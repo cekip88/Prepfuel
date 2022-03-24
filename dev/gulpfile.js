@@ -43,7 +43,8 @@ const
         src_build : ['js/*.js'],
         file_name: 'front.js',
         src_all : [
-            'js/**/*.js'
+            'js/**/*.js',
+            'js/**/*.css'
         ],
         dest: projectPath
     },

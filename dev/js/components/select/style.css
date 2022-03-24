@@ -1,0 +1,11 @@
+:host{
+    --body-display: none;
+}
+.g-select-head{
+  border: 1px solid #000;
+  cursor: pointer;
+}
+.g-select-body{
+    display: var(--body-display);
+    flex-direction: column;
+}
