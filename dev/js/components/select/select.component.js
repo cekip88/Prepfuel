@@ -10,32 +10,30 @@ export default class GSelect extends GComponent {
 	define(){
 		const _ = this;
 		_.opened = false;
-		_.filteredAttributes = ['items','title']
+		_.filteredAttributes = ['items','title'];
 		_.selectedValues = [];
 		_.baseTitle = '';
 		_.multiple = false;
 		_.titles = [];
 		_ .on('open',_.open.bind(_))
 			.on('choose',_.choose.bind(_));
-
-
-
 	}
 
 	open(clickData){
 		const _ = this;
 		if(!_.opened){
-			_.setProperty('--body-display','flex');
+			_.setProperty('--body-max-height','184px');
 			_.opened = true;
+			_.shadow.querySelector('.g-select').classList.add('active');
 		}	else{
-			_.setProperty('--body-display','none');
-			_.opened = false;
+			_.close();
 		}
 	}
 	close(){
 		const _ = this;
-		_.setProperty('--body-display','none');
+		_.setProperty('--body-max-height','0');
 		_.opened = false;
+		_.shadow.querySelector('.g-select').classList.remove('active');
 	}
 
 
@@ -98,6 +96,7 @@ export default class GSelect extends GComponent {
 		const _ = this;
 		let
 			item = _.ascent(clickData.event,'g-select-option');
+		if (!item) return void 0;
 		_.multiple = _.hasAttribute('multiple');
 
 		_.handleOption('selectedValues',item,'value',	_.setValue.bind(_));
@@ -113,7 +112,6 @@ export default class GSelect extends GComponent {
 			value: _.selectedValues,
 			event: clickData.event
 		})
-
 	}
 	createHiddenInput(data){
 		const _ = this;

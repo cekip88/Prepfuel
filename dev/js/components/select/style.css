@@ -1,11 +1,81 @@
-:host{
-    --body-display: none;
+*{
+  margin: 0;
+  padding: 0;
+  font-size: 1em;
+  line-height: calc(20 / 14);
+  font-weight: initial;
+  box-sizing: border-box;
+  outline: 0;
+  text-decoration: none;
+  -webkit-text-size-adjust: 100%;
 }
-.g-select-head{
-  border: 1px solid #000;
-  cursor: pointer;
+input, button {
+  font-family: inherit;
+  font-size: inherit;
+  background-color: transparent;
+  border: none;
+}
+:host{
+  --body-max-height: 0px;
+}
+.g-select{
+  width: 100%;
+  height: 100%;
+  position: relative;
+  font-family: 'roboto-regular', serif;
+}
+.g-select-head,.g-select-option{
+  width: 100%;
+  height: 100%;
+  padding: 11px 12px 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color:#F3F6F9;
+  border-radius: 9px;
+  white-space: normal;
+  transition: .35s ease;
+}
+.g-select-head-icon {
+  flex: 0 0 7px;
+  width: 7px;
+  height: 4px;
+  margin-left: 16px;
+  fill: #3F4254;
+  transition: .35s ease;
 }
 .g-select-body{
-    display: var(--body-display);
-    flex-direction: column;
+  width: 100%;
+  max-height: var(--body-max-height);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: auto;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  z-index: 2;
+  transition: .2s ease;
+}
+.g-select.active .g-select-head-icon{
+  transform: rotate(180deg);
+}
+.g-select-option{
+  margin-top: 2px;
+  text-align: left;
+  box-shadow: 0 3px 3px rgba(0,0,0,0.2);
+}
+.g-select-option.active{
+  background-color: #A1A5B7;
+}
+.g-select-option:hover,.g-select-head:hover{
+  background-color: #B5B5C3;
+}
+.g-select-option.active,
+.g-select-option:hover,
+.g-select-head:hover{
+  color: #fff;
+}
+.g-select-head:hover .g-select-head-icon {
+  fill: #fff;
 }

@@ -1,29 +1,183 @@
+%transition
+	transition: .35s ease
 .section
 	+w($mobile)
-	margin: auto
+	padding: 0 10px
+body
+	height: 100vh
+	overflow: auto
+::-webkit-scrollbar
+	+wh(10px)
+::-webkit-scrollbar-track
+	border-radius: 8px
+	background: rgb($neutral-100)
+::-webkit-scrollbar-thumb
+	border-radius: 6px
+	background: rgb($neutral-400)
+::-webkit-scrollbar-thumb:hover
+	background: rgb($neutral-500)
 
-.select
-	position: relative
-	&-head
-		&-item
-			+wh(100%,40px)
-			text-align: center
-	&-dropdown
-		width: 100%
-		max-height: 0
+.ui
+	.select,.button,.button-blue,.button-add
+		margin-top: 20px
+		margin-right: 20px
+	.block
+		padding-top: 50px
 		display: flex
+		flex-wrap: wrap
+	.title
+		width: 100%
+		margin-bottom: 10px
+		display: block
+	svg
+		max-width: 50px
+
+.title,.section-title
+	font-size: calc(20em / 14)
+	line-height: initial
+.title
+	font-family: $p_semi
+	color: #181C32
+.section-title
+	font-family: $f_bold
+	color: #3F4254
+
+
+.button,.button-blue,.button-add,.add
+	@extend %dfi
+	border: 1px solid transparent
+	font-family: $f_semi
+	&:hover
+		.button-icon
+			transform: rotate(90deg)
+.button,.button-blue,.button-add
+	border-radius: 6px
+.button,.button-blue,.button-add,.button-icon,.add
+	transition: .35s ease
+.button,.button-blue
+	padding: 13px 24px
+.button
+	color: rgb($neutral-600)
+	&,&.reverse:hover
+		background-color: rgb($neutral-100)
+	&:hover,&.reverse
+		border-color: rgb($neutral-600)
+		background-color: transparent
+	&.reverse:hover
+		border-color: transparent
+	&-icon
+		+wh(10px)
+		margin-left: 11px
+		fill: rgb($neutral-600)
+		&:first-child
+			margin-left: 0
+			margin-right: 11px
+	&-blue
+		&,&.reverse:hover
+			background-color: rgb($blue)
+			color: rgb($white)
+		&:hover,&.reverse
+			background-color: transparent
+			color: rgb($blue)
+			border-color: rgb($blue)
+			.button-icon
+				fill: rgb($blue)
+		.button-icon,&.reverse:hover .button-icon
+			fill: rgb($white)
+	&-add
+		padding: 11px 20px
+		background-color: rgb($blue-light)
+		color: rgb($blue)
+		.button-icon
+			+wh(16px)
+			fill: rgb($blue)
+		&:hover
+			background-color: transparent
+			border-color: rgb($blue)
+.add
+	color: rgb($blue)
+	span
+		position: relative
+		&:after
+			+af
+			+wh(0,1px)
+			position: absolute
+			bottom: -2px
+			left: 50%
+			background-color: rgb($blue)
+			transition: .35s ease
+	.button-icon
+		+wh(16px)
+		padding: 3px
+		border: 1px solid rgb($blue)
+		border-radius: 100%
+		fill: rgb($blue)
+	&:hover
+		span
+			&:after
+				width: 100%
+				left: 0
+
+.head
+	background-color: rgb($blue)
+	&-logo
+		max-width: calc(100% - 220px)
+	&-row
+		@extend %dfi
+		padding: 16px 0
+	&-control
+		@extend %dfa
+	&-button
+		margin-right: 24px
+		svg
+			+wh(28px)
+			fill: rgb($white)
+	&-info
+		@extend %df
+		margin-right: 14px
 		flex-direction: column
-		position: absolute
-		top: 100%
-		left: 0
-		z-index: 10
-		overflow: hidden
-		transition: .35s ease
-		&-item
-			+dfc
-			+wh(100%,40px)
-			flex: 0 0 40px
-	&.active
-		.select-dropdown
-			max-height: 160px
-			overflow: auto
+	&-name,&-position
+		font-family: $p_semi
+		font-size: 12px
+		text-align: right
+		line-height: initial
+	&-position
+		color: rgb($white)
+	&-name
+		color: rgb($blue-white)
+	&-user
+		@extend %dfc
+		+wh(30px)
+		background-color: rgba($white,.08)
+		border-radius: 6px
+		color: rgb($white)
+		font-family: $p_medium
+		font-size: calc(20em / 14)
+
+
+.pagination
+	@extend %dfi
+	flex-wrap: wrap
+	&-info,&-link,&-arrow
+		color: rgb($neutral-600)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

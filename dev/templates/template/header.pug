@@ -1,2 +1,17 @@
 header.head
-    .section
+	.section
+		.head-row
+			a(href='/').head-logo
+				+img("logo.svg")
+			.head-control
+				button.head-button
+					svg
+						use(xlink:href='img/sprite.svg#bell')
+				button.head-button
+					svg
+						use(xlink:href='img/sprite.svg#chat')
+				.head-info
+					span.head-name Sean
+					span.head-position Student
+				button.head-user
+					span S

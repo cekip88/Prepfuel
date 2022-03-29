@@ -3,11 +3,15 @@
 @import "vars"
 $dpx: 14px
 $font_body: 14px
-//+font_inc($f_reg,'roboto-regular.ttf')
++font_inc('Poppins-SemiBold','Poppins-SemiBold.ttf')
++font_inc('Poppins-Medium','Poppins-Medium.ttf')
++font_inc('roboto-regular','roboto-regular.woff2')
++font_inc('roboto-semibold','roboto-semibold.woff2')
++font_inc('roboto-bold','roboto-bold.woff2')
 .set,body
 	+wh(100%)
 body
-	+font($font_body,$f_reg,$black)
+	+font($font_body,$f_reg,$main-text)
 	min-height: 100vh
 	overflow-x: hidden
 
@@ -20,11 +24,11 @@ button,label,input[type='submit'],input[type='button']
 	cursor: pointer
 // -==[ Медиа ]==-
 @import "media/m"
-+mq(440px)
-	@import "media/ml"
-+mq(740px)
++mq(768px)
 	@import "media/t"
-+mq(1000px)
++mq(1024px)
 	@import "media/tl"
-+mq(1170px)
++mq(1200px)
 	@import "media/d"
++mq(1440px)
+	//@import "media/dl"

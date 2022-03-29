@@ -1,0 +1,228 @@
+extends template/main
+append vars
+	-
+		page_title= 'UIkit'
+block content
+	main
+		section.ui
+			.section
+				.block
+					span.title Titles
+					h1.title title
+					h2.section-title section-title
+				.block
+					span.title Selects
+					g-select.select(action='testChange' name='testField' title='test' items=[{"value": 1, "text": 'option 1'}, {
+						"value": 2,
+						"text": 'option 2'
+					}, {"value": 3, "text": 'option 3'}])
+					g-select.select(
+						action='testChange'
+						name='testFiel2d'
+						title='test 2'
+						multiple
+						items=[
+							{"value": 1, "text": 'option 2-1'},
+							{"value": 2, "text": 'option 2-2'}
+						]
+					)
+				.block
+					span.title Buttons
+					button.button-blue button.blue
+					button.button-blue
+						span button-blue
+						svg.button-icon
+							use(xlink:href='img/sprite.svg#plus')
+					button.button-blue.reverse button.blue.reverse
+					button.button-blue.reverse
+						span button.blue.reverse
+						svg.button-icon
+							use(xlink:href='img/sprite.svg#plus')
+					button.button button
+					button.button
+						span button
+						svg.button-icon
+							use(xlink:href='img/sprite.svg#plus')
+					button.button.reverse
+						span button.reverse
+						svg.button-icon
+							use(xlink:href='img/sprite.svg#plus')
+					button.button-add
+						svg.button-icon
+							use(xlink:href='img/sprite.svg#plus')
+						span button.add
+					button.add
+						svg.button-icon
+							use(xlink:href='img/sprite.svg#plus')
+						span button add reverse
+				.block
+					span.title Icons & Images
+					img(src="img/logo.svg")
+					svg.arrow
+						use(xlink:href='img/sprite.svg#select-arrow-bottom')
+					svg.arrow
+						use(xlink:href='img/sprite.svg#arrow-bottom')
+					svg.arrow
+						use(xlink:href='img/sprite.svg#arrow-left-transparent')
+					svg.arrow
+						use(xlink:href='img/sprite.svg#arrow-right-transparent')
+					svg.arrow
+						use(xlink:href='img/sprite.svg#arrow-left')
+					svg.arrow
+						use(xlink:href='img/sprite.svg#arrow-right')
+					svg.bell
+						use(xlink:href='img/sprite.svg#bell')
+					svg.share
+						use(xlink:href='img/sprite.svg#share')
+					svg.share-transparent
+						use(xlink:href='img/sprite.svg#share-transparent')
+					svg.tablet
+						use(xlink:href='img/sprite.svg#tablet')
+					svg.file
+						use(xlink:href='img/sprite.svg#file')
+					svg.badge
+						use(xlink:href='img/sprite.svg#badge')
+					svg.clock
+						use(xlink:href='img/sprite.svg#clock')
+					svg.questions
+						use(xlink:href='img/sprite.svg#questions')
+					svg.graphic
+						use(xlink:href='img/sprite.svg#graphic')
+					svg.graphic-1
+						use(xlink:href='img/sprite.svg#graphic-1')
+					svg.graphic-2
+						use(xlink:href='img/sprite.svg#graphic-2')
+					svg.graphic-3
+						use(xlink:href='img/sprite.svg#graphic-3')
+					svg.graphic-4
+						use(xlink:href='img/sprite.svg#graphic-4')
+					svg.shield
+						use(xlink:href='img/sprite.svg#shield')
+					svg.calendar
+						use(xlink:href='img/sprite.svg#calendar')
+					svg.rocket
+						use(xlink:href='img/sprite.svg#rocket')
+					svg.stars
+						use(xlink:href='img/sprite.svg#stars')
+					svg.dots
+						use(xlink:href='img/sprite.svg#dots')
+					svg(class='three-dots')
+						use(xlink:href='img/sprite.svg#three-dots')
+					svg.hwcompleted
+						use(xlink:href='img/sprite.svg#hwcompleted')
+					svg.message
+						use(xlink:href='img/sprite.svg#message')
+					svg.group
+						use(xlink:href='img/sprite.svg#group')
+					svg.emoji
+						use(xlink:href='img/sprite.svg#emoji')
+					svg.smile-transparent
+						use(xlink:href='img/sprite.svg#smile-transparent')
+					svg.send
+						use(xlink:href='img/sprite.svg#send')
+					svg.eye
+						use(xlink:href='img/sprite.svg#eye')
+					svg.eye-transparent
+						use(xlink:href='img/sprite.svg#eye-transparent')
+					svg.video
+						use(xlink:href='img/sprite.svg#video')
+					svg.video-clip
+						use(xlink:href='img/sprite.svg#video-clip')
+					svg.play
+						use(xlink:href='img/sprite.svg#play')
+					svg.pause
+						use(xlink:href='img/sprite.svg#pause')
+					svg.search
+						use(xlink:href='img/sprite.svg#search')
+					svg.search-unbroken
+						use(xlink:href='img/sprite.svg#search-unbroken')
+					svg.filter
+						use(xlink:href='img/sprite.svg#filter')
+					svg.checkmark
+						use(xlink:href='img/sprite.svg#checkmark')
+					svg.bookmark
+						use(xlink:href='img/sprite.svg#bookmark')
+					svg.bookmark-transparent
+						use(xlink:href='img/sprite.svg#bookmark-transparent')
+					svg.edit
+						use(xlink:href='img/sprite.svg#edit')
+					svg.edit-transparent
+						use(xlink:href='img/sprite.svg#edit-transparent')
+					svg.error-circle
+						use(xlink:href='img/sprite.svg#error-circle')
+					svg.close
+						use(xlink:href='img/sprite.svg#close')
+					svg.close-transparent
+						use(xlink:href='img/sprite.svg#close-transparent')
+					svg.dismiss-circle
+						use(xlink:href='img/sprite.svg#dismiss-circle')
+					svg.lamp
+						use(xlink:href='img/sprite.svg#lamp')
+					svg.activity
+						use(xlink:href='img/sprite.svg#activity')
+					svg.microphone
+						use(xlink:href='img/sprite.svg#microphone')
+					svg.microphone-transparent
+						use(xlink:href='img/sprite.svg#microphone-transparent')
+					svg.microphone-mute
+						use(xlink:href='img/sprite.svg#microphone-mute')
+					svg.camera
+						use(xlink:href='img/sprite.svg#camera')
+					svg.camera-transparent
+						use(xlink:href='img/sprite.svg#camera-transparent')
+					svg.camera-off
+						use(xlink:href='img/sprite.svg#camera-off')
+					svg.participants
+						use(xlink:href='img/sprite.svg#participants')
+					svg.class-management
+						use(xlink:href='img/sprite.svg#class-management')
+					svg.teaching-tools
+						use(xlink:href='img/sprite.svg#teaching-tools')
+					svg.break
+						use(xlink:href='img/sprite.svg#break')
+					svg.hand
+						use(xlink:href='img/sprite.svg#hand')
+					svg.hand-transparent
+						use(xlink:href='img/sprite.svg#hand-transparent')
+					svg.reactions
+						use(xlink:href='img/sprite.svg#reactions')
+					svg.participants-check
+						use(xlink:href='img/sprite.svg#participants-check')
+					svg.syllabus
+						use(xlink:href='img/sprite.svg#syllabus')
+					svg.assigment
+						use(xlink:href='img/sprite.svg#assigment')
+					svg.quiz-new
+						use(xlink:href='img/sprite.svg#quiz-new')
+					svg.checkmark-circle
+						use(xlink:href='img/sprite.svg#checkmark-circle')
+					svg.whiteboard
+						use(xlink:href='img/sprite.svg#whiteboard')
+					svg.browse
+						use(xlink:href='img/sprite.svg#browse')
+					include ../img/noto_glowing-star.svg
+					include ../img/noto_eyes.svg
+					include ../img/noto_fast-reverse-button.svg
+					include ../img/noto_hand-with-fingers-splayed.svg
+					include ../img/noto_red-exclamation-mark.svg
+				.block
+					.pagination
+						.pagination-info
+							span Showing 1 to 5 of 25 entries
+						.pagination-links
+							a(href='#').pagination-arrow.pagination-prev
+								svg.arrow
+									use(xlink:href='img/sprite.svg#arrow-left-transparent')
+							a(href='#').pagination-link
+								span 1
+							a(href='#').pagination-link
+								span 2
+							a(href='#').pagination-link
+								span 3
+							a(href='#').pagination-link
+								span 4
+							a(href='#').pagination-link
+								span 5
+							a(href='#').pagination-arrow.pagination-next
+								svg.arrow
+									use(xlink:href='img/sprite.svg#arrow-right-transparent')
