@@ -6,16 +6,46 @@ block content
 	main
 		section.ui
 			.section
+				.section-header
+					h1.title Homework
+					.section-buttons
+						button.section-button.active
+							span All
+						button.section-button
+							span Verbal Reasoning
+						button.section-button
+							span Quantitative Reasoning
+						button.section-button
+							span Reading Comprehension
+						button.section-button
+							span Reading Comprehension
 				.block
-					span.title Titles
-					h1.title title
-					h2.section-title section-title
+					.block-filter
+						h2.block-title Upcoming Tutoring Sessions
+						.block-filter-buttons
+							button.block-filter-button.active
+								span Today
+							button.block-filter-button
+								span Week
+							button.block-filter-button
+								span Month
 				.block
-					span.title Selects
-					g-select.select(action='testChange' name='testField' title='test' items=[{"value": 1, "text": 'option 1'}, {
-						"value": 2,
-						"text": 'option 2'
-					}, {"value": 3, "text": 'option 3'}])
+					h5.title Titles
+					h2.title title
+					h2.block-title section-title
+				.block
+					h5.title Selects
+					g-select.select(
+						action='testChange'
+						name='testField'
+						title='test'
+						items=[
+							{"value": 1, "text": 'option 1'},
+							{"value": 2, "text": 'option 2'},
+							{"value": 3, "text": 'option 3'}
+						]
+						arrowSvg='img/sprite.svg#select-arrow-bottom'
+					)
 					g-select.select(
 						action='testChange'
 						name='testFiel2d'
@@ -25,21 +55,13 @@ block content
 							{"value": 1, "text": 'option 2-1'},
 							{"value": 2, "text": 'option 2-2'}
 						]
+						arrowSvg='img/sprite.svg#select-arrow-bottom'
 					)
 				.block
-					span.title Buttons
-					button.button-blue button.blue
-					button.button-blue
-						span button-blue
-						svg.button-icon
-							use(xlink:href='img/sprite.svg#plus')
-					button.button-blue.reverse button.blue.reverse
-					button.button-blue.reverse
-						span button.blue.reverse
-						svg.button-icon
-							use(xlink:href='img/sprite.svg#plus')
-					button.button button
-					button.button
+					h5.title Buttons
+					button(disabled).button
+						span button
+					button.button(data-click='showPopup' data-target='#question')
 						span button
 						svg.button-icon
 							use(xlink:href='img/sprite.svg#plus')
@@ -47,16 +69,27 @@ block content
 						span button.reverse
 						svg.button-icon
 							use(xlink:href='img/sprite.svg#plus')
-					button.button-add
+					button.button-blue
+						span button-blue
+					button.button-blue
+						span button-blue
+						svg.button-icon
+							use(xlink:href='img/sprite.svg#plus')
+					button.button-blue.reverse button-blue.reverse
+					button.button-blue.reverse
+						span button-blue.reverse
+						svg.button-icon
+							use(xlink:href='img/sprite.svg#plus')
+					button.button-lightblue
 						svg.button-icon
 							use(xlink:href='img/sprite.svg#plus')
 						span button.add
-					button.add
+					button.button-transparent
 						svg.button-icon
 							use(xlink:href='img/sprite.svg#plus')
 						span button add reverse
 				.block
-					span.title Icons & Images
+					h5.title Icons & Images
 					img(src="img/logo.svg")
 					svg.arrow
 						use(xlink:href='img/sprite.svg#select-arrow-bottom')
@@ -206,6 +239,7 @@ block content
 					include ../img/noto_hand-with-fingers-splayed.svg
 					include ../img/noto_red-exclamation-mark.svg
 				.block
+					h5.title Pagination
 					.pagination
 						.pagination-info
 							span Showing 1 to 5 of 25 entries
@@ -213,7 +247,7 @@ block content
 							a(href='#').pagination-arrow.pagination-prev
 								svg.arrow
 									use(xlink:href='img/sprite.svg#arrow-left-transparent')
-							a(href='#').pagination-link
+							a(href='#').pagination-link.active
 								span 1
 							a(href='#').pagination-link
 								span 2

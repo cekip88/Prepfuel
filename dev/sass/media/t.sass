@@ -1,11 +1,64 @@
 .section
-	+w($tablet)
-	padding: 0
-	margin: 0 auto
+  +w($tablet)
+  padding: 0
+  margin: 0 auto
+.section,.block-filter
+  &-buttons
+    margin-bottom: 24px
+    flex-direction: row
+    justify-content: space-between
+  &-button
+    margin-bottom: 0
+.block
+  &-title
+    margin-bottom: 0
+  &-filter
+    padding-bottom: 18px
+    display: flex
+    align-items: center
+    position: relative
+    &:after
+      +af
+      +wh(100%,1px)
+      background-color: rgb($neutral-200)
+      position: absolute
+      left: 0
+      bottom: 0
+    &-buttons
+      margin-bottom: 0
+    &-button
+      margin-right: 10px
+      padding: 0 10px
+      position: relative
+      &:last-child
+        margin-right: 0
+      &:after
+        +af
+        +wh(100%,1px)
+        position: absolute
+        left: 0
+        bottom: -21px
+        z-index: 1
+      &.active
+        &:after
+          background-color: rgb($blue)
+
+
+.pagination
+  flex-direction: row
+  justify-content: space-between
+  &-info
+    margin-bottom: 0
+
+
 
 
 .head
-	&-logo
-		max-width: initial
-	&-user
-		+wh(40px)
+  &-logo
+    max-width: initial
+  &-user
+    +wh(40px)
+
+.navigate
+  &-item
+    width: calc(100% / 3)

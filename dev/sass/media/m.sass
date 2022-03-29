@@ -1,167 +1,253 @@
 %transition
-	transition: .35s ease
-.section
-	+w($mobile)
-	padding: 0 10px
+  transition: .35s ease
+
 body
-	height: 100vh
-	overflow: auto
+  height: 100vh
+  background-color: rgb($bgc)
+  overflow: auto
 ::-webkit-scrollbar
-	+wh(10px)
+  +wh(10px)
 ::-webkit-scrollbar-track
-	border-radius: 8px
-	background: rgb($neutral-100)
+  border-radius: 8px
+  background: rgb($neutral-100)
 ::-webkit-scrollbar-thumb
-	border-radius: 6px
-	background: rgb($neutral-400)
+  border-radius: 6px
+  background: rgb($neutral-400)
 ::-webkit-scrollbar-thumb:hover
-	background: rgb($neutral-500)
+  background: rgb($neutral-500)
+
 
 .ui
-	.select,.button,.button-blue,.button-add
-		margin-top: 20px
-		margin-right: 20px
-	.block
-		padding-top: 50px
-		display: flex
-		flex-wrap: wrap
-	.title
-		width: 100%
-		margin-bottom: 10px
-		display: block
-	svg
-		max-width: 50px
+  .select,.button,.button-blue,.button-lightblue,.button-transparent
+    margin-top: 20px
+    margin-right: 20px
+  svg
+    max-width: 50px
 
-.title,.section-title
-	font-size: calc(20em / 14)
-	line-height: initial
+
+.section
+  +w($mobile)
+  padding: 0 10px
+  &-button
+    font-family: $p_semi
+
+.section,.block-filter
+  &-buttons
+    @extend %df
+    margin-bottom: 12px
+    flex-direction: column
+    align-items: flex-start
+  &-button
+    @extend %transition
+    margin-bottom: 8px
+    color: rgb($neutral-400)
+    &.active
+      color: rgb($neutral-800)
+
+.block
+  padding: 12px 16px
+  margin-bottom: 12px
+  background-color: rgb($white)
+  border-radius: 12px
+  &-title
+    margin-bottom: 10px
+    font-family: $f_bold
+    color: #3F4254
+  &-filter
+    margin-bottom: 12px
+    &-button
+      font-size: calc(8em / 7)
+      font-family: $f_medium
+
+
+.title,.block-title
+  width: 100%
+  font-size: calc(20em / 14)
+  line-height: initial
 .title
-	font-family: $p_semi
-	color: #181C32
-.section-title
-	font-family: $f_bold
-	color: #3F4254
+  margin-bottom: 10px
+  font-family: $p_semi
+  color: #181C32
 
 
-.button,.button-blue,.button-add,.add
-	@extend %dfi
-	border: 1px solid transparent
-	font-family: $f_semi
-	&:hover
-		.button-icon
-			transform: rotate(90deg)
-.button,.button-blue,.button-add
-	border-radius: 6px
-.button,.button-blue,.button-add,.button-icon,.add
-	transition: .35s ease
-.button,.button-blue
-	padding: 13px 24px
 .button
-	color: rgb($neutral-600)
-	&,&.reverse:hover
-		background-color: rgb($neutral-100)
-	&:hover,&.reverse
-		border-color: rgb($neutral-600)
-		background-color: transparent
-	&.reverse:hover
-		border-color: transparent
-	&-icon
-		+wh(10px)
-		margin-left: 11px
-		fill: rgb($neutral-600)
-		&:first-child
-			margin-left: 0
-			margin-right: 11px
-	&-blue
-		&,&.reverse:hover
-			background-color: rgb($blue)
-			color: rgb($white)
-		&:hover,&.reverse
-			background-color: transparent
-			color: rgb($blue)
-			border-color: rgb($blue)
-			.button-icon
-				fill: rgb($blue)
-		.button-icon,&.reverse:hover .button-icon
-			fill: rgb($white)
-	&-add
-		padding: 11px 20px
-		background-color: rgb($blue-light)
-		color: rgb($blue)
-		.button-icon
-			+wh(16px)
-			fill: rgb($blue)
-		&:hover
-			background-color: transparent
-			border-color: rgb($blue)
-.add
-	color: rgb($blue)
-	span
-		position: relative
-		&:after
-			+af
-			+wh(0,1px)
-			position: absolute
-			bottom: -2px
-			left: 50%
-			background-color: rgb($blue)
-			transition: .35s ease
-	.button-icon
-		+wh(16px)
-		padding: 3px
-		border: 1px solid rgb($blue)
-		border-radius: 100%
-		fill: rgb($blue)
-	&:hover
-		span
-			&:after
-				width: 100%
-				left: 0
-
-.head
-	background-color: rgb($blue)
-	&-logo
-		max-width: calc(100% - 220px)
-	&-row
-		@extend %dfi
-		padding: 16px 0
-	&-control
-		@extend %dfa
-	&-button
-		margin-right: 24px
-		svg
-			+wh(28px)
-			fill: rgb($white)
-	&-info
-		@extend %df
-		margin-right: 14px
-		flex-direction: column
-	&-name,&-position
-		font-family: $p_semi
-		font-size: 12px
-		text-align: right
-		line-height: initial
-	&-position
-		color: rgb($white)
-	&-name
-		color: rgb($blue-white)
-	&-user
-		@extend %dfc
-		+wh(30px)
-		background-color: rgba($white,.08)
-		border-radius: 6px
-		color: rgb($white)
-		font-family: $p_medium
-		font-size: calc(20em / 14)
+  color: rgb($neutral-600)
+  background-color: rgb($neutral-100)
+  &,&.reverse
+    &:not([disabled]):hover
+      color: rgb($white)
+      background-color: rgb($neutral-800)
+      .button-icon
+        fill: rgb($white)
+  &,&-blue,&-lightblue,&-transparent,&-icon
+    @extend %transition
+  &,&-blue,&-lightblue,&-transparent
+    @extend %dfi
+    font-family: $f_semi
+    &[disabled]
+      opacity: .3
+      cursor: initial
+  &,&-blue,&-lightblue
+    border-radius: 6px
+    border: 1px solid transparent
+  &,&-blue
+    padding: 13px 24px
+  &-lightblue,&-transparent
+    color: rgb($blue)
+  &-icon
+    +wh(10px)
+    margin-left: 11px
+    fill: rgb($neutral-600)
+    &:first-child
+      margin-left: 0
+      margin-right: 11px
+  &.reverse
+    border-color: rgb($neutral-600)
+    background-color: transparent
+  &-blue
+    background-color: rgb($blue)
+    color: rgb($white)
+    .button-icon
+      fill: rgb($white)
+    &.reverse
+      background-color: transparent
+      color: rgb($blue)
+      border-color: rgb($blue)
+      .button-icon
+        fill: rgb($blue)
+    &,&.reverse
+      &:not([disabled]):hover
+        color: rgb($neutral-800)
+        background-color: rgb($blue-light)
+        border-color: transparent
+        .button-icon
+          fill: rgb($neutral-800)
+  &-lightblue
+    padding: 11px 20px
+    background-color: rgb($blue-light)
+    .button-icon
+      +wh(16px)
+      fill: rgb($blue)
+    &:not([disabled]):hover
+      background-color: rgb($blue)
+      color: rgb($white)
+      svg
+        fill: rgb($white)
+  &-transparent
+    span
+      position: relative
+      &:after
+        +af
+        +wh(0,1px)
+        position: absolute
+        bottom: -2px
+        left: 50%
+        background-color: rgb($blue)
+        transition: .35s ease
+    .button-icon
+      +wh(16px)
+      padding: 3px
+      border: 1px solid rgb($blue)
+      border-radius: 100%
+      fill: rgb($blue)
+    &:hover
+      span
+        &:after
+          width: 100%
+          left: 0
+      .button-icon
+        transform: rotate(90deg)
 
 
 .pagination
-	@extend %dfi
-	flex-wrap: wrap
-	&-info,&-link,&-arrow
-		color: rgb($neutral-600)
+  @extend %dfa
+  width: 100%
+  flex-direction: column
+  &-links
+    @extend %dfa
+  &-info,&-link
+    color: rgb($neutral-600)
+    font-family: $f_medium
+  &-link,&-arrow
+    @extend %dfc
+    +wh(28px)
+    border-radius: 6px
+  &-info
+    margin-bottom: 10px
+  &-arrow
+    svg
+      height: 13px
+      fill: rgb($neutral-600)
+  &-prev
+    margin-right: 12px
+  &-next
+    margin-left: 12px
+  &-link
+    &.active
+      background-color: rgb($blue)
+      color: rgb($white)
+  &-link,&-arrow
+    &:hover
+      background-color: rgb($neutral-100)
 
 
+
+
+.head
+  background-color: rgb($blue)
+  &-logo
+    max-width: calc(100% - 220px)
+  &-row
+    @extend %dfi
+    padding: 16px 0
+  &-control
+    @extend %dfa
+  &-button
+    margin-right: 24px
+    svg
+      +wh(28px)
+      fill: rgb($white)
+  &-info
+    @extend %df
+    margin-right: 14px
+    flex-direction: column
+  &-name,&-position
+    font-family: $p_semi
+    font-size: 12px
+    text-align: right
+    line-height: initial
+  &-position
+    color: rgb($white)
+  &-name
+    color: rgb($blue-white)
+  &-user
+    @extend %dfc
+    +wh(30px)
+    background-color: rgba($white,.08)
+    border-radius: 6px
+    color: rgb($white)
+    font-family: $p_medium
+    font-size: calc(20em / 14)
+
+
+.navigate
+  background-color: rgb($blue)
+  &-label
+    display: none
+    position: absolute
+  &-list
+    @extend %dfi
+    padding: 10px 0
+    flex-wrap: wrap
+  &-item
+    width: 50%
+    padding: 10px
+    border-radius: 18px
+    color: rgb($blue-white)
+    font-family: $p_semi
+    &.active
+      background-color: rgb($white)
+      color: rgb($neutral-800)
 
 
 

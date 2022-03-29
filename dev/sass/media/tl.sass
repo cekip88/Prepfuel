@@ -1,2 +1,58 @@
 .section
 	+w($tablet-large)
+	&-buttons
+		align-items: center
+	&-button
+		&.active
+			padding: 8px 16px
+			border-radius: 6px
+			background-color: rgb($neutral-800)
+			color: rgb($white)
+			&:after
+				width: 0
+.block
+	padding: 24px 32px
+	&,&-filter
+		margin-bottom: 24px
+
+
+.navigate
+	&-list
+		padding: 12px 0 0
+		justify-content: flex-start
+		position: relative
+	&-item
+		width: initial
+		padding: 18px 20px
+		font-size: calc(8em / 7)
+		line-height: initial
+		position: relative
+		z-index: 1
+		&.active
+			background: none
+			color: rgb($neutral-800)
+	&-label
+		height: 61px
+		border-radius: 12px 12px 0 0
+		background-color: rgb($white)
+		position: absolute
+		bottom: 0
+		transition: .35s ease
+		&-left,&-right
+			+wh(20px,100%)
+			background-color: rgb($white)
+			position: absolute
+			&:before
+				+af
+				+wh(20px,100%)
+				background-color: rgb($blue)
+				position: absolute
+				bottom: 0
+		&-left
+			left: -20px
+			&:before
+				border-bottom-right-radius: 12px
+		&-right
+			right: -20px
+			&:before
+				border-bottom-left-radius: 12px

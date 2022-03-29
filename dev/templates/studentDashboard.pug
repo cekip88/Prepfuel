@@ -1,0 +1,8 @@
+extends template/main
+append vars
+	-
+		page_title = 'Student - Dashboard'
+block content
+	main
+		section.navigate(data-active='.navigate-item:nth-child(3)')
+			include parts/student-nav

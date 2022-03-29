@@ -5,26 +5,76 @@ class Front extends _front{
   constructor(){
     super();
     const _ = this;
-    G_Bus.on('testSubmit',_.testSubmit.bind(_))
-    G_Bus.on('testChange',_.testChange.bind(_))
-    G_Bus.on('anotherChange',_.anotherChange.bind(_))
+    G_Bus.on('navigate',_.navigate.bind(_))
   }
-  async testSubmit(submitData){
+
+  ascent(item,targetCls,endCls){
+    while(!item.classList.contains(targetCls)) {
+      item = item.parentElement;
+      if (item.classList.contains(endCls)) {
+        break;
+        return;
+      }
+    }
+    return item;
+  }
+  removeCls(item,cls) {
+    if (item) item.classList.remove(cls)
+  }
+
+  navigationInit(list) {
     const _ = this;
-    submitData.event.preventDefault()
-    console.log(
-      submitData['item'].elements)
+    if (!list) return;
+    _.setActiveNavItem(list);
 
-    let formData = await _.formDataCapture(submitData['item']);
-    console.log(formData)
+    window.addEventListener('resize',()=>{
+      let activeBtn = list.querySelector('.active');
+      if (activeBtn) _.showActiveNavItem(activeBtn,list);
+    })
+  }
+  setActiveNavItem(list){
+    const _ = this;
+    let
+      container = list.closest('.navigate'),
+      activeItemSelector = container.getAttribute('data-active'),
+      newActiveBtn = list.querySelector(activeItemSelector),
+      activeBtn = list.querySelector('.active');
+    if (newActiveBtn) {
+      container.removeAttribute('data-active');
+      _.navigate({item:list, event:{target:newActiveBtn}})
+    } else if (activeBtn){
+      _.navigate({item:list, event:{target:activeBtn}})
+    }
+  }
+  navigate(clickData){
+    const _ = this;
+    let
+      list = clickData.item,
+      target = clickData.event.target,
+      btn = _.ascent(target,'navigate-item','navigate-list');
+
+    _.showActiveNavItem(btn,list);
+    _.changeActiveNavItem(btn)
+  }
+  changeActiveNavItem(item){
+    const _ = this;
+    let
+      cont = item.parentElement,
+      curItem = cont.querySelector('.active');
+    _.removeCls(curItem,'active');
+    item.classList.add('active')
+  }
+  showActiveNavItem(btn,list){
+    let
+      width = btn.clientWidth,
+      x = btn.offsetLeft,
+      label = list.querySelector('.navigate-label');
+    label.style = `display:block;width: ${width}px;left: ${x}px;`;
   }
 
-  testChange(data){
-    console.log(data)
+  init(){
+    const _ = this;
+    _.navigationInit(document.querySelector('.navigate-list'));
   }
-  anotherChange(data){
-    console.log(data)
-  }
-	
 }
 new Front();
