@@ -3,6 +3,7 @@
 @import "vars"
 $dpx: 14px
 $font_body: 14px
++font_inc('Poppins-Regular','Poppins-Regular.ttf')
 +font_inc('Poppins-SemiBold','Poppins-SemiBold.ttf')
 +font_inc('Poppins-Medium','Poppins-Medium.ttf')
 +font_inc('roboto-regular','roboto-regular.woff2')
@@ -12,7 +13,7 @@ $font_body: 14px
 .set,body
 	+wh(100%)
 body
-	+font($font_body,$f_reg,$main-text)
+	+font($font_body,$f_reg,rgb($main-text))
 	min-height: 100vh
 	overflow-x: hidden
 

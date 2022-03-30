@@ -4,5 +4,13 @@ append vars
 		page_title = 'Student - Dashboard'
 block content
 	main
-		section.navigate(data-active='.navigate-item:nth-child(3)')
+		section.navigate(data-active='.navigate-item:nth-child(1)' data-tabs='.dashboard-tabs')
 			include parts/student-nav
+		section
+			.subnavigate(data-tabs='.dashboard-subtabs')
+				include parts/student-dashboard-nav
+			include parts/student-dashboard-main
+			.section.row
+				.col
+					include parts/practice-schedule
+					include parts/upcoming-tutoring-sessions

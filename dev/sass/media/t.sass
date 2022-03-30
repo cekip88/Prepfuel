@@ -10,9 +10,18 @@
   &-button
     margin-bottom: 0
 .block
+  margin-top: 24px
   &-title
-    margin-bottom: 0
+    &:not(:last-child)
+      margin-bottom: 0
+    &-control
+      .block-title
+        width: initial
+        margin-right: auto
+      .button
+        margin-right: 16px
   &-filter
+    margin-bottom: 32px
     padding-bottom: 18px
     display: flex
     align-items: center
@@ -51,14 +60,59 @@
     margin-bottom: 0
 
 
-
-
 .head
   &-logo
     max-width: initial
   &-user
     +wh(40px)
 
+
 .navigate
   &-item
     width: calc(100% / 3)
+
+
+.block
+  padding: 30px
+
+.student
+  &-main
+    padding-right: 50%
+    background-image: url(img/multitasking.png)
+    background-size: auto 100%
+    background-position: calc(100% - 30px) 50%
+    background-repeat: no-repeat
+
+
+.upcoming
+  &-item
+    flex-direction: row
+    align-items: center
+  &-center
+    margin: 0 0 0 auto
+  &-right
+    margin-left: 44px
+
+
+.schedule
+  &-item
+    &:not(:last-child)
+      margin-bottom: 32px
+    .icon
+      +wh(64px)
+      padding: 12px
+    .info
+      margin-left: 32px
+      &-item
+        margin-top: 12px
+      &-text
+        font-size: $fz16
+
+
+
+
+
+
+
+
+

@@ -16,7 +16,6 @@ body
 ::-webkit-scrollbar-thumb:hover
   background: rgb($neutral-500)
 
-
 .ui
   .select,.button,.button-blue,.button-lightblue,.button-transparent
     margin-top: 20px
@@ -31,30 +30,46 @@ body
   &-button
     font-family: $p_semi
 
-.section,.block-filter
+.section
   &-buttons
     @extend %df
     margin-bottom: 12px
     flex-direction: column
     align-items: flex-start
   &-button
-    @extend %transition
     margin-bottom: 8px
+.section,.block-filter
+  &-button
+    @extend %transition
     color: rgb($neutral-400)
     &.active
       color: rgb($neutral-800)
 
 .block
   padding: 12px 16px
-  margin-bottom: 12px
+  margin-top: 12px
   background-color: rgb($white)
   border-radius: 12px
   &-title
-    margin-bottom: 10px
+    width: 100%
     font-family: $f_bold
     color: #3F4254
+    &:not(:last-child)
+      margin-bottom: 10px
+    &-control
+      @extend %dfa
+      flex-wrap: wrap
+      &:not(:last-child)
+        margin-bottom: 16px
+      .button
+        margin-right: 10px
+        font-size: $fz12
+        &:last-child
+          margin-right: 0
   &-filter
     margin-bottom: 12px
+    &-buttons
+      @extend %dfi
     &-button
       font-size: calc(8em / 7)
       font-family: $f_medium
@@ -69,6 +84,16 @@ body
   font-family: $p_semi
   color: #181C32
 
+.main-title
+  font-size: $fz24
+  letter-spacing: -0.02em
+  span,strong
+    display: block
+    line-height: 1.25
+  span
+    font-family: $p_reg
+  strong
+    font-family: $p_semi
 
 .button
   color: rgb($neutral-600)
@@ -191,8 +216,6 @@ body
       background-color: rgb($neutral-100)
 
 
-
-
 .head
   background-color: rgb($blue)
   &-logo
@@ -213,7 +236,7 @@ body
     flex-direction: column
   &-name,&-position
     font-family: $p_semi
-    font-size: 12px
+    font-size: $fz12
     text-align: right
     line-height: initial
   &-position
@@ -227,7 +250,7 @@ body
     border-radius: 6px
     color: rgb($white)
     font-family: $p_medium
-    font-size: calc(20em / 14)
+    font-size: $fz20
 
 
 .navigate
@@ -242,7 +265,7 @@ body
   &-item
     width: 50%
     padding: 10px
-    border-radius: 18px
+    border-radius: 8px
     color: rgb($blue-white)
     font-family: $p_semi
     &.active
@@ -250,10 +273,168 @@ body
       color: rgb($neutral-800)
 
 
+.student
+  &-main
+    &-text
+      margin-top: 12px
+      letter-spacing: -0.02em
+      font-family: $p_medium
+      color: rgb($neutral-400)
+      line-height: 1.625
+      strong
+        margin-left: 5px
+        color: rgb($main-text)
+    .button-blue
+      margin-top: 16px
+      padding: 12px 20px
+      font-size: $fz15
+      font-family: $f_medium
 
 
+.subnavigate
+  padding: 18px 0
+  background-color: rgb($white)
+  &-button
+    padding: 10px 16px
+    border-radius: 8px
+    font-family: $p_semi
+    color: rgb($subnav)
+    line-height: $fz24
+    &.active
+      color: rgb($blue)
+      background-color: rgb($neutral-100)
 
 
+.upcoming
+  &-item
+    @extend %df
+    padding: 2px 0 4px 17px
+    flex-direction: column
+    align-items: flex-start
+    position: relative
+    &:not(&:last-child)
+      margin-bottom: 16px
+    &:before
+      +af
+      +wh(4px,100%)
+      border-radius: 8px
+      background-color: #E4E6EF
+      position: absolute
+      left: 0
+      top: 0
+  &-center
+    margin: 10px 0
+    .status
+      padding: 6px 11.5px
+      border-radius: 6px
+      font-size: $fz12
+      font-family: $f_bold
+      &.completed
+        background-color: rgb($green-light)
+        color: rgb($green)
+      &.inprogress
+        background-color: rgb($blue-light)
+        color: #00A3FF
+      &.yet
+        background-color: rgb($neutral-100)
+        color: rgb($neutral-500)
+  &-right
+    .action
+      &-button
+        @extend %dfc
+        @extend %transition
+        +wh(64px,34px)
+        padding: 0
+        background-color: rgb($blue-text)
+        border: 1px solid transparent
+        border-radius: 6px
+        color: rgb($white)
+        font-size: $fz12
+        &[disabled]
+          opacity: .3
+  &-time,&-title
+    &:not(:last-child)
+      margin-bottom: 4px
+  &-time
+    @extend %df
+    font-size: $fz16
+    font-family: $f_medium
+    color: rgb($neutral-800)
+    .day,.date,.time
+      line-height: $fz20
+    .day,.date
+      margin-right: 5px
+    .time
+      i
+        margin-left: 5px
+        font-size: calc(12em/16)
+        line-height: calc(20em/12)
+        color: rgb($neutral-400)
+  &-title
+    font-family: $f_medium
+    line-height: $fz20
+    color: #5E6278
+  &-instructor
+    @extend %dfa
+    .photo
+      +wh(36px)
+      margin-right: 8px
+      border-radius: 100%
+      overflow: hidden
+      img
+        +wh(100%)
+        display: block
+        object-fit: cover
+    .info
+      &-lead
+        @extend %dfa
+        font-family: $f_medium
+        font-size: $fz12
+        &-left
+          margin-right: 5px
+          color: rgb($neutral-400)
+      &-lead-left,&-lead-right,&-button
+        line-height: calc(18em / 12)
+      &-button
+        color: rgb($blue-text)
+
+
+.schedule
+  &-item
+    @extend %df
+    align-items: flex-start
+    &:not(:last-child)
+      margin-bottom: 20px
+    .icon
+      @extend %dfc
+      +wh(40px)
+      padding: 5px
+      border-radius: 12px
+      background-color: rgb($neutral-100)
+      svg
+        fill: rgb($blue)
+      &.blue
+        background-color: rgb($blue-text)
+        svg
+          fill: rgb($white)
+    .info
+      margin-left: 10px
+      &-item
+        @extend %df
+        align-items: flex-start
+      &-icon
+        margin-right: 4px
+        svg
+          +wh(22px)
+          display: block
+          fill: rgb($blue)
+      &-text
+        margin-top: 4px
+        font-family: $p_medium
+        color: rgb($neutral-400)
+  &-title
+    font-size: $fz20
+    font-family: $p_semi
 
 
 

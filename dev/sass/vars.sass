@@ -13,6 +13,7 @@
 
 \:root
 
+	--p_reg: 'Poppins-Regular'
 	--p_semi: 'Poppins-SemiBold'
 	--p_medium: 'Poppins-Medium'
 	--f_reg: 'roboto-regular'
@@ -35,6 +36,7 @@
 	--blue-white: #{getRgb(#9CCDFF)}
 	--blue-light: #{getRgb(#ECF8FF)}
 	--blue: #{getRgb(#3699FF)}
+	--blue-text: #{getRgb(#00A3FF)}
 
 	--viol-light: #{getRgb(#F8F5FF)}
 	--viol: #{getRgb(#5014D0)}
@@ -54,16 +56,19 @@
 	--neutral-600: #{getRgb(#7E8299)}
 	--neutral-800: #{getRgb(#3F4254)}
 
+	--subnav: #{getRgb(#80808F)}
+
 
 
 	--mobile: 100%
 	--tablet: 740px
 	--tabLarge: 1000px
-	--desk: 1170px
+	--desk: 1200px
 	--desk-large: 1440px
 
 
 // --==[Шрифты]==--
+$p_reg: var(--p_reg)
 $p_semi: var(--p_semi)
 $p_medium: var(--p_medium)
 $f_reg: var(--f_reg)
@@ -94,6 +99,7 @@ $red-dark: var(--red-dark)
 $blue-light: var(--blue-light)
 $blue-white: var(--blue-white)
 $blue: var(--blue)
+$blue-text: var(--blue-text)
 
 $viol-light: var(--viol-light)
 $viol: var(--viol)
@@ -112,3 +118,19 @@ $neutral-400: var(--neutral-400)
 $neutral-500: var(--neutral-500)
 $neutral-600: var(--neutral-600)
 $neutral-800: var(--neutral-800)
+
+$subnav: var(--subnav)
+
+
+
+// Размеры шрифтов
+
+$fz12: calc(12em/14)
+$fz15: calc(15em/14)
+$fz16: calc(16em/14)
+$fz18: calc(18em/14)
+$fz20: calc(20em/14)
+$fz24: calc(24em/14)
+$fz26: calc(26em/14)
+$fz30: calc(30em/14)
+$fz32: calc(32em/14)

@@ -1,5 +1,9 @@
 .section
 	+w($desk)
+	&.row
+		display: flex
+		align-items: flex-start
+		justify-content: space-between
 	&-header
 		padding: 4px 0
 		margin-bottom: 24px
@@ -16,8 +20,15 @@
 			color: rgb($neutral-800)
 		&.active:hover
 			color: rgb($white)
+	.col
+		width: 588px
+		&.wide
+			width: 894px
+		&.narrow
+			width: 282px
 
 .block
+	width: 100%
 	&-filter
 		margin-bottom: 32px
 		&-button
@@ -27,3 +38,55 @@
 
 .title
 	margin-bottom: 0
+
+.student
+	&-main
+		padding: 40px calc(50% + 12px) 40px 102px
+		background-size: 510px auto
+		background-position: calc(100% - 102px) 50%
+
+
+.upcoming
+	&-instructor
+		.info-button
+			position: relative
+			&:after
+				+af
+				+wh(0,1px)
+				background-color: rgb($blue-text)
+				position: absolute
+				left: 50%
+				bottom: 0
+				transition: .35s ease
+			&:hover
+				&:after
+					width: 100%
+					left: 0
+				
+	&-right
+		.action
+			&-button
+				&:not([disabled])
+					&:hover
+						border-color: rgb($blue-text)
+						background-color: rgb($white)
+						color: rgb($blue-text)
+				&[disabled]
+					cursor: initial
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,75 @@
+.block
+	include sessions-filter
+	ul.upcoming-list.empty
+		li.upcoming-item
+			.upcoming-item-left
+				h6.upcoming-title Monday, Feb 21 - There are no upcoming sessions.
+.block
+	include sessions-filter
+	ul.upcoming-list
+		li.upcoming-item
+			.upcoming-item-left
+				.upcoming-time
+					span.day Monday,
+					span.date Feb 21,
+					span.time 10:20 - 11:00
+						i AM
+				h6.upcoming-title Arithmetic and Fractions
+				.upcoming-instructor
+					.photo
+						+img('teacher.jpg')
+					.info
+						.info-lead
+							span.info-lead-left Lead by
+							span.info-lead-right Peter Marcus
+						button.info-button View profile
+			.upcoming-center
+				.status.completed Completed
+			.upcoming-right
+				.action
+					button.action-button
+						span View
+		li.upcoming-item
+			.upcoming-item-left
+				.upcoming-time
+					span.day Monday,
+					span.date Feb 21,
+					span.time 10:20 - 11:00
+						i AM
+				h6.upcoming-title Arithmetic and Fractions
+				.upcoming-instructor
+					.photo
+						+img('teacher.jpg')
+					.info
+						.info-lead
+							span.info-lead-left Lead by
+							span.info-lead-right Peter Marcus
+						button.info-button View profile
+			.upcoming-center
+				.status.inprogress In Progress
+			.upcoming-right
+				.action
+					button.action-button
+						span Join
+		li.upcoming-item
+			.upcoming-item-left
+				.upcoming-time
+					span.day Monday,
+					span.date Feb 21,
+					span.time 10:20 - 11:00
+						i AM
+				h6.upcoming-title Arithmetic and Fractions
+				.upcoming-instructor
+					.photo
+						+img('teacher.jpg')
+					.info
+						.info-lead
+							span.info-lead-left Lead by
+							span.info-lead-right Peter Marcus
+						button.info-button View profile
+			.upcoming-center
+				.status.yet Yet to start
+			.upcoming-right
+				.action
+					button(disabled).action-button
+						span Join

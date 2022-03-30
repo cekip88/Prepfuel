@@ -12,19 +12,22 @@
 				width: 0
 .block
 	padding: 24px 32px
-	&,&-filter
+	&-filter
 		margin-bottom: 24px
 
 
+.main-title
+	font-size: $fz32
+
 .navigate
 	&-list
-		padding: 12px 0 0
+		padding: 12px 12px 0
 		justify-content: flex-start
 		position: relative
 	&-item
 		width: initial
 		padding: 18px 20px
-		font-size: calc(8em / 7)
+		font-size: $fz16
 		line-height: initial
 		position: relative
 		z-index: 1
@@ -56,3 +59,12 @@
 			right: -20px
 			&:before
 				border-bottom-left-radius: 12px
+
+
+.student
+	&-main
+		padding: 40px 50% 40px 51px
+		background-size: auto 150%
+		background-position: calc(100% - 51px) 50%
+		&-text
+			font-size: $fz16
