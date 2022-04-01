@@ -1,14 +1,10 @@
+%transition-d
+	transition: .35s ease
 .section
 	+w($desk)
 	&.row
 		display: flex
-		align-items: flex-start
 		justify-content: space-between
-	&-header
-		padding: 4px 0
-		margin-bottom: 24px
-		display: flex
-		align-items: center
 	&-buttons
 		margin-bottom: 0
 	&-button
@@ -26,6 +22,19 @@
 			width: 894px
 		&.narrow
 			width: 282px
+			.block
+				padding: 24px 16px
+
+
+.button
+	&-white
+		border: 1px solid transparent
+		@extend %transition-d
+		&:hover
+			background-color: rgb($neutral-500)
+			color: rgb($white)
+			border-color: rgb($white)
+
 
 .block
 	width: 100%
@@ -38,6 +47,25 @@
 
 .title
 	margin-bottom: 0
+
+
+.head
+	&-button
+		border-radius: 4px
+		svg
+			display: block
+		&,svg
+			@extend %transition-d
+		&:hover
+			background-color: rgb($white)
+			svg
+				fill: rgb($blue)
+	&-user
+		@extend %transition-d
+		&:hover
+			background-color: rgb($white)
+			color: rgb($blue)
+
 
 .student
 	&-main
@@ -57,7 +85,7 @@
 				position: absolute
 				left: 50%
 				bottom: 0
-				transition: .35s ease
+				@extend %transition-d
 			&:hover
 				&:after
 					width: 100%
@@ -75,18 +103,104 @@
 					cursor: initial
 
 
+.hidden
+	&-show
+		border-radius: 4px
+		@extend %transition-d
+		&:hover
+			background-color: rgb($neutral-100)
+
+
+.skill
+	&-level
+		&-item
+			.link
+				span
+					&:after
+						@extend %transition-d
+				&:hover
+					span
+						&:after
+							width: 0
+							left: 50%
+
+
+.achievements
+	&-item
+		&:nth-child(n)
+			margin-right: 28px
+		&:nth-child(6n)
+			margin-right: 0
+
+
+.test
+	&-block
+		overflow: auto
+	&-header
+		&-button
+			span,svg
+				@extend %transition-d
+			&:hover
+				span
+					color: rgb($blue-text)
+				svg
+					fill: rgb($blue-text)
+	&-footer
+		&-button
+			span
+				position: relative
+				&:after
+					@extend %transition-d
+					+af
+					+wh(0,2px)
+					background-color: rgb($blue-text)
+					position: absolute
+					left: 50%
+			&:hover
+				span
+					&:after
+						width: 100%
+						left: 0
 
 
 
+.answer
+	&-variant
+		@extend %transition-d
+	&-button
+		&:hover
+			.answer
+				&-variant
+					background-color: rgb($blue)
+					color: rgb($white)
+	&-wrong
+		@extend %transition-d
+		&:hover
+			background-color: rgb($neutral-600)
+			svg
+				transform: scale(1.15)
+				fill: rgb($white)
+	&-item
+		&[disabled]
+			.answer-button
+				cursor: initial
+				&:hover
+					.answer-variant
+							background-color: rgb($white)
+							color: rgb($answer-disabled)
 
 
-
-
-
-
-
-
-
-
+.questions,.test-block
+	height: calc(100vh - 190px)
+.questions
+	overflow: hidden
+	&-cont
+		height: calc(100% - 40px)
+		margin-top: 24px
+		overflow: auto
+	&-list
+		&-title
+			&:first-child
+				margin-top: 0
 
 

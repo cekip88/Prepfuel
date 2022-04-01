@@ -17,7 +17,7 @@ export class _front extends G_G{
     //
    
     //
-    _.init();
+    //_.init();
   }
 	define(){}
   getModule(moduleData){

@@ -8,14 +8,33 @@ class Front extends _front{
     G_Bus.on('navigate',_.navigate.bind(_))
       .on('subnavigate',_.subnavigate.bind(_))
       .on('getSessions',_.getSessions.bind(_))
+      .on('showHidden',_.showHidden.bind(_))
   }
 
-  ascent(item,targetCls,endCls){
-    while(!item.classList.contains(targetCls)) {
-      item = item.parentElement;
-      if (item.classList.contains(endCls)) {
-        break;
-        return;
+  ascent(item,targetSelector,endCls){
+    if (targetSelector[0] === '.') {
+      while(!item.classList.contains(targetSelector.substr(1))) {
+        item = item.parentElement;
+        if (item.classList.contains(endCls)) {
+          break;
+          return;
+        }
+      }
+    } else if (targetSelector[0] === '#') {
+      while(!item.id === targetSelector) {
+        item = item.parentElement;
+        if (item.classList.contains(endCls)) {
+          break;
+          return;
+        }
+      }
+    } else {
+      while(!item.tagName === targetSelector) {
+        item = item.parentElement;
+        if (item.classList.contains(endCls)) {
+          break;
+          return;
+        }
       }
     }
     return item;
@@ -24,6 +43,19 @@ class Front extends _front{
     if (item) item.classList.remove(cls)
   }
 
+
+  showHidden(clickData){
+    const _ = this;
+    let btn = clickData.item,
+      cont = btn.nextElementSibling;
+    if (cont.classList.contains('active')) {
+      cont.classList.remove('active');
+      btn.classList.remove('active');
+    } else {
+      cont.classList.add('active');
+      btn.classList.add('active');
+    }
+  }
 
   // get list of sessions
   getSessions(clickData){
@@ -48,7 +80,7 @@ class Front extends _front{
     let
       list = clickData.item,
       target = clickData.event.target,
-      btn = _.ascent(target,'navigate-item','navigate-list');
+      btn = _.ascent(target,'.navigate-item','navigate-list');
 
     _.showActiveNavItem(btn,list);
     _.changeActiveNavItem(btn);
@@ -58,7 +90,7 @@ class Front extends _front{
     if (!clickData) return;
     let
       target = clickData.event.target,
-      btn = _.ascent(target,'subnavigate-button','subnavigate');
+      btn = _.ascent(target,'.subnavigate-button','subnavigate');
 
     _.changeActiveNavItem(btn);
   }
@@ -110,7 +142,9 @@ class Front extends _front{
   init(){
     const _ = this;
     _.navigationInit(document.querySelector('.navigate-list'));
-    _.subnavigate({event:{target:_.f('.subnavigate-button.active')}})
+
+    let subNav = _.f('.subnavigate-button.active');
+    if (subNav) _.subnavigate({event:{target:subNav}});
   }
 }
 new Front();

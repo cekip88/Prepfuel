@@ -1,0 +1,26 @@
+extends template/main
+append vars
+	-
+		page_title = 'Student - Test'
+block content
+	main
+		section.test
+			.section
+				.section-header
+					h1.title Practice Test - Section Name
+					button.button-white
+						span Don’t start this section now
+			.section.row
+				.block.test-block
+					.test-header
+						h5.block-title.test-title
+							span Welcome
+					.test-inner
+						h6.test-subtitle
+							span Welcome to Practice Test - Section Name
+						p.test-text
+							span This section has 40 questions and is 20 minutes total.
+							span Once you start timer, you cannot pause this section.
+					.test-footer
+						a(href='./test-desc.html').button-blue
+							span Let’s go, start the timer!

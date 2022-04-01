@@ -16,10 +16,12 @@
 	--p_reg: 'Poppins-Regular'
 	--p_semi: 'Poppins-SemiBold'
 	--p_medium: 'Poppins-Medium'
+	--p_bold: 'Poppins-Bold'
 	--f_reg: 'roboto-regular'
 	--f_semi: 'roboto-semibold'
 	--f_bold: 'roboto-bold'
 	--f_medium: 'Roboto-Medium'
+	--f_black: 'Roboto-Black'
 
 
 
@@ -33,13 +35,25 @@
 	--red: #{getRgb(#F1416C)}
 	--red-dark: #{getRgb(#D9214E)}
 
+	--orange: #{getRgb(#FFA621)}
+	--orange-light: #{getRgb(#FFF5E7)}
+
+	--gold: #{getRgb(#F1BC00)}
+	--gold-light: #{getRgb(#FFF8DD)}
+
+	--brown-light: #{getRgb(#FBF1F8)}
+	--brown: #{getRgb(#98654F)}
+	--brown-dark: #{getRgb(#58244B)}
+
 	--blue-white: #{getRgb(#9CCDFF)}
 	--blue-light: #{getRgb(#ECF8FF)}
 	--blue: #{getRgb(#3699FF)}
 	--blue-text: #{getRgb(#00A3FF)}
+	--blue-dark: #{getRgb(#1B2CCF)}
 
 	--viol-light: #{getRgb(#F8F5FF)}
 	--viol: #{getRgb(#5014D0)}
+	--viol-dark: #{getRgb(#663259)}
 
 	--green-light: #{getRgb(#E8FFF3)}
 	--green: #{getRgb(#50CD89)}
@@ -51,13 +65,16 @@
 
 	--neutral-100: #{getRgb(#F5F8FA)}
 	--neutral-200: #{getRgb(#EFF2F5)}
+	--neutral-300: #{getRgb(#E5EAEE)}
 	--neutral-400: #{getRgb(#B5B5C3)}
 	--neutral-500: #{getRgb(#A1A5B7)}
 	--neutral-600: #{getRgb(#7E8299)}
+	--neutral-700: #{getRgb(#5E6278)}
 	--neutral-800: #{getRgb(#3F4254)}
+	--neutral-900: #{getRgb(#181C32)}
 
 	--subnav: #{getRgb(#80808F)}
-
+	--answer-disabled: #{getRgb(#c4c4c4)}
 
 
 	--mobile: 100%
@@ -71,10 +88,12 @@
 $p_reg: var(--p_reg)
 $p_semi: var(--p_semi)
 $p_medium: var(--p_medium)
+$p_bold: var(--p_bold)
 $f_reg: var(--f_reg)
 $f_semi: var(--f_semi)
 $f_bold: var(--f_bold)
 $f_medium: var(--f_medium)
+$f_black: var(--f_black)
 
 
 // --==[ Ширины ]==--
@@ -96,13 +115,25 @@ $red-light: var(--red-light)
 $red: var(--red)
 $red-dark: var(--red-dark)
 
+$gold: var(--gold)
+$gold-light: var(--gold-light)
+
+$orange: var(--orange)
+$orange-light: var(--orange-light)
+
+$brown-light: var(--brown-light)
+$brown: var(--brown)
+$brown-dark: var(--brown-dark)
+
 $blue-light: var(--blue-light)
 $blue-white: var(--blue-white)
 $blue: var(--blue)
 $blue-text: var(--blue-text)
+$blue-dark: var(--blue-dark)
 
 $viol-light: var(--viol-light)
 $viol: var(--viol)
+$viol-dark: var(--viol-dark)
 
 $green: var(--green)
 $green-light: var(--green-light)
@@ -114,10 +145,15 @@ $turquoise-dark: var(--turquoise-dark)
 
 $neutral-100: var(--neutral-100)
 $neutral-200: var(--neutral-200)
+$neutral-300: var(--neutral-300)
 $neutral-400: var(--neutral-400)
 $neutral-500: var(--neutral-500)
 $neutral-600: var(--neutral-600)
+$neutral-700: var(--neutral-700)
 $neutral-800: var(--neutral-800)
+$neutral-900: var(--neutral-900)
+
+$answer-disabled: var(--answer-disabled)
 
 $subnav: var(--subnav)
 
@@ -126,10 +162,13 @@ $subnav: var(--subnav)
 // Размеры шрифтов
 
 $fz12: calc(12em/14)
+$fz13: calc(13em/14)
 $fz15: calc(15em/14)
 $fz16: calc(16em/14)
 $fz18: calc(18em/14)
 $fz20: calc(20em/14)
+$fz22: calc(22em/14)
+$fz23: calc(23em/14)
 $fz24: calc(24em/14)
 $fz26: calc(26em/14)
 $fz30: calc(30em/14)

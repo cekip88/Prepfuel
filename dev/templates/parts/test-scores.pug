@@ -1,0 +1,97 @@
+.block
+	.block-title-control
+		h5.block-title
+			span Test Scores
+	p.block-text Your test scores will appear here once you complete your first practice test.
+
+.block.test-scores
+	.block-title-control
+		h5.block-title
+			span Test Scores
+		button.button
+			span Hide Scores
+		button.button
+			span View Practice Tests
+	ul.test-scores-list
+		li.test-scores-item
+			strong 1000
+			span Start Score
+		li.test-scores-item.orange
+			strong 1000
+			span Current Score
+		li.test-scores-item.green
+			strong 1600
+			span Goal Score
+		li.test-scores-item.brown
+			strong 600
+			span Points Needed
+	button.hidden-show(data-click='showHidden')
+		.hidden-show-text
+			span Details
+		svg
+			use(xlink:href='img/sprite.svg#select-arrow-bottom')
+	.hidden-cont
+		.table
+			table
+				thead
+					tr
+						th
+							.table-inner Test
+						th
+							.table-inner total
+						th
+							.table-inner VR
+						th
+							.table-inner QR
+						th
+							.table-inner RC
+						th
+							.table-inner MA
+						th
+							.table-inner ESSAY
+				tbody
+					tr
+						td
+							.table-inner Practice test 1
+						td
+							.table-inner 1000
+						td
+							.table-inner 400
+						td
+							.table-inner 300
+						td
+							.table-inner 200
+						td
+							.table-inner 100
+						td
+							.table-inner -
+					tr
+						td
+							.table-inner Practice test 2
+						td
+							.table-inner 1000
+						td
+							.table-inner 400
+						td
+							.table-inner 300
+						td
+							.table-inner 200
+						td
+							.table-inner 100
+						td
+							.table-inner -
+					tr
+						td
+							.table-inner Practice test 3
+						td
+							.table-inner 1000
+						td
+							.table-inner 400
+						td
+							.table-inner 300
+						td
+							.table-inner 200
+						td
+							.table-inner 100
+						td
+							.table-inner -

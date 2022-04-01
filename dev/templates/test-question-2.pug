@@ -1,0 +1,79 @@
+extends template/main
+append vars
+	-
+		page_title = 'Student - Test'
+block content
+	main
+		section.test
+			.section
+				.section-header
+					h1.title Practice Test - Section Name
+					.test-timer 20 minutes left
+					button.button-white
+						span Finish this section
+			.section.row
+				.col.wide
+					.block.test-block
+						.test-header
+							h5.block-title.test-title
+								span Question 1 of 40
+							button.test-header-button
+								svg
+									use(xlink:href='img/sprite.svg#bookmark-transparent')
+								span Bookmark
+							button.test-header-button
+								svg
+									use(xlink:href='img/sprite.svg#edit-transparent')
+								span Bookmark
+							button.test-header-button
+								svg
+									use(xlink:href='img/sprite.svg#error-circle')
+								span Bookmark
+						.test-inner
+							p.test-text
+								span Math formula
+							p.test-text
+								span Text of a question
+							ul.answer-list
+								li.answer-item.active
+									button.answer-button
+										span.answer-variant a
+										span.answer-value Answer A
+									button.answer-wrong
+										svg
+											use(xlink:href='img/sprite.svg#dismiss-circle')
+								li.answer-item(disabled)
+									button.answer-button
+										span.answer-variant b
+										span.answer-value Answer B
+									button.answer-wrong
+										svg
+											use(xlink:href='img/sprite.svg#dismiss-circle')
+								li.answer-item
+									button.answer-button
+										span.answer-variant c
+										span.answer-value Answer C
+									button.answer-wrong
+										svg
+											use(xlink:href='img/sprite.svg#dismiss-circle')
+								li.answer-item
+									button.answer-button
+										span.answer-variant d
+										span.answer-value Answer D
+									button.answer-wrong
+										svg
+											use(xlink:href='img/sprite.svg#dismiss-circle')
+								li.answer-item
+									button.answer-button
+										span.answer-variant e
+										span.answer-value I don't know
+									button.answer-wrong
+										svg
+											use(xlink:href='img/sprite.svg#dismiss-circle')
+						.test-footer
+							a(href='#').test-footer-button
+								span Directions
+							a(href='./test-question-1.html').button-blue
+								span Next to questions 2
+				.col.narrow
+					include parts/questions-links

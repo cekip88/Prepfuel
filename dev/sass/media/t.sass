@@ -2,6 +2,11 @@
   +w($tablet)
   padding: 0
   margin: 0 auto
+  &-header
+    display: flex
+    justify-content: space-between
+    align-items: center
+    flex-wrap: wrap
 .section,.block-filter
   &-buttons
     margin-bottom: 24px
@@ -11,15 +16,19 @@
     margin-bottom: 0
 .block
   margin-top: 24px
+  padding: 30px
   &-title
     &:not(:last-child)
       margin-bottom: 0
     &-control
+      min-height: 34px
       .block-title
         width: initial
         margin-right: auto
       .button
         margin-right: 16px
+    &-left
+      margin-right: auto
   &-filter
     margin-bottom: 32px
     padding-bottom: 18px
@@ -72,9 +81,6 @@
     width: calc(100% / 3)
 
 
-.block
-  padding: 30px
-
 .student
   &-main
     padding-right: 50%
@@ -109,10 +115,55 @@
         font-size: $fz16
 
 
+.frequently
+  &-row
+    justify-content: space-between
 
 
+.test
+  &-scores
+    &-item
+      width: calc((100% - 60px) / 4)
+      flex-basis: calc((100% - 60px) / 4)
+      margin-bottom: 0
+    .table
+      white-space: nowrap
+  &-block
+    min-height: calc(100vh - 228px)
+  &-header
+    padding-bottom: 20px
+    flex-wrap: nowrap
+    &-button
+      margin-left: 24px
+  &-timer
+    margin-bottom: 0
+  &-footer
+    padding-top: 20px
+  &-inner
+    padding: 32px 0
+
+.skill
+  &-level
+    &-item
+      margin-bottom: 0
+      flex-basis: initial
 
 
+.achievements
+  &-item
+    width: 64px
+    margin-right: 20px
+    margin-bottom: 0
+    &:nth-child(3n)
+      margin-right: 20px
 
 
-
+.stars
+  &-row
+    display: flex
+    align-items: flex-start
+  &-circle
+    +wh(310px)
+  &-info
+    margin-left: 48px
+    margin-top: 0

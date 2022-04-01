@@ -52,3 +52,25 @@
 							use(xlink:href='img/sprite.svg#clock')
 					.info-text
 						span 79 days until test, Saturday May 7
+	button.hidden-show(data-click='showHidden')
+		.hidden-show-text
+			span Open calendar
+			span Close calendar
+		svg
+			use(xlink:href='img/sprite.svg#select-arrow-bottom')
+	.hidden-cont
+		.calendar-days
+			span.calendar-day Su
+			span.calendar-day Mo
+			span.calendar-day Tu
+			span.calendar-day We
+			span.calendar-day Th
+			span.calendar-day Fri
+			span.calendar-day Sa
+		.calendar-list
+			.calendar-item
+				include ./calendar
+			.calendar-item
+				include ./calendar
+			.calendar-item
+				include ./calendar

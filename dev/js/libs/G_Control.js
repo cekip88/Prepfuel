@@ -24,7 +24,7 @@ class _G_Control{
 			item = item.parentNode;
 		}
 	}
-	contextHandler(e){
+	/*contextHandler(e){
 		const _ = this;
 		e.preventDefault();
 		let item = e.target;
@@ -38,7 +38,7 @@ class _G_Control{
 				item = item.parentNode;
 			}
 		}
-	}
+	}*/
 	focusOutHandler(e){
 		let item = e.target;
 		if( ('outfocus' in item.dataset) ){
@@ -148,7 +148,7 @@ class _G_Control{
 		_.container.addEventListener('focusout',_.focusOutHandler);
 		_.container.addEventListener('submit',_.submitHandler);
 		_.container.addEventListener('click', _.clickHandler);
-		_.container.addEventListener('contextmenu', _.contextHandler);
+		//_.container.addEventListener('contextmenu', _.contextHandler);
 		_.container.addEventListener('change',_.changeHandler);
 		_.container.addEventListener('input',_.inputHandler);
 		_.container.addEventListener('keyup',_.keyUpHandler);
