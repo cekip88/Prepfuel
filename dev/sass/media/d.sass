@@ -161,7 +161,18 @@
 					&:after
 						width: 100%
 						left: 0
-
+.questions,.test-block
+	height: calc(100vh - 190px)
+.questions
+	overflow: hidden
+	&-cont
+		height: calc(100% - 40px)
+		margin-top: 24px
+		overflow: auto
+	&-list
+		&-title
+			&:first-child
+				margin-top: 0
 
 
 .answer
@@ -190,17 +201,6 @@
 							color: rgb($answer-disabled)
 
 
-.questions,.test-block
-	height: calc(100vh - 190px)
-.questions
-	overflow: hidden
-	&-cont
-		height: calc(100% - 40px)
-		margin-top: 24px
-		overflow: auto
-	&-list
-		&-title
-			&:first-child
-				margin-top: 0
+
 
 

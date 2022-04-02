@@ -896,7 +896,26 @@ body
     +wh(268px)
     overflow: hidden
     &>svg
-      +wh(100%)
+      +wh(268px)
+      transform: rotate(90deg)
+    circle
+      r: 106
+      stroke-width: 28px
+      fill: none
+      &.orange
+        stroke: rgb($orange)
+      &.red
+        stroke: rgb($red)
+      &.green
+        stroke: rgb($green)
+      &.blue
+        stroke: rgb($blue)
+      &.violet
+        stroke: rgb($viol)
+      &.turquoise
+        stroke: rgb($turquoise)
+      &.gold
+        stroke: rgb($gold)
     &-count
       @extend %dfa
       @extend %fdc

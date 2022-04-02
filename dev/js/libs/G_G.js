@@ -114,6 +114,11 @@ export default class G_G{
 		}
 		return parser.body.children;
 	}
+	markupElement(domStr){
+		const _ = this;
+		let parser = new DOMParser().parseFromString(domStr,'text/html');
+		return parser.body.children[0];
+	}
 	f(selector){
 		let searchedItems =  document.querySelectorAll(selector);
 		if( this instanceof HTMLElement ){

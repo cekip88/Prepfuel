@@ -64,6 +64,49 @@ class Front extends _front{
   }
 
 
+  getStarsInfo(){
+    return {
+      orange:1500,
+      red:1500,
+      green: 1000,
+      blue: 1500,
+      violet: 2500,
+      turquoise: 345,
+      gold: 0
+    }
+  }
+  showCircleGraphic(data){
+    const _ = this;
+    let starsCont = _.f('.stars-circle');
+    if (!starsCont) return;
+
+    let svg = `</svg>`;
+    let radius = window.innerWidth < 768 ? 106 : 134;
+    let sum = 0;
+    for (let key in data) {
+      let number = parseInt(data[key]);
+      if (isNaN(number)) continue;
+      sum += number;
+    }
+
+    let circleWidth = 2 * Math.PI * radius;
+    let strokeDashoffset = 0;
+
+    for (let key in data) {
+      if (!data[key] || isNaN(parseInt(data[key]))) continue;
+      let width = data[key] / sum * circleWidth;
+      let strokeDasharray = `${width} ${circleWidth - width}`;
+      svg = `<circle class="${key}" stroke-dasharray="${strokeDasharray}" stroke-dashoffset="-${strokeDashoffset}" stroke-linecap="round" cx="50%" cy="50%"></circle>` + svg;
+      strokeDashoffset += width;
+    }
+
+    svg = '<svg xmlns="http://www.w3.org/2000/svg">' + svg;
+    svg = _.markupElement(svg);
+
+    starsCont.prepend(svg);
+  }
+
+
   // methods to navigate blocks from main nav and sub main nav
   navigationInit(list) {
     const _ = this;
@@ -142,6 +185,9 @@ class Front extends _front{
   init(){
     const _ = this;
     _.navigationInit(document.querySelector('.navigate-list'));
+
+    let data = _.getStarsInfo();
+    _.showCircleGraphic(data);
 
     let subNav = _.f('.subnavigate-button.active');
     if (subNav) _.subnavigate({event:{target:subNav}});

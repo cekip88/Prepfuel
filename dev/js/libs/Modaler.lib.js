@@ -7,7 +7,7 @@ class _Modaler extends Lib{
     super();
     const _ = this;
     _.body = document.querySelector('body');
-    _.modalerAppendPlace = document.querySelector('core') ? document.querySelector('core') : document.querySelector('body');
+    _.modalerAppendPlace = document.querySelector('core') ?? document.querySelector('body');
     _.zindex = 0;
     _.conts = [];
     _.openedModals = new Map();
