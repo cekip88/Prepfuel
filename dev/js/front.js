@@ -83,10 +83,14 @@ class Front extends _front{
     let svg = `</svg>`;
     let radius = window.innerWidth < 768 ? 106 : 134;
     let sum = 0;
+    let last;
+    let count = 0;
     for (let key in data) {
       let number = parseInt(data[key]);
-      if (isNaN(number)) continue;
+      if (isNaN(number) || !number) continue;
+      last = key;
       sum += number;
+      count++;
     }
 
     let circleWidth = 2 * Math.PI * radius;
@@ -95,6 +99,9 @@ class Front extends _front{
     for (let key in data) {
       if (!data[key] || isNaN(parseInt(data[key]))) continue;
       let width = data[key] / sum * circleWidth;
+      if (key !== last) {
+        width -= 14 / (count - 1);
+      } else width += 14;
       let strokeDasharray = `${width} ${circleWidth - width}`;
       svg = `<circle class="${key}" stroke-dasharray="${strokeDasharray}" stroke-dashoffset="-${strokeDashoffset}" stroke-linecap="round" cx="50%" cy="50%"></circle>` + svg;
       strokeDashoffset += width;

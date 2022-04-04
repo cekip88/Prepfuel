@@ -3,7 +3,7 @@ h6.questions-list-title
 ul.questions-list
 	li.questions-item
 		span.questions-number 1
-		span.questions-variant A
+		button.questions-variant A
 		.questions-bookmark
 			svg
 				use(xlink:href='img/sprite.svg#bookmark-transparent')
@@ -11,7 +11,7 @@ ul.questions-list
 				use(xlink:href='img/sprite.svg#bookmark')
 	li.questions-item.checked
 		span.questions-number 2
-		span.questions-variant
+		button.questions-variant
 		.questions-bookmark
 			svg
 				use(xlink:href='img/sprite.svg#bookmark-transparent')
@@ -20,7 +20,7 @@ ul.questions-list
 	-for (let i = 3; i < 11; i++)
 				li.questions-item
 					span.questions-number #{i}
-					span.questions-variant
+					button.questions-variant
 					.questions-bookmark
 						svg
 							use(xlink:href='img/sprite.svg#bookmark-transparent')

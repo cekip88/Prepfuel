@@ -697,6 +697,26 @@ body
   &-title
     &:not(:last-child)
       margin-bottom: 12px
+  &-row
+    &:not(:first-child)
+      margin-top: 20px
+  &-col
+    margin-bottom: 20px
+    &:last-child
+      margin-bottom: 0
+    .test
+      &-header
+        &:not(:first-child)
+          margin-top: 20px
+    &-title
+      font-size: $fz16
+      color: rgb($neutral-700)
+      text-align: center
+      font-family: $f_semi
+      text-decoration: underline
+    .test-title
+      color: rgb($neutral-600)
+      font-size: $fz12
   &-block
     display: flex
     flex-direction: column
@@ -724,26 +744,57 @@ body
     @extend %dfa
     padding-top: 20px
     margin-top: auto
+    flex-direction: column
+    align-items: flex-start
     border-top: 1px solid rgb($neutral-200)
-    button,a
-      &:last-child
-        margin-left: auto
+    &-back
+      color: rgb($neutral-400)
+      font-family: $f_medium
     &-button
-      padding: 12px 20px
       color: rgb($blue-text)
       font-size: $fz15
       font-family: $f_medium
+    button,a
+      margin-bottom: 10px
+      &:last-child
+        margin-bottom: 0
   &-inner
     width: 100%
     max-width: 588px
     margin: 0 auto
     padding: 20px 0
+    &:first-child
+      padding-top: 0
+    &.comparison
+      max-width: 620px
+    &.grid
+      max-width: initial
+  &-left
+    padding: 20px
+    display: flex
+    flex-direction: column
+    background-color: rgb($neutral-200)
+    svg,img
+      margin: 0 auto 20px
+    &-text
+      margin-bottom: 20px
+      font-family: $p_reg
+      color: rgb($neutral-800)
+      line-height: $fz24
+      &:last-child
+        margin-bottom: 0
+  &-right
+    padding: 20px
+    border-radius: 8px
+    border: 1px solid rgb($neutral-300)
   &-subtitle
     font-family: $f_bold
     font-size: $fz18
   &-text
     margin-top: 16px
     font-size: $fz16
+    &:first-child
+      margin-top: 0
     &,span
       line-height: calc(24em / 16)
     span
@@ -1032,7 +1083,9 @@ body
 
 .questions
   &-cont
+    @extend %df
     padding-right: 20px
+    flex-direction: column
   &-list
     @extend %dfi
     flex-wrap: wrap
@@ -1041,21 +1094,31 @@ body
       font-size: $fz12
       font-family: $p_reg
       color: rgb($neutral-700)
+    &:last-of-type
+      margin-bottom: auto
   &-item
-    @extend %dfi
+    @extend %dfa
     width: 100px
     margin-top: 14px
+    justify-content: flex-end
     font-family: $p_reg
     font-size: $fz12
+    svg
+      &:last-child
+        fill: rgb($blue)
     &.checked
       svg
         &:last-child
           display: block
         &:first-child
           display: none
+  &-number
+    width: 20px
+    text-align: center
   &-variant
     @extend %dfc
-    +wh(53px,24px)
+    +wh(calc(100% - 48px),24px)
+    margin: 0 4px
     border-radius: 8px
     background-color: rgb($neutral-200)
   &-bookmark
@@ -1063,7 +1126,23 @@ body
       +wh(20px)
       &:last-child
         display: none
-
+  &-button
+    @extend %dfa
+    margin: 0 auto
+    padding: 4px 8px
+    background-color: rgb($blue)
+    border-radius: 8px 8px 0 0
+    border: 1px solid rgb($blue)
+    font-size: $fz12
+    color: rgb($white)
+    font-family: $p_medium
+    position: sticky
+    bottom: 0
+    svg
+      +wh(12px)
+      stroke: rgb($white)
+    span
+      margin: 0 8px
 
 
 

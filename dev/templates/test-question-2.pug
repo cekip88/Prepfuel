@@ -16,7 +16,7 @@ block content
 					.block.test-block
 						.test-header
 							h5.block-title.test-title
-								span Question 1 of 40
+								span Question 2 of 40
 							button.test-header-button
 								svg
 									use(xlink:href='img/sprite.svg#bookmark-transparent')
@@ -24,11 +24,11 @@ block content
 							button.test-header-button
 								svg
 									use(xlink:href='img/sprite.svg#edit-transparent')
-								span Bookmark
+								span Note
 							button.test-header-button
 								svg
 									use(xlink:href='img/sprite.svg#error-circle')
-								span Bookmark
+								span Report
 						.test-inner
 							p.test-text
 								span Math formula
@@ -71,9 +71,11 @@ block content
 										svg
 											use(xlink:href='img/sprite.svg#dismiss-circle')
 						.test-footer
-							a(href='#').test-footer-button
+							a(href='./test-desc.html').test-footer-button
 								span Directions
-							a(href='./test-question-1.html').button-blue
-								span Next to questions 2
+							a(href='./test-question-1.html').test-footer-back
+								span Back to question 1
+							a(href='./test-question-3.html').button-blue
+								span Next to questions 3
 				.col.narrow
 					include parts/questions-links

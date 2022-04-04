@@ -1,0 +1,44 @@
+extends template/main
+append vars
+	-
+		page_title = 'Student - Test'
+block content
+	main
+		section.test
+			.section
+				.section-header
+					h1.title Practice Test - Section Name
+					.test-timer 20 minutes left
+					button.button-white
+						span Finish this section
+			.section.row
+				.col.wide
+					.block.test-block
+						.test-row.test-inner
+							.test-col
+								.test-left
+									p.test-left-text Text Passage
+									p.test-left-text Nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt aliquip deserunt reprehenderit elit laborum.
+									p.test-left-text Aliqua id fugiat nostrud irure ex duis ea quis id quis ad et. Sunt qui esse pariatur duis deserunt mollit dolore cillum minim tempor enim. Elit aute irure tempor cupidatat incididunt sint deserunt ut voluptate aute id deserunt nisi.
+									p.test-left-text Nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt aliquip deserunt reprehenderit elit laborum.
+									p.test-left-text Aliqua id fugiat nostrud irure ex duis ea quis id quis ad et. Sunt qui esse pariatur duis deserunt mollit dolore cillum minim tempor enim. Elit aute irure tempor cupidatat incididunt sint deserunt ut voluptate aute id deserunt nisi.
+									p.test-left-text Nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt aliquip deserunt reprehenderit elit laborum.
+									p.test-left-text Allla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt aliquip deserunt reprehenderit elit laborum.
+									p.test-left-text Aliqua id fugiat nostrud irure ex duis ea quis id quis ad et. Sunt qui esse pariatur duis deserunt mollit dolore cillum minim tempor enim. Elit aute irure tempor cupidatat incididunt sint deserunt ut voluptate aute id deserunt nisi.
+									p.test-left-text Aliqua id fugiat nostrud irure ex duis ea quis id quis ad et. Sunt qui esse pariatur duis deserunt mollit dolore cillum minim tempor enim. Elit aute irure tempor cupidatat incididunt sint deserunt ut voluptate aute id deserunt nisi.
+							.test-col
+								.test-right
+									p.test-text For these questions, you will consider how the passage might be revised to improve the expression of ideas or to correct the errors in sentence structure, usage, or punctuation.
+									p.test-text Some questions will direct you to an underlined portion of the passage or a location in the passage. Others will ask you to think about the passage as a whole.
+									include parts/test-right-quetion
+									include parts/test-right-quetion
+									include parts/test-right-quetion
+						.test-footer
+							a(href='./test-desc.html').test-footer-button
+								span Directions
+							a(href='./test-question-3.html').test-footer-back
+								span Back to question 3
+							a(href='./test-question-5.html').button-blue
+								span Next to questions 5
+				.col.narrow
+					include parts/questions-links

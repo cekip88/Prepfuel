@@ -16,7 +16,7 @@ block content
 					.block.test-block
 						.test-header
 							h5.block-title.test-title
-								span Question 1 of 40
+								span Question 5 of 40
 							button.test-header-button
 								svg
 									use(xlink:href='img/sprite.svg#bookmark-transparent')
@@ -29,37 +29,45 @@ block content
 								svg
 									use(xlink:href='img/sprite.svg#error-circle')
 								span Report
-						.test-inner
+						.test-inner.comparison
 							p.test-text
-								span Math formula
-							p.test-text
-								span Text of a question
+								span Text of a question or math formula.
+							.test-row
+								.test-col.mini
+									h6.test-col-title
+										span Column A
+									p.test-text Aliqua id fugiat nostrud irure ex duis ea quis id quis ad et. Sunt qui esse pariatur duis deserunt mollit dolore cillum minim tempor enim. Elit aute irure tempor cupidatat incididunt sint deserunt ut voluptate aute id deserunt nisi.
+								.line
+								.test-col.mini
+									h6.test-col-title
+										span Column B
+									p.test-text For these questions, you will consider how the passage might be revised to improve the expression of ideas or to correct the errors in sentence structure, usage, or punctuation.
 							ul.answer-list
 								li.answer-item
 									button.answer-button
 										span.answer-variant a
-										span.answer-value Answer A
+										span.answer-value The quantity in column A is greater.
 									button.answer-wrong
 										svg
 											use(xlink:href='img/sprite.svg#dismiss-circle')
 								li.answer-item
 									button.answer-button
 										span.answer-variant b
-										span.answer-value Answer B
+										span.answer-value The quantity in column B is greater.
 									button.answer-wrong
 										svg
 											use(xlink:href='img/sprite.svg#dismiss-circle')
 								li.answer-item
 									button.answer-button
 										span.answer-variant c
-										span.answer-value Answer C
+										span.answer-value The two quantities are equal.
 									button.answer-wrong
 										svg
 											use(xlink:href='img/sprite.svg#dismiss-circle')
 								li.answer-item
 									button.answer-button
 										span.answer-variant d
-										span.answer-value Answer D
+										span.answer-value The relationship cannot be determined from the information given.
 									button.answer-wrong
 										svg
 											use(xlink:href='img/sprite.svg#dismiss-circle')
@@ -70,7 +78,9 @@ block content
 						.test-footer
 							a(href='./test-desc.html').test-footer-button
 								span Directions
-							a(href='./test-question-2.html').button
-								span Skip to questions 2
+							a(href='./test-question-4.html').test-footer-back
+								span Back to question 4
+							a(href='./test-question-6.html').button-blue
+								span Next to questions 6
 				.col.narrow
 					include parts/questions-links

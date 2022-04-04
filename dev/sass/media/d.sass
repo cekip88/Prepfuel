@@ -146,7 +146,7 @@
 				svg
 					fill: rgb($blue-text)
 	&-footer
-		&-button
+		&-button,&-back
 			span
 				position: relative
 				&:after
@@ -161,6 +161,9 @@
 					&:after
 						width: 100%
 						left: 0
+		&-back
+			span:after
+				background-color: rgb($neutral-400)
 .questions,.test-block
 	height: calc(100vh - 190px)
 .questions
@@ -173,6 +176,16 @@
 		&-title
 			&:first-child
 				margin-top: 0
+	&-item
+		width: 100px
+	&-button
+		&,svg
+			@extend %transition-d
+		&:hover
+			background-color: transparent
+			color: rgb($blue)
+			svg
+				stroke: rgb($blue)
 
 
 .answer

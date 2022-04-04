@@ -1,0 +1,43 @@
+extends template/main
+append vars
+	-
+		page_title = 'Student - Test'
+block content
+	main
+		section.test
+			.section
+				.section-header
+					h1.title Practice Test - Section Name
+					.test-timer 20 minutes left
+					button.button-white
+						span Finish this section
+			.section.row
+				.col.wide
+					.block.test-block
+						.test-header
+							h5.block-title.test-title
+								span Question 6 of 40
+							button.test-header-button
+								svg
+									use(xlink:href='img/sprite.svg#bookmark-transparent')
+								span Bookmark
+							button.test-header-button
+								svg
+									use(xlink:href='img/sprite.svg#edit-transparent')
+								span Note
+							button.test-header-button
+								svg
+									use(xlink:href='img/sprite.svg#error-circle')
+								span Report
+						.test-inner.grid.test-row
+							.test-col.wide
+							.test-col.narrow
+						.test-footer
+							a(href='./test-desc.html').test-footer-button
+								span Directions
+							a(href='./test-question-5.html').test-footer-back
+								span Back to question 5
+							a(href='./test-question-2.html').button
+								span Skip to questions 2
+				.col.narrow
+					include parts/questions-links
