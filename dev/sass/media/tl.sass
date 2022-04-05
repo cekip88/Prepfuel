@@ -78,8 +78,12 @@
 
 .test
 	&-block
-		min-height: calc(100vh - 188px)
+		height: calc(100vh - 188px)
+		display: flex
+		flex-direction: column
 	&-inner
+		height: 100%
+		overflow: auto
 		&.comparison
 			.test-text
 				&:last-child
@@ -94,7 +98,6 @@
 			background-color: rgb($neutral-300)
 	&-col
 		width: 100%
-		height: calc(100vh - 340px)
 		margin-bottom: 0
 		overflow: auto
 		&:not(:last-child)
@@ -107,17 +110,23 @@
 		&.mini
 			height: initial
 			max-height: calc(100vh - 430px)
+		&.wide
+			margin-right: 32px
 		&.narrow
-			max-width: 257px
-	&-left
-		padding: 32px
+			flex: 0 0 257px
+			padding-left: 32px
 		img,svg
 			margin-bottom: 80px
 			&:last-child
 				margin-bottom: 0
+	&-left
+		padding: 32px
+	&-col.narrow
+		border-left: 1px solid rgb($neutral-300)
 
 
-
+.modal
+	max-width: 792px
 
 
 

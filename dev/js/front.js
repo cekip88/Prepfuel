@@ -1,6 +1,8 @@
 import { G_Bus } from "./libs/G_Control.js";
 import { _front } from "./libs/_front.js";
-import GSelect from "./components/select/select.component.js"
+import GInput from "./components/input/input.component.js";
+import GSelect from "./components/select/select.component.js";
+import Modaler from "./components/modaler/modaler.component.js";
 class Front extends _front{
   constructor(){
     super();
@@ -9,6 +11,7 @@ class Front extends _front{
       .on('subnavigate',_.subnavigate.bind(_))
       .on('getSessions',_.getSessions.bind(_))
       .on('showHidden',_.showHidden.bind(_))
+      .on('showNote',_.showNote.bind(_))
   }
 
   ascent(item,targetSelector,endCls){
@@ -41,6 +44,13 @@ class Front extends _front{
   }
   removeCls(item,cls) {
     if (item) item.classList.remove(cls)
+  }
+
+  showNote(){
+    G_Bus.trigger('showModal',{
+      type: 'html',
+      target: '#modal'
+    });
   }
 
 

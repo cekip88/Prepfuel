@@ -29,15 +29,40 @@ block content
 								svg
 									use(xlink:href='img/sprite.svg#error-circle')
 								span Report
-						.test-inner.grid.test-row
+						.test-inner.test-row
 							.test-col.wide
-							.test-col.narrow
+								+img('test-graphic.svg')
+								p.test-text Text of a question or math formula. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit.
+							.test-col.narrow.grid
+								.grid-row
+									input(type='text' disabled).grid-input
+								.grid-row
+									.grid-col
+										button.grid-button -
+									-for (let i = 0; i < 4; i++)
+										.grid-col
+											button.grid-button .
+								.grid-row
+									.grid-col
+										button.grid-button.high
+									-for (let k = 0; k < 4; k++)
+										.grid-col
+											-for (let i = 0; i < 10; i++)
+												button.grid-button #{i}
 						.test-footer
 							a(href='./test-desc.html').test-footer-button
 								span Directions
 							a(href='./test-question-5.html').test-footer-back
 								span Back to question 5
-							a(href='./test-question-2.html').button
-								span Skip to questions 2
+							button(data-click='showNote').button-blue
+								span Finish this section
 				.col.narrow
 					include parts/questions-links
+			div(hidden)
+				.modal(id='modal' slot='modal-item')
+					h6.modal-title
+						span Are you sure you want to finish this section
+					p.modal-text You have 5 minutes left to work on the 4 questions you haven’t answered, and to double-check your other answers. You will not able to return later to answer more questions if you finish this section.
+					.modal-row
+						a(href='./test-result.html').button Yes, I’m done with this section
+						a(href='./test-question-1.html').button-blue No, take me to my first skipped question

@@ -1,1 +1,202 @@
-export default class e extends HTMLElement{constructor(e){super();const t=this;t.flag=e,t.events={},t.container=t,t.handle(),t.filteredAttributes=[]}async importTpl(e,t="default"){let r=await import(e);this.tpls=r[t]}getTpl(e){if(this.tpls)return this.tpls[e]??""}markup(e,t=!0){let r=document.createDocumentFragment(),n=(new DOMParser).parseFromString(e,"text/html");return t?(r.append(...n.body.children),r):n.body.children}setProperty(e,t){this.style.setProperty(e,t)}appendTpl(e){this.shadow.innerHTML=e(),this.fillAttributes()}attr(e,t){const r=this;if(r.hasAttribute(e))return t?void r.setAttribute(e,t):r.getAttribute(e)}fillAttributes(){const e=this;for(let t=0;t<e.attributes.length;t++){let r=e.attributes[t];"style"!=r.name&&"id"!=r.name&&(e.filteredAttributes.indexOf(r.name)>-1||e.setProperty(`--${r.name}`,r.value))}}on(e,t){const r=this;return r.events[e]||(this.events[e]=[]),this.events[e].push(t),"dev"===r.flag&&console.warn(`Referring to an event: ${e}.Handler: ${t.name}`),r}trigger(e,t){const r=this;return new Promise((function(n){"dev"===r.flag&&console.log(`Trigger event: ${e} with data: "${t}" `);try{r.events[e]&&r.events[e].forEach((async e=>n(await e(t))))}catch(t){if("TypeError"==t.name){let r={};r.err=t,r.event=e,r.line=t.lineNumber,console.log("%c%s","background-color:#3f51b5;",`!РћР±СЂР°С‰РµРЅРёРµ Рє СЃРѕР±С‹С‚РёСЋ, РєРѕС‚РѕСЂРѕРµ РЅРµ РѕРїСЂРµРґРµР»РµРЅРѕ ${componentName}: ${e}\n${t}`)}}}))}remove(e,t){const r=this;r.events[e]&&delete r.events[e]}clear(){const e=this;for(let t in e.events)"includeModule"!==t&&"showMenu"!==t&&delete e.events[t]}ascent(e,t){const r=this;let n=e.composedPath();if(n.length)for(let e=0,a=n.length;e<a;e++){let a=n[e];if(!a==r.container||!a||!a.tagName)break;if(a.classList.contains(t))return a}}triggerWithEvent(e,t){const r=this;if(!e.item)return;e.item.dataset[t].split(";").forEach((t=>{r.trigger(t,e)}))}prepareHandler(e,t){const r=this;let n=e.composedPath();if(n.length)for(let a=0,i=n.length;a<i;a++){let i=n[a];if(!i==r.container||!i||!i.tagName)break;if(i.hasAttribute(`data-${t}`)){r.triggerWithEvent({item:i,event:e},t);break}}}clickHandler(e){return this.prepareHandler(e,"click")}focusOutHandler(e){return this.prepareHandler(e,"focusout")}changeHandler(e){return this.prepareHandler(e,"change")}inputHandler(e){return this.prepareHandler(e,"input")}keyUpHandler(e){let t=e.target;"keyup"in t.dataset&&_.triggerWithEvent({item:t,event:e},"keyup")}submitHandler(e){console.log("s");const t=this;e.preventDefault();let r=e.composedPath();if(r.length)for(let n=0,a=r.length;n<a;n++){let a=r[n];if(!a==t.container||!a||!a.tagName)break;if(a.hasAttribute("data-submit"))return void console.log(e)}}scrollHandler(e){let t=e.target;if(t.dataset)return"scroll"in t.dataset?_.triggerWithEvent({item:t,event:e},"scroll"):void 0}overHandler(e){let t=e.target;"over"in t.dataset&&_.triggerWithEvent({item:t,event:e},"over")}dragStartHandler(e){let t=e.target;"dragStart"in t.dataset&&_.triggerWithEvent({item:t,event:e},"dragStart")}dragOverHandler(e){let t=e.target;"dragOver"in t.dataset&&_.triggerWithEvent({item:t,event:e},"dragOver")}dragEnterHandler(e){let t=e.target;"dragEnter"in t.dataset&&_.triggerWithEvent({item:t,event:e},"dragEnter")}dragLeaveHandler(e){let t=e.target;"dragLeave"in t.dataset&&_.triggerWithEvent({item:t,event:e},"dragLeave")}dropHandler(e){let t=e.target;"drop"in t.dataset&&_.triggerWithEvent({item:t,event:e},"drop")}outHandler(e){let t=e.target;"out"in t.dataset&&_.triggerWithEvent({item:t,event:e},"out")}leaveHandler(e){let t=e.target;t instanceof HTMLElement&&t.hasAttribute("data-leave")&&"leave"in t.dataset&&_.triggerWithEvent({item:t,event:e},"leave")}handle(){const e=this;e.container.addEventListener("focusout",e.focusOutHandler),e.container.addEventListener("submit",e.submitHandler),e.container.addEventListener("click",e.clickHandler.bind(e)),e.container.addEventListener("change",e.changeHandler),e.container.addEventListener("input",e.inputHandler),e.container.addEventListener("keyup",e.keyUpHandler),e.container.addEventListener("mouseover",e.overHandler),e.container.addEventListener("mouseout",e.outHandler),e.container.addEventListener("mouseleave",e.leaveHandler),e.container.addEventListener("dragstart",e.dragStartHandler),e.container.addEventListener("dragenter",e.dragEnterHandler),e.container.addEventListener("dragleave",e.dragLeaveHandler),e.container.addEventListener("dragover",e.dragOverHandler),e.container.addEventListener("drop",e.dropHandler),e.container.addEventListener("scroll",e.scrollHandler)}}
+export default class GComponent extends HTMLElement {
+	#_events = {}
+	constructor(flag) {
+		super();
+		// элемент создан
+		const _ = this;
+		_.flag = flag;
+		_.container = _;
+		_.handle();
+		_.filteredAttributes = [];
+	}
+	async initShadow(){
+		const _ = this;
+		if(_.shadow) return;
+		await _.importTpl(`./${_.componentName}/template.js`);
+		_.shadow = this.attachShadow({ mode: 'open' });
+		_.container = _.shadow;
+	}
+	async importTpl(fileName='template', method = 'default') {
+		const _ = this;
+		let tpl = await import(fileName);
+		_.tpls = tpl[method];
+		return void 0;
+	}
+	getTpl(tplName){
+		const _ = this;
+		if(!_.tpls) return;
+		return _.tpls[tplName] ?? '';
+	}
+	markup(domStr,isFragment=true){
+		const _ = this;
+		let
+			fragment = document.createDocumentFragment(),
+			parser= new DOMParser().parseFromString(domStr,'text/html');
+		if(isFragment){
+			fragment.append(...parser.body.children);
+			return fragment;
+		}
+		return parser.body.children;
+	}
+	setProperty(property,value){
+		const _ = this;
+		_.style.setProperty(property,value);
+	}
+	appendTpl(tpl){
+		const _ = this;
+		_.shadow.innerHTML = tpl();
+		_.fillAttributes();
+	}
+
+	attr(name,value){
+		const _ = this;
+		//if(!_.hasAttribute(name)) return;
+		if(!value) return _.getAttribute(name);
+		_.setAttribute(name,value);
+	}
+
+	fillAttributes(){
+		const _ = this;
+		for(let i=0; i < _.attributes.length;i++){
+			let attr = _.attributes[i];
+			if( (attr.name == 'style') || (attr.name == 'id')  ) continue;
+			if(_.filteredAttributes.indexOf(attr.name) > -1 ) continue;
+			_.setProperty(`--${attr.name}`,  attr.value);
+		}
+		/*	_.setProperty("--color",  this.getAttribute('color'));
+			_.setProperty("--right",  this.getAttribute('right'));*/
+	}
+	/**/
+	on(eventName,fn=eventName){
+		const _ = this;
+		if (!_.#_events[eventName]) {
+			this.#_events[eventName] = []
+		}
+		this.#_events[eventName].push(fn)
+		if(_.flag === 'dev'){
+			console.warn(`Referring to an event: ${eventName}.Handler: ${fn.name}`);
+		}
+		return _;
+	}
+	trigger(eventName,data){
+		const _ = this;
+		return new Promise(function (resolve) {
+			if(_.flag === 'dev'){
+				console.log(`Trigger event: ${eventName} with data: "${data}" `);
+			}
+			try{
+				if (_.#_events[eventName]) {
+					_.#_events[eventName].forEach( async (fn) => resolve(await fn(data)))
+				}
+			} catch (e) {
+				if(e.name == 'TypeError'){
+					let errObj = {};
+					errObj['err'] = e;
+					errObj['event'] = eventName;
+					errObj['line'] = e.lineNumber;
+					console.log('%c%s',`background-color:#3f51b5;`,`!РћР±СЂР°С‰РµРЅРёРµ Рє СЃРѕР±С‹С‚РёСЋ, РєРѕС‚РѕСЂРѕРµ РЅРµ РѕРїСЂРµРґРµР»РµРЅРѕ ${componentName}: ${eventName}\n${e}`);
+				}
+			}
+		})
+	}
+	remove(eventName,prop){
+		const _ = this;
+		if (_.#_events[eventName]) {
+			delete _.#_events[eventName];
+		}
+	}
+	/**/
+	ascent(event,targetCls){
+		const _ = this;
+		let eventPath = event.composedPath();
+		if(!eventPath.length) return;
+		for(let i=0,len=eventPath.length; i < len;i++){
+			let item = eventPath[i];
+			if( (!item == _.container ) || (!item) || (!item.tagName) ) break;
+			if( item.classList.contains(targetCls) ){
+				return item;
+			}
+		}
+	}
+	/**/
+	triggerWithEvent(data,currentAction){
+		const _ = this;
+		if (!data['item'])  return;
+		let rawActions = data['item'].dataset[currentAction].split(';');
+		rawActions.forEach( (action)=>{
+			_.trigger(action,data);
+		});
+	}
+
+	prepareHandler(e,dataEvent){
+		const _ = this;
+		let eventPath = e.composedPath();
+		if(!eventPath.length) return;
+		for(let i=0,len=eventPath.length; i < len;i++){
+			let item = eventPath[i];
+			if( (!item == _.container ) || (!item) || (!item.tagName) ) break;
+			if( item.hasAttribute(`data-${dataEvent}`) ){
+				_.triggerWithEvent({'item':item,'event':e},dataEvent);
+				break;
+			}
+		}
+	}
+
+	clickHandler(e){ return this.prepareHandler(e,'click');}
+	focusOutHandler(e){
+		return this.prepareHandler(e,'focusout');
+	}
+	focusInHandler(e){return this.prepareHandler(e,'focusin');}
+	changeHandler(e){return this.prepareHandler(e,'change');}
+	inputHandler(e){
+		return this.prepareHandler(e,'input');
+	}
+	keyUpHandler(e){ return this.prepareHandler(e,'keyup');}
+	keyDownHandler(e){ return this.prepareHandler(e,'keydown');}
+	mouseUpHandler(e){ return this.prepareHandler(e,'mouseup');}
+	mouseDownHandler(e){ return this.prepareHandler(e,'mousedown');}
+	submitHandler(e){ return this.prepareHandler(e,'submit');}
+	scrollHandler(e){ return this.prepareHandler(e,'scroll');}
+	overHandler(e){ return this.prepareHandler(e,'over');}
+
+	dragStartHandler(e){ return this.prepareHandler(e,'dragStart');}
+	dragOverHandler(e){ return this.prepareHandler(e,'dragOver');}
+	dragEnterHandler(e){ return this.prepareHandler(e,'dragEnter');}
+	dragLeaveHandler(e){ return this.prepareHandler(e,'dragLeave');}
+	dropHandler(e){ return this.prepareHandler(e,'drop');}
+	outHandler(e){ return this.prepareHandler(e,'out');}
+	leaveHandler(e){ return this.prepareHandler(e,'leave');}
+
+	triggerChangeEvent(){
+		const changeEvent = new Event('change', {
+			bubbles: true,
+			cancelable: true
+		});
+		this.dispatchEvent(changeEvent);
+	}
+
+	handle(){
+		const _  = this;
+		//_.container = _.shadow;
+		_.container.addEventListener('focusout',_.focusOutHandler.bind(_));
+		_.container.addEventListener('focusin',_.focusInHandler.bind(_));
+		_.container.addEventListener('submit',_.submitHandler.bind(_));
+		_.container.addEventListener('click', _.clickHandler.bind(_));
+		_.container.addEventListener('change',_.changeHandler.bind(_));
+		_.container.addEventListener('input',_.inputHandler.bind(_));
+		_.container.addEventListener('keyup',_.keyUpHandler);
+		_.container.addEventListener('keydown',_.keyDownHandler);
+		_.container.addEventListener('mouseup',_.mouseUpHandler.bind(_));
+		_.container.addEventListener('mousedown',_.mouseDownHandler.bind(_));
+		_.container.addEventListener('mouseover',_.overHandler);
+		_.container.addEventListener('mouseout',_.outHandler);
+		_.container.addEventListener('mouseleave',_.leaveHandler);
+		_.container.addEventListener('dragstart',_.dragStartHandler);
+		_.container.addEventListener('dragenter',_.dragEnterHandler);
+		_.container.addEventListener('dragleave',_.dragLeaveHandler);
+		_.container.addEventListener('dragover',_.dragOverHandler);
+		_.container.addEventListener('drop',_.dropHandler);
+		_.container.addEventListener('scroll',_.scrollHandler);
+	}
+	/**/
+}

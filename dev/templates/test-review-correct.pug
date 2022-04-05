@@ -7,16 +7,15 @@ block content
 		section.test
 			.section
 				.section-header
-					h1.title Practice Test - Section Name
-					.test-timer 20 minutes left
+					h1.title Practice Test Review - Section Name
 					button.button-white
-						span Finish this section
+						span Finish reviewing this section
 			.section.row
 				.col.wide
 					.block.test-block
 						.test-header
 							h5.block-title.test-title
-								span Question 2 of 40
+								span Question 1 of 40
 							button.test-header-button
 								svg
 									use(xlink:href='img/sprite.svg#bookmark-transparent')
@@ -35,47 +34,38 @@ block content
 							p.test-text
 								span Text of a question
 							ul.answer-list
-								li.answer-item.active
+								li.answer-item.correct
 									button.answer-button
 										span.answer-variant a
 										span.answer-value Answer A
-									button.answer-wrong
+									.answer-review-icon
 										svg
-											use(xlink:href='img/sprite.svg#dismiss-circle')
-								li.answer-item(disabled)
+											use(xlink:href='img/sprite.svg#correct')
+									p.answer-desc Description text. Explains why answer is correct or incorrect
+								li.answer-item.wrong
 									button.answer-button
 										span.answer-variant b
 										span.answer-value Answer B
-									button.answer-wrong
-										svg
-											use(xlink:href='img/sprite.svg#dismiss-circle')
-								li.answer-item
+									p.answer-desc Description text. Explains why answer is correct or incorrect
+								li.answer-item.wrong
 									button.answer-button
 										span.answer-variant c
 										span.answer-value Answer C
-									button.answer-wrong
-										svg
-											use(xlink:href='img/sprite.svg#dismiss-circle')
-								li.answer-item
+									p.answer-desc Description text. Explains why answer is correct or incorrect
+								li.answer-item.wrong
 									button.answer-button
 										span.answer-variant d
 										span.answer-value Answer D
-									button.answer-wrong
-										svg
-											use(xlink:href='img/sprite.svg#dismiss-circle')
-								li.answer-item
+									p.answer-desc Description text. Explains why answer is correct or incorrect
+								li.answer-item.wrong
 									button.answer-button
 										span.answer-variant e
 										span.answer-value I don't know
-									button.answer-wrong
-										svg
-											use(xlink:href='img/sprite.svg#dismiss-circle')
+									p.answer-desc Description text. Explains why answer is correct or incorrect
 						.test-footer
 							a(href='./test-desc.html').test-footer-button
 								span Directions
-							a(href='./test-question-1.html').test-footer-back
-								span Back to question 1
-							a(href='./test-question-3.html').button-blue
-								span Next to questions 3
+							a(href='./test-review-wrong.html').button-blue
+								span Skip to questions 2
 				.col.narrow
-					include parts/questions-links
+					include parts/questions-links-review

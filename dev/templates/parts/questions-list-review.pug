@@ -1,0 +1,28 @@
+h6.questions-list-title
+	span Question 1 - 10
+ul.questions-list
+	li.questions-item.wrong
+		span.questions-number 1
+		button.questions-variant A
+		.questions-bookmark
+			svg
+				use(xlink:href='img/sprite.svg#bookmark-transparent')
+			svg
+				use(xlink:href='img/sprite.svg#bookmark')
+	li.questions-item.checked
+		span.questions-number 2
+		button.questions-variant
+		.questions-bookmark
+			svg
+				use(xlink:href='img/sprite.svg#bookmark-transparent')
+			svg
+				use(xlink:href='img/sprite.svg#bookmark')
+	-for (let i = 3; i < 11; i++)
+				li.questions-item.correct
+					span.questions-number #{i}
+					button.questions-variant A
+					.questions-bookmark
+						svg
+							use(xlink:href='img/sprite.svg#bookmark-transparent')
+						svg
+							use(xlink:href='img/sprite.svg#bookmark')

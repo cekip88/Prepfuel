@@ -134,8 +134,6 @@
 
 
 .test
-	&-block
-		overflow: auto
 	&-header
 		&-button
 			span,svg
@@ -186,17 +184,34 @@
 			color: rgb($blue)
 			svg
 				stroke: rgb($blue)
+	&-variant
+		@extend %transition-d
+		&:hover
+			background-color: rgb($neutral-600)
+			color: rgb($white)
+
+.grid
+	&-button
+		@extend %transition-d
+		&:hover
+			color: rgb($white)
+			background-color: rgb($neutral-600)
 
 
 .answer
 	&-variant
 		@extend %transition-d
-	&-button
-		&:hover
-			.answer
-				&-variant
-					background-color: rgb($blue)
-					color: rgb($white)
+	&-item
+		&:not(.correct):not(.wrong):not([disabled])
+			.answer-button
+				&:hover
+					.answer
+						&-variant
+							background-color: rgb($blue)
+							color: rgb($white)
+		&.correct,&.wrong,&[disabled]
+			.answer-button
+				cursor: initial
 	&-wrong
 		@extend %transition-d
 		&:hover
@@ -204,14 +219,6 @@
 			svg
 				transform: scale(1.15)
 				fill: rgb($white)
-	&-item
-		&[disabled]
-			.answer-button
-				cursor: initial
-				&:hover
-					.answer-variant
-							background-color: rgb($white)
-							color: rgb($answer-disabled)
 
 
 
