@@ -23,42 +23,7 @@ block content
 								span Math formula
 							p.test-text
 								span Text of a question
-							ul.answer-list
-								li.answer-item.active
-									button.answer-button
-										span.answer-variant a
-										span.answer-value Answer A
-									button.answer-wrong
-										svg
-											use(xlink:href='img/sprite.svg#dismiss-circle')
-								li.answer-item(disabled)
-									button.answer-button
-										span.answer-variant b
-										span.answer-value Answer B
-									button.answer-wrong
-										svg
-											use(xlink:href='img/sprite.svg#dismiss-circle')
-								li.answer-item
-									button.answer-button
-										span.answer-variant c
-										span.answer-value Answer C
-									button.answer-wrong
-										svg
-											use(xlink:href='img/sprite.svg#dismiss-circle')
-								li.answer-item
-									button.answer-button
-										span.answer-variant d
-										span.answer-value Answer D
-									button.answer-wrong
-										svg
-											use(xlink:href='img/sprite.svg#dismiss-circle')
-								li.answer-item
-									button.answer-button
-										span.answer-variant e
-										span.answer-value I don't know
-									button.answer-wrong
-										svg
-											use(xlink:href='img/sprite.svg#dismiss-circle')
+							include parts/answer-list
 						.test-footer
 							a(href='./test-desc.html').test-footer-button
 								span Directions

@@ -12,6 +12,7 @@ class Front extends _front{
       .on('getSessions',_.getSessions.bind(_))
       .on('showHidden',_.showHidden.bind(_))
       .on('showForm',_.showForm.bind(_))
+      .on('showTestLabelModal',_.showTestLabelModal.bind(_))
   }
 
   ascent(item,targetSelector,endCls){
@@ -46,10 +47,14 @@ class Front extends _front{
     if (item) item.classList.remove(cls)
   }
 
+  showTestLabelModal(clickData){
+    let btn = clickData.item,
+      target = btn.nextElementSibling;
+    target.classList.toggle('active')
+  }
   showForm(clickData){
     let btn = clickData.item,
       id = btn.getAttribute('data-id');
-    console.log(id)
     G_Bus.trigger('showModal',{
       type: 'html',
       target: `#${id}`

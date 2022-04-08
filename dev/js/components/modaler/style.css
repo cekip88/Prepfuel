@@ -42,8 +42,8 @@ input, button {
 	font-family: inherit;
 	font-weight: 700;
 	position: absolute;
-	top: 32px;
-	right: 32px;
+	top: 12px;
+	right: 12px;
 	cursor: pointer;
 	transition: .35s ease;
 }
@@ -55,4 +55,11 @@ input, button {
 	height: 14px;
 	display: block;
 	stroke: #B5B5C3;
+}
+
+@media screen and (min-width: 768px){
+	.modaler-close {
+		top: 32px;
+		right: 32px;
+	}
 }

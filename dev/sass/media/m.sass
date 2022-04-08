@@ -865,6 +865,60 @@ body
         &:nth-child(3)
           right: 0px
           bottom: 36px
+  &-label
+    &-block
+      @extend %df
+      width: 100%
+      margin-top: 32px
+      padding: 17px 18px
+      align-items: flex-start
+      background-color: rgb($neutral-200)
+      border-radius: 8px
+      color: rgb($neutral-800)
+      font-family: $p_reg
+      position: relative
+      svg
+        display: block
+        fill: rgb($neutral-600)
+    &-title
+      margin-bottom: 10px
+    &-icon
+      margin-right: 14px
+      svg
+        +wh(20px)
+    &-text
+      margin-top: -1px
+      p,h5
+        line-height: $fz24
+    &-button
+      padding: 2px 10px
+      svg
+        +wh(4px,16px)
+    &-modal
+      @extend %df
+      @extend %fdc
+      @extend %transition
+      padding: 7px 10px
+      align-items: flex-start
+      background-color: rgb($white)
+      box-shadow: 0 0 40px rgba(56, 71, 109, 0.29)
+      border-radius: 8px
+      position: absolute
+      top: 10px
+      right: 45px
+      opacity: 0
+      visibility: hidden
+      &.active
+        opacity: 1
+        visibility: visible
+      &-button
+        margin-bottom: 12px
+        font-family: $p_reg
+        font-size: 12px
+        line-height: calc(4em / 3)
+        color: rgb($neutral-600)
+        &:last-child
+          margin-bottom: 0
 .grid
   &-row
     @extend %df
@@ -1291,7 +1345,7 @@ body
 
 
 .modal
-  width: 80vh
+  width: calc(90vw - 48px)
   &-title
     padding: 4px 0
     font-family: $p_semi
