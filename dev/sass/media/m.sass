@@ -1358,9 +1358,11 @@ body
     margin-bottom: 24px
   &-row
     @extend %dfa
+    @extend %fdc
     .button,.button-blue
-      &:not(:last-child)
-        margin-right: 16px
+      margin-bottom: 16px
+      &:last-child
+        margin-bottom: 0
     &.end
       justify-content: flex-end
   &-area
