@@ -1,14 +1,34 @@
-form.modal.report(id='report' slot='modal-item')
+form.modal.report(slot='modal-item')#report
 	h6.modal-title
 		span Report a mistake in this question
 	p.modal-text Remember to read through the explanations and double check your answer. Thanks for your help!
 	p.modal-text What’s wrong
-
+	.check-list
+		.check-item
+			input(type='radio' name='report')#report-wrong
+			label(for='report-wrong').check-label
+				span.check-label-icon.radio
+				span.check-label-text The answer is wrong.
+		.check-item
+			input(type='radio' name='report')#report-typo
+			label(for='report-typo').check-label
+				span.check-label-icon.radio
+				span.check-label-text I caught a typo.
+		.check-item
+			input(type='radio' name='report')#report-confusing
+			label(for='report-confusing').check-label
+				span.check-label-icon.radio
+				span.check-label-text The question or explanations are confusing or unclear.
+		.check-item
+			input(type='radio' name='report')#report-broken
+			label(for='report-broken').check-label
+				span.check-label-icon.radio
+				span.check-label-text Something isn’t working / something seems broken.
 	h6.modal-title
 		span Description of issue
 	textarea.modal-area
 	.modal-row.end
-		button(type='button').button
+		button(type='button' data-click='closeModal').button
 			span Cancel
 		button.button-blue
 			span Submit Issue

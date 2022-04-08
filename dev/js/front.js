@@ -49,6 +49,7 @@ class Front extends _front{
   showForm(clickData){
     let btn = clickData.item,
       id = btn.getAttribute('data-id');
+    console.log(id)
     G_Bus.trigger('showModal',{
       type: 'html',
       target: `#${id}`

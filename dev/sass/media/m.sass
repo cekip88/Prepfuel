@@ -728,10 +728,21 @@ body
       svg
         +wh(16px)
         margin: 0 4px 0 0!important
+        &:nth-child(2)
+          display: none
       span
         font-family: $p_reg
         color: rgb($neutral-600)
         font-size: $fz12
+      &.active
+        svg
+          &:first-child
+            display: none
+          &:nth-child(2)
+            display: block
+            fill: rgb($blue)
+        span
+          color: rgb($blue)
   &-inner
     width: 100%
     margin: 0 auto
@@ -1280,7 +1291,7 @@ body
 
 
 .modal
-  max-width: 80vh
+  width: 80vh
   &-title
     padding: 4px 0
     font-family: $p_semi
@@ -1289,7 +1300,7 @@ body
     color: rgb($neutral-900)
     font-family: $p_reg
     line-height: $fz24
-  &-text,&-title,&-area
+  &-text,&-title,&-area,.check-list
     margin-bottom: 24px
   &-row
     @extend %dfa
@@ -1304,3 +1315,31 @@ body
     background-color: rgb($neutral-200)
     resize: none
     border: none
+
+.check
+  &-list
+    input:checked ~ .check-label
+      .check-label-icon
+        &:after
+          background-color: rgb($blue)
+  &-item
+    margin-bottom: 20px
+    &:last-child
+      margin-bottom: 0
+  &-label
+    @extend %dfa
+    &-icon
+      @extend %dfc
+      +wh(24px)
+      flex: 0 0 24px
+      margin-right: 12px
+      background-color: rgb($neutral-200)
+      &:after
+        @extend %transition
+        +af
+        +wh(12px)
+      &,&:after
+        border-radius: 100%
+    &-text
+      font-family: $f_medium
+      color: rgb($neutral-700)

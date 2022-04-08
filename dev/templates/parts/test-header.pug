@@ -1,8 +1,10 @@
-button.test-header-button
+button.test-header-button.active
 	svg
 		use(xlink:href='img/sprite.svg#bookmark-transparent')
+	svg
+		use(xlink:href='img/sprite.svg#bookmark')
 	span Bookmark
-button.test-header-button
+button.test-header-button(data-click='showForm' data-id='note')
 	svg
 		use(xlink:href='img/sprite.svg#edit-transparent')
 	span Note
