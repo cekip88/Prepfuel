@@ -1282,17 +1282,25 @@ body
 .modal
   max-width: 80vh
   &-title
-    margin-bottom: 20px
     padding: 4px 0
     font-family: $p_semi
     color: rgb($neutral-900)
   &-text
-    margin-bottom: 40px
     color: rgb($neutral-900)
-    line-height: initial
+    font-family: $p_reg
+    line-height: $fz24
+  &-text,&-title,&-area
+    margin-bottom: 24px
   &-row
     @extend %dfa
-    button,a
+    .button,.button-blue
       &:not(:last-child)
         margin-right: 16px
-
+    &.end
+      justify-content: flex-end
+  &-area
+    +wh(100%,140px)
+    padding: 20px
+    background-color: rgb($neutral-200)
+    resize: none
+    border: none

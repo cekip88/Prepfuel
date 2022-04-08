@@ -25,18 +25,7 @@ block content
 								.test-header
 									h5.block-title.test-title
 										span Question 3 of 40
-									button.test-header-button
-										svg
-											use(xlink:href='img/sprite.svg#bookmark-transparent')
-										span Bookmark
-									button.test-header-button
-										svg
-											use(xlink:href='img/sprite.svg#edit-transparent')
-										span Note
-									button.test-header-button
-										svg
-											use(xlink:href='img/sprite.svg#error-circle')
-										span Report
+									include parts/test-header
 								p.test-text
 									span Math formula
 								p.test-text
@@ -83,3 +72,5 @@ block content
 								span Next to questions 4
 				.col.narrow
 					include parts/questions-links
+			div(hidden)
+				include parts/report

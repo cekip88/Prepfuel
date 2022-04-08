@@ -16,18 +16,7 @@ block content
 						.test-header
 							h5.block-title.test-title
 								span Question 1 of 40
-							button.test-header-button
-								svg
-									use(xlink:href='img/sprite.svg#bookmark-transparent')
-								span Bookmark
-							button.test-header-button
-								svg
-									use(xlink:href='img/sprite.svg#edit-transparent')
-								span Note
-							button.test-header-button
-								svg
-									use(xlink:href='img/sprite.svg#error-circle')
-								span Report
+							include parts/test-header
 						.test-inner.middle
 							p.test-text
 								span Math formula
@@ -69,3 +58,5 @@ block content
 								span Skip to questions 2
 				.col.narrow
 					include parts/questions-links-review
+			div(hidden)
+				include parts/report

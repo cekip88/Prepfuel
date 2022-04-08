@@ -17,18 +17,7 @@ block content
 						.test-header
 							h5.block-title.test-title
 								span Question 6 of 40
-							button.test-header-button
-								svg
-									use(xlink:href='img/sprite.svg#bookmark-transparent')
-								span Bookmark
-							button.test-header-button
-								svg
-									use(xlink:href='img/sprite.svg#edit-transparent')
-								span Note
-							button.test-header-button
-								svg
-									use(xlink:href='img/sprite.svg#error-circle')
-								span Report
+							include parts/test-header
 						.test-inner.test-row
 							.test-col.wide
 								+img('test-graphic.svg')
@@ -54,12 +43,13 @@ block content
 								span Directions
 							a(href='./test-question-5.html').test-footer-back
 								span Back to question 5
-							button(data-click='showNote').button-blue
-								span Finish this section
+							button(data-click='showForm' data-id='finish').button-blue
+								span Finish this <section></section>
 				.col.narrow
 					include parts/questions-links
 			div(hidden)
-				.modal(id='modal' slot='modal-item')
+				include parts/report
+				.modal.finish(id='finish' slot='modal-item')
 					h6.modal-title
 						span Are you sure you want to finish this section
 					p.modal-text You have 5 minutes left to work on the 4 questions you haven’t answered, and to double-check your other answers. You will not able to return later to answer more questions if you finish this section.

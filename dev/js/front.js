@@ -11,7 +11,7 @@ class Front extends _front{
       .on('subnavigate',_.subnavigate.bind(_))
       .on('getSessions',_.getSessions.bind(_))
       .on('showHidden',_.showHidden.bind(_))
-      .on('showNote',_.showNote.bind(_))
+      .on('showForm',_.showForm.bind(_))
   }
 
   ascent(item,targetSelector,endCls){
@@ -46,10 +46,12 @@ class Front extends _front{
     if (item) item.classList.remove(cls)
   }
 
-  showNote(){
+  showForm(clickData){
+    let btn = clickData.item,
+      id = btn.getAttribute('data-id');
     G_Bus.trigger('showModal',{
       type: 'html',
-      target: '#modal'
+      target: `#${id}`
     });
   }
 
