@@ -207,7 +207,7 @@ class Front extends _front{
     }
   }
 
-  init(){
+  async init(){
     const _ = this;
     _.navigationInit(document.querySelector('.navigate-list'));
 
@@ -216,6 +216,12 @@ class Front extends _front{
 
     let subNav = _.f('.subnavigate-button.active');
     if (subNav) _.subnavigate({event:{target:subNav}});
-  }
+	
+		let
+			page = _.definePage(),
+			currentPage = await _.getPage({
+			  name: page
+		});
+	}
 }
 new Front();
