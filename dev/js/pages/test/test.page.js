@@ -30,7 +30,7 @@ class TestPage extends _front{
 		const _ = this;
 		
 		_._$.route = _.item.getAttribute('route');
-		
+		console.log();
 		_._$.currentSection = 'directions';
 	}
 	
