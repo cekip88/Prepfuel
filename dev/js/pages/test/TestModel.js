@@ -1,7 +1,7 @@
 export default  class TestModel{
 	getTest(testObj){
 		const _ = this;
-		return new Promise((resolve)=>{
+		return new Promise(resolve =>{
 			resolve({
 				id: 1,
 				time: 20,

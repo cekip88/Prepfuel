@@ -72,7 +72,6 @@ class TestPage extends _front{
 	
 	carcas(){
 		const _ = this;
-		console.log(_.currentSection);
 		return  _.markup(`
 			<div class="section">
 				${_.welcomeHeader()}
@@ -86,7 +85,7 @@ class TestPage extends _front{
 						${_.welcomeInner()}
 					</div>
 					<div class="test-footer">
-						<button class="button-blue" type="button" data-click="changePage" route="/test/directions">
+						<button class="button-blue" type="button" data-click="setRoute" route="login">
 							<span>Let’s go, start the timer!</span>
 						</button>
 					</div>
@@ -96,11 +95,13 @@ class TestPage extends _front{
 	}
 	init(){
 		const _ = this;
-		_._( ()=>{
-			_.clear(_.f('.g-body'));
-			_.f('.g-body').append(_.carcas());
-	
-		},['currentSection']);
+	}
+	async render(){
+		const _ = this;
+		_.header = await _.getBlock({name:'header'},'blocks');
+		_.fillPage([
+			_.markup(_.header.render())
+		]);
 	}
 }
 export { TestPage }

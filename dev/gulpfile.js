@@ -143,11 +143,16 @@ gulp.task('browserSync', function() {
     };
     if (!proxy){
         serverCfg['server'] =  {
-            baseDir: projectPath,
-            index: "index.html",
-            serveStaticOptions: {
-                extensions: ["html"]
-            }
+          baseDir: projectPath,
+          index: "index.html",
+	        middleware: [ {
+		        id: "SPA support",
+		        route: "",
+		        handle: require("connect-history-api-fallback")()
+	        } ],
+          serveStaticOptions: {
+              extensions: ["html"]
+          }
         };
     }
     browserSync.init(serverCfg);

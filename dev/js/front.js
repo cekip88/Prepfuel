@@ -13,6 +13,7 @@ class Front extends _front{
       .on('showHidden',_.showHidden.bind(_))
       .on('showForm',_.showForm.bind(_))
       .on('showTestLabelModal',_.showTestLabelModal.bind(_))
+	  G_Bus.on('setRoute',_.setRoute.bind(_))
   }
 
   ascent(item,targetSelector,endCls){
@@ -217,11 +218,7 @@ class Front extends _front{
     let subNav = _.f('.subnavigate-button.active');
     if (subNav) _.subnavigate({event:{target:subNav}});
 	
-		let
-			page = _.definePage(),
-			currentPage = await _.getPage({
-			  name: page
-		});
+		_.setRoute({});
 	}
 }
 new Front();
