@@ -1,15 +1,12 @@
-import G_G from "./G_G.js";
-import { G_Bus } from "./G_Bus.js";
-export class _front extends G_G{
-  constructor() {
-		super();
-    const _ = this;
-    _.componentName = 'front';
-    _.libs = new Map();
-    _.components = new Map();
-  }
-	define(){}
-	
+import { G_Bus } from "../libs/G_Bus.js";
+export class router {
+	constructor() {
+		const _ = this;
+		_.componentName = 'router';
+		_.libs = new Map();
+		_.components = new Map();
+		G_Bus.on('setRoute',_.setRoute.bind(_))
+	}
 	/*Storage*/
 	storageHas(key){
 		return localStorage.getItem(key) ? true : false;
@@ -41,59 +38,12 @@ export class _front extends G_G{
 	}
 	/*Storage*/
 	
-	/*Form*/
-	checkValidate(form){
-		const _ = this;
-		if(!form) return;
-		let check = true;
-		let
-			inputs = form.querySelectorAll('.g-form-item');
-		console.log(inputs);
-		for(let input of inputs){
-			if(!input.doValidate()){
-				check = false;
-			}
+	clear(domElement){
+		if(!domElement) return void 0;
+		if(domElement instanceof HTMLElement){
+			domElement.innerHTML = null;
 		}
-		return check;
 	}
-	gFormDataCapture(form) {
-		const _ = this;
-		let
-			obj = {},
-			items = form.querySelectorAll('.g-form-item');
-		for(let item of items){
-			if( (item.value instanceof Array) && (!item.value.length)){
-				obj[item.name] = null;
-			}else obj[item.name] = item.value;
-		}
-		return obj;
-	}
-	prepareForm(form){
-		const _ = this;
-		if(_.checkValidate(form)){
-			return _.gFormDataCapture(form);
-		}
-		return null;
-	}
-	formDataCapture(form){
-		return new Promise(function (resolve) {
-			let
-			outData = {},
-			formElements = form.elements;
-			for(let element of formElements){
-				if(element.type === 'radio'){
-					if (element.checked){
-						outData[element.name] = element.value;
-					}
-				}else if (element.name){
-					outData[element.name] = element.value;
-				}
-			}
-			resolve(outData);
-		});
-	}
-	/*Form*/
-	
 	saveRoute(route){
 		const _ = this;
 		_.storageSave('g-route-prev',_.storageGet('g-route-current'));
@@ -102,9 +52,9 @@ export class _front extends G_G{
 	async setupRoute(route){
 		const _ = this;
 		let
-			currentPage = await _.getBlock({
-				name: route
-			});
+		currentPage = await _.getBlock({
+			name: route
+		});
 		currentPage.render();
 		_.saveRoute(route);
 	}
@@ -130,13 +80,13 @@ export class _front extends G_G{
 		return new Promise(async function (resolve,reject) {
 			try{
 				let
-					rawParams = blockData.name.split('/'),
-					moduleInc = (type == 'pages') ? 'Page' : 'Block',
-					fileType = (type == 'pages') ? 'page' : 'block',
-					name = rawParams[0] ? rawParams[0] : rawParams[1],
-					params = blockData.params ? blockData.params : {},
-					moduleStr = name.charAt(0).toUpperCase() + name.substr(1)+ moduleInc,
-					path = `/${type}/${name}/${name}.${fileType}.js`;
+				rawParams = blockData.name.split('/'),
+				moduleInc = (type == 'pages') ? 'Page' : 'Block',
+				fileType = (type == 'pages') ? 'page' : 'block',
+				name = rawParams[0] ? rawParams[0] : rawParams[1],
+				params = blockData.params ? blockData.params : {},
+				moduleStr = name.charAt(0).toUpperCase() + name.substr(1)+ moduleInc,
+				path = `/${type}/${name}/${name}.${fileType}.js`;
 				
 				
 				
@@ -146,8 +96,8 @@ export class _front extends G_G{
 					resolve(comp);
 				}
 				const
-					module = await import(path),
-					moduleName = new module[moduleStr](params);
+				module = await import(path),
+				moduleName = new module[moduleStr](params);
 				_.components.set(name, moduleName);
 				resolve(moduleName);
 			} catch(e) {
@@ -159,7 +109,7 @@ export class _front extends G_G{
 		/* Рендер страницы компонентами */
 		const _ = this;
 		let
-			gSet = _.f('#g-set')
+		gSet = document.querySelector('#g-set')
 		_.clear(gSet);
 		if( !(parts instanceof Array) ){
 			gSet.append(parts);
@@ -170,8 +120,8 @@ export class _front extends G_G{
 		}
 		
 	}
-  init(){
-    const _ = this;
-  }
-
+	init(){
+		const _ = this;
+	}
+	
 }

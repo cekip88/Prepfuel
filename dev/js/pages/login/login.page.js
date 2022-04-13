@@ -19,6 +19,7 @@ class LoginPage extends _front{
 		if( rawResponse.status == 200 ){
 			let response = rawResponse.json();
 			if(response['status'] == 'success'){
+				_.storageSave('token',response['_token']);
 				_.setRouteFromString('test');
 			}
 		}else{

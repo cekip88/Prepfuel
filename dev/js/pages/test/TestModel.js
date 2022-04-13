@@ -21,7 +21,17 @@ export default  class TestModel{
 						innerDescription: 'This is description for test'
 					}
 				},
-				questions: [],
+				questions: [
+					{
+						id:1,
+						answers:{
+							a: 'Test answer a',
+							b: 'Test answer a',
+							c: 'Test answer a',
+							d: 'Test answer a',
+						}
+					}
+				],
 			})
 		});
 	}

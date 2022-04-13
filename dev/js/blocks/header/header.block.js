@@ -20,17 +20,17 @@ class HeaderBlock extends _front{
 				<div class="section">
 					<div class="head-row">
 						<a class="head-logo" href="#">
-							<img src="img/logo.svg" alt="">
+							<img src="/img/logo.svg" alt="">
 						</a>
 						<div class="head-control">
 							<a class="head-button" href="./studentDashboard.html">
 								<svg>
-									<use xlink:href="img/sprite.svg#bell"></use>
+									<use xlink:href="/img/sprite.svg#bell"></use>
 								</svg>
 							</a>
 							<button class="head-button">
 								<svg>
-									<use xlink:href="img/sprite.svg#chat"></use>
+									<use xlink:href="/img/sprite.svg#chat"></use>
 								</svg>
 							</button>
 							<div class="head-info">

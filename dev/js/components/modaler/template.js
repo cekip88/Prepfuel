@@ -1,7 +1,7 @@
 export default {
 	'modaler': (data = {}) => {
 		return `
-			<link rel="stylesheet" href="./components/modaler/style.css">
+			<link rel="stylesheet" href="/components/modaler/style.css">
 			<div class="modaler-cont" data-mouseup="closeModal">
 				<div class="modaler-inner" data-mouseup="cancelCloseModal">
 					<div class="modaler-header">

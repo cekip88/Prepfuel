@@ -7,13 +7,14 @@ class Front extends _front{
   constructor(){
     super();
     const _ = this;
-    G_Bus.on('navigate',_.navigate.bind(_))
+    G_Bus
+      .on('navigate',_.navigate.bind(_))
       .on('subnavigate',_.subnavigate.bind(_))
       .on('getSessions',_.getSessions.bind(_))
       .on('showHidden',_.showHidden.bind(_))
       .on('showForm',_.showForm.bind(_))
       .on('showTestLabelModal',_.showTestLabelModal.bind(_))
-	  G_Bus.on('setRoute',_.setRoute.bind(_))
+      .on('setRoute',_.setRoute.bind(_))
   }
 
   ascent(item,targetSelector,endCls){
