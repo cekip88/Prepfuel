@@ -12,19 +12,25 @@ class LoginPage extends _front{
 	async doLogin({item:form,event}){
 		const _ = this;
 		let formData = _.prepareForm(form);
-		let rawResponse = await fetch('/api/auth/login',{
+		if(!formData){return void 0}
+		let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/auth/login`,{
 			method: 'POST',
+			headers:{
+				"Content-Type": "application/json"
+			},
 			body: JSON.stringify(formData)
 		});
 		if( rawResponse.status == 200 ){
-			let response = rawResponse.json();
+			let response = await rawResponse.json();
 			if(response['status'] == 'success'){
 				_.storageSave('token',response['_token']);
 				_.setRouteFromString('test');
 			}
+			console.log(response);
 		}else{
-			_.setRouteFromString('test');
+			console.log(await rawResponse.text());
 		}
+		
 	}
 	async render(){
 		const _ = this;
@@ -34,8 +40,8 @@ class LoginPage extends _front{
 			_.markup(`
 				<div class="section">
 					<form data-submit="doLogin">
-						<g-input class="g-form-item" type="email" placeholder="Email" required></g-input>
-						<g-input class="g-form-item" type="password" placeholder="Password" required></g-input>
+						<g-input class="g-form-item"  name="email" type="email" placeholder="Email" required></g-input>
+						<g-input class="g-form-item" name='password' type="password" placeholder="Password" required></g-input>
 						<br><br>
 						<button class="button-blue">Submit</button>
 					</form>

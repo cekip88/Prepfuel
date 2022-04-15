@@ -162,6 +162,7 @@ class TestPage extends _front{
             <div class="test-inner middle">
               <p class="test-text"><span>Math formula</span></p>
               <p class="test-text"><span>Text of a question</span></p>
+              
               <ul class="answer-list">
                 <li class="answer-item active">
                   <button class="answer-button"><span class="answer-variant">a</span><span class="answer-value">Answer A</span></button>

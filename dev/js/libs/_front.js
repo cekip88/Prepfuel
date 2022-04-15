@@ -48,7 +48,6 @@ export class _front extends G_G{
 		let check = true;
 		let
 			inputs = form.querySelectorAll('.g-form-item');
-		console.log(inputs);
 		for(let input of inputs){
 			if(!input.doValidate()){
 				check = false;
@@ -142,7 +141,6 @@ export class _front extends G_G{
 				
 				if (_.components.has(name)) {
 					let comp = _.components.get(name);
-					console.log(comp);
 					resolve(comp);
 				}
 				const
