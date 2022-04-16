@@ -104,6 +104,7 @@ export class _front extends G_G{
 			currentPage = await _.getBlock({
 				name: route
 			});
+		await currentPage.asyncDefine();
 		currentPage.render();
 		_.saveRoute(route);
 	}

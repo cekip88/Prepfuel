@@ -23,16 +23,15 @@ class LoginPage extends _front{
 		if( rawResponse.status == 200 ){
 			let response = await rawResponse.json();
 			if(response['status'] == 'success'){
-				_.storageSave('token',response['_token']);
+				_.storageSave('token',response['token']);
 				_.setRouteFromString('test');
 			}
-			console.log(response);
 		}else{
-			console.log(await rawResponse.text());
+			throw new Error(await rawResponse.text());
 		}
 		
 	}
-	async render(){
+	async init(){
 		const _ = this;
 		_.header = await _.getBlock({name:'header'},'blocks');
 		_.fillPage([
@@ -48,6 +47,9 @@ class LoginPage extends _front{
 				</div>
 			`),
 		]);
+	}
+	async render(){
+	
 	}
 }
 export { LoginPage }

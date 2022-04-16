@@ -73,11 +73,12 @@ export default class G_G{
 	}
 	defineDefineMethod(props){
 		const _ = this;
-		return new Promise( (resolve) =>{
+		return new Promise( async (resolve) =>{
 			if(!( (props?.define ?? 'define') in _) ){
 				throw Error('G_G: No define method declared');
 			}else{
-				resolve(_[props?.define ?? 'define']());
+				let method = await _[props?.define ?? 'define']();
+				resolve(method);
 			}
 		})
 	}

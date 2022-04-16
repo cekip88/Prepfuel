@@ -6,20 +6,24 @@ class TestPage extends _front{
 	constructor() {
 		super();
 		const _ = this;
-		
-		console.log(_.components);
-
+	}
+	async asyncDefine(){
+		const _ = this;
+		_.set({
+			test: await _.model.getTest()
+		})
 	}
 	async define(){
 		const _ = this;
 		G_Bus
 			.on('changeSection',_.changeSection.bind(_))
-			.on('changeSection',_.render.bind(_));
+			.on('changeSection',_.render.bind(_))
+			.on('setWrongAnswer',_.setWrongAnswer.bind(_));
 		_.model = new TestModel();
 		_.set({
-			currentSection: 'welcome',
-			test: await _.model.getTest()
-		})
+			currentQuestion: 0,
+			currentSection: 'welcome'
+		});
 	}
 /*	showDirections({item,event}){
 		const _ = this;
@@ -126,6 +130,131 @@ class TestPage extends _front{
 			</div>
 		`);
 	}
+	setWrongAnswer({item,event}){
+		let answer = item.parentNode;
+		if(answer.hasAttribute('disabled')){
+			answer.removeAttribute('disabled')
+		}else{
+			answer.setAttribute('disabled',true);
+		}
+	}
+	setCorrectAnswer({item,event}){
+		let answer = item.parentNode;
+		if(answer.hasAttribute('disabled')){
+			answer.removeAttribute('disabled')
+		}else{
+			answer.setAttribute('disabled',true);
+		}
+	}
+	standartQuestion(){
+		const _ = this;
+		let tpl = `
+			<p class="test-text">
+				${_.test.questions[_._$.currentQuestion]['title']}
+			</p>
+			<p class="test-text">
+				${_.test.questions[_._$.currentQuestion]['description']}
+			</p>
+			<ul class="answer-list" data-click="chooseAnswer">
+		`;
+		let cnt = 1;
+		for(let answer of _.test.questions[_._$.currentQuestion]['answers']){
+			tpl+=
+			// active disabled
+			`<li class="answer-item ">
+				<button class="answer-button">
+					<span class="answer-variant">${cnt++}</span>
+					<span class="answer-value">${answer}</span>
+				</button>
+				<button class="answer-wrong" data-click="setWrongAnswer">
+					<svg>
+						<use xlink:href="img/sprite.svg#dismiss-circle"></use>
+					</svg>
+				</button>
+			</li>`;
+		}
+		tpl+=`
+			</ul>
+			<div class="test-label-block">
+				<div class="test-label-icon">
+					<svg>
+						<use xlink:href="img/sprite.svg#edit-transparent"></use>
+					</svg>
+				</div>
+				<div class="test-label-text">
+					<p>Note - nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt aliquip deserunt reprehenderit elit laborum.</p>
+				</div>
+				<button class="test-label-button" data-click="showTestLabelModal">
+					<svg>
+						<use xlink:href="img/sprite.svg#three-dots"></use>
+					</svg>
+				</button>
+				<div class="test-label-modal">
+					<button class="test-label-modal-button"><span>Edit</span></button>
+					<button class="test-label-modal-button"><span>Delete</span></button>
+				</div>
+			</div>
+			<div class="test-label-block">
+				<div class="test-label-icon">
+					<svg>
+						<use xlink:href="img/sprite.svg#lamp"></use>
+					</svg>
+				</div>
+				<div class="test-label-text">
+					<h5 class="test-label-title">
+						<span>Explanation to correct answer</span>
+					</h5>
+					<p>Nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt aliquip deserunt reprehenderit elit laborum.</p>
+				</div>
+			</div>
+		`;
+		return tpl;
+	}
+	questionsList(){
+		const _ = this;
+		let tpl =  `
+			<div class="col narrow">
+				<div class="block questions">
+				<h5 class="block-title small"><span>Questions</span></h5>
+				<div class="questions-cont">
+					<h6 class="questions-list-title"><span>Question 1 - ${_.test.questions.length}</span></h6>
+					<ul class="questions-list">
+		`;
+		let cnt = 1;
+		for(let question of _.test.questions){
+			tpl+=`
+				<li class="questions-item">
+					<span class="questions-number">${cnt++}</span>
+					<button class="questions-variant"></button>
+					<div class="questions-bookmark">
+						<svg>
+							<use xlink:href="img/sprite.svg#bookmark-transparent"></use>
+						</svg>
+						<svg>
+							<use xlink:href="img/sprite.svg#bookmark"></use>
+						</svg>
+					</div>
+				</li>
+			`;
+		}
+		
+  tpl+=`
+		</ul>
+		<button class="questions-button">
+			<svg>
+				<use xlink:href="img/sprite.svg#arrow-bottom"></use>
+			</svg>
+			<span>Scroll for more</span>
+			<svg>
+				<use xlink:href="img/sprite.svg#arrow-bottom"></use>
+			</svg>
+		</button>
+		</div>
+		</div>
+		</div>
+	`;
+		return tpl;
+	}
 	questionsCarcass(){
 		const _ = this;
 		return  _.markup(`
@@ -160,81 +289,7 @@ class TestPage extends _front{
               </button>
             </div>
             <div class="test-inner middle">
-              <p class="test-text"><span>Math formula</span></p>
-              <p class="test-text"><span>Text of a question</span></p>
-              
-              <ul class="answer-list">
-                <li class="answer-item active">
-                  <button class="answer-button"><span class="answer-variant">a</span><span class="answer-value">Answer A</span></button>
-                  <button class="answer-wrong">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#dismiss-circle"></use>
-                    </svg>
-                  </button>
-                </li>
-                <li class="answer-item" disabled>
-                  <button class="answer-button"><span class="answer-variant">b</span><span class="answer-value">Answer B</span></button>
-                  <button class="answer-wrong">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#dismiss-circle"></use>
-                    </svg>
-                  </button>
-                </li>
-                <li class="answer-item">
-                  <button class="answer-button"><span class="answer-variant">c</span><span class="answer-value">Answer C</span></button>
-                  <button class="answer-wrong">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#dismiss-circle"></use>
-                    </svg>
-                  </button>
-                </li>
-                <li class="answer-item">
-                  <button class="answer-button"><span class="answer-variant">d</span><span class="answer-value">Answer D</span></button>
-                  <button class="answer-wrong">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#dismiss-circle"></use>
-                    </svg>
-                  </button>
-                </li>
-                <li class="answer-item">
-                  <button class="answer-button"><span class="answer-variant">e</span><span class="answer-value">I don't know</span></button>
-                  <button class="answer-wrong">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#dismiss-circle"></use>
-                    </svg>
-                  </button>
-                </li>
-              </ul>
-              <div class="test-label-block">
-                <div class="test-label-icon">
-                  <svg>
-                    <use xlink:href="img/sprite.svg#edit-transparent"></use>
-                  </svg>
-                </div>
-                <div class="test-label-text">
-                  <p>Note - nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt aliquip deserunt reprehenderit elit laborum.</p>
-                </div>
-                <button class="test-label-button" data-click="showTestLabelModal">
-                  <svg>
-                    <use xlink:href="img/sprite.svg#three-dots"></use>
-                  </svg>
-                </button>
-                <div class="test-label-modal">
-                  <button class="test-label-modal-button"><span>Edit</span></button>
-                  <button class="test-label-modal-button"><span>Delete</span></button>
-                </div>
-              </div>
-              <div class="test-label-block">
-                <div class="test-label-icon">
-                  <svg>
-                    <use xlink:href="img/sprite.svg#lamp"></use>
-                  </svg>
-                </div>
-                <div class="test-label-text">
-                  <h5 class="test-label-title"><span>Explanation to correct answer</span></h5>
-                  <p>Nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt aliquip deserunt reprehenderit elit laborum.</p>
-                </div>
-              </div>
+              ${_.standartQuestion()}
             </div>
             <div class="test-footer">
               <button class="test-footer-button" data-click="changeSection" section="directions">
@@ -246,473 +301,7 @@ class TestPage extends _front{
             </div>
           </div>
         </div>
-        <div class="col narrow">
-          <div class="block questions">
-            <h5 class="block-title small"><span>Questions</span></h5>
-            <div class="questions-cont">
-              <h6 class="questions-list-title"><span>Question 1 - 10</span></h6>
-              <ul class="questions-list">
-                <li class="questions-item"><span class="questions-number">1</span>
-                  <button class="questions-variant">A</button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item checked"><span class="questions-number">2</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">3</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">4</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">5</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">6</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">7</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">8</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">9</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">10</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-              </ul>
-              <h6 class="questions-list-title"><span>Question 1 - 10</span></h6>
-              <ul class="questions-list">
-                <li class="questions-item"><span class="questions-number">1</span>
-                  <button class="questions-variant">A</button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item checked"><span class="questions-number">2</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">3</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">4</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">5</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">6</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">7</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">8</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">9</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">10</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-              </ul>
-              <h6 class="questions-list-title"><span>Question 1 - 10</span></h6>
-              <ul class="questions-list">
-                <li class="questions-item"><span class="questions-number">1</span>
-                  <button class="questions-variant">A</button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item checked"><span class="questions-number">2</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">3</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">4</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">5</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">6</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">7</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">8</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">9</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">10</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-              </ul>
-              <h6 class="questions-list-title"><span>Question 1 - 10</span></h6>
-              <ul class="questions-list">
-                <li class="questions-item"><span class="questions-number">1</span>
-                  <button class="questions-variant">A</button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item checked"><span class="questions-number">2</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">3</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">4</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">5</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">6</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">7</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">8</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">9</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-                <li class="questions-item"><span class="questions-number">10</span>
-                  <button class="questions-variant"></button>
-                  <div class="questions-bookmark">
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
-                    </svg>
-                    <svg>
-                      <use xlink:href="img/sprite.svg#bookmark"></use>
-                    </svg>
-                  </div>
-                </li>
-              </ul>
-              <button class="questions-button">
-                <svg>
-                  <use xlink:href="img/sprite.svg#arrow-bottom"></use>
-                </svg><span>Scroll for more</span>
-                <svg>
-                  <use xlink:href="img/sprite.svg#arrow-bottom"></use>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
+        ${_.questionsList()}
       </div>
      <div hidden>
         <form class="modal report" slot="modal-item" id="report">
@@ -767,11 +356,16 @@ class TestPage extends _front{
 			return _.questionsCarcass()
 		}
 	}
-	init(){
+	async init(){
 		const _ = this;
+		_._( ()=>{
+			console.log('questionChanged');
+		},['currentQuestion'])
 	}
+	
 	async render(){
 		const _ = this;
+		console.log(_._$.test);
 		_.header = await _.getBlock({name:'header'},'blocks');
 		_.fillPage([
 			_.markup(_.header.render()),
