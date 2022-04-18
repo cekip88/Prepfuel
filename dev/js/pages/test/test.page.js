@@ -10,40 +10,97 @@ class TestPage extends _front{
 	async asyncDefine(){
 		const _ = this;
 		_.set({
-			test: await _.model.getTest()
+			test: await _.model.getTest(),
+		});
+		_.set({
+			currentQuestionId: _._$.test.questions[0].id,
+		})
+		_.set({
+			currentQuestion: _._$.test.questions[0],
 		})
 	}
 	async define(){
 		const _ = this;
 		G_Bus
 			.on('changeSection',_.changeSection.bind(_))
-			.on('changeSection',_.render.bind(_))
-			.on('setWrongAnswer',_.setWrongAnswer.bind(_));
+			//.on('changeSection',_.render.bind(_))
+			.on('setWrongAnswer',_.setWrongAnswer.bind(_))
+			.on('setCorrectAnswer',_.setCorrectAnswer.bind(_))
+			.on('changeQuestion',_.changeQuestion.bind(_))
+			.on('jumpToQuestion',_.jumpToQuestion.bind(_))
+			.on('setBookmark',_.setBookmark.bind(_))
+			.on('setNote',_.setNote.bind(_))
 		_.model = new TestModel();
+		_.storageTest = _.model.getTestFromStorage();
+		_.aplahabet = ['A','B','C','D','E',"F","G"];
 		_.set({
-			currentQuestion: 0,
+			
 			currentSection: 'welcome'
 		});
+		
+		
 	}
-/*	showDirections({item,event}){
-		const _ = this;
-		_._$.currentSection = 'directions';
-	}
-		get currentSection(){
-		const _ = this;
-		_._$.session = _._$.currentSection;
-		return _._$.test.sections[_._$.currentSection];
-	}*/
 	get test(){
 		const _ = this;
 		return _._$.test;
 	}
-	changeSection({item,event}){
+	
+	
+	fillCheckedAnswers(){
+		const _ = this;
+		let test = _.model.getTestFromStorage();
+		for(let t in test){
+			let currentTestObj = test[t],
+			questionId= currentTestObj['id'];
+			if(currentTestObj['bookmarked']) _.f(`.questions-list .questions-item[data-question-id="${questionId}"]`).classList.add('checked');
+			if(currentTestObj['answer']) _.f(`.questions-list .questions-item[data-question-id="${questionId}"] .questions-variant`).textContent = currentTestObj['answer'].toUpperCase();
+			
+		}
+	}
+	
+	setBookmark({item,event}){
+		const _ = this;
+		let bookmarked = item.classList.contains('active');
+		_.model.saveTestToStorage({
+			id: _._$.currentQuestion['id'],
+			bookmarked: !bookmarked
+		});
+		item.classList.toggle('active');
+		_.f(`.questions-list .questions-item[data-question-id="${_._$.currentQuestion['id']}"]`).classList.toggle('checked');
+	}
+	async setNote({item:form,event}){
+		const _ = this;
+		let formData = await _.formDataCapture(form);
+		_.model.saveTestToStorage({
+			id: _._$.currentQuestion['id'],
+			note: formData['text']
+		})
+	}
+	async changeSection({item,event}){
 		const _ = this;
 		let section = item.getAttribute('section');
 		_._$.currentSection = section;
+		_.renderPart({part:'body',content: await _.flexible()});
+		if(section == 'questions'){
+			_.fillCheckedAnswers()
+		}
 	}
-	
+	jumpToQuestion({item,event}){
+		const _ = this;
+		let
+			currentQuestionPos = _.model.currentPos(_._$.currentQuestion['id']),
+			jumpQuestionPos = _.model.currentPos(item.parentNode.getAttribute('data-question-id'));
+		if(currentQuestionPos == jumpQuestionPos) return;
+		_._$.currentQuestion = _.test['questions'][jumpQuestionPos];
+	}
+	changeQuestion({ item, event }){
+		const _ = this;
+		let index = _.model.currentPos(_._$.currentQuestion['id']);
+		if( index == _.test.questions.length-1){
+			return void 0;
+		}
+		_._$.currentQuestion= _.test['questions'][index+1];
+	}
 	welcomeHeader(){
 		const _ = this;
 		return `
@@ -67,9 +124,9 @@ class TestPage extends _front{
 		`;
 	}
 	
-	directionsHeader(){
+	async directionsHeader(){
 		const _ = this;
-		return `
+		return new Promise( (resolve) =>{resolve(`
 			<div class="section">
 				<div class="section-header">
 					<h1 class="title">${_.test['sections']['directions'].headerTitle}</h1>
@@ -77,12 +134,12 @@ class TestPage extends _front{
 					<button class="button-white"><span>Finish this section</span></button>
 				</div>
 			</div>
-		`;
+		`)});
 	}
-	directionsCarcas(){
+	async directionsCarcas(){
 		const _ = this;
 		return _.markup(`
-			${_.directionsHeader()}
+			${await _.directionsHeader()}
 			<div class="section row">
 				<div class="block test-block">
 					<div class="test-header">
@@ -103,7 +160,7 @@ class TestPage extends _front{
 					</div>
 				</div>
 			</div>
-		`);
+		`,false);
 	}
 
 	
@@ -128,7 +185,7 @@ class TestPage extends _front{
 					</div>
 				</div>
 			</div>
-		`);
+		`,false);
 	}
 	setWrongAnswer({item,event}){
 		let answer = item.parentNode;
@@ -139,62 +196,25 @@ class TestPage extends _front{
 		}
 	}
 	setCorrectAnswer({item,event}){
-		let answer = item.parentNode;
-		if(answer.hasAttribute('disabled')){
-			answer.removeAttribute('disabled')
-		}else{
-			answer.setAttribute('disabled',true);
-		}
-	}
-	standartQuestion(){
 		const _ = this;
-		let tpl = `
-			<p class="test-text">
-				${_.test.questions[_._$.currentQuestion]['title']}
-			</p>
-			<p class="test-text">
-				${_.test.questions[_._$.currentQuestion]['description']}
-			</p>
-			<ul class="answer-list" data-click="chooseAnswer">
-		`;
-		let cnt = 1;
-		for(let answer of _.test.questions[_._$.currentQuestion]['answers']){
-			tpl+=
-			// active disabled
-			`<li class="answer-item ">
-				<button class="answer-button">
-					<span class="answer-variant">${cnt++}</span>
-					<span class="answer-value">${answer}</span>
-				</button>
-				<button class="answer-wrong" data-click="setWrongAnswer">
-					<svg>
-						<use xlink:href="img/sprite.svg#dismiss-circle"></use>
-					</svg>
-				</button>
-			</li>`;
-		}
-		tpl+=`
-			</ul>
-			<div class="test-label-block">
-				<div class="test-label-icon">
-					<svg>
-						<use xlink:href="img/sprite.svg#edit-transparent"></use>
-					</svg>
-				</div>
-				<div class="test-label-text">
-					<p>Note - nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt aliquip deserunt reprehenderit elit laborum.</p>
-				</div>
-				<button class="test-label-button" data-click="showTestLabelModal">
-					<svg>
-						<use xlink:href="img/sprite.svg#three-dots"></use>
-					</svg>
-				</button>
-				<div class="test-label-modal">
-					<button class="test-label-modal-button"><span>Edit</span></button>
-					<button class="test-label-modal-button"><span>Delete</span></button>
-				</div>
-			</div>
-			<div class="test-label-block">
+		console.log('here');
+		let
+			answer = item.parentNode,
+			ul = answer.parentNode,
+			answerVariant = item.querySelector('.answer-variant').textContent,
+			questionId =  parseInt(answer.getAttribute('data-question-id'));
+		if(ul.querySelector('.active')) ul.querySelector('.active').classList.remove('active');
+		answer.classList.add('active');
+		_.f(`.questions-list .questions-item[data-question-id="${questionId}"] .questions-variant`).textContent =  answerVariant.toUpperCase();
+		_.model.saveTestToStorage({
+			id: questionId,
+			answer: answerVariant
+		});
+		
+	}
+	explanationAnswer(){
+		const _ = this;
+		return `<div class="test-label-block">
 				<div class="test-label-icon">
 					<svg>
 						<use xlink:href="img/sprite.svg#lamp"></use>
@@ -206,7 +226,61 @@ class TestPage extends _front{
 					</h5>
 					<p>Nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt aliquip deserunt reprehenderit elit laborum.</p>
 				</div>
-			</div>
+			</div>`;
+	}
+	note(){
+		const _ = this;
+		return `<div class="test-label-block">
+				<div class="test-label-icon">
+					<svg>
+						<use xlink:href="img/sprite.svg#edit-transparent"></use>
+					</svg>
+				</div>
+				<div class="test-label-text">
+					<p>
+						${_.storageTest[_._$.currentQuestion['id'].note]}
+					</p>
+				</div>
+				<button class="test-label-button" data-click="showTestLabelModal">
+					<svg>
+						<use xlink:href="img/sprite.svg#three-dots"></use>
+					</svg>
+				</button>
+				<div class="test-label-modal">
+					<button class="test-label-modal-button"><span>Edit</span></button>
+					<button class="test-label-modal-button"><span>Delete</span></button>
+				</div>
+			</div>`;
+	}
+	standartQuestion(){
+		const _ = this;
+		let tpl = `
+			<p class="test-text">
+				${_._$.currentQuestion['title']}
+			</p>
+			<p class="test-text">
+				${_._$.currentQuestion['description']}
+			</p>
+			<ul class="answer-list">
+		`;
+		for(let answer in  _._$.currentQuestion['answers']){
+			tpl+=
+			// active disabled
+			`<li class="answer-item " data-question-id="${_._$.currentQuestion['id']}">
+				<button class="answer-button" data-click="setCorrectAnswer">
+					<span class="answer-variant">${answer}</span>
+					<span class="answer-value">${_._$.currentQuestion['answers'][answer]}</span>
+				</button>
+				<button class="answer-wrong" data-click="setWrongAnswer">
+					<svg>
+						<use xlink:href="img/sprite.svg#dismiss-circle"></use>
+					</svg>
+				</button>
+			</li>`;
+		}
+		tpl+=`
+			</ul>
+			${ _.storageTest[_._$.currentQuestion['id']] ? (_.storageTest[_._$.currentQuestion['id']].note ? _.note() : ''): ''}
 		`;
 		return tpl;
 	}
@@ -219,13 +293,13 @@ class TestPage extends _front{
 				<div class="questions-cont">
 					<h6 class="questions-list-title"><span>Question 1 - ${_.test.questions.length}</span></h6>
 					<ul class="questions-list">
-		`;
+	`;
 		let cnt = 1;
 		for(let question of _.test.questions){
 			tpl+=`
-				<li class="questions-item">
+				<li class="questions-item" data-question-id="${question.id}">
 					<span class="questions-number">${cnt++}</span>
-					<button class="questions-variant"></button>
+					<button class="questions-variant" data-click="jumpToQuestion"></button>
 					<div class="questions-bookmark">
 						<svg>
 							<use xlink:href="img/sprite.svg#bookmark-transparent"></use>
@@ -237,28 +311,27 @@ class TestPage extends _front{
 				</li>
 			`;
 		}
-		
-  tpl+=`
-		</ul>
-		<button class="questions-button">
-			<svg>
-				<use xlink:href="img/sprite.svg#arrow-bottom"></use>
-			</svg>
-			<span>Scroll for more</span>
-			<svg>
-				<use xlink:href="img/sprite.svg#arrow-bottom"></use>
-			</svg>
-		</button>
-		</div>
-		</div>
-		</div>
-	`;
+		tpl+=`
+			</ul>
+			<button class="questions-button">
+				<svg>
+					<use xlink:href="img/sprite.svg#arrow-bottom"></use>
+				</svg>
+				<span>Scroll for more</span>
+				<svg>
+					<use xlink:href="img/sprite.svg#arrow-bottom"></use>
+				</svg>
+			</button>
+			</div>
+			</div>
+			</div>
+		`;
 		return tpl;
 	}
-	questionsCarcass(){
+	async questionsCarcass(){
 		const _ = this;
 		return  _.markup(`
-	   ${_.directionsHeader()}
+	   ${await _.directionsHeader()}
      <div class="section row">
         <div class="col wide">
           <div class="block test-block">
@@ -266,13 +339,14 @@ class TestPage extends _front{
               <h5 class="block-title test-title">
                 <span>Question 1 of ${_.test.questions.length}</span>
               </h5>
-              <button class="test-header-button active">
+              <button class="test-header-button bookmarked-button" data-click="setBookmark">
                 <svg>
                   <use xlink:href="img/sprite.svg#bookmark-transparent"></use>
                 </svg>
                 <svg>
                   <use xlink:href="img/sprite.svg#bookmark"></use>
-                </svg><span>Bookmark</span>
+                </svg>
+                <span>Bookmark</span>
               </button>
               <button class="test-header-button active" data-click="showForm" data-id="note">
                 <svg>
@@ -295,9 +369,9 @@ class TestPage extends _front{
               <button class="test-footer-button" data-click="changeSection" section="directions">
                 <span>Directions</span>
               </button>
-              <a class="button" href="./test-question-2.html">
-                <span>Skip to questions 2</span>
-              </a>
+              <button class="button" data-click="changeQuestion">
+                <span>Skip to questions <b class="skip-to-question">2</b></span>
+              </button>
             </div>
           </div>
         </div>
@@ -333,16 +407,16 @@ class TestPage extends _front{
             <button class="button-blue"><span>Submit Issue</span></button>
           </div>
         </form>
-        <form class="modal note" slot="modal-item" id="note">
+        <form class="modal note" slot="modal-item" id="note" data-submit="setNote">
           <h6 class="modal-title"><span>Note</span></h6>
-          <textarea class="modal-area"></textarea>
+          <textarea class="modal-area" name="text"></textarea>
           <div class="modal-row end">
             <button class="button" type="button" data-click="closeModal"><span>Cancel</span></button>
             <button class="button-blue"><span>Save</span></button>
           </div>
         </form>
       </div>
-		`);
+		`,false);
 	}
 	flexible(){
 		const _ = this;
@@ -353,23 +427,37 @@ class TestPage extends _front{
 			return _.directionsCarcas()
 		}
 		if(_._$.currentSection == 'questions'){
-			return _.questionsCarcass()
+			return _.questionsCarcass();
 		}
 	}
 	async init(){
 		const _ = this;
 		_._( ()=>{
-			console.log('questionChanged');
-		},['currentQuestion'])
+			let cont = _.f('.test-inner.middle');
+			if(!cont) return;
+			_.clear(cont);
+			let questionTpl = _.standartQuestion();
+		
+			cont.append(
+				_.markup(questionTpl)
+			);
+			_.f('.bookmarked-button').classList.remove('active')
+			let currentTest = _.storageTest[_._$.currentQuestion['id']];
+			if(currentTest){
+				if(currentTest['bookmarked']){
+					_.f('.bookmarked-button').classList.add('active')
+				}
+			}
+			let nextQuestionPos = _.model.currentPos(_._$.currentQuestion['id'])+2;
+			_.f('.skip-to-question').textContent = nextQuestionPos;
+		},['currentQuestion']);
 	}
-	
 	async render(){
 		const _ = this;
-		console.log(_._$.test);
 		_.header = await _.getBlock({name:'header'},'blocks');
-		_.fillPage([
-			_.markup(_.header.render()),
-			_.flexible()
+		_.fillPartsPage([
+			{part:'header', content:_.markup(_.header.render(),false)},
+			{part:'body', content: await _.flexible()}
 		]);
 	}
 }

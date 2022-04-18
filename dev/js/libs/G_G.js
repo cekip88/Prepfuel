@@ -113,7 +113,8 @@ export default class G_G{
 			fragment.append(...parser.body.children);
 			return fragment;
 		}
-		return parser.body.children;
+		
+		return [...parser.body.children];
 	}
 	markupElement(domStr){
 		const _ = this;
@@ -160,7 +161,6 @@ export default class G_G{
 				if(~props.indexOf(innerProp)){
 					fnObj[innerProp]();
 				}else if(innerProp === '')	{
-
 					fnObj[innerProp]();
 				}
 			}

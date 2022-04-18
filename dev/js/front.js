@@ -1,7 +1,7 @@
 import { G_Bus } from "./libs/G_Control.js";
 import { _front } from "./libs/_front.js";
 import GInput from "./components/input/input.component.js";
-import GSelect from "./components/select/select.component.js";
+import t from "./components/select/select.component.js";
 import Modaler from "./components/modaler/modaler.component.js";
 class Front extends _front{
   constructor(){

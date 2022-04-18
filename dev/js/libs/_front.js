@@ -7,6 +7,7 @@ export class _front extends G_G{
     _.componentName = 'front';
     _.libs = new Map();
     _.components = new Map();
+		_.parts = {}
   }
 	define(){}
 	
@@ -104,7 +105,7 @@ export class _front extends G_G{
 			currentPage = await _.getBlock({
 				name: route
 			});
-		await currentPage.asyncDefine();
+		if('asyncDefine' in currentPage)	await currentPage.asyncDefine();
 		currentPage.render();
 		_.saveRoute(route);
 	}
@@ -167,7 +168,37 @@ export class _front extends G_G{
 				gSet.append(part);
 			}
 		}
-		
+	}
+	fillPartsPage(parts){
+		/* Рендер страницы компонентами */
+		const _ = this;
+		//_.parts = parts;
+		let
+			gSet = _.f('#g-set')
+		_.clear(gSet);
+		for(let part of parts){
+			_.parts[part['part']] = part;
+			gSet.append(...part['content']);
+		}
+	}
+	renderPart(partObj){
+		const _ = this;
+		if(!(partObj['part'] in _.parts)) return;
+		let template = document.createElement('template');
+		template.classList.add('g-temp');
+		_.parts[partObj['part']]['content'].forEach( (p,i,arr)=>{
+			p.before(template);
+			p.remove();
+		});
+		_.parts[partObj['part']]['content'] = [];
+		let posToAppend = template;
+		partObj['content'].forEach( p =>{
+			posToAppend.after(p);
+			posToAppend = p;
+		});
+		_.parts[partObj['part']] = partObj;
+		template.remove();
+		template = null;
 	}
   init(){
     const _ = this;

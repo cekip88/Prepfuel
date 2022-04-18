@@ -2,25 +2,33 @@ export default  class TestModel{
 	async getTest(testObj){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/practice-tests/625993cc6b2cfe252e6b7fcc`,{
+			let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/practice-tests/625d52da743ff0ab14eccb23`,{
 				method: 'GET',
 				headers:{
 					"Authorization": localStorage.getItem('token'),
 					"Content-Type": "application/json"
 				}
 			});
-			
-			
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
-					_.test = response['test']
+					_.test = response['test'];
+					console.log(_.test);
 					resolve(_.test);
 				}
 			}else{
 				_.logout(rawResponse);
 			}
 		});
+	}
+	currentQuestion(id){
+		const _ = this;
+		let c =  _.test.questions.filter(quest => quest['id'] == id);
+		if(c.length) return c;
+	}
+	currentPos(id){
+		const _ = this;
+		return _.test.questions.findIndex(quest => quest['id'] == id);
 	}
 	logout(response){
 		if(response.status == 401){
@@ -33,11 +41,11 @@ export default  class TestModel{
 		return localStorage.getItem('test') ? true : false;
 	}
 	isEmpty(obj){
-		return !!Object.keys({}).length;
+		return Object.keys(obj).length ? false : true;
 	}
 
 	
-	async getTestFromStorage(){
+	getTestFromStorage(){
 		const _ = this;
 		if(!_.hasTestFromStorage()) return {};
 		let test;
@@ -54,8 +62,18 @@ export default  class TestModel{
 		if(_.isEmpty(test)){
 			test[testData['id']] = testData;
 		}else{
-			for(let t in test){
-				test[ testData['id'] ] = testData;
+			if(testData['id'] in test){
+				for(let t in test){
+					let testId = testData['id'];
+					if(testId == test[t]['id']){
+						for(let rawT in testData){
+							test[t][rawT] = testData[rawT];
+						}
+						break;
+					}
+				}
+			}else{
+				test[testData['id']] = testData;
 			}
 		}
 		localStorage.setItem('test',JSON.stringify(test));
