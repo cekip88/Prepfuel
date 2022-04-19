@@ -2,7 +2,7 @@ export default  class TestModel{
 	async getTest(testObj){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/practice-tests/625d52da743ff0ab14eccb23`,{
+			let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/practice-tests/625ea1cde2a2f10be82b6bc0`,{
 				method: 'GET',
 				headers:{
 					"Authorization": localStorage.getItem('token'),
@@ -23,12 +23,36 @@ export default  class TestModel{
 	}
 	currentQuestion(id){
 		const _ = this;
-		let c =  _.test.questions.filter(quest => quest['id'] == id);
+		let c =  _.test['sections']['questionPages'].filter(quest => quest['pageId'] == id);
 		if(c.length) return c;
+	}
+	questionPos(pos){
+		const _ = this;
+		let outPos = 1;
+		for(let i=0;i < pos;i++){
+			outPos+= _.test['sections']['questionPages'][i]['questions'].length;
+		}
+		return outPos;
 	}
 	currentPos(id){
 		const _ = this;
-		return _.test.questions.findIndex(quest => quest['id'] == id);
+		let index = -1;
+		_.test['sections']['questionPages'].forEach((page,i) => {
+			page['questions'].forEach(quest =>{
+				if( quest['id'] == id ) index = page['pageId']-1;
+			});
+		});
+		if(index < 0){
+			_.test['sections']['questionPages'].forEach((page,i) => {
+				if(page['pageId'] == id) index = i;
+			});
+		}
+		return index;
+/*		let c = _.test['sections']['questionPages'].findIndex(quest => {
+			return quest['questions'].findIndex(q => q['id']== id )
+		});
+		return c;*/
+		return _.test['sections']['questionPages'].findIndex(quest => quest['pageId'] == id);
 	}
 	logout(response){
 		if(response.status == 401){
