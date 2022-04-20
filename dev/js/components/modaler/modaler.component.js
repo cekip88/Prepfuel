@@ -11,6 +11,7 @@ export default class GModaler extends GComponent {
 		_.componentName = 'modaler';
 		G_Bus
 			.on('showModal',_.showModal.bind(_))
+			.on('closeModal',_.closeModal());
 		_.on('closeModal',_.closeModal())
 		_.on('cancelCloseModal',_.cancelCloseModal())
 		
@@ -34,11 +35,9 @@ export default class GModaler extends GComponent {
 	}
 	showModal(modalData){
 		const _ = this;
-		
 		let targetContent = document.querySelector(modalData['target']);
 		targetContent.classList.add('modaler-content');
 		_.targetContentParent = targetContent.parentNode;
-		
 		_.modalCont.classList.add('active');
 		_.append(targetContent);
 	}
@@ -60,9 +59,6 @@ export default class GModaler extends GComponent {
 		_.mainTpl = _.getTpl('modaler');
 		
 		_.setContent(_.mainTpl);
-		
-		
-		
 	}
 	disconnectedCallback(){
 	}

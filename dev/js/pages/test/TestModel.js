@@ -2,7 +2,7 @@ export default  class TestModel{
 	async getTest(testObj){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/practice-tests/625ea1cde2a2f10be82b6bc0`,{
+			let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/practice-tests/625ff2450ecc658cfae4c1f7`,{
 				method: 'GET',
 				headers:{
 					"Authorization": localStorage.getItem('token'),
@@ -13,7 +13,7 @@ export default  class TestModel{
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					_.test = response['test'];
-					console.log(_.test);
+					_.catchQuestions(_.test)
 					resolve(_.test);
 				}
 			}else{
@@ -21,11 +21,35 @@ export default  class TestModel{
 			}
 		});
 	}
+	
+	get firstQuestion(){
+		const _ = this;
+		return _.test['sections']['questionPages'][0];
+	}
+	
+	
+	catchQuestions(test){
+		const _ = this;
+		_.questions = {};
+		test['sections']['questionPages'].forEach((page,i) => {
+			page['questions'].forEach(quest =>{
+				_.questions[quest['id']] = quest;
+			});
+		});
+	}
 	currentQuestion(id){
 		const _ = this;
 		let c =  _.test['sections']['questionPages'].filter(quest => quest['pageId'] == id);
 		if(c.length) return c;
 	}
+	innerQuestion(id){
+		const _ = this;
+		return _.questions[id];
+	}
+	
+	
+	
+	
 	questionPos(pos){
 		const _ = this;
 		let outPos = 1;
@@ -48,11 +72,6 @@ export default  class TestModel{
 			});
 		}
 		return index;
-/*		let c = _.test['sections']['questionPages'].findIndex(quest => {
-			return quest['questions'].findIndex(q => q['id']== id )
-		});
-		return c;*/
-		return _.test['sections']['questionPages'].findIndex(quest => quest['pageId'] == id);
 	}
 	logout(response){
 		if(response.status == 401){
@@ -91,6 +110,9 @@ export default  class TestModel{
 					let testId = testData['id'];
 					if(testId == test[t]['id']){
 						for(let rawT in testData){
+							if(!testData[rawT]){
+								delete test[t][rawT];
+							}
 							test[t][rawT] = testData[rawT];
 						}
 						break;
@@ -102,45 +124,5 @@ export default  class TestModel{
 		}
 		localStorage.setItem('test',JSON.stringify(test));
 	}
-	/*
-	*
-	*
-	*
-	* */
-}
 
-/*
-* return new Promise(resolve =>{
-			resolve({
-				id: 1,
-				time: 20,
-				title:'',
-				description:'',
-				sections:{
-					welcome:{
-						headerTitle: 'Practice Test - Section Name',
-						innerTitle: 'Welcome to Practice Test - Section Name',
-						innerDescription:
-							`This section has 40 questions and is 20 minutes total.
-							Once you start timer, you cannot pause this section.`
-					},
-					directions:{
-						headerTitle: 'Directions test header',
-						innerTitle: 'Test directions',
-						innerDescription: 'This is description for test'
-					}
-				},
-				questions: [
-					{
-						id:1,
-						answers:{
-							a: 'Test answer a',
-							b: 'Test answer a',
-							c: 'Test answer a',
-							d: 'Test answer a',
-						}
-					}
-				],
-			})
-		});
-* */
+}

@@ -2,7 +2,7 @@ import { G_Bus } from "./libs/G_Control.js";
 import { _front } from "./libs/_front.js";
 import GInput from "./components/input/input.component.js";
 import t from "./components/select/select.component.js";
-import Modaler from "./components/modaler/modaler.component.js";
+
 class Front extends _front{
   constructor(){
     super();
@@ -12,7 +12,6 @@ class Front extends _front{
       .on('subnavigate',_.subnavigate.bind(_))
       .on('getSessions',_.getSessions.bind(_))
       .on('showHidden',_.showHidden.bind(_))
-      .on('showForm',_.showForm.bind(_))
       .on('showTestLabelModal',_.showTestLabelModal.bind(_))
       .on('setRoute',_.setRoute.bind(_))
   }
@@ -54,14 +53,7 @@ class Front extends _front{
       target = btn.nextElementSibling;
     target.classList.toggle('active')
   }
-  showForm(clickData){
-    let btn = clickData.item,
-      id = btn.getAttribute('data-id');
-    G_Bus.trigger('showModal',{
-      type: 'html',
-      target: `#${id}`
-    });
-  }
+ 
 
 
   showHidden(clickData){

@@ -78,8 +78,9 @@ export class _front extends G_G{
 	formDataCapture(form){
 		return new Promise(function (resolve) {
 			let
-			outData = {},
+				outData = {},
 			formElements = form.elements;
+			if(!formElements) return;
 			for(let element of formElements){
 				if(element.type === 'radio'){
 					if (element.checked){
