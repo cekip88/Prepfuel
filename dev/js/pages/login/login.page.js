@@ -4,10 +4,9 @@ import { _front } from "../../libs/_front.js";
 class LoginPage extends _front{
 	define(){
 		const _ = this;
-		_.set({
-			test: 'ss'
-		});
-		G_Bus.on('doLogin',_.doLogin.bind(_))
+		_.componentName = 'LoginPage';
+		G_Bus
+			.on(_,'doLogin')
 	}
 	async doLogin({item:form,event}){
 		const _ = this;
@@ -38,7 +37,7 @@ class LoginPage extends _front{
 			_.markup(_.header.render()),
 			_.markup(`
 				<div class="section">
-					<form data-submit="doLogin">
+					<form data-submit="${_.componentName}:doLogin">
 						<g-input class="g-form-item"  name="email" type="email" placeholder="Email" required></g-input>
 						<g-input class="g-form-item" name='password' type="password" placeholder="Password" required></g-input>
 						<br><br>

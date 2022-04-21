@@ -1,10 +1,14 @@
 import { G_Bus } from "./G_Bus.js";
 let triggerWithEvent = (data,currentAction) =>{
 	if (!data['item'])  return;
-	let rawActions = data['item'].dataset[currentAction].split(';');
-	rawActions.forEach( (action)=>{
-		G_Bus.trigger(action,data);
-	});
+	let
+		rawActions = data['item'].dataset[currentAction].split(';');
+	for(let rAction of rawActions){
+		let rawAction = rAction.split(':'),
+			component = rawAction[0],
+			action = rawAction[1];
+		G_Bus.trigger(component,action,data);
+	}
 }
 class _G_Control{
 	constructor(params={}){

@@ -2,7 +2,7 @@ export default  class TestModel{
 	async getTest(testObj){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/practice-tests/625ff2450ecc658cfae4c1f7`,{
+			let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/practice-tests/626027a7e604e5c1a0ec067e`,{
 				method: 'GET',
 				headers:{
 					"Authorization": localStorage.getItem('token'),

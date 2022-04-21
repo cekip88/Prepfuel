@@ -18,18 +18,20 @@ class TestPage extends _front{
 	}
 	async define(){
 		const _ = this;
+		_.componentName = 'TestPage';
 		G_Bus
-			.on('changeSection',_.changeSection.bind(_))
-			.on('setWrongAnswer',_.setWrongAnswer.bind(_))
-			.on('setCorrectAnswer',_.setCorrectAnswer.bind(_))
-			.on('changeQuestion',_.changeQuestion.bind(_))
-			.on('jumpToQuestion',_.jumpToQuestion.bind(_))
-			.on('saveBookmark',_.saveBookmark.bind(_))
-			.on('saveNote',_.saveNote.bind(_))
-			.on('changeInnerQuestionId',_.changeInnerQuestionId.bind(_))
-			.on('showForm',_.showForm.bind(_))
-			.on('deleteNote',_.deleteNote.bind(_))
-			.on('editNote',_.editNote.bind(_))
+			.on(_,'changeSection')
+			.on(_,'setWrongAnswer')
+			.on(_,'setCorrectAnswer')
+			.on(_,'changeQuestion')
+			.on(_,'jumpToQuestion')
+			.on(_,'saveBookmark')
+			.on(_,'saveNote')
+			.on(_,'changeInnerQuestionId')
+			.on(_,'showForm')
+			.on(_,'deleteNote')
+			.on(_,'editNote')
+			.on(_,'showTestLabelModal')
 		_.model = new TestModel();
 		_.storageTest = _.model.getTestFromStorage();
 		_.types = {
@@ -60,12 +62,17 @@ class TestPage extends _front{
 		}
 		return outPos;
 	}
-	
+
+	showTestLabelModal(clickData){
+		let btn = clickData.item,
+			target = btn.nextElementSibling;
+		target.classList.toggle('active')
+	}
 	showForm(clickData){
 		let btn = clickData.item,
 		id = btn.getAttribute('data-id');
 		this.f(`#${id}`).reset();
-		G_Bus.trigger('showModal',{
+		G_Bus.trigger('modaler','showModal',{
 			type: 'html',
 			target: `#${id}`
 		});
@@ -77,7 +84,7 @@ class TestPage extends _front{
 		let questionId= parseInt(item.getAttribute('data-question-id'));
 		let note = _.storageTest[questionId]['note'];
 		
-		G_Bus.trigger('showModal',{
+		G_Bus.trigger('modaler','showModal',{
 			type:'html',
 			target:'#note'
 		});
@@ -142,8 +149,7 @@ class TestPage extends _front{
 			}
 		}
 		answerList.after(_.markup(_.noteTpl(question)));
-		G_Bus.trigger('closeModal');
-		
+		G_Bus.trigger('modaler','closeModal');
 		// Show active note button
 		_.f(`.note-button[data-question-id="${question['id']}"]`).classList.add('active');
 		
@@ -194,7 +200,6 @@ class TestPage extends _front{
 		const _ = this;
 		let dir = item.getAttribute('data-dir');
 		let index = _.currentPos;
-		
 		if(dir == 'prev'){
 			if( index == 0){
 				return void 0;
@@ -226,10 +231,10 @@ class TestPage extends _front{
 	questionFooter(){
 		return `
 		<div class="test-footer">
-			<button class="test-footer-button dir-button" data-click="changeSection" section="directions">
+			<button class="test-footer-button dir-button" data-click="${this.componentName}:changeSection" section="directions">
 				<span>Directions</span>
 			</button>
-			<button class="button skip-to-question-button" data-click="changeQuestion">
+			<button class="button skip-to-question-button" data-click="${this.componentName}:changeQuestion">
 				<span><em class="skip-to-question-title">Skip to questions</em> <b class="skip-to-question">2</b></span>
 			</button>
 		</div>`;
@@ -261,7 +266,7 @@ class TestPage extends _front{
 						</p>
 					</div>
 					<div class="test-footer">
-						<button class="button-blue"  data-click="changeSection" section="questions">
+						<button class="button-blue"  data-click="${this.componentName}:changeSection" section="questions">
 							<span>Continue to first question</span>
 						</button>
 					</div>
@@ -294,7 +299,7 @@ class TestPage extends _front{
 						</p>
 					</div>
 					<div class="test-footer">
-						<button class="button-blue" type="button" data-click="changeSection" section="directions">
+						<button class="button-blue" type="button" data-click="${this.componentName}:changeSection" section="directions">
 							<span>Let’s go, start the timer!</span>
 						</button>
 					</div>
@@ -341,23 +346,23 @@ class TestPage extends _front{
           <h6 class="modal-title"><span>Description of issue</span></h6>
           <textarea class="modal-area"></textarea>
           <div class="modal-row end">
-            <button class="button" type="button" data-click="closeModal"><span>Cancel</span></button>
+            <button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
             <button class="button-blue"><span>Submit Issue</span></button>
           </div>
         </form>
-        <form class="modal note"  slot="modal-item" id="note" data-submit="saveNote">
+        <form class="modal note"  slot="modal-item" id="note" data-submit="${this.componentName}:saveNote">
           <h6 class="modal-title"><span>Note</span></h6>
           <textarea class="modal-area" name="text"></textarea>
           <div class="modal-row end">
-            <button class="button" type="button" data-click="closeModal"><span>Cancel</span></button>
-            <button class="button-blue" data-click="saveNote"><span>Save</span></button>
+            <button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
+            <button class="button-blue" data-click="${this.componentName}:saveNote"><span>Save</span></button>
           </div>
         </form>
       </div>
 		`,false);
 	}
 	/* Cacrass templates*/
-	
+
 	setWrongAnswer({item,event}){
 		let answer = item.parentNode;
 		if(answer.hasAttribute('disabled')){
@@ -419,14 +424,14 @@ class TestPage extends _front{
 						${_.storageTest[question['id']].note}
 					</p>
 				</div>
-				<button class="test-label-button" data-click="showTestLabelModal">
+				<button class="test-label-button" data-click="${this.componentName}:showTestLabelModal">
 					<svg>
 						<use xlink:href="#three-dots"></use>
 					</svg>
 				</button>
 				<div class="test-label-modal">
-					<button class="test-label-modal-button" data-click="editNote" data-question-id="${question['id']}"><span>Edit</span></button>
-					<button class="test-label-modal-button" data-click="deleteNote" data-question-id="${question['id']}"><span>Delete</span></button>
+					<button class="test-label-modal-button" data-click="${this.componentName}:editNote" data-question-id="${question['id']}"><span>Edit</span></button>
+					<button class="test-label-modal-button" data-click="${this.componentName}:deleteNote" data-question-id="${question['id']}"><span>Delete</span></button>
 				</div>
 			</div>`;
 		}
@@ -435,11 +440,11 @@ class TestPage extends _front{
 	answerTpl(question,answer){
 		return `
 			<li class="answer-item" data-question-id="${question['id']}" data-variant="${answer}">
-				<button class="answer-button" data-click="setCorrectAnswer">
+				<button class="answer-button" data-click="${this.componentName}:setCorrectAnswer">
 					<span class="answer-variant">${answer}</span>
 					<span class="answer-value">${question['answers'][answer]}</span>
 				</button>
-				<button class="answer-wrong" data-click="setWrongAnswer">
+				<button class="answer-wrong" data-click="${this.componentName}:setWrongAnswer">
 					<svg>
 						<use xlink:href="#dismiss-circle"></use>
 					</svg>
@@ -448,7 +453,7 @@ class TestPage extends _front{
 	}
 	actionsTpl(question){
 		return `
-			<button class="test-header-button bookmarked-button" data-click="saveBookmark" data-question-id="${question['id']}">
+			<button class="test-header-button bookmarked-button" data-click="${this.componentName}:saveBookmark" data-question-id="${question['id']}">
 				<svg>
 					<use xlink:href="#bookmark-transparent"></use>
 				</svg>
@@ -457,7 +462,7 @@ class TestPage extends _front{
 				</svg>
 				<span>Bookmark</span>
 			</button>
-			<button class="test-header-button note-button" data-click="showForm;changeInnerQuestionId" data-question-id="${question['id']}" data-id="note">
+			<button class="test-header-button note-button" data-click="${this.componentName}:showForm;${this.componentName}:changeInnerQuestionId" data-question-id="${question['id']}" data-id="note">
 				<svg>
 					<use xlink:href="#edit-transparent"></use>
 				</svg>
@@ -466,7 +471,7 @@ class TestPage extends _front{
 				</svg>
 				<span>Note</span>
 			</button>
-			<button class="test-header-button" data-click="showForm;changeInnerQuestionId" data-question-id="${question['id']}" data-id="report">
+			<button class="test-header-button" data-click="${this.componentName}:showForm;${this.componentName}:changeInnerQuestionId" data-question-id="${question['id']}" data-id="report">
 				<svg>
 					<use xlink:href="#error-circle"></use>
 				</svg><span>Report</span>
@@ -722,7 +727,7 @@ class TestPage extends _front{
 				tpl+=`
 					<li class="questions-item" data-question-id="${question.id}">
 						<span class="questions-number">${cnt++}</span>
-						<button class="questions-variant" data-click="jumpToQuestion"></button>
+						<button class="questions-variant" data-click="${this.componentName}:jumpToQuestion"></button>
 						<div class="questions-bookmark">
 							<svg>
 								<use xlink:href="#bookmark-transparent"></use>
@@ -737,15 +742,15 @@ class TestPage extends _front{
 		}
 		tpl+=`
 			</ul>
-				<button class="questions-button" data-click="scrollForMore">
-				<svg>
-					<use xlink:href="#arrow-bottom"></use>
-				</svg>
-				<span>Scroll for more</span>
-				<svg>
-					<use xlink:href="#arrow-bottom"></use>
-				</svg>
-			</button>
+				<button class="questions-button" data-click="${this.componentName}:scrollForMore">
+					<svg>
+						<use xlink:href="#arrow-bottom"></use>
+					</svg>
+					<span>Scroll for more</span>
+					<svg>
+						<use xlink:href="#arrow-bottom"></use>
+					</svg>
+				</button>
 			</div>
 			</div>
 			</div>
@@ -757,8 +762,6 @@ class TestPage extends _front{
 		const _ = this;
 		return _[`${_.types[_._$.currentQuestion['type']]}Question`]();
 	}
-	
-
 	flexible(section){
 		const _ = this;
 		// welcome | directions | questions
@@ -771,41 +774,42 @@ class TestPage extends _front{
 			if(!cont) return;
 			_.clear(cont);
 			_.questionPos = _.model.questionPos(_.currentPos);
-			let questionTpl = _.getQuestionTpl();
 			cont.append(
-				_.markup(questionTpl),
+				_.markup(_.getQuestionTpl()),
 				_.markup(_.questionFooter())
 			);
 			_.setActions();
 			_.setActions('note');
-	
 			let step = 1;
-			if(_.test['sections']['questionPages'][_.currentPos]['questions'].length > 1){
+			if( _.test['sections']['questionPages'][_.currentPos]['questions'].length > 1){
 				step=_.test['sections']['questionPages'][_.currentPos]['questions'].length;
 			}
-			let nextQuestionPos = _.questionPos+step;
-			_.f('.skip-to-question').textContent = nextQuestionPos;
-			
+			_.f('.skip-to-question').textContent = _.questionPos+step;
 			if(_.currentPos > 0){
 				if(_.f('.back-to-question-button')){
 					_.f('.back-to-question-button').remove();
 				}
 				_.f('.test-footer .dir-button').after(
-				_.markup(`<button class="test-footer-back back-to-question-button" data-click="changeQuestion" data-dir="prev"><span>Back to question ${_.questionPos-1}</span></button>`)
+					_.markup(`<button class="test-footer-back back-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="prev"><span>Back to question ${_.questionPos-1}</span></button>`)
 				)
 			}
-			
-			
-			
-			
+
+			_.storageTest = _.model.getTestFromStorage();
+
+			_.storageTest
+
+			console.log(_.questionPos)
+			//if()
+
+
 		},['currentQuestion']);
 	}
 	async render(){
 		const _ = this;
 		_.header = await _.getBlock({name:'header'},'blocks');
 		_.fillPartsPage([
-			{part:'header', content:_.markup(_.header.render(),false)},
-			{part:'body', content: await _.flexible('welcome')}
+			{ part:'header', content:_.markup(_.header.render(),false)},
+			{ part:'body', content: await _.flexible('welcome')}
 		]);
 	}
 }

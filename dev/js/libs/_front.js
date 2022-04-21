@@ -4,12 +4,15 @@ export class _front extends G_G{
   constructor() {
 		super();
     const _ = this;
-    _.componentName = 'front';
+
     _.libs = new Map();
     _.components = new Map();
 		_.parts = {}
+		_.systemComponents = ['front'];
   }
-	define(){}
+	define(){
+		this.componentName = 'front';
+	}
 	
 	/*Storage*/
 	storageHas(key){
@@ -103,11 +106,12 @@ export class _front extends G_G{
 	async setupRoute(route){
 		const _ = this;
 		let
-			currentPage = await _.getBlock({
+			nextPage = await _.getBlock({
 				name: route
 			});
-		if('asyncDefine' in currentPage)	await currentPage.asyncDefine();
-		currentPage.render();
+		if('asyncDefine' in nextPage)	await nextPage.asyncDefine();
+		nextPage.render();
+		_.clearComponents()
 		_.saveRoute(route);
 	}
 	async setRouteFromString(route){
@@ -182,6 +186,31 @@ export class _front extends G_G{
 			gSet.append(...part['content']);
 		}
 	}
+
+
+
+	clearComponents(arr,modules){
+		const _ = this;
+		for(let component of _.components){
+			if(_.isSystemComponent(component[0])){
+				continue;
+			}
+			//debugger
+			let EventComponentName = component[0].toLowerCase();
+			delete G_Bus.components[EventComponentName];
+			_.components.get(component[0]).remove();
+			_.components.set(component[0],null);
+			_.components.delete(component[0]);
+		}
+		//console.log(arr)
+	}
+	isSystemComponent(componentName){
+		if(this.systemComponents.indexOf(componentName) > -1){
+			return true;
+		}
+		return false;
+	}
+
 	renderPart(partObj){
 		const _ = this;
 		if(!(partObj['part'] in _.parts)) return;

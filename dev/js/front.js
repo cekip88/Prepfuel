@@ -7,14 +7,14 @@ class Front extends _front{
   constructor(){
     super();
     const _ = this;
-    G_Bus
+    G_Bus.on(_,'setRoute')
+/*    G_Bus
       .on('navigate',_.navigate.bind(_))
       .on('subnavigate',_.subnavigate.bind(_))
-      .on('getSessions',_.getSessions.bind(_))
       .on('showHidden',_.showHidden.bind(_))
-      .on('showTestLabelModal',_.showTestLabelModal.bind(_))
-      .on('setRoute',_.setRoute.bind(_))
+      .on('setRoute',_.setRoute.bind(_))*/
   }
+
 
   ascent(item,targetSelector,endCls){
     if (targetSelector[0] === '.') {
@@ -48,11 +48,7 @@ class Front extends _front{
     if (item) item.classList.remove(cls)
   }
 
-  showTestLabelModal(clickData){
-    let btn = clickData.item,
-      target = btn.nextElementSibling;
-    target.classList.toggle('active')
-  }
+
  
 
 
@@ -70,10 +66,7 @@ class Front extends _front{
   }
 
   // get list of sessions
-  getSessions(clickData){
-    const _ = this;
 
-  }
 
 
   getStarsInfo(){
