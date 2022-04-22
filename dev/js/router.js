@@ -1,127 +1,93 @@
+import { mixins } from "./mixins.js";
 import { G_Bus } from "../libs/G_Bus.js";
 export class router {
 	constructor() {
 		const _ = this;
 		_.componentName = 'router';
-		_.libs = new Map();
-		_.components = new Map();
-		G_Bus.on('setRoute',_.setRoute.bind(_))
+		_.pages = new Map();
+		_.systemComponents = ['router'];
+		G_Bus.on(_,'changePage')
 	}
-	/*Storage*/
-	storageHas(key){
-		return localStorage.getItem(key) ? true : false;
-	}
-	storageGet(key,parse){
-		if (!this.storageHas(key)) return null;
-		if (!parse) parse = false;
-		return !parse ? localStorage.getItem(key) : JSON.parse(localStorage.getItem(key));
-	}
-	storageSave(key,value){
-		localStorage.removeItem(key);
-		if(typeof value == 'object'){
-			localStorage.setItem(key,JSON.stringify(value));
+	async changePage(route){
+		const _ = this;
+		let currentPageRoute = _.definePageRoute(route);
+		if(_.pages.has(currentPageRoute['module']).length){
+			_.clearComponents();
 		}else{
-			localStorage.setItem(key,value);
+			if(!_.pages.has(currentPageRoute['module'])){
+				let currentPage = await _.includePage(currentPageRoute);
+			}
 		}
 	}
-	storageUpdate(key,value){
+	definePageRoute(route){
 		const _ = this;
-		let savedItem = _.storageGet(key,true);
-		if (typeof savedItem != 'object' || typeof value != 'object') return;
-		for(let k in value){
-			savedItem[k] = value[k];
-		}
-		_.storageSave(key,savedItem);
-	}
-	remove(key){
-		if(this.storageHas(key)) localStorage.removeItem(key);
-	}
-	/*Storage*/
-	
-	clear(domElement){
-		if(!domElement) return void 0;
-		if(domElement instanceof HTMLElement){
-			domElement.innerHTML = null;
-		}
-	}
-	saveRoute(route){
-		const _ = this;
-		_.storageSave('g-route-prev',_.storageGet('g-route-current'));
-		_.storageSave('g-route-current',route);
-	}
-	async setupRoute(route){
-		const _ = this;
+		if(route) history.pushState(null, null, route);
 		let
-		currentPage = await _.getBlock({
-			name: route
-		});
-		currentPage.render();
-		_.saveRoute(route);
+			pathName = location.pathname,
+			pathParts = pathName.split('/').splice(1),
+			module = pathParts.splice(0,1)[0],
+			params = pathParts;
+		if(_.routes.indexOf(`/${module}`) < 0){
+			return {
+				'module': 'NotFound', 'params': null
+			}
+		}
+		return {
+			'module': module, 'params': params
+		}
 	}
-	async setRouteFromString(route){
+	includePage(blockData){
 		const _ = this;
-		return await _.setupRoute(route);
-	}
-	async setRoute({item,event}){
-		const _ = this;
-		let route = item ? item.getAttribute('route') : _.defineRoute();
-		return await _.setupRoute(route);
-	}
-	defineRoute(){
-		const _ = this;
-		return _.storageGet('g-route-current') ?? 'login';
-	}
-	getBlock(blockData,type='pages'){
-		/*
-		* Запрашивает блок страницы или модуль целой страницы
-		* */
-		const _ = this;
-		if(blockData.name == '404') return void 0;
 		return new Promise(async function (resolve,reject) {
 			try{
 				let
-				rawParams = blockData.name.split('/'),
-				moduleInc = (type == 'pages') ? 'Page' : 'Block',
-				fileType = (type == 'pages') ? 'page' : 'block',
-				name = rawParams[0] ? rawParams[0] : rawParams[1],
-				params = blockData.params ? blockData.params : {},
-				moduleStr = name.charAt(0).toUpperCase() + name.substr(1)+ moduleInc,
-				path = `/${type}/${name}/${name}.${fileType}.js`;
-				
-				
-				
-				if (_.components.has(name)) {
-					let comp = _.components.get(name);
-					console.log(comp);
+					moduleInc = 'Page',
+					fileType = 'page',
+					name = blockData['module'],
+					params = blockData['params'] ? blockData['params'] : {},
+					moduleStr = name.charAt(0).toUpperCase() + name.substr(1)+ moduleInc,
+					path = `/pages/${name}/${name}.${fileType}.js`;
+				if (_.pages.has(name)) {
+					let comp = _.pages.get(name);
 					resolve(comp);
 				}
 				const
-				module = await import(path),
-				moduleName = new module[moduleStr](params);
-				_.components.set(name, moduleName);
+					module = await import(path),
+					moduleName = new module[moduleStr](params);
+				Object.assign(module[moduleStr].prototype,mixins);
+
+				_.pages.set(name, moduleName);
+				if('asyncDefine' in moduleName)	await moduleName.asyncDefine();
+				moduleName.render();
 				resolve(moduleName);
 			} catch(e) {
 				reject(e);
 			}
 		});
 	}
-	fillPage(parts){
-		/* Рендер страницы компонентами */
+	clearComponents(modules){
 		const _ = this;
-		let
-		gSet = document.querySelector('#g-set')
-		_.clear(gSet);
-		if( !(parts instanceof Array) ){
-			gSet.append(parts);
-		}else{
-			for(let part of parts){
-				gSet.append(part);
+		for(let page of _.pages){
+			if(_.isSystemComponent(page[0])){
+				continue;
 			}
+			let EventComponentName = `${page[0]}page`.toLowerCase();
+			delete G_Bus.components[EventComponentName];
 		}
-		
+		//console.log(arr)
 	}
-	init(){
+	isSystemComponent(componentName){
+		if(this.systemComponents.indexOf(componentName) > -1){
+			return true;
+		}
+		return false;
+	}
+
+	async init(params){
 		const _ = this;
+		_.routes = params['routes'];
+		await _.changePage();
+
 	}
-	
+
 }

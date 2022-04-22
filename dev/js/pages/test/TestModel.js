@@ -77,7 +77,8 @@ export default  class TestModel{
 		if(response.status == 401){
 			localStorage.removeItem('g-route-prev')
 			localStorage.removeItem('g-route-current')
-			localStorage.removeItem('token')
+			localStorage.removeItem('token');
+			history.pushState(null, null, '/login');
 		}
 	}
 	hasTestFromStorage(){

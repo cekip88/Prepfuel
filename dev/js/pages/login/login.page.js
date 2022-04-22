@@ -1,10 +1,15 @@
 import { G_Bus } from "../../libs/G_Control.js";
-import { _front } from "../../libs/_front.js";
+import { G } from "../../libs/G.js";
+import loginModel from "./loginModel.js";
 
-class LoginPage extends _front{
+class LoginPage extends G{
+	constructor() {
+		super();
+	}
 	define(){
 		const _ = this;
 		_.componentName = 'LoginPage';
+		_.model = new loginModel();
 		G_Bus
 			.on(_,'doLogin')
 	}
@@ -12,25 +17,14 @@ class LoginPage extends _front{
 		const _ = this;
 		let formData = _.prepareForm(form);
 		if(!formData){return void 0}
-		let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/auth/login`,{
-			method: 'POST',
-			headers:{
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify(formData)
-		});
-		if( rawResponse.status == 200 ){
-			let response = await rawResponse.json();
-			if(response['status'] == 'success'){
-				_.storageSave('token',response['token']);
-				_.setRouteFromString('test');
-			}
-		}else{
-			throw new Error(await rawResponse.text());
-		}
-		
+
+		let token = await _.model.doLogin(formData);
+		_.storageSave('token',token);
 	}
 	async init(){
+		const _ = this;
+	}
+	async render(){
 		const _ = this;
 		_.header = await _.getBlock({name:'header'},'blocks');
 		_.fillPage([
@@ -46,9 +40,6 @@ class LoginPage extends _front{
 				</div>
 			`),
 		]);
-	}
-	async render(){
-	
 	}
 }
 export { LoginPage }

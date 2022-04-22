@@ -1,8 +1,8 @@
 import { G_Bus } from "../../libs/G_Control.js";
 import  TestModel from "./TestModel.js";
-import { _front } from "../../libs/_front.js";
+import { G } from "../../libs/G.js";
 import Modaler from "../../components/modaler/modaler.component.js";
-class TestPage extends _front{
+class TestPage extends G{
 	constructor() {
 		super();
 		const _ = this;
@@ -793,15 +793,7 @@ class TestPage extends _front{
 					_.markup(`<button class="test-footer-back back-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="prev"><span>Back to question ${_.questionPos-1}</span></button>`)
 				)
 			}
-
 			_.storageTest = _.model.getTestFromStorage();
-
-			_.storageTest
-
-			console.log(_.questionPos)
-			//if()
-
-
 		},['currentQuestion']);
 	}
 	async render(){

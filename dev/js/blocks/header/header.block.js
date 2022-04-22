@@ -1,7 +1,7 @@
 import { G_Bus } from "../../libs/G_Control.js";
-import { _front } from "../../libs/_front.js";
+import { G } from "../../libs/G.js";
 
-class HeaderBlock extends _front{
+class HeaderBlock extends G{
 		define(){
 		const _ = this;
 		_.set({

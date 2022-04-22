@@ -1,18 +1,18 @@
-import { G_Bus } from "./libs/G_Control.js";
-import { _front } from "./libs/_front.js";
-import GInput from "./components/input/input.component.js";
-import t from "./components/select/select.component.js";
+//import { G_Bus } from "./libs/G_Control.js";
+//import { G } from "./libs/G.js";
+import { router } from "./router.js";
+//import GInput from "./components/input/input.component.js";
+//import t from "./components/select/select.component.js";
 
-class Front extends _front{
+/*class Front extends G{
   constructor(){
     super();
     const _ = this;
-    G_Bus.on(_,'setRoute')
-/*    G_Bus
+/!*    G_Bus
       .on('navigate',_.navigate.bind(_))
       .on('subnavigate',_.subnavigate.bind(_))
       .on('showHidden',_.showHidden.bind(_))
-      .on('setRoute',_.setRoute.bind(_))*/
+      .on('setRoute',_.setRoute.bind(_))*!/
   }
 
 
@@ -203,8 +203,16 @@ class Front extends _front{
 
     let subNav = _.f('.subnavigate-button.active');
     if (subNav) _.subnavigate({event:{target:subNav}});
-	
-		_.setRoute({});
+
 	}
-}
-new Front();
+}*/
+//new Front();
+
+
+let r = new router();
+
+r.init({
+  'routes':[
+    '/login','/test'
+  ]
+});
