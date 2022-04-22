@@ -1,3 +1,5 @@
+import {G_Bus} from "../../libs/G_Bus.js";
+
 export default  class TestModel{
 	async getTest(testObj){
 		const _ = this;
@@ -78,7 +80,7 @@ export default  class TestModel{
 			localStorage.removeItem('g-route-prev')
 			localStorage.removeItem('g-route-current')
 			localStorage.removeItem('token');
-			history.pushState(null, null, '/login');
+			G_Bus.trigger('router','changePage','/login');
 		}
 	}
 	hasTestFromStorage(){
@@ -87,8 +89,6 @@ export default  class TestModel{
 	isEmpty(obj){
 		return Object.keys(obj).length ? false : true;
 	}
-
-	
 	getTestFromStorage(){
 		const _ = this;
 		if(!_.hasTestFromStorage()) return {};

@@ -1,6 +1,7 @@
 import { G_Bus } from "../../libs/G_Control.js";
 import { G } from "../../libs/G.js";
 import loginModel from "./loginModel.js";
+import GInput from "../../components/input/input.component.js";
 
 class LoginPage extends G{
 	constructor() {
@@ -26,6 +27,9 @@ class LoginPage extends G{
 	}
 	async render(){
 		const _ = this;
+		if(await _.model.isLogin()){
+			return void 0;
+		}
 		_.header = await _.getBlock({name:'header'},'blocks');
 		_.fillPage([
 			_.markup(_.header.render()),

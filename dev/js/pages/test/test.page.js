@@ -703,7 +703,8 @@ class TestPage extends G{
 		</div>`;
 		return tpl;
 	}
-	
+	/* Questions tpls */
+
 	fillAnswer(){
 		const _ = this
 		if(_.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${currentTestObj['answer']}"]`)){

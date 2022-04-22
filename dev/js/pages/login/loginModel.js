@@ -14,12 +14,21 @@ export default class loginModel{
 		if( rawResponse.status == 200 ){
 			let response = await rawResponse.json();
 			if(response['status'] == 'success'){
-
 				G_Bus.trigger('router','changePage','/test');
 				return response['token'];
 			}
 		}else{
 			throw new Error(await rawResponse.text());
 		}
+	}
+	async isLogin(){
+		const _ = this;
+		return new Promise( (resolve) =>{
+			if(localStorage.getItem('token')){
+				G_Bus.trigger('router','changePage','/test');
+				resolve(true);
+			}
+			resolve(false);
+		})
 	}
 }
