@@ -11,30 +11,51 @@ export default class GModaler extends GComponent {
 		_.componentName = 'modaler';
 		G_Bus
 			.on(_,'showModal')
-			.on(_,'closeModal');
-		_.on('closeModal',_.closeModal.bind(_))
-		_.on('cancelCloseModal',_.cancelCloseModal.bind(_))
+		_.on('closeModal',_.closeModal())
+		_.on('cancelCloseModal',_.cancelCloseModal())
 		
 		
 	}
 	cancelCloseModal(mouseupData){
-		const _ = this;
-		mouseupData['event'].preventDefault();
+		return (mouseupData)=>{
+			const _ = this;
+			mouseupData['event'].preventDefault();
+		}
 	}
 	closeModal(modalData){
+		return (modalData)=> {
+			const _ = this;
+			let targetContent = _.querySelector('.modaler-content');
+			if(!targetContent) return;
+			targetContent.classList.remove('modaler-content');
+			_.targetContentParent.append(targetContent);
+			_.modalCont.classList.remove('active');
+		}
+	}
+	hideShadow(){
 		const _ = this;
-		let targetContent = _.querySelector('.modaler-content');
-		if(!targetContent) return;
-		targetContent.classList.remove('modaler-content');
-		_.targetContentParent.append(targetContent);
-		_.modalCont.classList.remove('active');
+		_.modalCont.classList.remove('modaler-shadow');
 	}
 	showModal(modalData){
 		const _ = this;
-		let targetContent = document.querySelector(modalData['target']);
+		
+		let
+			showShadow = modalData['showShadow'] ?? true,
+			targetContent = document.querySelector(modalData['target']);
 		targetContent.classList.add('modaler-content');
 		_.targetContentParent = targetContent.parentNode;
+		
 		_.modalCont.classList.add('active');
+		
+		if(!showShadow) {
+			_.hideShadow();
+		}else{
+			let shadowClass = modalData['shadowClass'] ?? '';
+			_.modalCont.classList.add('shadowClass');
+		}
+		
+		
+		
 		_.append(targetContent);
 	}
 	
@@ -47,7 +68,6 @@ export default class GModaler extends GComponent {
 		_.modalHeader = _.shadow.querySelector('.modaler-header');
 		_.modalBody = _.shadow.querySelector('.modaler-body');
 		_.modalClose = _.shadow.querySelector('.modaler-close');
-		
 	}
 	async connectedCallback(){
 		const _ = this;
@@ -55,6 +75,8 @@ export default class GModaler extends GComponent {
 		_.mainTpl = _.getTpl('modaler');
 		
 		_.setContent(_.mainTpl);
+		
+		_.trigger('appended');
 	}
 	disconnectedCallback(){
 	}

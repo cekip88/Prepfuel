@@ -2,6 +2,7 @@ class _G_Bus {
 	constructor(flag){
 		const _ = this;
 		_.components = {};
+		_.flag = flag;
 	}
 	on(component,eventName,fn,inProp){
 		const _ = this;
@@ -24,51 +25,49 @@ class _G_Bus {
 		}
 		if(!_.components[componentName]){
 			_.components[componentName] = {};
-			_.components[componentName]['events'] = {};
+			_.components[componentName]['events'] = _.components[componentName]['events'] || new Map();
+		//	_.components[componentName]['events'] = {};
 		}
-		if(!_.components[componentName]['events'][eventName]){
+		if(!_.components[componentName]['events'].has(eventName)){
 			_.components[componentName]['events'][eventName] = new Map();
 		}
-		_.components[componentName]['events'] = _.components[componentName]['events'] || new Map();
 		if(!_.components[componentName]['events'][eventName].has(prop)) {
 			_.components[componentName]['events'][eventName].set(prop, fn);
 			return _;
 		}
 		if(_.flag === 'dev'){
-			console.warn(`Подписка на событие ${eventName} на ф-ю: ${fn.name}`);
+			console.warn(`Subscribe on event ${eventName} on fn: ${fn.name}`);
 		}
 		return _;
 	}
 	trigger(componentName,eventName,data){
 		const _ = this;
 		componentName = componentName.toLowerCase();
-		return new Promise(function (resolve) {
+		return new Promise(async function (resolve) {
 			if(_.flag === 'dev'){
-				console.log(`Компонент ${componentName}: Запуск события ${eventName} с данными: "${data}" `);
+				console.log(`Component ${componentName}: Event start ${eventName} with data:`,data);
 			}
 			try{
-
-				if (_.components[componentName]['events'][eventName]) {
-					_.components[componentName]['events'][eventName].forEach( async function(fn) {
-						resolve(await fn(data));
-					});
+				let currentEvents = _.components[componentName]['events'][eventName]
+				if(currentEvents){
+					if (currentEvents.size) {
+						for(let item of currentEvents){
+							resolve(await item[1](data));
+						}
+					}
 				}
 			} catch (e) {
 				if(e.name == 'TypeError'){
-					let errObj = {};
-					errObj['err'] = e;
-					errObj['component'] = componentName;
-					errObj['event'] = eventName;
-					errObj['line'] = e.lineNumber;
-					console.log('%c%s',`background-color:#3f51b5;`,`!Обращение к событию, которое не определено ${componentName}: ${eventName}\n${e}`);
+					console.log('%c%s',`background-color:#3f51b5;`,`Event is not define ${componentName}: ${eventName}\n${e}`);
 				}
 			}
 		})
 	}
 	remove(component,eventName,prop){
 		const _ = this;
-		if (_.components[componentName].events[eventName]) {
-			_.components[componentName].events[eventName].delete(prop);
+		let currentEvents = _.components[componentName]['events'][eventName]
+		if (currentEvents) {
+			currentEvents.delete(prop);
 		}
 	}
 	clear(component){

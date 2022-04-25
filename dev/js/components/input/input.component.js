@@ -19,6 +19,7 @@ export default class GInput extends GComponent {
 			'match': 'Password not matched',
 		};
 		_
+		//	.on('appended',_.doInput.bind(_))
 			.on('doInput',_.doInput.bind(_))
 			.on('preparePassword',_.preparePassword.bind(_))
 			.on('doFocusIn',_.doFocusIn.bind(_))
@@ -78,9 +79,15 @@ export default class GInput extends GComponent {
 	
 	
 	
-	doValidate(){
+	doValidate(text){
 		const _ = this;
 		let isValidate = true;
+
+		if(text){
+			_.setError(text,false);
+			return false;
+		}
+
 		if(!_.checkMatch()){
 			_.setError('match',true);
 			_.matchedElement.setError('match',true);
@@ -163,7 +170,9 @@ export default class GInput extends GComponent {
 	doFocusOut(focusData){
 		const _ = this;
 		_.shadow.querySelector('.inpt-value').classList.remove('focused');
-		if(!_.value)	_.shadow.querySelector('.inpt-value').append(_.basePlaceholder.firstElementChild)
+		if(_.isSymbolPassword()){
+			if(!_.value)	_.shadow.querySelector('.inpt-value').append(_.basePlaceholder.firstElementChild);
+		}
 	}
 	doKeyDown(keyData){
 		const _ = this;
@@ -393,26 +402,38 @@ export default class GInput extends GComponent {
 		}
 		_.tipTpl = _.getTpl('tip');
 		_.shadow.innerHTML = _.mainTpl({
+			className: _.attr('className'),
 			items: JSON.parse(_.attr('items')),
 			format: _.attr('format'),
 			type: _.attr('type'),
 			name: _.attr('name'),
 			title: _.attr('title'),
-			placeholder: _.attr('placeholder')
+			placeholder: _.attr('placeholder'),
+			value: _.attr('value')
 		});
 		_.type = _.attr('type');
 		if(_.attr('symbol'))
 		_.symbol = _.attr('symbol');
 		_.symbolImg = _.attr('symbolImg');
-		
+		_.trigger('appended');
 	}
+	
 	disconnectedCallback() {
 	}
 	static get observedAttributes() {
-		return [];
+		return ['items'];
 	}
 	attributeChangedCallback(name, oldValue, newValue) {
 		const _ = this;
+		if(!_.shadow) return;
+		if(name == 'items'){
+			let itemsCont = _.shadow.querySelector('.inpt-items-cont');
+			let tpl = _.getTpl('checkItems');
+			itemsCont.innerHTML = tpl({
+				'items':JSON.parse(newValue),
+				type: _.attr('type'),
+				'name':_.attr('name')});
+		}
 	}
 }
 customElements.define("g-input", GInput);

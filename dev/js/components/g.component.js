@@ -8,7 +8,18 @@ export default class GComponent extends HTMLElement {
 		_.container = _;
 		_.handle();
 		_.filteredAttributes = [];
+		_
+			.on('appended',_.appended.bind(_))
 	}
+	appended(elem){
+		document.styleSheets
+		const _ = this;
+		let cssLink  = document.createElement('link');
+		cssLink.rel = 'stylesheet';
+		cssLink.href = _.attr('stylesheet') ?? '/components.css';
+		_.shadow.append(cssLink);
+	}
+	
 	async initShadow(){
 		const _ = this;
 		if(_.shadow) return;

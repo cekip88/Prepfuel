@@ -1,7 +1,9 @@
 import {G_Bus} from "../../libs/G_Bus.js";
 
 export default class loginModel{
-	constructor() {}
+	constructor() {
+		this.componentName = 'LoginPage';
+	}
 	async doLogin(formData){
 		const _ = this;
 		let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/auth/login`,{
@@ -14,11 +16,14 @@ export default class loginModel{
 		if( rawResponse.status == 200 ){
 			let response = await rawResponse.json();
 			if(response['status'] == 'success'){
-				G_Bus.trigger('router','changePage','/test');
-				return response['token'];
+				G_Bus.trigger('router','changePage','/test')
+				G_Bus.trigger(_.componentName,'loginSuccess',response['token']);
+			}else{
+				G_Bus.trigger(_.componentName,'loginError',{
+					"response": response,
+					"formData": formData
+				})
 			}
-		}else{
-			throw new Error(await rawResponse.text());
 		}
 	}
 	async isLogin(){
