@@ -3,11 +3,13 @@ let triggerWithEvent = (data,currentAction) =>{
 	if (!data['item'])  return;
 	let
 		rawActions = data['item'].dataset[currentAction].split(';');
+	
 	for(let rAction of rawActions){
 		let rawAction = rAction.split(':'),
-			component = rawAction[0],
-			action = rawAction[1];
-		G_Bus.trigger(component,action,data);
+			component = rawAction.splice(0,1)[0];
+		for(let action of rawAction){
+			G_Bus.trigger(component,action,data);
+		}
 	}
 }
 class _G_Control{
@@ -28,21 +30,6 @@ class _G_Control{
 			item = item.parentNode;
 		}
 	}
-	/*contextHandler(e){
-		const _ = this;
-		e.preventDefault();
-		let item = e.target;
-		if(!item) return;
-		if(e.which == 3){
-			while(item != _) {
-				if( ('context' in item.dataset) ){
-					triggerWithEvent({'item':item,'event':e},'context');
-					return;
-				}
-				item = item.parentNode;
-			}
-		}
-	}*/
 	focusOutHandler(e){
 		let item = e.target;
 		if( ('outfocus' in item.dataset) ){

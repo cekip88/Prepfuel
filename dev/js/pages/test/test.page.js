@@ -10,7 +10,7 @@ class TestPage extends G{
 	async asyncDefine(){
 		const _ = this;
 		_.set({
-			test: await _.model.getTest(),
+			test: await _.model.getTest('626027a7e604e5c1a0ec067e'),
 		});
 		_.set({
 			currentQuestion: _.model.firstQuestion,
@@ -32,6 +32,7 @@ class TestPage extends G{
 			.on(_,'deleteNote')
 			.on(_,'editNote')
 			.on(_,'showTestLabelModal')
+			.on(_,'startTimer')
 		_.model = new TestModel();
 		_.storageTest = _.model.getTestFromStorage();
 		_.types = {
@@ -77,7 +78,10 @@ class TestPage extends G{
 			target: `#${id}`
 		});
 	}
-	
+	startTimer({item}){
+		const _ = this;
+		_.model.start();
+	}
 	/* Work with note */
 	editNote({item}){
 		const _ = this;
@@ -155,7 +159,6 @@ class TestPage extends G{
 		
 		
 	}
-	
 	setActions(type='bookmarked'){
 		const _ = this;
 		let handle = (currentTest)=>{
@@ -173,7 +176,6 @@ class TestPage extends G{
 		let currentTest = _.storageTest[_._$.currentQuestion['questions'][0]['id']];
 		handle(currentTest);
 	}
-	
 	changeInnerQuestionId({item}){
 		const _ = this;
 		_.innerQuestionId = parseInt(item.getAttribute('data-question-id'));
@@ -181,6 +183,9 @@ class TestPage extends G{
 	async changeSection({item,event}){
 		const _ = this;
 		let section = item.getAttribute('section');
+		if(section == 'directions') {
+			_.model.start();
+		}
 		_._$.currentSection = section;
 		_.renderPart({part:'body',content: await _.flexible(section)});
 		if(section == 'questions'){
@@ -785,7 +790,13 @@ class TestPage extends G{
 			if( _.test['sections']['questionPages'][_.currentPos]['questions'].length > 1){
 				step=_.test['sections']['questionPages'][_.currentPos]['questions'].length;
 			}
-			_.f('.skip-to-question').textContent = _.questionPos+step;
+			//console.log(_.questionPos,_.questionsLength);
+			if(_.questionPos < _.questionsLength){
+				_.f('.skip-to-question').textContent = _.questionPos+step;
+			}else{
+				//alert('ah')
+			}
+			
 			if(_.currentPos > 0){
 				if(_.f('.back-to-question-button')){
 					_.f('.back-to-question-button').remove();

@@ -1,10 +1,14 @@
 import {G_Bus} from "../../libs/G_Bus.js";
 
 export default  class TestModel{
-	async getTest(testObj){
+	constructor(){
+		const _ = this;
+		_.backendUrl = 'https://live-prepfuelbackend-mydevcube.apps.devinci.co/api';
+	}
+	async getTest(testId){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/practice-tests/626027a7e604e5c1a0ec067e`,{
+			let rawResponse = await fetch(`${_.backendUrl}/practice-tests/${testId}`,{
 				method: 'GET',
 				headers:{
 					"Authorization": localStorage.getItem('token'),
@@ -15,13 +19,37 @@ export default  class TestModel{
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					_.test = response['test'];
-					_.catchQuestions(_.test)
+					_.catchQuestions(_.test);
 					resolve(_.test);
 				}
 			}else{
 				_.logout(rawResponse);
 			}
 		});
+	}
+	
+	async start(){
+		const _ =this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/create/${_.test['_id']}`,{
+				'method': 'POST',
+				headers:{
+					'Content-Type': 'application/json',
+					'Authorization': localStorage.getItem('token')
+				}
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				if(response['status'] == 'success'){
+					_.test['resultId'] = response['resultId'];
+					resolve(response['resultId']);
+				}
+			}
+		});
+	}
+	
+	finishTest(){
+		const _ = this;
 	}
 	
 	get firstQuestion(){
