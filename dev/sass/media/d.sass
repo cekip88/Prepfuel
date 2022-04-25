@@ -221,6 +221,24 @@
 				fill: rgb($white)
 
 
+.login
+	.link
+		position: relative
+		&:after
+			@extend %transition-d
+			+af
+			+wh(0,1px)
+			background-color: rgb($blue-text)
+			position: absolute
+			left: 50%
+			bottom: -2px
+		&:hover:after
+			width: 100%
+			left: 0
+	&-bottom
+		.link:after
+			background-color: rgb($neutral-400)
+
 
 
 
