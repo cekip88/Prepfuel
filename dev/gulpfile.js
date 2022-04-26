@@ -27,7 +27,7 @@ const
         ],
         dest: projectPath
     },
-  componentsCss = {
+    componentsCss = {
     err_title: "Ошибка при компиляции в CSS",
     src_build : ['sass/components/components.sass'],
     file_name: 'components.css',
@@ -211,8 +211,7 @@ gulp.task('watch', function() {
     gulp.watch(css['src_build'],gulp.parallel('css'));
     gulp.watch(css['src_all'],gulp.parallel('css'));
     gulp.watch(js['src_all'],gulp.parallel('js'));
-
-  gulp.watch(componentsCss['src_all'],gulp.parallel('componentsCss'));
+    gulp.watch(componentsCss['src_all'],gulp.parallel('componentsCss'));
     gulp.watch(img['src_all'],gulp.parallel('move_images'));
     gulp.watch(projectPath+'/*.css',gulp.parallel('media_query'));
 

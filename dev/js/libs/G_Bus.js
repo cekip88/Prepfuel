@@ -59,6 +59,7 @@ class _G_Bus {
 			} catch (e) {
 				if(e.name == 'TypeError'){
 					console.log('%c%s',`background-color:#3f51b5;`,`Event is not define ${componentName}: ${eventName}\n${e}`);
+					console.trace();
 				}
 			}
 		})

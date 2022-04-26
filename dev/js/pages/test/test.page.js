@@ -33,6 +33,7 @@ class TestPage extends G{
 			.on(_,'editNote')
 			.on(_,'showTestLabelModal')
 			.on(_,'startTimer')
+			.on(_,'updateStorageTest')
 		_.model = new TestModel();
 		_.storageTest = _.model.getTestFromStorage();
 		_.types = {
@@ -63,7 +64,12 @@ class TestPage extends G{
 		}
 		return outPos;
 	}
-
+	
+	updateStorageTest(){
+		const _ = this;
+		_.storageTest = _.model.getTestFromStorage();
+	}
+	
 	showTestLabelModal(clickData){
 		let btn = clickData.item,
 			target = btn.nextElementSibling;
@@ -137,6 +143,7 @@ class TestPage extends G{
 	}
 	async saveNote({item:form,event}){
 		const _ = this;
+		event.preventDefault();
 		let formData = await _.formDataCapture(form);
 		_.model.saveTestToStorage({
 			id: _.innerQuestionId,
@@ -159,6 +166,7 @@ class TestPage extends G{
 		
 		
 	}
+	
 	setActions(type='bookmarked'){
 		const _ = this;
 		let handle = (currentTest)=>{
@@ -369,12 +377,41 @@ class TestPage extends G{
 	/* Cacrass templates*/
 
 	setWrongAnswer({item,event}){
-		let answer = item.parentNode;
+		const _ = this;
+		let
+			answer = item.parentNode,
+			questionId =  parseInt(answer.getAttribute('data-question-id')),
+			currentTest = _.storageTest[questionId],
+			variant = answer.getAttribute('data-variant'),
+			obj  = {
+				id: questionId
+			};
 		if(answer.hasAttribute('disabled')){
-			answer.removeAttribute('disabled')
+			answer.removeAttribute('disabled');
 		}else{
+			if(answer.classList.contains('active')){
+				_.model.saveTestToStorage({
+					id: questionId,
+					answer: null
+				});
+				answer.classList.remove('active');
+				G_Bus.trigger(_.componentName,'updateStorageTest')
+			}
+			
+			if(!currentTest){
+				obj['disabledAnswers'] = [];
+			}else{
+				if(!currentTest['disabledAnswers']){
+					obj['disabledAnswers'] = [];
+				}else{
+					obj['disabledAnswers'] = currentTest['disabledAnswers'];
+				}
+			}
+			if(obj['disabledAnswers'].indexOf(variant) < 0) obj['disabledAnswers'].push(variant)
 			answer.setAttribute('disabled',true);
 		}
+		_.model.saveTestToStorage(obj);
+		G_Bus.trigger(_.componentName,'updateStorageTest')
 	}
 	setCorrectAnswer({item,event}){
 		const _ = this;
@@ -786,17 +823,14 @@ class TestPage extends G{
 			);
 			_.setActions();
 			_.setActions('note');
-			let step = 1;
-			if( _.test['sections']['questionPages'][_.currentPos]['questions'].length > 1){
-				step=_.test['sections']['questionPages'][_.currentPos]['questions'].length;
+			let step = 1,
+					len = _.test['sections']['questionPages'][_.currentPos]['questions'].length;
+			if( len > 1 ){
+				step= len;
 			}
-			//console.log(_.questionPos,_.questionsLength);
 			if(_.questionPos < _.questionsLength){
 				_.f('.skip-to-question').textContent = _.questionPos+step;
-			}else{
-				//alert('ah')
 			}
-			
 			if(_.currentPos > 0){
 				if(_.f('.back-to-question-button')){
 					_.f('.back-to-question-button').remove();
@@ -805,7 +839,22 @@ class TestPage extends G{
 					_.markup(`<button class="test-footer-back back-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="prev"><span>Back to question ${_.questionPos-1}</span></button>`)
 				)
 			}
-			_.storageTest = _.model.getTestFromStorage();
+			G_Bus.trigger(_.componentName,'updateStorageTest');
+			_.currentQuestion = _.model.innerQuestion(_.questionPos);
+			let currentStorageTest = _.storageTest[_.currentQuestion['id']];
+			if(currentStorageTest){
+				if(currentStorageTest['answer']){
+					_.f(`.answer-list .answer-item[data-question-id="${currentStorageTest['id']}"][data-variant="${currentStorageTest['answer']}"]`).classList.add('active');
+				}
+				if(currentStorageTest['disabledAnswers']){
+					for(let dis of currentStorageTest['disabledAnswers']){
+						_.f(`.answer-list .answer-item[data-question-id="${currentStorageTest['id']}"][data-variant="${dis}"]`).classList.remove('active');
+						_.f(`.answer-list .answer-item[data-question-id="${currentStorageTest['id']}"][data-variant="${dis}"]`).setAttribute('disabled', 'disabled');
+					}
+				}
+			}
+			
+			
 		},['currentQuestion']);
 	}
 	async render(){

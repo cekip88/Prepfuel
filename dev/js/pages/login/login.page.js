@@ -14,14 +14,14 @@ class LoginPage extends G{
 		G_Bus
 			.on(_,'doLogin')
 			.on(_,'loginSuccess')
-			.on(_,'loginError')
+			.on(_,'loginFail')
 	}
 	loginSuccess(token){
 		const _ = this;
 		_.storageSave('token',token);
 	}
 
-	loginError({response,formData}){
+	loginFail({response,formData}){
 		const _ = this;
 		let msg = response['message'];
 		_.f('g-input[name="email"]').doValidate(msg);

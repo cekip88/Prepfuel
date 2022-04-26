@@ -4,6 +4,14 @@ export default class loginModel{
 	constructor() {
 		this.componentName = 'LoginPage';
 	}
+	
+	isSuccessResponse(response){
+		return response['status'] == 'success';
+	}
+	isFailResponse(response){
+		return response['status'] == 'fail';
+	}
+	
 	async doLogin(formData){
 		const _ = this;
 		let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/auth/login`,{
@@ -15,14 +23,14 @@ export default class loginModel{
 		});
 		if( rawResponse.status == 200 ){
 			let response = await rawResponse.json();
-			if(response['status'] == 'success'){
-				G_Bus.trigger('router','changePage','/test')
+			if( _.isSuccessResponse(response) ){
+				G_Bus.trigger('router','changePage','/test');
 				G_Bus.trigger(_.componentName,'loginSuccess',response['token']);
 			}else{
-				G_Bus.trigger(_.componentName,'loginError',{
+				G_Bus.trigger(_.componentName,'loginFail',{
 					"response": response,
 					"formData": formData
-				})
+				});
 			}
 		}
 	}
