@@ -1424,7 +1424,7 @@ body
     color: rgb($blue-text)
     font-family: $f_medium
   &-left,&-right,&-full
-    height: 100vh
+    min-height: 100vh
   &-left,&-success
     align-items: center
     justify-content: flex-end
@@ -1457,6 +1457,7 @@ body
         line-height: 33px
   &-right
     @extend %dfc
+    padding: 40px 0 70px
     background-color: rgb($white)
     .button
       &-blue,&-lightblue
