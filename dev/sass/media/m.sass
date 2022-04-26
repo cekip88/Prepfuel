@@ -136,7 +136,7 @@ body
   &,&-blue
     padding: 13px 24px
   &-lightblue,&-transparent
-    color: rgb($blue)
+    color: rgb($blue-text)
   &-icon
     +wh(10px)
     margin-left: 11px
@@ -1413,26 +1413,61 @@ body
   &-subtitle
     margin-top: 8px
     font-family: $f_medium
+    text-align: center
     &>span
       margin-right: 5px
+      line-height: 24px
       color: rgb($neutral-400)
+      &:not(:first-child)
+        display: block
   .link
     color: rgb($blue-text)
     font-family: $f_medium
-  &-left,&-right
-    height: 100vh
-  &-left
+  &-left,&-right,&-full
+    min-height: 100vh
+  &-left,&-success
+    align-items: center
+    justify-content: flex-end
+    flex-direction: column
+    background-color: rgb($blue-text)
     display: none
+    .login-main
+      &-title
+        margin-bottom: 32px
+  &-left
+    &-logo
+      margin-bottom: 16px
+    &-img
+      width: 100%
+      max-width: 500px
+  &-main
+    &-title,&-subtitle
+      text-align: center
+    &-title
+      font-size: calc(24em/14)
+      font-family: $f_bold
+    &-subtitle
+      display: flex
+      flex-direction: column
+      align-items: center
+      font-size: calc(18em/14)
+      color: rgb($neutral-400)
+      font-family: $f_medium
+      span
+        line-height: 33px
   &-right
     @extend %dfc
+    padding: 40px 0 70px
     background-color: rgb($white)
+    .button
+      &-blue,&-lightblue
+        width: 100%
   &-form
     @extend %df
     @extend %fdc
     @extend %dfa
   .button
     &-blue,&-lightblue
-      width: 100%
       height: 48px
       justify-content: center
       svg
@@ -1453,13 +1488,44 @@ body
       color: rgb($neutral-400)
       &:last-child
         margin-right: 0
+  &-full
+    display: flex
+    flex: 0 0 100%
+  &-success
+    background-color: rgb($white)
+    .login-left-logo
+      margin-bottom: -20px
+    .login-main
+      &-title,&-subtitle
+        margin-bottom: auto
+    .button-blue
+      margin-bottom: auto
+    &-img
+      width: 300px
+    &-bgc
+      display: none
+  &-checkbox
+    margin-top: 64px
+    font-family: $f_medium
+    color: rgb($neutral-400)
+
 
 .form
   &-block
     @extend %df
     @extend %fdc
-    width: 100%
+    width: 300px
     margin-top: 32px
+    &.row
+      flex-direction: row
+      .button-blue,.button-lightblue
+        margin-left: 16px
+        &:first-child
+          margin-left: 0
+    &-comment
+      margin-top: 12px
+      font-size: calc(12em/14)
+      color: $neutral-400
   &-label
     font-family: $f_bold
     color: rgb($neutral-900)
@@ -1467,13 +1533,18 @@ body
       @extend %dfi
       padding-bottom: 12px
   &-input
+    @extend %transition
     height: 54px
-    width: 80vw
-    max-width: 380px
+    width: 100%
     padding: 0 15px
     border-radius: 6px
     background-color: rgb($neutral-100)
   &-checkbox
+    &-row
+      @extend %df
+      @extend %dfa
+      &>span,&>a,&>label
+        margin-right: 5px
     &-icon
       @extend %dfc
       @extend %transition

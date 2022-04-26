@@ -211,11 +211,58 @@
 
 
 .login
+  overflow: hidden
   &-subtitle
     font-size: calc(18em/14)
-  &-left
-    flex: 0 0 calc(600% / 14.4)
   &-right
     width: 100%
   &-span
     font-size: calc(18em/14)
+  &-row
+    width: 100%
+    max-width: 480px
+    display: flex
+    .form-block
+      margin-right: 32px
+      min-width: initial
+      &:last-child
+        margin-right: 0
+  &-success
+    &-img
+      position: relative
+      z-index: 1
+    &-bgc
+      width: 100%
+      display: block
+      position: absolute
+      img
+        position: absolute
+        bottom: 0
+        &:nth-child(2)
+          left: -100px
+        &:nth-child(3)
+          left: -100px
+        &:nth-child(7)
+          bottom: -24px
+          right: 10%
+        &:nth-child(8)
+          right: 10%
+          bottom: 210px
+        &:nth-child(9)
+          right: -210px
+    .button-blue
+      margin-bottom: 0
+    .login
+      &-main
+        &-title,&-subtitle
+          margin-bottom: 16px
+  &-left,&-success
+    &-img
+      margin-top: 15vh
+
+
+.form
+  &-block
+    width: 100%
+    min-width: 380px
+    max-width: 480px

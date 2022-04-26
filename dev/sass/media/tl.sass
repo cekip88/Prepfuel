@@ -135,36 +135,16 @@
 .login
   display: flex
   &-left
+    flex: 0 0 calc(600% / 14.4)
     display: flex
-    align-items: center
-    justify-content: flex-end
-    flex-direction: column
-    background-color: rgb($blue-text)
-    &-logo
-      margin-bottom: 16px
     .login-main
-      &-title
-        margin-bottom: 32px
-      &-subtitle
-        margin-bottom: 15vh
-    &-img
-      width: 100%
-      max-width: 500px
+      &-subtitle,&-title
+        color: rgb($white)
   &-main
-    &-title,&-subtitle
-      text-align: center
-      color: rgb($white)
     &-title
-      font-family: $f_bold
       font-size: calc(30em/14)
     &-subtitle
-      display: flex
-      flex-direction: column
-      align-items: center
-      font-family: $f_medium
       font-size: calc(22em/14)
-      span
-        line-height: 33px
   &-right
     position: relative
   .button
@@ -173,3 +153,10 @@
   &-bottom
     .link
       font-size: calc(18em/14)
+  &-success
+    &-img
+      width: 400px
+    &-bgc
+      img
+        &:nth-child(8)
+          right: 171px

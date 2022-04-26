@@ -1,7 +1,7 @@
 extends template/main
 append vars
 	-
-		page_title = 'Student - Test'
+		page_title = 'Student - Login'
 block content
 	main
 		section.login
@@ -20,7 +20,7 @@ block content
 						span Sing In to Prepfuel
 					h5.login-subtitle
 						span New Here?
-						a(href='#').link
+						a(href='/register-layout.html').link
 							span Create an Account
 					.form-block
 						.form-label-row
@@ -29,7 +29,7 @@ block content
 					.form-block
 						.form-label-row
 							label.form-label Password
-							a(href='#').link
+							a(href='/forgot-layout.html').link
 								span Forgot Password?
 						input(type='text').form-input
 					.form-block
