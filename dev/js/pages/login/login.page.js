@@ -19,6 +19,7 @@ class LoginPage extends G{
 	loginSuccess(token){
 		const _ = this;
 		_.storageSave('token',token);
+		return Promise.resolve(token);
 	}
 
 	loginFail({response,formData}){

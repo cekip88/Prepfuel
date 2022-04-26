@@ -24,8 +24,9 @@ export default class loginModel{
 		if( rawResponse.status == 200 ){
 			let response = await rawResponse.json();
 			if( _.isSuccessResponse(response) ){
-				G_Bus.trigger('router','changePage','/test');
-				G_Bus.trigger(_.componentName,'loginSuccess',response['token']);
+				await G_Bus.trigger(_.componentName,'loginSuccess',response['token']);
+				await G_Bus.trigger('router','changePage','/test');
+				
 			}else{
 				G_Bus.trigger(_.componentName,'loginFail',{
 					"response": response,

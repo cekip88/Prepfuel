@@ -11,26 +11,23 @@ export default class GModaler extends GComponent {
 		_.componentName = 'modaler';
 		G_Bus
 			.on(_,'showModal')
-		_.on('closeModal',_.closeModal())
-		_.on('cancelCloseModal',_.cancelCloseModal())
+			.on(_,'closeModal')
+		_.on('closeModal',_.closeModal.bind(_))
+		_.on('cancelCloseModal',_.cancelCloseModal.bind(_))
 		
 		
 	}
 	cancelCloseModal(mouseupData){
-		return (mouseupData)=>{
-			const _ = this;
-			mouseupData['event'].preventDefault();
-		}
+		const _ = this;
+		mouseupData['event'].preventDefault();
 	}
 	closeModal(modalData){
-		return (modalData)=> {
-			const _ = this;
-			let targetContent = _.querySelector('.modaler-content');
-			if(!targetContent) return;
-			targetContent.classList.remove('modaler-content');
-			_.targetContentParent.append(targetContent);
-			_.modalCont.classList.remove('active');
-		}
+		const _ = this;
+		let targetContent = _.querySelector('.modaler-content');
+		if(!targetContent) return;
+		targetContent.classList.remove('modaler-content');
+		_.targetContentParent.append(targetContent);
+		_.modalCont.classList.remove('active');
 	}
 	hideShadow(){
 		const _ = this;

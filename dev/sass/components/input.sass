@@ -1,7 +1,7 @@
 :host
 	--animation-time: .35s
-	--blue: 80, 104, 226
-	--red: 241, 65, 108
+	--input-blue: 80, 104, 226
+	--input-red: 241, 65, 108
 	--green: 131, 191, 110
 	--gap: 10px
 .inpt
@@ -68,14 +68,14 @@
 		+wh(20px)
 		pointer-events: none
 	&.error
-		border-color: rgb(var(--red))
+		border-color: rgb(var(--input-red))
 	&.error &-tip,
 	&.error &-value-placeholder,
 	&.error &-value::placeholder
-		color: rgb(var(--red))
+		color: rgb(var(--input-red))
 	&.error &-value
-		color: rgb(var(--red))
-		border-bottom-color: rgb(var(--red))
+		color: rgb(var(--input-red))
+		border-bottom-color: rgb(var(--input-red))
 	&.error &-tip,&.success &-tip
 		top: 125%
 		transform: scale(1)

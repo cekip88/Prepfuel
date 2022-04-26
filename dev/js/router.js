@@ -6,17 +6,16 @@ export class router {
 		_.componentName = 'router';
 		_.pages = new Map();
 		_.systemComponents = ['router'];
-		G_Bus.on(_,'changePage')
+		G_Bus
+			.on(_,'changePage')
+			.on(_,'logout')
 	}
 	async changePage(route){
 		const _ = this;
-		let currentPageRoute = _.definePageRoute(route);
-		if(_.pages.has(currentPageRoute['module']).length){
+		_.currentPageRoute = _.definePageRoute(route);
 			_.clearComponents();
-		}else{
-			if(!_.pages.has(currentPageRoute['module'])){
-				let currentPage = await _.includePage(currentPageRoute);
-			}
+		if(!_.pages.has(_.currentPageRoute['module'])){
+			let currentPage = await _.includePage(_.currentPageRoute);
 		}
 	}
 	definePageRoute(route){
@@ -71,11 +70,22 @@ export class router {
 			if(_.isSystemComponent(page[0])){
 				continue;
 			}
+			if(_.currentPageRoute['module'] == page[0]){
+				continue;
+			}
 			let EventComponentName = `${page[0]}page`.toLowerCase();
+			_.pages.delete(page[0]);
 			delete G_Bus.components[EventComponentName];
 		}
-		//console.log(arr)
 	}
+	
+	logout(){
+		localStorage.removeItem('g-route-prev')
+		localStorage.removeItem('g-route-current')
+		localStorage.removeItem('token');
+		G_Bus.trigger('router','changePage','/login');
+	}
+	
 	isSystemComponent(componentName){
 		if(this.systemComponents.indexOf(componentName) > -1){
 			return true;

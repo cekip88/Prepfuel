@@ -10,7 +10,7 @@ class TestPage extends G{
 	async asyncDefine(){
 		const _ = this;
 		_.set({
-			test: await _.model.getTest('626027a7e604e5c1a0ec067e'),
+			test: await _.model.getTest('6267ee277b8495743752bf63'),
 		});
 		_.set({
 			currentQuestion: _.model.firstQuestion,
@@ -149,9 +149,9 @@ class TestPage extends G{
 			id: _.innerQuestionId,
 			note: formData['text']
 		});
-		_.storageTest = _.model.getTestFromStorage();
+		G_Bus.trigger(_.componentName,'updateStorageTest')
 		let question = _.model.innerQuestion(_.innerQuestionId);
-		
+	
 		// Add note after answer list
 		let answerList = _.f(`.answer-list[data-question-id="${question['id']}"]`);
 		if(answerList.nextElementSibling) {
@@ -163,8 +163,7 @@ class TestPage extends G{
 		G_Bus.trigger('modaler','closeModal');
 		// Show active note button
 		_.f(`.note-button[data-question-id="${question['id']}"]`).classList.add('active');
-		
-		
+		// Нижнего переднего рычага задний сайлентблоки
 	}
 	
 	setActions(type='bookmarked'){
@@ -220,7 +219,7 @@ class TestPage extends G{
 			_.currentPos-=1;
 			_._$.currentQuestion= _.questionsPages[index-1];
 		}else{
-			if( index == _.questionsLength-1){
+			if( index == _.questionsPages.length-1){
 				return void 0;
 			}
 			_.currentPos+=1;
@@ -368,7 +367,7 @@ class TestPage extends G{
           <textarea class="modal-area" name="text"></textarea>
           <div class="modal-row end">
             <button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
-            <button class="button-blue" data-click="${this.componentName}:saveNote"><span>Save</span></button>
+            <button class="button-blue"><span>Save</span></button>
           </div>
         </form>
       </div>
@@ -388,6 +387,11 @@ class TestPage extends G{
 			};
 		if(answer.hasAttribute('disabled')){
 			answer.removeAttribute('disabled');
+			if(currentTest['disabledAnswers']){
+				console.log(currentTest['disabledAnswers'].indexOf(variant));
+				currentTest['disabledAnswers'].splice(currentTest['disabledAnswers'].indexOf(variant),1);
+				G_Bus.trigger(_.componentName,'updateStorageTest')
+			}
 		}else{
 			if(answer.classList.contains('active')){
 				_.model.saveTestToStorage({
@@ -825,11 +829,18 @@ class TestPage extends G{
 			_.setActions('note');
 			let step = 1,
 					len = _.test['sections']['questionPages'][_.currentPos]['questions'].length;
+			
 			if( len > 1 ){
 				step= len;
 			}
+			
 			if(_.questionPos < _.questionsLength){
 				_.f('.skip-to-question').textContent = _.questionPos+step;
+			}
+			if(_.questionPos == _.questionsLength){
+				_.f('.skip-to-question-title').textContent = 'Finish this section';
+				_.f('.skip-to-question').textContent = '';
+				_.f('.skip-to-question-button').classList.add('button-blue');
 			}
 			if(_.currentPos > 0){
 				if(_.f('.back-to-question-button')){
@@ -848,8 +859,9 @@ class TestPage extends G{
 				}
 				if(currentStorageTest['disabledAnswers']){
 					for(let dis of currentStorageTest['disabledAnswers']){
-						_.f(`.answer-list .answer-item[data-question-id="${currentStorageTest['id']}"][data-variant="${dis}"]`).classList.remove('active');
-						_.f(`.answer-list .answer-item[data-question-id="${currentStorageTest['id']}"][data-variant="${dis}"]`).setAttribute('disabled', 'disabled');
+						let item = _.f(`.answer-list .answer-item[data-question-id="${currentStorageTest['id']}"][data-variant="${dis}"]`);
+						item.classList.remove('active');
+						item.setAttribute('disabled', 'disabled');
 					}
 				}
 			}

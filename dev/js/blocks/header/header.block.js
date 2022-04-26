@@ -37,7 +37,7 @@ class HeaderBlock extends G{
 								<span class="head-name">${this._$.headerName}</span>
 								<span class="head-position">Student</span>
 							</div>
-							<button class="head-user">
+							<button class="head-user" data-click="router:logout">
 								<span>S</span>
 							</button>
 						</div>
