@@ -21,7 +21,6 @@ class LoginPage extends G{
 		_.storageSave('token',token);
 		return Promise.resolve(token);
 	}
-
 	loginFail({response,formData}){
 		const _ = this;
 		let msg = response['message'];
@@ -127,7 +126,6 @@ class LoginPage extends G{
 			</section>
 		`;
 	}
-
 	async doLogin({item:form,event}){
 		const _ = this;
 		event.preventDefault()

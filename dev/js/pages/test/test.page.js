@@ -20,6 +20,7 @@ class TestPage extends G{
 		const _ = this;
 		_.componentName = 'TestPage';
 		G_Bus
+			.on(_,'showResults')
 			.on(_,'changeSection')
 			.on(_,'setWrongAnswer')
 			.on(_,'setCorrectAnswer')
@@ -63,6 +64,10 @@ class TestPage extends G{
 			outPos+= _.test['sections']['questionPages'][i]['questions'].length;
 		}
 		return outPos;
+	}
+	
+	showResults(data){
+		console.log(data);
 	}
 	
 	updateStorageTest(){
@@ -196,15 +201,16 @@ class TestPage extends G{
 		_._$.currentSection = section;
 		_.renderPart({part:'body',content: await _.flexible(section)});
 		if(section == 'questions'){
-			_.fillCheckedAnswers()
+			_.fillCheckedAnswers();
 		}
 	}
+	
 	jumpToQuestion({item,event}){
 		const _ = this;
 		let
 			currentQuestionPos = _.currentPos,
 			jumpQuestionPos = _.model.currentPos(item.parentNode.getAttribute('data-question-id'));
-		if(currentQuestionPos == jumpQuestionPos) return;
+		if(currentQuestionPos == jumpQuestionPos) return void 0;
 		_.currentPos = jumpQuestionPos;
 		_._$.currentQuestion = _.test['sections']['questionPages'][jumpQuestionPos];
 	}
@@ -212,6 +218,21 @@ class TestPage extends G{
 		const _ = this;
 		let dir = item.getAttribute('data-dir');
 		let index = _.currentPos;
+		
+		_.currentQuestion = _.model.innerQuestion(_.questionPos);
+		_.currentPage = _.model.currentPage(_.currentPos);
+		let answer = _.storageTest[_.currentQuestion['id']];
+		_.model.saveAnswer(_.test['resultId'],{
+			answer:{
+				questionPageId: _.currentPage['pageId'],
+				//questionId: answer['id'],
+				answerId: answer['id'],
+				answer: answer['answer'],
+				disabledAnswers: answer['disabledAnswers'],
+				note: answer['note']
+			}
+		})
+		
 		if(dir == 'prev'){
 			if( index == 0){
 				return void 0;
@@ -434,6 +455,7 @@ class TestPage extends G{
 		});
 		_.f('.skip-to-question-title').textContent = 'Next to question';
 		_.f('.skip-to-question-button').className= 'skip-to-question-button button-blue';
+		G_Bus.trigger(_.componentName,'updateStorageTest')
 	}
 	
 	explanationAnswer(){
@@ -814,6 +836,14 @@ class TestPage extends G{
 		// welcome | directions | questions
 		return _[`${section}Carcass`]();
 	}
+	async render(){
+		const _ = this;
+		_.header = await _.getBlock({name:'header'},'blocks');
+		_.fillPartsPage([
+			{ part:'header', content:_.markup(_.header.render(),false)},
+			{ part:'body', content: await _.flexible('welcome')}
+		]);
+	}
 	async init(){
 		const _ = this;
 		_._( ()=>{
@@ -866,16 +896,10 @@ class TestPage extends G{
 				}
 			}
 			
+		
 			
 		},['currentQuestion']);
 	}
-	async render(){
-		const _ = this;
-		_.header = await _.getBlock({name:'header'},'blocks');
-		_.fillPartsPage([
-			{ part:'header', content:_.markup(_.header.render(),false)},
-			{ part:'body', content: await _.flexible('welcome')}
-		]);
-	}
+	
 }
 export { TestPage }

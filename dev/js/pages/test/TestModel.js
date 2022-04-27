@@ -30,6 +30,10 @@ export default  class TestModel{
 	
 	async start(){
 		const _ =this;
+		if(localStorage.getItem('resultId')){
+			_.test['resultId'] = localStorage.getItem('resultId');
+			return Promise.resolve(_.test['resultId']);
+		}
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/create/${_.test['_id']}`,{
 				'method': 'POST',
@@ -42,12 +46,70 @@ export default  class TestModel{
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					_.test['resultId'] = response['resultId'];
+					localStorage.setItem('resultId', response['resultId']);
 					resolve(response['resultId']);
 				}
 			}
 		});
 	}
 	
+	async saveAnswer(resultId,answer){
+		// Save choosed answer in server
+		const _ = this;
+		if(answer){
+			answer['status'] = 'in progress';
+		}
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${resultId}`,{
+				method: 'PUT',
+				headers:{
+					"Authorization": localStorage.getItem('token'),
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(answer)
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				if(response['status'] == 'success'){
+					_.getTestResults();
+					resolve(response);
+				}
+			}
+		});
+	}
+	async getLatestTestResults(){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${_.test['_id']/latest}`,{
+				method: 'GET',
+				headers:{
+					"Authorization": localStorage.getItem('token'),
+					"Content-Type": "application/json"
+				}
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				G_Bus.trigger('TestPage','showLatestResults',response)
+			}
+		});
+	}
+	async getTestResults(){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${_.test['resultId']}`,{
+				method: 'GET',
+				headers:{
+					"Authorization": localStorage.getItem('token'),
+					"Content-Type": "application/json"
+				}
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				G_Bus.trigger('TestPage','showResults',response);
+			}
+		});
+	}
+	async getTestSummary(resultId){}
 	finishTest(){
 		const _ = this;
 	}
@@ -67,10 +129,11 @@ export default  class TestModel{
 			});
 		});
 	}
-	currentQuestion(id){
+	currentPage(pos){
 		const _ = this;
-		let c =  _.test['sections']['questionPages'].filter(quest => quest['pageId'] == id);
-		if(c.length) return c;
+		return _.test['sections']['questionPages'][pos];
+	/*	let c =  _.test['sections']['questionPages'].filter(quest => quest['pageId'] == id);
+		if(c.length) return c;*/
 	}
 	innerQuestion(id){
 		const _ = this;
