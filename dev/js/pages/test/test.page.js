@@ -10,7 +10,7 @@ class TestPage extends G{
 	async asyncDefine(){
 		const _ = this;
 		_.set({
-			test: await _.model.getTest('6267ee277b8495743752bf63'),
+			test: await _.model.getTest('6269535b18bfca991362ed5e'),
 		});
 		_.set({
 			currentQuestion: _.model.firstQuestion,
@@ -21,6 +21,7 @@ class TestPage extends G{
 		_.componentName = 'TestPage';
 		G_Bus
 			.on(_,'showResults')
+			.on(_,'showSummary')
 			.on(_,'changeSection')
 			.on(_,'setWrongAnswer')
 			.on(_,'setCorrectAnswer')
@@ -67,6 +68,9 @@ class TestPage extends G{
 	}
 	
 	showResults(data){
+		console.log(data);
+	}
+	showSummary(data){
 		console.log(data);
 	}
 	
@@ -202,6 +206,8 @@ class TestPage extends G{
 		_.renderPart({part:'body',content: await _.flexible(section)});
 		if(section == 'questions'){
 			_.fillCheckedAnswers();
+			
+			_.model.getTestResults();
 		}
 	}
 	
@@ -214,25 +220,40 @@ class TestPage extends G{
 		_.currentPos = jumpQuestionPos;
 		_._$.currentQuestion = _.test['sections']['questionPages'][jumpQuestionPos];
 	}
+	saveAnswerToDB(){
+		const _ = this;
+		_.currentQuestion = _.model.innerQuestion(_.questionPos);
+		_.currentPage = _.model.currentPage(_.currentPos);
+		let handle = (answer)=>{
+			_.model.saveAnswer({
+				answer:{
+					questionPageId: _.currentPage['pageId'],
+					questionId: answer['id'],
+					answer: answer['answer'],
+					disabledAnswers: answer['disabledAnswers'],
+					note: answer['note']
+				}
+			})
+		}
+		if(_.currentPage['questions'].length > 1){
+			for(let quest of _.currentPage['questions']){
+				let answer = _.storageTest[quest['id']];
+				if(!answer) continue;
+				handle(answer)
+			}
+		}else{
+			let answer = _.storageTest[_.currentQuestion['id']];
+			handle(answer)
+			//_.model.finishTest();
+		}
+		
+	}
 	changeQuestion({ item, event }){
 		const _ = this;
 		let dir = item.getAttribute('data-dir');
 		let index = _.currentPos;
-		
-		_.currentQuestion = _.model.innerQuestion(_.questionPos);
-		_.currentPage = _.model.currentPage(_.currentPos);
-		let answer = _.storageTest[_.currentQuestion['id']];
-		_.model.saveAnswer(_.test['resultId'],{
-			answer:{
-				questionPageId: _.currentPage['pageId'],
-				//questionId: answer['id'],
-				answerId: answer['id'],
-				answer: answer['answer'],
-				disabledAnswers: answer['disabledAnswers'],
-				note: answer['note']
-			}
-		})
-		
+	
+		_.saveAnswerToDB();
 		if(dir == 'prev'){
 			if( index == 0){
 				return void 0;
@@ -256,7 +277,7 @@ class TestPage extends G{
 				<div class="section-header">
 					<h1 class="title">Practice Test - Section Name</h1>
 					<div class="test-timer"><span class="test-timer-value">${_.test.time}</span> minutes left</div>
-					<button class="button-white"><span>Finish this section</span></button>
+					<button class="button-white" data-click="${this.componentName}:changeSection" section="score"><span>Finish this section</span></button>
 				</div>
 			</div>
 	`)});
@@ -282,7 +303,7 @@ class TestPage extends G{
 				<div class="section-header">
 					<h1 class="title">${_.test['sections']['directions'].headerTitle}</h1>
 					<div class="test-timer"><span class="test-timer-value">${_.test.time}</span> minutes left</div>
-					<button class="button-white"><span>Finish this section</span></button>
+					<button class="button-white"  data-click="${this.componentName}:changeSection" section="score"><span>Finish this section</span></button>
 				</div>
 			</div>
 			<div class="section row">
@@ -392,6 +413,71 @@ class TestPage extends G{
           </div>
         </form>
       </div>
+		`,false);
+	}
+	async scoreCarcass(){
+		const _ = this;
+		let response = await _.model.getTestSummary();
+		return  _.markup(`
+			<div class="section">
+				<div class="section-header">
+					<h2 class="title">Practice Test Score - Section Name</h2>
+					<button class="button-white">
+						<span>Exit this section</span>
+					</button>
+				</div>
+			</div>
+			<div class="section">
+				<div class="block test-block">
+					<div class="test-header">
+						<h5 class="block-title test-title"><span>Complete</span></h5>
+					</div>
+					<div class="test-inner">
+						<h5 class="block-title test-title">
+							<span>You finished ${_.test['title']}</span>
+						</h5>
+						<p class="test-text">
+							Description text about rules at the real test - if there will be break or not etc.
+						</p>
+					<div class="test-result">
+						<div class="test-result-block violet">
+							<h6 class="test-result-title"><span>Questions Answered</span></h6>
+							<p class="test-result-score">${response['summary']['questionsAnswered']}</p>
+						</div>
+						<div class="test-result-block turquoise">
+							<h6 class="test-result-title"><span>Questions Correct</span></h6>
+							<p class="test-result-score">${response['summary']['questionsCorrect']}</p>
+						</div>
+						<div class="test-result-block gray">
+							<h6 class="test-result-title"><span>Not answered</span></h6>
+							<p class="test-result-score">${response['summary']['questionsNotAnswered']}</p>
+						</div>
+						<div class="test-result-block green">
+							<h6 class="test-result-title"><span>Score</span></h6>
+							<p class="test-result-score">${response['summary']['totalScore']}</p>
+						</div>
+						<div class="test-result-block blue">
+							<h6 class="test-result-title"><span>Stars for section of the Test</span></h6>
+						<p class="test-result-score">+150</p>
+						<div class="test-result-img">
+							<svg>
+								<use xlink:href="#stars"></use>
+							</svg>
+							<svg>
+								<use xlink:href="#stars"></use>
+							</svg>
+							<svg>
+								<use xlink:href="#stars"></use>
+							</svg>
+						</div>
+					</div>
+					</div>
+					</div>
+					<div class="test-footer"><a class="test-footer-back" href="./test-review-correct.html"><span>Review this section</span></a>
+					<button class="button-blue"><span>Start the next section: Quantitative Reasoning</span></button>
+					</div>
+				</div>
+			</div>
 		`,false);
 	}
 	/* Cacrass templates*/
@@ -549,95 +635,79 @@ class TestPage extends G{
 	
 	
 	/* Questions tpls */
+	gridDigitButtons(){
+		const _ = this;
+		let tpl = ``;
+		for(let i=0; i < 10; i++){
+			tpl+=`<button class="grid-button">${i}</button>`;
+		}
+		return tpl;
+	}
 	gridQuestion(){
 		const _ = this;
-		return `
+		let currentQuestion = _._$.currentQuestion['questions'][0];
+		let tpl =  `
 			<div class="test-header">
 				<h5 class="block-title test-title"><span>Question ${_.questionPos} of ${_.questionsLength}</span></h5>
 				${_.actionsTpl(_._$.currentQuestion['questions'][0])}
 			</div>
 			<div class="test-inner test-row">
 				<div class="test-col wide">
-			<img src="img/test-graphic.svg" alt="">
-			<p class="test-text">Text of a question or math formula. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit.</p>
+					`;
+			for(let fileLink of _._$.currentQuestion['files']){
+				tpl+=`<img src="${fileLink}" alt="">`;
+			}
+			tpl+=`
+					<p class="test-text">
+						<span>${currentQuestion['mathFormula']}</span>
+					</p>
+					<p class="test-text">
+						<span>${currentQuestion['questionText']}</span>
+					</p>
+					<br><br>
 			</div>
 				<div class="test-col narrow grid">
 			<div class="grid-row">
-			<input class="grid-input" type="text" disabled="">
+				<input class="grid-input" type="text" disabled="">
 			</div>
 			<div class="grid-row">
-			<div class="grid-col">
-			<button class="grid-button">-</button>
+				<div class="grid-col">
+				<button class="grid-button">-</button>
 			</div>
-			<div class="grid-col">
-			<button class="grid-button">.</button>
-			</div>
-			<div class="grid-col">
-			<button class="grid-button">.</button>
-			</div>
-			<div class="grid-col">
-			<button class="grid-button">.</button>
-			</div>
-			<div class="grid-col">
-			<button class="grid-button">.</button>
-			</div>
+				<div class="grid-col">
+					<button class="grid-button">.</button>
+				</div>
+				<div class="grid-col">
+					<button class="grid-button">.</button>
+				</div>
+				<div class="grid-col">
+					<button class="grid-button">.</button>
+				</div>
+				<div class="grid-col">
+					<button class="grid-button">.</button>
+				</div>
 			</div>
 			<div class="grid-row">
+				<div class="grid-col">
+					<button class="grid-button high"></button>
+				</div>
 			<div class="grid-col">
-			<button class="grid-button high"></button>
+				${_.gridDigitButtons()}
 			</div>
 			<div class="grid-col">
-			<button class="grid-button">0</button>
-			<button class="grid-button">1</button>
-			<button class="grid-button">2</button>
-			<button class="grid-button">3</button>
-			<button class="grid-button">4</button>
-			<button class="grid-button">5</button>
-			<button class="grid-button">6</button>
-			<button class="grid-button">7</button>
-			<button class="grid-button">8</button>
-			<button class="grid-button">9</button>
+				${_.gridDigitButtons()}
 			</div>
 			<div class="grid-col">
-			<button class="grid-button">0</button>
-			<button class="grid-button">1</button>
-			<button class="grid-button">2</button>
-			<button class="grid-button">3</button>
-			<button class="grid-button">4</button>
-			<button class="grid-button">5</button>
-			<button class="grid-button">6</button>
-			<button class="grid-button">7</button>
-			<button class="grid-button">8</button>
-			<button class="grid-button">9</button>
+				${_.gridDigitButtons()}
 			</div>
 			<div class="grid-col">
-			<button class="grid-button">0</button>
-			<button class="grid-button">1</button>
-			<button class="grid-button">2</button>
-			<button class="grid-button">3</button>
-			<button class="grid-button">4</button>
-			<button class="grid-button">5</button>
-			<button class="grid-button">6</button>
-			<button class="grid-button">7</button>
-			<button class="grid-button">8</button>
-			<button class="grid-button">9</button>
-			</div>
-			<div class="grid-col">
-			<button class="grid-button">0</button>
-			<button class="grid-button">1</button>
-			<button class="grid-button">2</button>
-			<button class="grid-button">3</button>
-			<button class="grid-button">4</button>
-			<button class="grid-button">5</button>
-			<button class="grid-button">6</button>
-			<button class="grid-button">7</button>
-			<button class="grid-button">8</button>
-			<button class="grid-button">9</button>
+				${_.gridDigitButtons()}
 			</div>
 			</div>
 			</div>
 			</div>
 		`;
+			return tpl;
 	}
 	compareQuestion(){
 		const _ = this;
@@ -899,6 +969,10 @@ class TestPage extends G{
 		
 			
 		},['currentQuestion']);
+		
+		
+		let worker = await navigator.serviceWorker.register('/worker.js',{scope:'/test'})
+		
 	}
 	
 }

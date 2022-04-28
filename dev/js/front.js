@@ -1,8 +1,6 @@
 //import { G_Bus } from "./libs/G_Control.js";
 //import { G } from "./libs/G.js";
 import { router } from "./router.js";
-//import GInput from "./components/input/input.component.js";
-//import t from "./components/select/select.component.js";
 
 /*class Front extends G{
   constructor(){
@@ -206,8 +204,6 @@ import { router } from "./router.js";
 
 	}
 }*/
-//new Front();
-
 
 let r = new router();
 

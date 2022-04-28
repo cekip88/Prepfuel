@@ -135,6 +135,9 @@ class LoginPage extends G{
 	}
 	async init(){
 		const _ = this;
+		let worker = await navigator.serviceWorker.register('/worker.js',{scope:'/login'})
+		
+	//	console.log(worker);
 	}
 	async render(){
 		const _ = this;

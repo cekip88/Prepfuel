@@ -4,16 +4,17 @@ export default  class TestModel{
 	constructor(){
 		const _ = this;
 		_.backendUrl = 'https://live-prepfuelbackend-mydevcube.apps.devinci.co/api';
+		_.baseHeaders = {
+			"Authorization": localStorage.getItem('token'),
+			"Content-Type": "application/json"
+		}
 	}
 	async getTest(testId){
 		const _ = this;
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.backendUrl}/practice-tests/${testId}`,{
 				method: 'GET',
-				headers:{
-					"Authorization": localStorage.getItem('token'),
-					"Content-Type": "application/json"
-				}
+				headers: _.baseHeaders
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
@@ -53,14 +54,14 @@ export default  class TestModel{
 		});
 	}
 	
-	async saveAnswer(resultId,answer){
+	async saveAnswer(answer){
 		// Save choosed answer in server
 		const _ = this;
 		if(answer){
 			answer['status'] = 'in progress';
 		}
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${resultId}`,{
+			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${_.test['resultId']}`,{
 				method: 'PUT',
 				headers:{
 					"Authorization": localStorage.getItem('token'),
@@ -74,6 +75,8 @@ export default  class TestModel{
 					_.getTestResults();
 					resolve(response);
 				}
+			}else{
+			
 			}
 		});
 	}
@@ -109,9 +112,44 @@ export default  class TestModel{
 			}
 		});
 	}
-	async getTestSummary(resultId){}
-	finishTest(){
+	async getTestSummary(){
 		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${_.test['resultId']}/summary`,{
+				method: 'GET',
+				headers:{
+					"Authorization": localStorage.getItem('token'),
+					"Content-Type": "application/json"
+				}
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				G_Bus.trigger('TestPage','showSummary',response);
+				resolve(response)
+			}
+		});
+	}
+	finishTest(answer){
+		const _ = this;
+		if(answer){
+			answer['status'] = 'finished';
+		}
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${_.test['resultId']}`,{
+				method: 'PUT',
+				headers:{
+					"Authorization": localStorage.getItem('token'),
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(answer)
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				if(response['status'] == 'success'){
+					resolve(response);
+				}
+			}
+		});
 	}
 	
 	get firstQuestion(){
