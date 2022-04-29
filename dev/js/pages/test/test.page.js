@@ -9,8 +9,12 @@ class TestPage extends G{
 	}
 	async asyncDefine(){
 		const _ = this;
+		let
+			tests =	await _.model.getTests(),
+			currentTest = tests['tests'],
+			currentTestId = currentTest[0]['_id'];
 		_.set({
-			test: await _.model.getTest('6269535b18bfca991362ed5e'),
+			test: await _.model.getTest(currentTestId),
 		});
 		_.set({
 			currentQuestion: _.model.firstQuestion,
@@ -969,9 +973,6 @@ class TestPage extends G{
 		
 			
 		},['currentQuestion']);
-		
-		
-		let worker = await navigator.serviceWorker.register('/worker.js',{scope:'/test'})
 		
 	}
 	

@@ -204,7 +204,7 @@ gulp.task('min_main', function() {
         )
 });
 
-gulp.task('minify',gulp.parallel('min_main','min_css','min_js'));
+gulp.task('minify',gulp.parallel('min_css','min_js'));
 
 gulp.task('watch', function() {
     gulp.watch(html['src_all'],gulp.series('html'));

@@ -208,7 +208,8 @@ import { router } from "./router.js";
 let r = new router();
 
 r.init({
-  'routes':[
-    '/login','/test'
-  ]
+  'routes':{
+    '/login': 'login',
+	  '/test': 'test'
+  }
 });

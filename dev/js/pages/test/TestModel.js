@@ -9,8 +9,27 @@ export default  class TestModel{
 			"Content-Type": "application/json"
 		}
 	}
+	async getTests(testId){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.backendUrl}/practice-tests`,{
+				method: 'GET',
+				headers: _.baseHeaders
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				if(response['status'] == 'success'){
+					console.log();
+					resolve(response);
+				}
+			}else{
+				_.logout(rawResponse);
+			}
+		});
+	}
 	async getTest(testId){
 		const _ = this;
+		
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.backendUrl}/practice-tests/${testId}`,{
 				method: 'GET',

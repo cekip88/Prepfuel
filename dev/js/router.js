@@ -22,17 +22,18 @@ export class router {
 		const _ = this;
 		if(route) history.pushState(null, null, route);
 		let
-			pathName = location.pathname,
-			pathParts = pathName.split('/').splice(1),
-			module = pathParts.splice(0,1)[0],
-			params = pathParts;
-		if(_.routes.indexOf(`/${module}`) < 0){
+		pathName = location.pathname,
+		pathParts = pathName.split('/').splice(1),
+		module = pathParts.splice(0,1)[0],
+		params = pathParts;
+		let routesValues = Object.keys(_.routes)
+		if(routesValues.indexOf(`/${module}`) < 0){
 			return {
 				'module': 'NotFound', 'params': null
 			}
 		}
 		return {
-			'module': module, 'params': params
+			'module': _.routes[`/${module}`], 'params': params
 		}
 	}
 	includePage(blockData){
