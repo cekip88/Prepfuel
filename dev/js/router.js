@@ -23,10 +23,10 @@ export class router {
 		const _ = this;
 		if(route) history.pushState(null, null, route);
 		let
-		pathName = location.pathname,
-		pathParts = pathName.split('/').splice(1),
-		module = pathParts.splice(0,1)[0],
-		params = pathParts;
+			pathName = location.pathname,
+			pathParts = pathName.split('/').splice(1),
+			module = pathParts.splice(0,1)[0],
+			params = pathParts;
 		let routesValues = Object.keys(_.routes)
 		if(routesValues.indexOf(`${pathName}`) < 0){
 			return {

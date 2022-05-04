@@ -216,6 +216,7 @@ r.init({
   'routes':{
     '/login': 'login',
     '/login/forgot': 'login',
+    '/login/reset/{token}': 'login',
 	  '/test': 'test'
   }
 });
