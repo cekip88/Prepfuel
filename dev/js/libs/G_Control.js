@@ -1,28 +1,27 @@
 import { G_Bus } from "./G_Bus.js";
 
 let prepareHandler = (e,dataEvent)=>{
+	
 		let
-			cnt = 1,max = 3, item = e.target;
-		if(!item) return void 0;
-		while(item != document) {
-			if(cnt > max) return void 0;
-			if( item.hasAttribute(`data-${dataEvent}`) ){
-				return triggerWithEvent({'item':item,'event':e},dataEvent);
-			}
-			cnt++;
-			item = item.parentNode;
-		}
+			item = e.target;
+	
+		if(!item || !item.closest) return void 0;
+		let citem = item.closest(`[data-${dataEvent}]`);
+	
+		if(!citem) return void 0;
+		return triggerWithEvent({'item':citem,'event':e},dataEvent);
 	},
 	triggerWithEvent = (data,currentAction) =>{
-	if (!data['item'])  return void 0;
-	let
-		rawActions = data['item'].getAttribute(`data-${currentAction}`).split(';');
-	for(let rAction of rawActions){
-		let rawAction = rAction.split(':'),
-			component = rawAction.splice(0,1)[0];
-		for(let action of rawAction){
-			G_Bus.trigger(component,action,data);
-		}
+		if (!data['item'])  return void 0;
+		let
+			rawActions = data['item'].getAttribute(`data-${currentAction}`).split(';');
+		
+		for(let rAction of rawActions){
+			let rawAction = rAction.split(':'),
+				component = rawAction.splice(0,1)[0];
+			for(let action of rawAction){
+				G_Bus.trigger(component,action,data);
+			}
 	}
 }
 class _G_Control{
@@ -31,7 +30,7 @@ class _G_Control{
 		_.container = params?.container ?? document;
 		_.handle();
 	}
-
+	
 	clickHandler(e){
 		return prepareHandler(e,'click');
 	}

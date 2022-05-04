@@ -9,8 +9,7 @@ class TestPage extends G{
 	}
 	async asyncDefine(){
 		const _ = this;
-		let
-			tests =	await _.model.getTests(),
+		let tests =	await _.model.getTests(),
 			currentTest = tests['tests'],
 			currentTestId = currentTest[0]['_id'];
 		_.set({
@@ -239,16 +238,17 @@ class TestPage extends G{
 				}
 			})
 		}
-		if(_.currentPage['questions'].length > 1){
-			for(let quest of _.currentPage['questions']){
-				let answer = _.storageTest[quest['id']];
-				if(!answer) continue;
-				handle(answer)
+		if(parseInt(_.currentPage['type']) !== 5){
+			if(_.currentPage['questions'].length > 1){
+				for(let quest of _.currentPage['questions']){
+					let answer = _.storageTest[quest['id']];
+					if(!answer) continue;
+					handle(answer)
+				}
+			}else{
+				let answer = _.storageTest[_.currentQuestion['id']];
+				handle(answer);
 			}
-		}else{
-			let answer = _.storageTest[_.currentQuestion['id']];
-			handle(answer)
-			//_.model.finishTest();
 		}
 		
 	}

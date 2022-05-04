@@ -52,15 +52,19 @@ export class G extends G_G{
 			}
 		}
 	}
-	fillPartsPage(parts){
+	fillPartsPage(parts,clear=true){
 		/* Рендер страницы компонентами */
 		const _ = this;
 		//_.parts = parts;
 		let
-			gSet = _.f('#g-set')
-		_.clear(gSet);
+			gSet = _.f('#g-set');
+		if(clear)	_.clear(gSet);
 		for(let part of parts){
 			_.parts[part['part']] = part;
+			if(part['parent']) {
+				if(gSet.querySelector(`${part['parent']}`))
+				gSet =  gSet.querySelector(`${part['parent']}`)
+			}
 			gSet.append(...part['content']);
 		}
 	}

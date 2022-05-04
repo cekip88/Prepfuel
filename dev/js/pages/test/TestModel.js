@@ -5,7 +5,7 @@ export default  class TestModel{
 		const _ = this;
 		_.backendUrl = 'https://live-prepfuelbackend-mydevcube.apps.devinci.co/api';
 		_.baseHeaders = {
-			"Authorization": localStorage.getItem('token'),
+			//"Authorization": localStorage.getItem('token'),
 			"Content-Type": "application/json"
 		}
 	}
@@ -14,12 +14,11 @@ export default  class TestModel{
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.backendUrl}/practice-tests`,{
 				method: 'GET',
-				headers: _.baseHeaders
+				headers:_.baseHeaders,
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
-					console.log();
 					resolve(response);
 				}
 			}else{
@@ -29,11 +28,10 @@ export default  class TestModel{
 	}
 	async getTest(testId){
 		const _ = this;
-		
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.backendUrl}/practice-tests/${testId}`,{
 				method: 'GET',
-				headers: _.baseHeaders
+				headers:_.baseHeaders
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
@@ -57,10 +55,7 @@ export default  class TestModel{
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/create/${_.test['_id']}`,{
 				'method': 'POST',
-				headers:{
-					'Content-Type': 'application/json',
-					'Authorization': localStorage.getItem('token')
-				}
+				headers:_.baseHeaders
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
@@ -82,10 +77,7 @@ export default  class TestModel{
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${_.test['resultId']}`,{
 				method: 'PUT',
-				headers:{
-					"Authorization": localStorage.getItem('token'),
-					"Content-Type": "application/json"
-				},
+				headers:_.baseHeaders,
 				body: JSON.stringify(answer)
 			});
 			if(rawResponse.status == 200){
@@ -104,10 +96,7 @@ export default  class TestModel{
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${_.test['_id']/latest}`,{
 				method: 'GET',
-				headers:{
-					"Authorization": localStorage.getItem('token'),
-					"Content-Type": "application/json"
-				}
+				headers:_.baseHeaders
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
@@ -120,10 +109,7 @@ export default  class TestModel{
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${_.test['resultId']}`,{
 				method: 'GET',
-				headers:{
-					"Authorization": localStorage.getItem('token'),
-					"Content-Type": "application/json"
-				}
+				headers:_.baseHeaders,
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
@@ -136,10 +122,7 @@ export default  class TestModel{
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${_.test['resultId']}/summary`,{
 				method: 'GET',
-				headers:{
-					"Authorization": localStorage.getItem('token'),
-					"Content-Type": "application/json"
-				}
+				headers:_.baseHeaders,
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
@@ -156,10 +139,7 @@ export default  class TestModel{
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${_.test['resultId']}`,{
 				method: 'PUT',
-				headers:{
-					"Authorization": localStorage.getItem('token'),
-					"Content-Type": "application/json"
-				},
+				headers:_.baseHeaders,
 				body: JSON.stringify(answer)
 			});
 			if(rawResponse.status == 200){

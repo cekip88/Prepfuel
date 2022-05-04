@@ -204,12 +204,18 @@ import { router } from "./router.js";
 
 	}
 }*/
+( async ()=>{
+	let worker = navigator.serviceWorker.register('/worker.js',{scope:'/'});
+	if(!navigator.serviceWorker.controller) location.reload();
+})()
+
 
 let r = new router();
 
 r.init({
   'routes':{
     '/login': 'login',
+    '/login/forgot': 'login',
 	  '/test': 'test'
   }
 });
