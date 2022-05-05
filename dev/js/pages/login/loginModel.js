@@ -1,10 +1,25 @@
 import {G_Bus} from "../../libs/G_Bus.js";
-
-export default class loginModel{
+import { env } from "/env.js"
+class _loginModel{
 	constructor() {
 		this.componentName = 'LoginPage';
+		
+		this.baseHeaders = {
+			headers:{
+				"Content-type": "application/json"
+			}
+		}
+		this.endpoints = {
+			'login': `${env.backendUrl}/auth/login`,
+			'register': `${env.backendUrl}/auth/register`,
+			'forgot': `${env.backendUrl}/auth/forgot-password`,
+			'reset': `${env.backendUrl}/auth/reset-password`,
+		};
+		
 	}
-	
+	isSuccessStatus(status){
+		return (status < 300);
+	}
 	isSuccessResponse(response){
 		return response['status'] == 'success';
 	}
@@ -14,19 +29,17 @@ export default class loginModel{
 	
 	async doLogin(formData){
 		const _ = this;
-		let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/auth/login`,{
+		let rawResponse = await fetch(_.endpoints['login'],{
 			method: 'POST',
-			headers:{
-				"Content-type": "application/json"
-			},
+			..._.baseHeaders,
 			body: JSON.stringify(formData),
+			
 		});
-		if( rawResponse.status == 200 ){
+		if(_.isSuccessStatus(rawResponse.status)){
 			let response = await rawResponse.json();
 			if( _.isSuccessResponse(response) ){
 				await G_Bus.trigger(_.componentName,'loginSuccess',response['token']);
 				await G_Bus.trigger('router','changePage','/test');
-				
 			}else{
 				G_Bus.trigger(_.componentName,'loginFail',{
 					"response": response,
@@ -37,16 +50,13 @@ export default class loginModel{
 	}
 	async doRegister(formData){
 		const _ = this;
-		let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/auth/register`,{
+		let rawResponse = await fetch(_.endpoints['register'],{
 			method: 'POST',
-			headers:{
-				"Content-type": "application/json"
-			},
+			..._.baseHeaders,
 			body: JSON.stringify(formData),
 		});
-		if( rawResponse.status == 200 ){
+		if( _.isSuccessStatus(rawResponse.status) ){
 			let response = await rawResponse.json();
-			console.log(response)
 			if( _.isSuccessResponse(response) ){
 				await G_Bus.trigger(_.componentName,'registerSuccess',response['token']);
 			}
@@ -60,14 +70,12 @@ export default class loginModel{
 	}
 	async doForgot(formData){
 		const _ = this;
-		let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/auth/forgot-password`,{
+		let rawResponse = await fetch(_.endpoints['forgot'],{
 			method: 'POST',
-			headers:{
-				"Content-type": "application/json"
-			},
+			..._.baseHeaders,
 			body: JSON.stringify(formData),
 		});
-		if( rawResponse.status == 200 ){
+		if( _.isSuccessStatus(rawResponse.status) ){
 			let response = await rawResponse.json();
 			console.log(response)
 			if( _.isSuccessResponse(response) ){
@@ -82,24 +90,23 @@ export default class loginModel{
 	}
 	async doReset(formData){
 		const _ = this;
-		let rawResponse = await fetch(`https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/auth/reset-password/`,{
+		let rawResponse = await fetch(`${_.endpoints['reset']}/${formData['token']}`,{
 			method: 'POST',
-			headers:{
-				"Content-type": "application/json"
-			},
+			..._.baseHeaders,
 			body: JSON.stringify(formData),
 		});
-		if( rawResponse.status == 200 ){
+		if( _.isSuccessStatus(rawResponse.status) ){
 			let response = await rawResponse.json();
-			console.log(response)
 			if( _.isSuccessResponse(response) ){
-				await G_Bus.trigger(_.componentName,'forgotSuccess',response['token']);
-			}else{
-				G_Bus.trigger(_.componentName,'forgotFail',{
-					"response": response,
-					"formData": formData
-				});
+				await G_Bus.trigger(_.componentName,'resetSuccess',response['token']);
 			}
+		}else{
+			let response = await rawResponse.json();
+			G_Bus.trigger(_.componentName,'resetFail',{
+				"response": response,
+				"formData": formData
+			});
+			console.error(response);
 		}
 	}
 	async isLogin(){
@@ -113,3 +120,4 @@ export default class loginModel{
 		})
 	}
 }
+export const loginModel = new _loginModel();

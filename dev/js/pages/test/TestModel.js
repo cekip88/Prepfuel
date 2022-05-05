@@ -1,6 +1,6 @@
-import {G_Bus} from "../../libs/G_Bus.js";
-
-export default  class TestModel{
+import { G_Bus } from "../../libs/G_Bus.js";
+import { env }   from "/env.js";
+class _TestModel{
 	constructor(){
 		const _ = this;
 		_.backendUrl = 'https://live-prepfuelbackend-mydevcube.apps.devinci.co/api';
@@ -12,7 +12,7 @@ export default  class TestModel{
 	async getTests(testId){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.backendUrl}/practice-tests`,{
+			let rawResponse = await fetch(`${env.backendUrl}/practice-tests`,{
 				method: 'GET',
 				headers:_.baseHeaders,
 			});
@@ -29,7 +29,7 @@ export default  class TestModel{
 	async getTest(testId){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.backendUrl}/practice-tests/${testId}`,{
+			let rawResponse = await fetch(`${env.backendUrl}/practice-tests/${testId}`,{
 				method: 'GET',
 				headers:_.baseHeaders
 			});
@@ -53,7 +53,7 @@ export default  class TestModel{
 			return Promise.resolve(_.test['resultId']);
 		}
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/create/${_.test['_id']}`,{
+			let rawResponse = await fetch(`${env.backendUrl}/practice-test-results/create/${_.test['_id']}`,{
 				'method': 'POST',
 				headers:_.baseHeaders
 			});
@@ -75,7 +75,7 @@ export default  class TestModel{
 			answer['status'] = 'in progress';
 		}
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${_.test['resultId']}`,{
+			let rawResponse = await fetch(`${env.backendUrl}/practice-test-results/${_.test['resultId']}`,{
 				method: 'PUT',
 				headers:_.baseHeaders,
 				body: JSON.stringify(answer)
@@ -94,7 +94,7 @@ export default  class TestModel{
 	async getLatestTestResults(){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${_.test['_id']/latest}`,{
+			let rawResponse = await fetch(`${env.backendUrl}/practice-test-results/${_.test['_id']/latest}`,{
 				method: 'GET',
 				headers:_.baseHeaders
 			});
@@ -107,7 +107,7 @@ export default  class TestModel{
 	async getTestResults(){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${_.test['resultId']}`,{
+			let rawResponse = await fetch(`${env.backendUrl}/practice-test-results/${_.test['resultId']}`,{
 				method: 'GET',
 				headers:_.baseHeaders,
 			});
@@ -120,7 +120,7 @@ export default  class TestModel{
 	async getTestSummary(){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${_.test['resultId']}/summary`,{
+			let rawResponse = await fetch(`${env.backendUrl}/practice-test-results/${_.test['resultId']}/summary`,{
 				method: 'GET',
 				headers:_.baseHeaders,
 			});
@@ -137,7 +137,7 @@ export default  class TestModel{
 			answer['status'] = 'finished';
 		}
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.backendUrl}/practice-test-results/${_.test['resultId']}`,{
+			let rawResponse = await fetch(`${env.backendUrl}/practice-test-results/${_.test['resultId']}`,{
 				method: 'PUT',
 				headers:_.baseHeaders,
 				body: JSON.stringify(answer)
@@ -255,3 +255,5 @@ export default  class TestModel{
 	}
 
 }
+
+export const TestModel = new _TestModel();

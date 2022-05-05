@@ -1,4 +1,4 @@
-let cacheBD = 'staticV2';
+let cacheBD = 'staticV6';
 self.addEventListener('install', event=>{
 	console.log('Installed');
 	event.waitUntil(self.skipWaiting())
@@ -20,10 +20,10 @@ self.addEventListener('install', event=>{
 			//	'/libs/G_Control.js',
 				'/libs/G_G.js',
 			//	'/front.js',
-				'/mixins.js',
+			//	'/mixins.js',
 			//	'/router.js',
-			//	'/front.css',
-				//	'/components.css',
+				'/front.css',
+					'/components.css',
 			//	'/pages/login/login.page.js',
 			//	'/pages/login/loginModel.js',
 			]);
@@ -45,7 +45,6 @@ self.addEventListener('activate', (event) => {
 });
 self.addEventListener('activate', () => self.clients.claim());
 self.addEventListener('fetch', event => {
-	console.log('here');
 	event.respondWith(async function() {
 		const cachedResponse = await caches.match(event.request);
 		if (cachedResponse) return cachedResponse;

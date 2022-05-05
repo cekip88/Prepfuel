@@ -23,18 +23,39 @@ export class router {
 		const _ = this;
 		if(route) history.pushState(null, null, route);
 		let
-			pathName = location.pathname,
+			pathName = location.pathname+location.search,
 			pathParts = pathName.split('/').splice(1),
 			module = pathParts.splice(0,1)[0],
 			params = pathParts;
-		let routesValues = Object.keys(_.routes)
+		let routesValues = Object.keys(_.routes);
+	
 		if(routesValues.indexOf(`${pathName}`) < 0){
-			return {
-				'module': 'NotFound', 'params': null
+			let outRoute, difRoute;
+			for(let value of routesValues){
+				if(value.indexOf('{') > 0){
+					let rawOutRoute = value.substring(value.indexOf('{')-1,-1);
+					difRoute = value;
+					rawOutRoute = new RegExp(rawOutRoute.replace('/','\/')+'/\\w{1,}');
+					outRoute = pathName.match(rawOutRoute);
+					if(outRoute) continue;
+				}
+			}
+			if(!outRoute){
+				return {
+					'module': 'NotFound',
+					'params': null
+				}
+			}else{
+				pathName = difRoute;
+				return {
+					'module': _.routes[`${pathName}`],
+					'params': params
+				}
 			}
 		}
 		return {
-			'module': _.routes[`${pathName}`], 'params': params
+			'module': _.routes[`${pathName}`],
+			'params': params
 		}
 	}
 	includePage(blockData){
@@ -47,7 +68,8 @@ export class router {
 					name = blockData['module'],
 					params = blockData['params'] ? blockData['params'] : {},
 					moduleStr = name.charAt(0).toUpperCase() + name.substr(1)+ moduleInc,
-					path = `/pages/${name}/${name}.${fileType}.js`;
+					path = `/pages/${name}/${name}.${fileType}.js`,
+					pathView = `/pages/${name}/${name}View.js`;
 				if (_.pages.has(name)) {
 					let comp = _.pages.get(name);
 					resolve(comp);
@@ -55,7 +77,11 @@ export class router {
 				const
 					module = await import(path),
 					moduleName = new module[moduleStr](params);
+				const
+					view = await import(pathView),
+					viewObj = view[`${name}View`];
 				Object.assign(module[moduleStr].prototype,mixins);
+				Object.assign(module[moduleStr].prototype,viewObj);
 
 				_.pages.set(name, moduleName);
 				if('asyncDefine' in moduleName)	await moduleName.asyncDefine();

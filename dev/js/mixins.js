@@ -1,14 +1,14 @@
 export const mixins = {
 	/*Storage*/
-	storageHas:(key)=>{
+	storageHas(key){
 		return localStorage.getItem(key) ? true : false;
 	},
-	storageGet:(key,parse)=>{
+	storageGet(key,parse){
 		if (!this.storageHas(key)) return null;
 		if (!parse) parse = false;
 		return !parse ? localStorage.getItem(key) : JSON.parse(localStorage.getItem(key));
 	},
-	storageSave:(key,value)=>{
+	storageSave(key,value){
 		localStorage.removeItem(key);
 		if(typeof value == 'object'){
 			localStorage.setItem(key,JSON.stringify(value));
@@ -16,7 +16,7 @@ export const mixins = {
 			localStorage.setItem(key,value);
 		}
 	},
-	storageUpdate:(key,value)=>{
+	storageUpdate(key,value){
 		const _ = this;
 		let savedItem = _.storageGet(key,true);
 		if (typeof savedItem != 'object' || typeof value != 'object') return;
@@ -25,26 +25,41 @@ export const mixins = {
 		}
 		_.storageSave(key,savedItem);
 	},
-	storageRemove:(key)=>{
+	storageRemove(key){
 		if(this.storageHas(key)) localStorage.removeItem(key);
 	},
 	/*Storage*/
 
 	/*Form*/
-	checkValidate:function(form){
+	handleErrors({response}){
+		const _ = this;
+		let errors = response['errors'];
+		if(!errors) return void 0;
+		let items = _.f('.g-form-item');
+		
+		for(let item of items){
+			for(let error of errors){
+				if(item.name == error.param){
+					item.doValidate(error.msg)
+				}
+			}
+		}
+	},
+	checkValidate(form){
 		const _ = this;
 		if(!form) return;
 		let check = true;
 		let
 			inputs = form.querySelectorAll('.g-form-item');
 		for(let input of inputs){
+			if(!input.doValidate) continue
 			if(!input.doValidate()){
 				check = false;
 			}
 		}
 		return check;
 	},
-	gFormDataCapture:function(form){
+	gFormDataCapture(form){
 		const _ = this;
 		let
 			obj = {},
@@ -56,14 +71,14 @@ export const mixins = {
 		}
 		return obj;
 	},
-	prepareForm:function(form){
+	prepareForm(form){
 		const _ = this;
 		if(_.checkValidate(form)){
 			return _.gFormDataCapture(form);
 		}
 		return null;
 	},
-	formDataCapture:function(form){
+	formDataCapture(form){
 		return new Promise(function (resolve) {
 			let
 				outData = {},

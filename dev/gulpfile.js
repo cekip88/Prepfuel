@@ -27,15 +27,6 @@ const
         ],
         dest: projectPath
     },
-    componentsCss = {
-    err_title: "Ошибка при компиляции в CSS",
-    src_build : ['sass/components/components.sass'],
-    file_name: 'components.css',
-    src_all : [
-      'sass/components/*.sass'
-    ],
-    dest: projectPath
-  },
     css = {
         err_title: "Ошибка при компиляции в CSS",
         src_build : ['sass/main.sass'],
@@ -48,6 +39,15 @@ const
         ],
         dest: projectPath
     },
+		componentsCss = {
+			err_title: "Ошибка при компиляции в CSS",
+			src_build : ['sass/components/components.sass'],
+			file_name: 'components.css',
+			src_all : [
+				'sass/components/*.sass'
+			],
+			dest: projectPath
+		},
     js = {
         src_build : ['js/*.js'],
         file_name: 'front.js',
@@ -80,19 +80,19 @@ gulp.task('html', function(){
         ).pipe(reload({stream:true}));
 });
 gulp.task('componentsCss', function(){
-  return gulp.src(componentsCss['src_build'])
-    .pipe(
-      sass({
-        outputStyle: css['style']
-      })
-        .on( 'error', notify.onError({
-          message: "<%= error %>",
-          title : css['err_title']
-        }))
-    )
-    .pipe(
-      gulp.dest(componentsCss['dest'])
-    ).pipe(reload({stream:true}));
+	return gulp.src(componentsCss['src_build'])
+	.pipe(
+	sass({
+		outputStyle: css['style']
+	})
+	.on( 'error', notify.onError({
+		message: "<%= error %>",
+		title : css['err_title']
+	}))
+	)
+	.pipe(
+	gulp.dest(componentsCss['dest'])
+	).pipe(reload({stream:true}));
 });
 gulp.task('html_func', function(){
     return gulp.src(html['src_all'])
