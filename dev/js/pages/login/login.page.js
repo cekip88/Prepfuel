@@ -20,8 +20,9 @@ class LoginPage extends G{
 			.on(_,'forgotFail')
 			.on(_,'resetSuccess')
 			.on(_,'resetFail')
-			.on(_,'changeSection');
-		
+			.on(_,'changeSection')
+			.on(_,'changeAgree')
+
 	}
 	async doFormAction({item:form,event:e}){
 		const _ = this;
@@ -41,6 +42,12 @@ class LoginPage extends G{
 		_.renderPart({part:part,content: _.markup(_[`${section}Tpl`](),false)});
 	}
 
+	changeAgree({item}){
+		const _ = this;
+		let accountBtn = _.f('#create-account-btn');
+		if(!item.value.length) accountBtn.setAttribute('disabled',true);
+		else accountBtn.removeAttribute('disabled');
+	}
 	
 	loginSuccess(token){
 		const _ = this;

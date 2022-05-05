@@ -97,13 +97,13 @@ export const loginView = {
 				<div class="form-block">
 				<div class="form-checkbox-row">
 				<label class="form-checkbox-label">
-					<g-input type="checkbox" class="" items='[{"value":1,"text":""}]'></g-input>
+					<g-input type="checkbox" class="" items='[{"value":1,"text":""}]' data-change="${_.componentName}:changeAgree"></g-input>
 					<span class="form-checkbox-label-text">I agree to the</span>
 				</label><a class="link" href="#"><span>Terms &amp; Conditions</span></a><span>and</span><a class="link" href="#"><span>Privacy Policy</span></a>
 				</div>
 				</div>
 					<div class="form-block">
-						<button class="button-blue">
+						<button class="button-blue" id="create-account-btn" disabled>
 							<span>Create account</span>
 						</button>
 						<span class="login-span">or</span>

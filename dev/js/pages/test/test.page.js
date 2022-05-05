@@ -16,6 +16,7 @@ class TestPage extends G{
 		_.set({
 			test: await TestModel.getTest(currentTestId),
 		});
+		console.log(_._$.test)
 		_.set({
 			currentQuestion: TestModel.firstQuestion,
 		})
@@ -143,7 +144,7 @@ class TestPage extends G{
 		_.setActions('note')
 	}
 	
-	saveBookmark({item,event}){
+	saveBookmark({item}){
 		const _ = this;
 		let questionId = parseInt(item.getAttribute('data-question-id'));
 		let bookmarked = item.classList.contains('active');
@@ -214,7 +215,28 @@ class TestPage extends G{
 			TestModel.getTestResults();
 		}
 	}
-	
+	changeQuestion({ item, event }){
+		const _ = this;
+		let dir = item.getAttribute('data-dir');
+		let index = _.currentPos;
+
+
+		if(dir == 'prev'){
+			if( index == 0){
+				return void 0;
+			}
+			_.currentPos-=1;
+			_._$.currentQuestion= _.questionsPages[index-1];
+		}else{
+			if( index == _.questionsPages.length-1){
+				return void 0;
+			}
+			_.saveAnswerToDB();
+			_.currentPos+=1;
+			_._$.currentQuestion= _.questionsPages[index+1];
+		}
+
+	}
 	jumpToQuestion({item,event}){
 		const _ = this;
 		let
@@ -243,37 +265,33 @@ class TestPage extends G{
 			if(_.currentPage['questions'].length > 1){
 				for(let quest of _.currentPage['questions']){
 					let answer = _.storageTest[quest['id']];
-					if(!answer) continue;
-					handle(answer)
+					if(!answer){
+						let bookmarkedButton = _.f(`.bookmarked-button[data-question-id="${quest['id']}"]`);
+						_.saveBookmark({
+							item: bookmarkedButton
+						});
+						continue;
+					}
+					handle(answer);
 				}
 			}else{
 				let answer = _.storageTest[_.currentQuestion['id']];
-				handle(answer);
+				if(answer){
+					// if user choosed answer save it to db
+					handle(answer);
+				}else{
+					// else set bookmarked this answer
+					_.saveBookmark({
+						item: _.f('.bookmarked-button')
+					});
+
+
+				}
 			}
 		}
 		
 	}
-	changeQuestion({ item, event }){
-		const _ = this;
-		let dir = item.getAttribute('data-dir');
-		let index = _.currentPos;
-	
-		_.saveAnswerToDB();
-		if(dir == 'prev'){
-			if( index == 0){
-				return void 0;
-			}
-			_.currentPos-=1;
-			_._$.currentQuestion= _.questionsPages[index-1];
-		}else{
-			if( index == _.questionsPages.length-1){
-				return void 0;
-			}
-			_.currentPos+=1;
-			_._$.currentQuestion= _.questionsPages[index+1];
-		}
-		
-	}
+
 	setWrongAnswer({item,event}){
 		const _ = this;
 		let
@@ -331,11 +349,50 @@ class TestPage extends G{
 			id: questionId,
 			answer: answerVariant
 		});
-		_.f('.skip-to-question-title').textContent = 'Next to question';
-		_.f('.skip-to-question-button').className= 'skip-to-question-button button-blue';
+		_.changeSkipButtonToNext();
 		G_Bus.trigger(_.componentName,'updateStorageTest')
 	}
-	
+
+	changeSkipButtonToNext(){
+		const _ = this;
+		_.f('.skip-to-question-title').textContent = 'Next to question';
+		let btn = _.f('.skip-to-question-button');
+		btn.className= 'skip-to-question-button button-blue';
+		btn.setAttribute('data-click',`${this.componentName}:changeQuestion`);
+	}
+	changeNextButtonToSkip(pos){
+		const _ = this;
+		_.f('.skip-to-question-title').textContent = `Skip to questions ${pos}`;
+		let btn = _.f('.skip-to-question-button');
+		btn.className= 'button skip-to-question-button';
+		btn.setAttribute('data-click',`${this.componentName}:changeQuestion`);
+	}
+	changeSkipButtonToFinish(pos){
+		const _ = this;
+		_.f('.skip-to-question-title').textContent = 'Finish this section';
+		_.f('.skip-to-question').textContent = '';
+		let btn = _.f('.skip-to-question-button');
+		btn.classList.add('button-blue');
+		btn.setAttribute('data-click',`${this.componentName}:changeSection`);
+		btn.setAttribute('section',`score`);
+	}
+
+	addBackToQuestionBtn(pos){
+		const _ = this;
+		_.f('.test-footer .dir-button').after(
+			_.markup(`
+				<button class="test-footer-back back-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="prev">
+					<span>Back to question ${pos}</span>
+				</button>`
+			)
+		)
+	}
+	removeBackToQuestionBtn(){
+		const _ = this;
+		if(_.f('.back-to-question-button')){
+			_.f('.back-to-question-button').remove();
+		}
+	}
 
 	fillAnswer(){
 		const _ = this
@@ -387,26 +444,28 @@ class TestPage extends G{
 				_.f('.skip-to-question').textContent = _.questionPos+step;
 			}
 			if(_.questionPos == _.questionsLength){
-				_.f('.skip-to-question-title').textContent = 'Finish this section';
-				_.f('.skip-to-question').textContent = '';
-				_.f('.skip-to-question-button').classList.add('button-blue');
+				_.changeSkipButtonToFinish();
 			}
 			if(_.currentPos > 0){
-				if(_.f('.back-to-question-button')){
-					_.f('.back-to-question-button').remove();
-				}
-				_.f('.test-footer .dir-button').after(
-					_.markup(`<button class="test-footer-back back-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="prev"><span>Back to question ${_.questionPos-1}</span></button>`)
-				)
+				_.removeBackToQuestionBtn();
+				_.addBackToQuestionBtn(_.questionPos-1);
 			}
-			G_Bus.trigger(_.componentName,'updateStorageTest');
+
+			G_Bus.trigger(_.componentName,'updateStorageTest'); // update test info in storage
 			_.currentQuestion = TestModel.innerQuestion(_.questionPos);
+
+
+			// work on marked answers
+
 			let currentStorageTest = _.storageTest[_.currentQuestion['id']];
 			if(currentStorageTest){
 				if(currentStorageTest['answer']){
+					// mark choosed answer
 					_.f(`.answer-list .answer-item[data-question-id="${currentStorageTest['id']}"][data-variant="${currentStorageTest['answer']}"]`).classList.add('active');
+					_.changeSkipButtonToNext();
 				}
 				if(currentStorageTest['disabledAnswers']){
+					// mark disabled answer
 					for(let dis of currentStorageTest['disabledAnswers']){
 						let item = _.f(`.answer-list .answer-item[data-question-id="${currentStorageTest['id']}"][data-variant="${dis}"]`);
 						item.classList.remove('active');
@@ -418,7 +477,6 @@ class TestPage extends G{
 		
 			
 		},['currentQuestion']);
-		
 	}
 	
 }

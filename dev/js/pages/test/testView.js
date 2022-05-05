@@ -216,7 +216,7 @@ export const testView = {
 							<span>You finished ${_.test['title']}</span>
 						</h5>
 						<p class="test-text">
-							Description text about rules at the real test - if there will be break or not etc.
+							${_.test['description']}
 						</p>
 					<div class="test-result">
 						<div class="test-result-block violet">
@@ -237,7 +237,7 @@ export const testView = {
 						</div>
 						<div class="test-result-block blue">
 							<h6 class="test-result-title"><span>Stars for section of the Test</span></h6>
-						<p class="test-result-score">+150</p>
+						<p class="test-result-score">+${response['summary']['stars']}</p>
 						<div class="test-result-img">
 							<svg>
 								<use xlink:href="#stars"></use>

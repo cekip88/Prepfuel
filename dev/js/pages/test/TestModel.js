@@ -3,16 +3,19 @@ import { env }   from "/env.js";
 class _TestModel{
 	constructor(){
 		const _ = this;
-		_.backendUrl = 'https://live-prepfuelbackend-mydevcube.apps.devinci.co/api';
 		_.baseHeaders = {
-			//"Authorization": localStorage.getItem('token'),
 			"Content-Type": "application/json"
 		}
+		_.endpoints = {
+			tests: `${env.backendUrl}/practice-tests`,
+			start: `${env.backendUrl}/practice-test-results/create`,
+			results: `${env.backendUrl}/practice-test-results`,
+		};
 	}
 	async getTests(testId){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${env.backendUrl}/practice-tests`,{
+			let rawResponse = await fetch(_.endpoints['tests'],{
 				method: 'GET',
 				headers:_.baseHeaders,
 			});
@@ -29,7 +32,7 @@ class _TestModel{
 	async getTest(testId){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${env.backendUrl}/practice-tests/${testId}`,{
+			let rawResponse = await fetch(`${_.endpoints['tests']}/${testId}`,{
 				method: 'GET',
 				headers:_.baseHeaders
 			});
@@ -53,7 +56,7 @@ class _TestModel{
 			return Promise.resolve(_.test['resultId']);
 		}
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${env.backendUrl}/practice-test-results/create/${_.test['_id']}`,{
+			let rawResponse = await fetch(`${_.endpoints['start']}/${_.test['_id']}`,{
 				'method': 'POST',
 				headers:_.baseHeaders
 			});
@@ -75,7 +78,7 @@ class _TestModel{
 			answer['status'] = 'in progress';
 		}
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${env.backendUrl}/practice-test-results/${_.test['resultId']}`,{
+			let rawResponse = await fetch(`${_.endpoints['results']}/${_.test['resultId']}`,{
 				method: 'PUT',
 				headers:_.baseHeaders,
 				body: JSON.stringify(answer)
@@ -94,7 +97,7 @@ class _TestModel{
 	async getLatestTestResults(){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${env.backendUrl}/practice-test-results/${_.test['_id']/latest}`,{
+			let rawResponse = await fetch(`${_.endpoints['results']}/${_.test['_id']/latest}`,{
 				method: 'GET',
 				headers:_.baseHeaders
 			});
@@ -107,7 +110,7 @@ class _TestModel{
 	async getTestResults(){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${env.backendUrl}/practice-test-results/${_.test['resultId']}`,{
+			let rawResponse = await fetch(`${_.endpoints['results']}/${_.test['resultId']}`,{
 				method: 'GET',
 				headers:_.baseHeaders,
 			});
@@ -120,7 +123,7 @@ class _TestModel{
 	async getTestSummary(){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${env.backendUrl}/practice-test-results/${_.test['resultId']}/summary`,{
+			let rawResponse = await fetch(`${_.endpoints['results']}/${_.test['resultId']}/summary`,{
 				method: 'GET',
 				headers:_.baseHeaders,
 			});
@@ -137,7 +140,7 @@ class _TestModel{
 			answer['status'] = 'finished';
 		}
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${env.backendUrl}/practice-test-results/${_.test['resultId']}`,{
+			let rawResponse = await fetch(`${_.endpoints['results']}/${_.test['resultId']}`,{
 				method: 'PUT',
 				headers:_.baseHeaders,
 				body: JSON.stringify(answer)
@@ -155,8 +158,6 @@ class _TestModel{
 		const _ = this;
 		return _.test['sections']['questionPages'][0];
 	}
-	
-	
 	catchQuestions(test){
 		const _ = this;
 		_.questions = {};
@@ -169,17 +170,11 @@ class _TestModel{
 	currentPage(pos){
 		const _ = this;
 		return _.test['sections']['questionPages'][pos];
-	/*	let c =  _.test['sections']['questionPages'].filter(quest => quest['pageId'] == id);
-		if(c.length) return c;*/
 	}
 	innerQuestion(id){
 		const _ = this;
 		return _.questions[id];
 	}
-	
-	
-	
-	
 	questionPos(pos){
 		const _ = this;
 		let outPos = 1;
