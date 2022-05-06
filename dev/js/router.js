@@ -1,11 +1,15 @@
 import { mixins } from "./mixins.js";
 import { G_Bus } from "../libs/G_Bus.js";
+import { env } from "/env.js"
 export class router {
 	constructor() {
 		const _ = this;
 		_.componentName = 'router';
 		_.pages = new Map();
 		_.systemComponents = ['router'];
+		this.endpoints = {
+			'logout': `${env.backendUrl}/auth/logout`,
+		};
 		G_Bus
 			.on(_,'changePage')
 			.on(_,'logout')
@@ -106,11 +110,19 @@ export class router {
 			delete G_Bus.components[EventComponentName];
 		}
 	}
-	logout(){
-		localStorage.removeItem('g-route-prev')
-		localStorage.removeItem('g-route-current')
-		localStorage.removeItem('token');
-		G_Bus.trigger('router','changePage','/login');
+	async logout(){
+		const _ = this;
+		Object.keys(localStorage).forEach( key => {
+			localStorage.removeItem(key)
+		});
+		let rawResponse = await fetch(_.endpoints['logout'],{
+			method: 'GET'
+		});
+		if(rawResponse.status < 206){
+			let response = await rawResponse.json();
+			G_Bus.trigger('router','changePage','/login');
+		}
+		
 	}
 	isSystemComponent(componentName){
 		if(this.systemComponents.indexOf(componentName) > -1){

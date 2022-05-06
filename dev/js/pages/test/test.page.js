@@ -219,8 +219,7 @@ class TestPage extends G{
 		const _ = this;
 		let dir = item.getAttribute('data-dir');
 		let index = _.currentPos;
-
-
+		
 		if(dir == 'prev'){
 			if( index == 0){
 				return void 0;
@@ -229,6 +228,7 @@ class TestPage extends G{
 			_._$.currentQuestion= _.questionsPages[index-1];
 		}else{
 			if( index == _.questionsPages.length-1){
+				TestModel.finishTest();
 				return void 0;
 			}
 			_.saveAnswerToDB();

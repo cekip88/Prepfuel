@@ -233,7 +233,7 @@ export const testView = {
 						</div>
 						<div class="test-result-block green">
 							<h6 class="test-result-title"><span>Score</span></h6>
-							<p class="test-result-score">${response['summary']['totalScore']}</p>
+							<p class="test-result-score">${response['summary']['score']}</p>
 						</div>
 						<div class="test-result-block blue">
 							<h6 class="test-result-title"><span>Stars for section of the Test</span></h6>
