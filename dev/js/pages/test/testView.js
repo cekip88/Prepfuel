@@ -30,18 +30,48 @@ export const testView = {
 		return tpl;
 	},
 	answerTpl(question,answer){
-		return `
-			<li class="answer-item" data-question-id="${question['id']}" data-variant="${answer}">
-				<button class="answer-button" data-click="${this.componentName}:setCorrectAnswer">
-					<span class="answer-variant">${answer}</span>
-					<span class="answer-value">${question['answers'][answer]}</span>
-				</button>
-				<button class="answer-wrong" data-click="${this.componentName}:setWrongAnswer">
-					<svg>
-						<use xlink:href="#dismiss-circle"></use>
-					</svg>
-				</button>
-			</li>`
+		let
+			currentQuestionId = question['id'],
+			tpl = `
+				<li class="answer-item" data-question-id="${question['id']}" data-variant="${answer}">
+					<button class="answer-button" data-click="${this.componentName}:setCorrectAnswer">
+						<span class="answer-variant">${answer}</span>
+						<span class="answer-value">${question['answers'][answer]}</span>
+					</button>
+					<button class="answer-wrong" data-click="${this.componentName}:setWrongAnswer">
+						<svg>
+							<use xlink:href="#dismiss-circle"></use>
+						</svg>
+					</button>
+				</li>`;
+		if(TestModel.isFinished()){
+			let
+				status = 'wrong',
+				answeredQuestion = TestModel.testServerAnswers[currentQuestionId],
+				currentQuestion = TestModel.questions[currentQuestionId];
+				if(answeredQuestion){
+					 if( (currentQuestion['correctAnswer'] !== answeredQuestion['answer']) && (answeredQuestion['answer'] == answer) ) {
+						status = 'incorrect';
+					}
+				}
+				tpl = `
+					<li class="answer-item ${status}" data-question-id="${question['id']}" data-variant="${answer}">
+						<button class="answer-button">
+							<span class="answer-variant">${answer}</span>
+							<span class="answer-value">${question['answers'][answer]}</span>
+						</button>
+						<div class="answer-review-icon">
+							<svg>
+								<use xlink:href="img/sprite.svg#${status}"></use>
+							</svg>
+						</div>
+						<p class="answer-desc">
+							${currentQuestion['descriptions'][answer]}
+						</p>
+					</li>
+				`;
+		}
+		return tpl;
 	},
 	actionsTpl(question){
 		return `
@@ -252,7 +282,10 @@ export const testView = {
 					</div>
 					</div>
 					</div>
-					<div class="test-footer"><a class="test-footer-back" href="./test-review-correct.html"><span>Review this section</span></a>
+					<div class="test-footer">
+						<a class="test-footer-back" data-click="${_.componentName}:changeSection" section="questions">
+							<span>Review this section</span>
+						</a>
 					<button class="button-blue"><span>Start the next section: Quantitative Reasoning</span></button>
 					</div>
 				</div>
@@ -407,8 +440,8 @@ export const testView = {
 	compareQuestion(){
 		const _ = this;
 		let
-		currentQuestion = _._$.currentQuestion['questions'][0],
-		tpl= `
+			currentQuestion = _._$.currentQuestion['questions'][0],
+			tpl= `
 				<div class="test-header">
 					<h5 class="block-title test-title"><span>Question ${_.questionPos} of ${_.questionsLength}</span></h5>
 					${_.actionsTpl(currentQuestion)}
@@ -430,11 +463,37 @@ export const testView = {
 		for(let answer in  currentQuestion['answers']){
 			tpl+=_.answerTpl(currentQuestion,answer);
 		}
+		
 		tpl+=`</ul>
 			${_.noteTpl(currentQuestion)}
 			</div>
 		`;
 		return tpl;
+	},
+	markCorrectAnswer(){
+		const _ = this;
+		let handle = (questionId,correctVariant)=>{
+			console.log(correctVariant);
+			let
+				answerItem = _.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${correctVariant}"]`);
+				answerItem.classList.remove('wrong');
+				answerItem.classList.add('correct');
+		};
+		if(_._$.currentQuestion['questions'].length > 1){
+			for(let question of _._$.currentQuestion['questions']){
+				let
+					answeredQuestion = TestModel.questions[question['id']],
+					correctVariant = answeredQuestion['correctAnswer'];
+				handle(question['id'],correctVariant);
+			}
+		}else{
+			let
+				currentQuestion = _._$.currentQuestion['questions'][0],
+				answeredQuestion = TestModel.questions[currentQuestion['id']],
+				correctVariant = answeredQuestion['correctAnswer'];
+			handle(currentQuestion['id'],correctVariant);
+		}
+		
 	},
 	graphicQuestion(){
 		const _ = this;

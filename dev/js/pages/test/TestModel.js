@@ -8,9 +8,12 @@ class _TestModel{
 		}
 		_.endpoints = {
 			tests: `${env.backendUrl}/practice-tests`,
-			start: `${env.backendUrl}/practice-test-results/create`,
+			create: `${env.backendUrl}/practice-test-results/create`,
 			results: `${env.backendUrl}/practice-test-results`,
+			resultsBy: `${env.backendUrl}/practice-tests/get-test-by-result/`,
 		};
+		
+		_.testStatus = 'in progress';
 	}
 	async getTests(testId){
 		const _ = this;
@@ -56,18 +59,21 @@ class _TestModel{
 			return Promise.resolve(_.test['resultId']);
 		}
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.endpoints['start']}/${_.test['_id']}`,{
+			let rawResponse = await fetch(`${_.endpoints['create']}/${_.test['_id']}`,{
 				'method': 'POST',
 				headers:_.baseHeaders
 			});
-			if(rawResponse.status == 200){
+			if(rawResponse.status < 206){
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					_.test['resultId'] = response['resultId'];
 					localStorage.setItem('resultId', response['resultId']);
 					resolve(response['resultId']);
 				}
+			}else{
+				resolve(false);
 			}
+			
 		});
 	}
 	
@@ -83,14 +89,16 @@ class _TestModel{
 				headers:_.baseHeaders,
 				body: JSON.stringify(answer)
 			});
+
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					_.getTestResults();
+					
 					resolve(response);
 				}
 			}else{
-			
+				_.getTestResultsByResultId();
 			}
 		});
 	}
@@ -116,7 +124,27 @@ class _TestModel{
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
-				G_Bus.trigger('TestPage','showResults',response);
+				
+				G_Bus.trigger('TestPage','showResults',response)
+				_.testServerAnswers = response['result']['answers'];
+				_.testStatus = response['result']['status'];
+				resolve(response['result']);
+			}
+		});
+	}
+	async getTestResultsByResultId(){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['resultsBy']}/${_.test['resultId']}`,{
+				method: 'GET',
+				headers:_.baseHeaders,
+			});
+			if(rawResponse.status < 206){
+				let response = await rawResponse.json();
+				_.test = response['test'];
+				_.refreshModelTest();
+			} else {
+			
 			}
 		});
 	}
@@ -127,7 +155,7 @@ class _TestModel{
 				method: 'GET',
 				headers:_.baseHeaders,
 			});
-			if(rawResponse.status == 200){
+			if(rawResponse.status < 206){
 				let response = await rawResponse.json();
 				G_Bus.trigger('TestPage','showSummary',response);
 				resolve(response)
@@ -148,6 +176,7 @@ class _TestModel{
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
+					_.testStatus = 'finished';
 					resolve(response);
 				}
 			}
@@ -158,6 +187,13 @@ class _TestModel{
 		const _ = this;
 		return _.test['sections']['questionPages'][0];
 	}
+	
+	
+	refreshModelTest(){
+		const _ = this;
+		_.catchQuestions(_.test);
+	}
+	
 	catchQuestions(test){
 		const _ = this;
 		_.questions = {};
@@ -206,6 +242,7 @@ class _TestModel{
 			G_Bus.trigger('router','changePage','/login');
 		}
 	}
+	
 	hasTestFromStorage(){
 		return localStorage.getItem('test') ? true : false;
 	}
@@ -214,6 +251,7 @@ class _TestModel{
 	}
 	getTestFromStorage(){
 		const _ = this;
+		if(_.testServerAnswers) return _.testServerAnswers;
 		if(!_.hasTestFromStorage()) return {};
 		let test;
 		try{
@@ -227,12 +265,12 @@ class _TestModel{
 		const _ = this;
 		let test = _.getTestFromStorage();
 		if(_.isEmpty(test)){
-			test[testData['id']] = testData;
+			test[testData['questionId']] = testData;
 		}else{
-			if(testData['id'] in test){
+			if(testData['questionId'] in test){
 				for(let t in test){
-					let testId = testData['id'];
-					if(testId == test[t]['id']){
+					let testId = testData['questionId'];
+					if(testId == test[t]['questionId']){
 						for(let rawT in testData){
 							if(!testData[rawT]){
 								delete test[t][rawT];
@@ -243,12 +281,15 @@ class _TestModel{
 					}
 				}
 			}else{
-				test[testData['id']] = testData;
+				test[testData['questionId']] = testData;
 			}
 		}
 		localStorage.setItem('test',JSON.stringify(test));
 	}
-
+	
+	isFinished(){
+		return this.testStatus == 'finished';
+	}
 }
 
 export const TestModel = new _TestModel();

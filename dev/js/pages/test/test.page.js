@@ -119,7 +119,7 @@ class TestPage extends G{
 		let questionId= parseInt(item.getAttribute('data-question-id'));
 		delete _.storageTest[questionId]['note'];
 		TestModel.saveTestToStorage({
-			id: questionId,
+			questionId: questionId,
 			note: null
 		});
 		item.parentNode.parentNode.remove();
@@ -131,7 +131,7 @@ class TestPage extends G{
 		let test = TestModel.getTestFromStorage();
 		for(let t in test){
 			let currentTestObj = test[t],
-			questionId= currentTestObj['id'];
+			questionId= currentTestObj['questionId']; // if request was not in local storage, try another prop for questionId
 			if(currentTestObj['bookmarked']) {
 				_.f(`.questions-list .questions-item[data-question-id="${questionId}"]`).classList.add('checked');
 			}
@@ -139,9 +139,30 @@ class TestPage extends G{
 				_.f(`.questions-list .questions-item[data-question-id="${questionId}"] .questions-variant`).textContent = currentTestObj['answer'].toUpperCase();
 			}
 		}
+		_.setActions(['bookmarked','note']);
+	}
+	markAnswers(){
+		const _ = this;
+		let
+			questionItems = _.f('.questions-item'),
+			serverQuestions = TestModel.questions;
+		for(let item of questionItems){
+			let
+				id = parseInt(item.getAttribute('data-question-id')),
+				serverQuestion = serverQuestions[id],
+				variant = item.querySelector('.questions-variant').textContent;
+			if(TestModel.testServerAnswers[id]){
+				if(TestModel.testServerAnswers[id]['answer'] === serverQuestion['correctAnswer']){
+					item.classList.add('correct')
+				}else{
+					item.classList.add('wrong')
+				}
+			}else{
+				item.classList.add('wrong');
+			}
+			
+		}
 		
-		_.setActions()
-		_.setActions('note')
 	}
 	
 	saveBookmark({item}){
@@ -149,7 +170,7 @@ class TestPage extends G{
 		let questionId = parseInt(item.getAttribute('data-question-id'));
 		let bookmarked = item.classList.contains('active');
 		TestModel.saveTestToStorage({
-			id: questionId,
+			questionId: questionId,
 			bookmarked: !bookmarked
 		});
 		item.classList.toggle('active');
@@ -160,7 +181,7 @@ class TestPage extends G{
 		event.preventDefault();
 		let formData = await _.formDataCapture(form);
 		TestModel.saveTestToStorage({
-			id: _.innerQuestionId,
+			questionId: _.innerQuestionId,
 			note: formData['text']
 		});
 		G_Bus.trigger(_.componentName,'updateStorageTest')
@@ -180,13 +201,16 @@ class TestPage extends G{
 		// Нижнего переднего рычага задний сайлентблоки
 	}
 	
-	setActions(type='bookmarked'){
+	setActions(types = ['bookmarked']){
+		//='bookmarked'
 		const _ = this;
 		let handle = (currentTest)=>{
 			if(currentTest) {
-				if(currentTest[type]) {
-					_.f(`.${type}-button[data-question-id="${currentTest['id']}"]`).classList.add('active')
-				}
+				types.forEach( type => {
+					if(currentTest[type]) {
+						_.f(`.${type}-button[data-question-id="${currentTest['questionId']}"]`).classList.add('active')
+					}
+				});
 			}
 		};
 		if(_._$.currentQuestion.questions.length > 2){
@@ -205,14 +229,22 @@ class TestPage extends G{
 		const _ = this;
 		let section = item.getAttribute('section');
 		if(section == 'directions') {
-			TestModel.start();
+			// start of test
+			let started = await TestModel.start();
+			if(!started) return void 0;
+			let results = await TestModel.getTestResults();
+			if(results['status'] === 'finished'){
+				section = 'score';
+				TestModel.getTestResultsByResultId();
+			}
 		}
 		_._$.currentSection = section;
 		_.renderPart({part:'body',content: await _.flexible(section)});
 		if(section == 'questions'){
 			_.fillCheckedAnswers();
-			
-			TestModel.getTestResults();
+			if(TestModel.isFinished()){
+				_.markAnswers();
+			}
 		}
 	}
 	changeQuestion({ item, event }){
@@ -228,10 +260,13 @@ class TestPage extends G{
 			_._$.currentQuestion= _.questionsPages[index-1];
 		}else{
 			if( index == _.questionsPages.length-1){
-				TestModel.finishTest();
+				TestModel.finishTest({});
+				TestModel.getTestResultsByResultId();
 				return void 0;
 			}
-			_.saveAnswerToDB();
+			if(!TestModel.isFinished()){
+				_.saveAnswerToDB();
+			}
 			_.currentPos+=1;
 			_._$.currentQuestion= _.questionsPages[index+1];
 		}
@@ -246,20 +281,20 @@ class TestPage extends G{
 		_.currentPos = jumpQuestionPos;
 		_._$.currentQuestion = _.test['sections']['questionPages'][jumpQuestionPos];
 	}
-	saveAnswerToDB(){
+	async saveAnswerToDB(){
 		const _ = this;
 		_.currentQuestion = TestModel.innerQuestion(_.questionPos);
 		_.currentPage = TestModel.currentPage(_.currentPos);
-		let handle = (answer)=>{
-			TestModel.saveAnswer({
+		let handle = async (answer)=>{
+			Promise.resolve(TestModel.saveAnswer({
 				answer:{
 					questionPageId: _.currentPage['pageId'],
-					questionId: answer['id'],
+					questionId: answer['questionId'],
 					answer: answer['answer'],
 					disabledAnswers: answer['disabledAnswers'],
 					note: answer['note']
 				}
-			})
+			}))
 		}
 		if(parseInt(_.currentPage['type']) !== 5){
 			if(_.currentPage['questions'].length > 1){
@@ -272,7 +307,7 @@ class TestPage extends G{
 						});
 						continue;
 					}
-					handle(answer);
+					await handle(answer);
 				}
 			}else{
 				let answer = _.storageTest[_.currentQuestion['id']];
@@ -284,8 +319,6 @@ class TestPage extends G{
 					_.saveBookmark({
 						item: _.f('.bookmarked-button')
 					});
-
-
 				}
 			}
 		}
@@ -300,7 +333,7 @@ class TestPage extends G{
 			currentTest = _.storageTest[questionId],
 			variant = answer.getAttribute('data-variant'),
 			obj  = {
-				id: questionId
+				questionId: questionId
 			};
 		if(answer.hasAttribute('disabled')){
 			answer.removeAttribute('disabled');
@@ -312,7 +345,7 @@ class TestPage extends G{
 		}else{
 			if(answer.classList.contains('active')){
 				TestModel.saveTestToStorage({
-					id: questionId,
+					questionId: questionId,
 					answer: null
 				});
 				answer.classList.remove('active');
@@ -336,6 +369,7 @@ class TestPage extends G{
 	}
 	setCorrectAnswer({item,event}){
 		const _ = this;
+		console.log('here');
 		let
 			answer = item.parentNode,
 			ul = answer.parentNode,
@@ -346,7 +380,7 @@ class TestPage extends G{
 		answer.classList.add('active');
 		_.f(`.questions-list .questions-item[data-question-id="${questionId}"] .questions-variant`).textContent =  answerVariant.toUpperCase();
 		TestModel.saveTestToStorage({
-			id: questionId,
+			questionId: questionId,
 			answer: answerVariant
 		});
 		_.changeSkipButtonToNext();
@@ -431,8 +465,7 @@ class TestPage extends G{
 				_.markup(_.getQuestionTpl()),
 				_.markup(_.questionFooter())
 			);
-			_.setActions();
-			_.setActions('note');
+			_.setActions(['bookmarked','note']);
 			let step = 1,
 					len = _.test['sections']['questionPages'][_.currentPos]['questions'].length;
 			
@@ -455,13 +488,17 @@ class TestPage extends G{
 			_.currentQuestion = TestModel.innerQuestion(_.questionPos);
 
 
-			// work on marked answers
+			if(TestModel.isFinished()) {
+				_.markCorrectAnswer();
+				return void 0;
+			}
 
+			// work on marked answers
 			let currentStorageTest = _.storageTest[_.currentQuestion['id']];
 			if(currentStorageTest){
 				if(currentStorageTest['answer']){
 					// mark choosed answer
-					_.f(`.answer-list .answer-item[data-question-id="${currentStorageTest['id']}"][data-variant="${currentStorageTest['answer']}"]`).classList.add('active');
+					_.f(`.answer-list .answer-item[data-question-id="${currentStorageTest['questionId']}"][data-variant="${currentStorageTest['answer']}"]`).classList.add('active');
 					_.changeSkipButtonToNext();
 				}
 				if(currentStorageTest['disabledAnswers']){

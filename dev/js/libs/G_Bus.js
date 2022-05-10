@@ -57,19 +57,21 @@ class _G_Bus {
 					}
 				}
 			} catch (e) {
-				if(e.name == 'TypeError'){
-					let stackLines = e.stack.split('\n'),
-							error= stackLines[0].trim(),
-							handle = stackLines[1].trim();
-					let styles= `
+				let stackLines = e.stack.split('\n'),
+				error= stackLines[0].trim(),
+				handle = stackLines[1].trim();
+				let styles= `
 						background: #1c1c1c 16px center no-repeat url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwIDJDMTQuNDEgMiAxOCA1LjU5IDE4IDEwQzE4IDE0LjQxIDE0LjQxIDE4IDEwIDE4QzUuNTkgMTggMiAxNC40MSAyIDEwQzIgNS41OSA1LjU5IDIgMTAgMlpNMTAgMEM0LjQ4IDAgMCA0LjQ4IDAgMTBDMCAxNS41MiA0LjQ4IDIwIDEwIDIwQzE1LjUyIDIwIDIwIDE1LjUyIDIwIDEwQzIwIDQuNDggMTUuNTIgMCAxMCAwWiIgZmlsbD0iI0ZGNDY2NyIgZmlsbC1vcGFjaXR5PSIwLjkiLz4KPHBhdGggZD0iTTkgMTFMOSA1QzkgNC40NSA5LjQ1IDQgMTAgNEMxMC41NSA0IDExIDQuNDUgMTEgNUwxMSAxMUMxMSAxMS41NSAxMC41NSAxMiAxMCAxMkM5LjQ1IDEyIDkgMTEuNTUgOSAxMVoiIGZpbGw9IiNGRjQ2NjciIGZpbGwtb3BhY2l0eT0iMC45Ii8+CjxyZWN0IHg9IjkiIHk9IjE0IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiByeD0iMSIgZmlsbD0iI0ZGNDY2NyIgZmlsbC1vcGFjaXR5PSIwLjkiLz4KPC9zdmc+Cg==");
 						background-size:20px;
 						padding: 10px 10px 10px 50px;
 						display: flex;
 						border-left:2px solid #FF6F6F;color:rgba(255, 255, 255, 0.6);
 					`;
+			//	if(e.name == 'TypeError'){
+					
+					
 					console.log(`%c%s`,styles,`Error in ${componentName}:${eventName}\n${error}\n${handle}`);
-				}
+			//	}
 			}
 		})
 	}
