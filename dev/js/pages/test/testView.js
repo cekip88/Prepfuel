@@ -182,30 +182,35 @@ export const testView = {
         ${_.questionsList()}
       </div>
      <div hidden>
-        <form class="modal report" slot="modal-item" id="report">
+        <form class="modal report" slot="modal-item" id="report" data-submit="${_.componentName}:saveReport">
           <h6 class="modal-title"><span>Report a mistake in this question</span></h6>
           <p class="modal-text">Remember to read through the explanations and double check your answer. Thanks for your help!</p>
           <p class="modal-text">What’s wrong</p>
           <div class="check-list">
-            <div class="check-item">
-              <input type="radio" name="report" id="report-wrong">
+            <g-input type='radio' class="g-form-item" name="answer" items='[
+            {"value":"wrong","text":"The answer is wrong"},
+            {"value":"typo","text":"I caught a typo."},
+            {"value":"confus","text":"The question or explanations are confusing or unclear."},
+            {"value":"broken","text":"Something isn’t working / something seems broken."}]'></g-input>
+            <!--<div class="check-item">
+              <input type="radio" name="answer" id="report-wrong">
               <label class="check-label" for="report-wrong"><span class="check-label-icon radio"></span><span class="check-label-text">The answer is wrong.</span></label>
             </div>
             <div class="check-item">
-              <input type="radio" name="report" id="report-typo">
+              <input type="radio" name="answer" id="report-typo">
               <label class="check-label" for="report-typo"><span class="check-label-icon radio"></span><span class="check-label-text">I caught a typo.</span></label>
             </div>
             <div class="check-item">
-              <input type="radio" name="report" id="report-confusing">
+              <input type="radio" name="answer" id="report-confusing">
               <label class="check-label" for="report-confusing"><span class="check-label-icon radio"></span><span class="check-label-text">The question or explanations are confusing or unclear.</span></label>
             </div>
             <div class="check-item">
-              <input type="radio" name="report" id="report-broken">
+              <input type="radio" name="answer" id="report-broken">
               <label class="check-label" for="report-broken"><span class="check-label-icon radio"></span><span class="check-label-text">Something isn’t working / something seems broken.</span></label>
-            </div>
+            </div>-->
           </div>
           <h6 class="modal-title"><span>Description of issue</span></h6>
-          <textarea class="modal-area"></textarea>
+          <textarea class="modal-area g-form-item" name="description"></textarea>
           <div class="modal-row end">
             <button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
             <button class="button-blue"><span>Submit Issue</span></button>
@@ -470,10 +475,11 @@ export const testView = {
 		`;
 		return tpl;
 	},
-	markCorrectAnswer(){
+	async markCorrectAnswer(){
 		const _ = this;
+		let isGrid = await G_Bus.trigger(_.componentName,'isGrid');
+		if(isGrid) return void 0;
 		let handle = (questionId,correctVariant)=>{
-			console.log(correctVariant);
 			let
 				answerItem = _.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${correctVariant}"]`);
 				answerItem.classList.remove('wrong');

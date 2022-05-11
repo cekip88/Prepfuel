@@ -76,17 +76,12 @@ class LoginPage extends G{
 		const _ = this;
 		_.renderPart({part:'row',content: _.markup(_[`passwordChangedTpl`](),false)});
 	}
-	
 	resetFail({response}){
 		this.handleErrors({response});
 	}
-	
-	
-	
 	async init(){
 		const _ = this;
 	}
-	
 	async render(blockData){
 		const _ = this;
 		let initTpl = _.loginTpl();

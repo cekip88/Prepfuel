@@ -118,5 +118,33 @@
 				position: absolute
 				left: 7px
 				top: 6px
-		
-	 
+	&-radio
+		display: none
+		&:checked+&-label:after
+			+wh(12px)
+			transform: scale(1)
+			background-color: rgb(54, 153, 255)
+		&-label
+			position: relative
+			display: flex
+			cursor: pointer
+			align-items: center
+			margin-bottom: var(--gap)
+			&-text
+				color: rgb(94, 98, 120)
+				font-family: "Roboto-Medium"
+			&:after,&:before
+				content: ''
+				transition: .35s ease
+				border-radius: 40px
+				transition: .35s ease
+			&:before
+				+wh(24px)
+				+bdrs(24px)
+				margin-right: 12px
+				background-color: rgb(245, 248, 250)
+			&:after
+				transform: scale(.5)
+				position: absolute
+				left: 6px
+				top: 6px
