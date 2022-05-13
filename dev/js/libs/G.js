@@ -1,5 +1,6 @@
 import G_G from "./G_G.js";
 import { G_Bus } from "./G_Bus.js";
+import { mixins } from "../mixins.js";
 export class G extends G_G{
   constructor() {
 		super();
@@ -31,6 +32,7 @@ export class G extends G_G{
 				const
 					module = await import(path),
 					moduleName = new module[moduleStr](params);
+				//Object.assign(module[moduleStr].prototype,mixins);
 				_.components.set(name, moduleName);
 				resolve(moduleName);
 			} catch(e) {

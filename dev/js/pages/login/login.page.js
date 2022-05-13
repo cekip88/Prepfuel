@@ -49,10 +49,13 @@ class LoginPage extends G{
 		else accountBtn.removeAttribute('disabled');
 	}
 	
-	loginSuccess(token){
+	loginSuccess(response){
 		const _ = this;
 		_.storageSave('authorization','true');
-		return Promise.resolve(token);
+		for(let prop in response['user']){
+			_.storageSave(prop,response['user'][prop]);
+		}
+		return Promise.resolve(response);
 	}
 	loginFail({response,formData}){
 		const _ = this;

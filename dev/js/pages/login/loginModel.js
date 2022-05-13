@@ -37,7 +37,7 @@ class _loginModel{
 		});
 		if(_.isSuccessStatus(rawResponse.status)){
 			let response = await rawResponse.json();
-			console.log(response);
+			
 			if( _.isSuccessResponse(response) ){
 				await G_Bus.trigger(_.componentName,'loginSuccess',response);
 				await G_Bus.trigger('router','changePage','/test');
