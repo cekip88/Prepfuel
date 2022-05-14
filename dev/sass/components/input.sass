@@ -1,130 +1,150 @@
 :host
-  --animation-time: .35s
-  --input-blue: 80, 104, 226
-  --input-red: 241, 65, 108
-  --green: 131, 191, 110
-  --gap: 10px
+	--animation-time: .35s
+	--input-blue: 80, 104, 226
+	--input-red: 241, 65, 108
+	--green: 131, 191, 110
+	--gap: 10px
 .inpt
-  +wh(100%)
-  position: relative
-  display: inline-block
-  &.form-input
-    +wh(100%,54px)
-    border: 1px solid transparent
-    padding: 0 15px
-    border-radius: 6px
-    background-color: rgb(var(--neutral-100))
-  &.form-search
-    height: initial
-    padding: 0
-    .inpt-value
-      height: 34px
-      color: rgb($neutral-500)
-      font-family: $f_bold
-  &-title
-    font: 13px/23px "Roboto-Medium"
-  &-value,&-mask
-    +wh(100%,50px)
-    display: inline-flex
-    align-items: center
-    padding: var(--gap)
-    overflow: hidden
-  &-value
-    &:before
-      +af
-    &.focused,
-    &:focus
-      border-color: rgb(247, 145, 65)
-    img
-      width: 8px
-      margin-right: var(--gap)
-      transition: .35s ease
-      &:hover
-        transform: rotate(90deg)
-    &-placeholder
-      font-size: 13px
-      pointer-events: none
-  &-mask,&-tip
-    top: 0
-    left: 0
-    opacity: 0
-  &-tip
-    top: 75%
-    font-size: 12px
-    transform: scale(0.95)
-  &-mask,&-tip,&-mask-placeholder,&-date-img
-    transition: var(--animation-time) ease
-    position: absolute
-  &-mask-date
-    opacity: 0
-    position: absolute
-  &-mask-date,&-date-img
-    bottom: 15px
-    right: var(--gap)
-    width: 48px
-  &-mask-placeholder
-    opacity: 0
-    left: var(--gap)
-    width: 100%
-    font-size: 10px
-    bottom: 3px
-    color: #ddd
-  &-value:focus+&-mask-placeholder
-    opacity: 1
-  &-date-img
-    +wh(20px)
-    pointer-events: none
-  &.error
-    border-color: rgb(var(--input-red))
-  &.error &-tip,
-  &.error &-value-placeholder,
-  &.error &-value::placeholder
-    color: rgb(var(--input-red))
-  &.error &-value
-    color: rgb(var(--input-red))
-    border-bottom-color: rgb(var(--input-red))
-  &.error &-tip,&.success &-tip
-    top: 125%
-    transform: scale(1)
-    opacity: 1
-  &.success
-    border-color: rgb(var(--green))
-  &.success &-tip,
-  &.success &-value-placeholder,
-  &.success &-value::placeholder
-    color: rgb(var(--green))
-  &.success &-value
-    border-bottom-color: rgb(var(--green))
-  &-checkbox
-    display: none
-    &:checked+&-label:after
-      +wh(12px)
-      transform: scale(1)
-      background-color: rgb(54, 153, 255)
-    &-label
-      position: relative
-      display: flex
-      cursor: pointer
-      align-items: center
-      margin-bottom: var(--gap)
-      &-text
-        color: rgb(94, 98, 120)
-        font-family: "Roboto-Medium"
-      &:after,&:before
-        content: ''
-        border-radius: 40px
-        transition: .35s ease
-      &:before
-        +wh(24px)
-        margin-right: 12px
-        border-radius: 6px
-        background-color: rgb(245, 248, 250)
-      &:after
-        transform: scale(.5)
-        position: absolute
-        left: 7px
-        top: 6px
-
-.input-date
-  background-color: rgb($neutral-100)
-  border-radius: 6px
+	+wh(100%)
+	position: relative
+	display: inline-block
+	&.form-input
+		+wh(100%,54px)
+		border: 1px solid transparent
+		padding: 0 15px
+		border-radius: 6px
+		background-color: rgb(var(--neutral-100))
+	&-title
+		font: 13px/23px "Roboto-Medium"
+	&-value,&-mask
+		+wh(100%,50px)
+		display: inline-flex
+		align-items: center
+		padding: var(--gap) 0 var(--gap) var(--gap)
+		overflow: hidden
+	&-value
+		&:before
+			+af
+		&.focused,
+		&:focus
+			border-color: rgb(247, 145, 65)
+		img
+			width: 8px
+			margin-right: var(--gap)
+			transition: .35s ease
+			&:hover
+				transform: rotate(90deg)
+		&-placeholder
+			font-size: 13px
+			pointer-events: none
+	&-mask,&-tip
+		top: 0
+		left: 0
+		opacity: 0
+	&-tip
+		top: 75%
+		font-size: 12px
+		transform: scale(0.95)
+	&-mask,&-tip,&-mask-placeholder,&-date-img
+		transition: var(--animation-time) ease
+		position: absolute
+	&-mask-date
+		opacity: 0
+		position: absolute
+	&-mask-date,&-date-img
+		bottom: 15px
+		right: var(--gap)
+		width: 48px
+	&-mask-placeholder
+		opacity: 0
+		left: var(--gap)
+		width: 100%
+		font-size: 10px
+		bottom: 3px
+		color: #ddd
+	&-value:focus+&-mask-placeholder
+		opacity: 1
+	&-date-img
+		+wh(20px)
+		pointer-events: none
+	&.error
+		border-color: rgb(var(--input-red))
+	&.error &-tip,
+	&.error &-value-placeholder,
+	&.error &-value::placeholder
+		color: rgb(var(--input-red))
+	&.error &-value
+		color: rgb(var(--input-red))
+		border-bottom-color: rgb(var(--input-red))
+	&.error &-tip,&.success &-tip
+		top: 125%
+		transform: scale(1)
+		opacity: 1
+	&.success
+		border-color: rgb(var(--green))
+	&.success &-tip,
+	&.success &-value-placeholder,
+	&.success &-value::placeholder
+		color: rgb(var(--green))
+	&.success &-value
+		border-bottom-color: rgb(var(--green))
+	&-checkbox
+		display: none
+		&:checked+&-label:after
+			+wh(12px)
+			transform: scale(1)
+			background-color: rgb(54, 153, 255)
+		&-label
+			position: relative
+			display: flex
+			cursor: pointer
+			align-items: center
+			margin-bottom: var(--gap)
+			&-text
+				color: rgb(94, 98, 120)
+				font-family: "Roboto-Medium"
+			&:after,&:before
+				content: ''
+				transition: .35s ease
+				border-radius: 40px
+				transition: .35s ease
+			&:before
+				+wh(24px)
+				margin-right: 12px
+				border-radius: 6px
+				background-color: rgb(245, 248, 250)
+			&:after
+				transform: scale(.5)
+				position: absolute
+				left: 7px
+				top: 6px
+	&-radio
+		display: none
+		&:checked+&-label:after
+			+wh(12px)
+			transform: scale(1)
+			background-color: rgb(54, 153, 255)
+		&-label
+			position: relative
+			display: flex
+			cursor: pointer
+			align-items: center
+			margin-bottom: var(--gap)
+			&-text
+				color: rgb(94, 98, 120)
+				font-family: "Roboto-Medium"
+			&:after,&:before
+				content: ''
+				transition: .35s ease
+				border-radius: 40px
+				transition: .35s ease
+			&:before
+				+wh(24px)
+				+bdrs(24px)
+				margin-right: 12px
+				background-color: rgb(245, 248, 250)
+			&:after
+				transform: scale(.5)
+				position: absolute
+				left: 6px
+				top: 6px

@@ -219,6 +219,8 @@ r.init({
     '/login': 'login',
     '/login/forgot': 'login',
     '/login/reset/{token}': 'login',
-	  '/test': 'test'
+	  '/test': 'test',
+	  '/student': 'student',
+	  '/student/schedule': 'student'
   }
 });

@@ -49,10 +49,13 @@ class LoginPage extends G{
 		else accountBtn.removeAttribute('disabled');
 	}
 	
-	loginSuccess(token){
+	loginSuccess(response){
 		const _ = this;
 		_.storageSave('authorization','true');
-		return Promise.resolve(token);
+		for(let prop in response['user']){
+			_.storageSave(prop,response['user'][prop]);
+		}
+		return Promise.resolve(response);
 	}
 	loginFail({response,formData}){
 		const _ = this;
@@ -76,17 +79,12 @@ class LoginPage extends G{
 		const _ = this;
 		_.renderPart({part:'row',content: _.markup(_[`passwordChangedTpl`](),false)});
 	}
-	
 	resetFail({response}){
 		this.handleErrors({response});
 	}
-	
-	
-	
 	async init(){
 		const _ = this;
 	}
-	
 	async render(blockData){
 		const _ = this;
 		let initTpl = _.loginTpl();

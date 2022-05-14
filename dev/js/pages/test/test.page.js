@@ -2,7 +2,7 @@ import { G_Bus }      from "../../libs/G_Control.js";
 import { TestModel }  from "./TestModel.js";
 import { G }          from "../../libs/G.js";
 import Modaler        from "../../components/modaler/modaler.component.js";
-
+import GInput         from "../../components/input/input.component.js";
 class TestPage extends G{
 	constructor() {
 		super();
@@ -25,6 +25,7 @@ class TestPage extends G{
 		const _ = this;
 		_.componentName = 'TestPage';
 		G_Bus
+			.on(_,'isGrid')
 			.on(_,'showResults')
 			.on(_,'showSummary')
 			.on(_,'changeSection')
@@ -41,7 +42,9 @@ class TestPage extends G{
 			.on(_,'showTestLabelModal')
 			.on(_,'startTimer')
 			.on(_,'updateStorageTest')
+			.on(_,'saveReport')
 		//TestModel = new TestModel();
+		_.isLastQuestion = false;
 		_.storageTest = TestModel.getTestFromStorage();
 		_.types = {
 			1:'standart',
@@ -71,7 +74,10 @@ class TestPage extends G{
 		}
 		return outPos;
 	}
-	
+	isGrid(){
+		const _ = this;
+		return _._$.currentQuestion.type == '5';
+	}
 	showResults(data){
 		console.log(data);
 	}
@@ -165,6 +171,17 @@ class TestPage extends G{
 		
 	}
 	
+	async saveReport({item:form,event}){
+		event.preventDefault();
+		const _ = this;
+		let gformData = await _.gFormDataCapture(form);
+		TestModel.saveTestToStorage({
+			questionId: _.innerQuestionId,
+			report: gformData
+		});
+		G_Bus.trigger(_.componentName,'updateStorageTest')
+		G_Bus.trigger('modaler','closeModal');
+	}
 	saveBookmark({item}){
 		const _ = this;
 		let questionId = parseInt(item.getAttribute('data-question-id'));
@@ -228,6 +245,15 @@ class TestPage extends G{
 	async changeSection({item,event}){
 		const _ = this;
 		let section = item.getAttribute('section');
+		if(section == 'score') {
+			if(!TestModel.isFinished()){
+				await _.saveAnswerToDB();
+				await TestModel.finishTest({});
+				TestModel.getTestResultsByResultId();
+				_.renderPart({part:'body',content: await _.flexible(section)});
+				return void 0;
+			}
+		}
 		if(section == 'directions') {
 			// start of test
 			let started = await TestModel.start();
@@ -244,6 +270,7 @@ class TestPage extends G{
 			_.fillCheckedAnswers();
 			if(TestModel.isFinished()){
 				_.markAnswers();
+				_.markCorrectAnswer();
 			}
 		}
 	}
@@ -251,7 +278,6 @@ class TestPage extends G{
 		const _ = this;
 		let dir = item.getAttribute('data-dir');
 		let index = _.currentPos;
-		
 		if(dir == 'prev'){
 			if( index == 0){
 				return void 0;
@@ -259,7 +285,9 @@ class TestPage extends G{
 			_.currentPos-=1;
 			_._$.currentQuestion= _.questionsPages[index-1];
 		}else{
+			
 			if( index == _.questionsPages.length-1){
+				_.saveAnswerToDB();
 				TestModel.finishTest({});
 				TestModel.getTestResultsByResultId();
 				return void 0;
@@ -286,19 +314,21 @@ class TestPage extends G{
 		_.currentQuestion = TestModel.innerQuestion(_.questionPos);
 		_.currentPage = TestModel.currentPage(_.currentPos);
 		let handle = async (answer)=>{
-			Promise.resolve(TestModel.saveAnswer({
+			return Promise.resolve(await TestModel.saveAnswer({
 				answer:{
 					questionPageId: _.currentPage['pageId'],
 					questionId: answer['questionId'],
 					answer: answer['answer'],
 					disabledAnswers: answer['disabledAnswers'],
-					note: answer['note']
+					note: answer['note'],
+					report: answer['report']
 				}
 			}))
 		}
 		if(parseInt(_.currentPage['type']) !== 5){
 			if(_.currentPage['questions'].length > 1){
-				for(let quest of _.currentPage['questions']){
+				for(let i=0; i < _.currentPage['questions'].length;i++){
+					let quest = _.currentPage['questions'][i];
 					let answer = _.storageTest[quest['id']];
 					if(!answer){
 						let bookmarkedButton = _.f(`.bookmarked-button[data-question-id="${quest['id']}"]`);
@@ -308,6 +338,7 @@ class TestPage extends G{
 						continue;
 					}
 					await handle(answer);
+					console.log(i);
 				}
 			}else{
 				let answer = _.storageTest[_.currentQuestion['id']];
@@ -369,13 +400,12 @@ class TestPage extends G{
 	}
 	setCorrectAnswer({item,event}){
 		const _ = this;
-		console.log('here');
 		let
 			answer = item.parentNode,
 			ul = answer.parentNode,
 			answerVariant = item.querySelector('.answer-variant').textContent,
 			questionId =  parseInt(answer.getAttribute('data-question-id'));
-		if(answer.hasAttribute('disabled')) return;
+		if(answer.hasAttribute('disabled')) return void 0;
 		if(ul.querySelector('.active')) ul.querySelector('.active').classList.remove('active');
 		answer.classList.add('active');
 		_.f(`.questions-list .questions-item[data-question-id="${questionId}"] .questions-variant`).textContent =  answerVariant.toUpperCase();
@@ -383,7 +413,12 @@ class TestPage extends G{
 			questionId: questionId,
 			answer: answerVariant
 		});
-		_.changeSkipButtonToNext();
+		if(!TestModel.isFinished()){
+			_.changeSkipButtonToNext();
+		}
+		if(_.isLastQuestion){
+			_.changeSkipButtonToFinish();
+		}
 		G_Bus.trigger(_.componentName,'updateStorageTest')
 	}
 
@@ -465,6 +500,7 @@ class TestPage extends G{
 				_.markup(_.getQuestionTpl()),
 				_.markup(_.questionFooter())
 			);
+			_.isLastQuestion = false;
 			_.setActions(['bookmarked','note']);
 			let step = 1,
 					len = _.test['sections']['questionPages'][_.currentPos]['questions'].length;
@@ -478,6 +514,7 @@ class TestPage extends G{
 			}
 			if(_.questionPos == _.questionsLength){
 				_.changeSkipButtonToFinish();
+				_.isLastQuestion = true;
 			}
 			if(_.currentPos > 0){
 				_.removeBackToQuestionBtn();

@@ -5,21 +5,23 @@ class HeaderBlock extends G{
 		define(){
 		const _ = this;
 		_.set({
-			headerName: 'Sean'
+			firstName: localStorage.getItem('firstName'),
+			lastName: localStorage.getItem('lastName'),
+			role: localStorage.getItem('role'),
 		});
 	}
 	init(){
 		const _ = this;
-		_._( ()=>{
+	/*	_._( ()=>{
 			_.f('.head-name').textContent = _._$.headerName;
-		},['headerName']);
+		},['headerName']);*/
 	}
 	render(){
 		return `
 			<header class="head">
 				<div class="section">
 					<div class="head-row">
-						<a class="head-logo" href="#">
+						<a class="head-logo" href="/">
 							<img src="/img/logo.svg" alt="">
 						</a>
 						<div class="head-control">
@@ -34,11 +36,11 @@ class HeaderBlock extends G{
 								</svg>
 							</button>
 							<div class="head-info">
-								<span class="head-name">${this._$.headerName}</span>
-								<span class="head-position">Student</span>
+								<span class="head-name">${this._$.firstName}</span>
+								<span class="head-position">${this._$.role}</span>
 							</div>
 							<button class="head-user" data-click="router:logout">
-								<span>S</span>
+								<span>${this._$.firstName[0].toUpperCase()}</span>
 							</button>
 						</div>
 					</div>

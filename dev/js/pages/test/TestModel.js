@@ -89,12 +89,10 @@ class _TestModel{
 				headers:_.baseHeaders,
 				body: JSON.stringify(answer)
 			});
-
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					_.getTestResults();
-					
 					resolve(response);
 				}
 			}else{
@@ -141,10 +139,10 @@ class _TestModel{
 			});
 			if(rawResponse.status < 206){
 				let response = await rawResponse.json();
+				let resultId = _.test['resultId']
 				_.test = response['test'];
+				_.test['resultId'] = resultId;
 				_.refreshModelTest();
-			} else {
-			
 			}
 		});
 	}
