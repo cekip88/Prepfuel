@@ -48,7 +48,6 @@ class LoginPage extends G{
 		if(!item.value.length) accountBtn.setAttribute('disabled',true);
 		else accountBtn.removeAttribute('disabled');
 	}
-	
 	loginSuccess(response){
 		const _ = this;
 		_.storageSave('authorization','true');

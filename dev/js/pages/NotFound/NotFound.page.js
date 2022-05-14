@@ -8,7 +8,9 @@ export class NotFoundPage extends G{
 			_.markup(_.header.render()),
 			_.markup(`
 				<div class="section">
-					<h1> Page is not found, sorry. Go do something else</h1>
+					<div class="block">
+						<h1 class="title"> Page is not found, sorry. Go do something else</h1>
+					</div>
 				</div>
 			`),
 		]);

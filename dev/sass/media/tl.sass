@@ -1,172 +1,174 @@
 .section
-  +w($tablet-large)
-  &-buttons
-    align-items: center
-  &-button
-    &.active
-      padding: 8px 16px
-      border-radius: 6px
-      background-color: rgb($neutral-800)
-      color: rgb($white)
-      &:after
-        width: 0
-  &-header
-    flex-wrap: nowrap
-    .title
-      margin-bottom: 0
-    button
-      margin-left: 24px
+	+w($tablet-large)
+	&-buttons
+		align-items: center
+	&-button
+		&.active
+			padding: 8px 16px
+			border-radius: 6px
+			background-color: rgb($neutral-800)
+			color: rgb($white)
+			&:after
+				width: 0
+	&-header
+		flex-wrap: nowrap
+		.title
+			margin-bottom: 0
+		button
+			margin-left: 24px
 .block
-  padding: 24px 32px
-  &-filter
-    margin-bottom: 24px
-  &-header
-    &-input,&-select,.button-blue
-      width: calc(25% - 15px)
+	padding: 24px 32px
+	&-filter
+		margin-bottom: 24px
+	&-header
+		&-input,&-select,.button-blue
+			width: calc(25% - 15px)
 
 .main-title
-  font-size: $fz32
+	font-size: $fz32
 
 .navigate
-  &-list
-    padding: 12px 12px 0
-    justify-content: flex-start
-    position: relative
-  &-item
-    width: initial
-    padding: 18px 20px
-    font-size: $fz16
-    line-height: initial
-    position: relative
-    z-index: 1
-    &.active
-      background: none
-      color: rgb($neutral-800)
-  &-label
-    height: 61px
-    border-radius: 12px 12px 0 0
-    background-color: rgb($white)
-    position: absolute
-    bottom: 0
-    transition: .35s ease
-    &-left,&-right
-      +wh(20px,100%)
-      background-color: rgb($white)
-      position: absolute
-      &:before
-        +af
-        +wh(20px,100%)
-        background-color: rgb($blue)
-        position: absolute
-        bottom: 0
-    &-left
-      left: -20px
-      &:before
-        border-bottom-right-radius: 12px
-    &-right
-      right: -20px
-      &:before
-        border-bottom-left-radius: 12px
+	&-list
+		padding: 12px 12px 0
+		justify-content: flex-start
+		position: relative
+	&-item
+		width: initial
+		padding: 18px 20px
+		font-size: $fz16
+		line-height: initial
+		position: relative
+		z-index: 1
+		span
+			position: relative
+		&.active
+			background: none
+			color: rgb($neutral-800)
+	&-label
+		height: 61px
+		border-radius: 12px 12px 0 0
+		background-color: rgb($white)
+		position: absolute
+		bottom: 0
+		transition: .35s ease
+		&-left,&-right
+			+wh(20px,100%)
+			background-color: rgb($white)
+			position: absolute
+			&:before
+				+af
+				+wh(20px,100%)
+				background-color: rgb($blue)
+				position: absolute
+				bottom: 0
+		&-left
+			left: -20px
+			&:before
+				border-bottom-right-radius: 12px
+		&-right
+			right: -20px
+			&:before
+				border-bottom-left-radius: 12px
 .navigate-label
-  display: block
+	display: block
 
 .student
-  &-main
-    padding: 40px 50% 40px 51px
-    background-size: auto 150%
-    background-position: calc(100% - 51px) 50%
-    &-text
-      font-size: $fz16
+	&-main
+		padding: 40px 50% 40px 51px
+		background-size: auto 150%
+		background-position: calc(100% - 51px) 50%
+		&-text
+			font-size: $fz16
 
 
 .test
-  &-block
-    height: calc(100vh - 188px)
-    display: flex
-    flex-direction: column
-  &-inner
-    height: 100%
-    padding-bottom: 30px
-    overflow: auto
-    &.comparison
-      .test-text
-        &:last-child
-          margin-bottom: 16px
-  &-row
-    max-width: initial
-    display: flex
-    .line
-      width: 1px
-      flex: 0 0 1px
-      margin-right: 24px
-      background-color: rgb($neutral-300)
-  &-col
-    width: 100%
-    margin-bottom: 0
-    overflow: auto
-    &:not(:last-child)
-      margin-right: 24px
-    &-title
-      margin-top: 16px
-    .test-header
-      &:not(:first-child)
-        margin-top: 32px
-    &.mini
-      height: initial
-      max-height: calc(100vh - 430px)
-    &.wide
-      margin-right: 32px
-    &.narrow
-      flex: 0 0 257px
-      padding-left: 32px
-    img,svg
-      margin-bottom: 80px
-      &:last-child
-        margin-bottom: 0
-  &-left
-    padding: 32px
-  &-col.narrow
-    border-left: 1px solid rgb($neutral-300)
+	&-block
+		height: calc(100vh - 188px)
+		display: flex
+		flex-direction: column
+	&-inner
+		height: 100%
+		padding-bottom: 30px
+		overflow: auto
+		&.comparison
+			.test-text
+				&:last-child
+					margin-bottom: 16px
+	&-row
+		max-width: initial
+		display: flex
+		.line
+			width: 1px
+			flex: 0 0 1px
+			margin-right: 24px
+			background-color: rgb($neutral-300)
+	&-col
+		width: 100%
+		margin-bottom: 0
+		overflow: auto
+		&:not(:last-child)
+			margin-right: 24px
+		&-title
+			margin-top: 16px
+		.test-header
+			&:not(:first-child)
+				margin-top: 32px
+		&.mini
+			height: initial
+			max-height: calc(100vh - 430px)
+		&.wide
+			margin-right: 32px
+		&.narrow
+			flex: 0 0 257px
+			padding-left: 32px
+		img,svg
+			margin-bottom: 80px
+			&:last-child
+				margin-bottom: 0
+	&-left
+		padding: 32px
+	&-col.narrow
+		border-left: 1px solid rgb($neutral-300)
 
 
 .modal
-  &.finish
-    width: 744px
-  &.report,&.note
-    width: 438px
+	&.finish
+		width: 744px
+	&.report,&.note
+		width: 438px
 
 
 .login
-  display: flex
-  &-left
-    flex: 0 0 calc(600% / 14.4)
-    display: flex
-    .login-main
-      &-subtitle,&-title
-        color: rgb($white)
-  &-main
-    &-title
-      font-size: calc(30em/14)
-    &-subtitle
-      font-size: calc(22em/14)
-  &-right
-    position: relative
-  .button
-    &-blue,&-lightblue
-      font-size: calc(16em/14)
-  &-bottom
-    .link
-      font-size: calc(18em/14)
-  &-success
-    &-img
-      width: 400px
-    &-bgc
-      img
-        &:nth-child(8)
-          right: 171px
+	display: flex
+	&-left
+		flex: 0 0 calc(600% / 14.4)
+		display: flex
+		.login-main
+			&-subtitle,&-title
+				color: rgb($white)
+	&-main
+		&-title
+			font-size: calc(30em/14)
+		&-subtitle
+			font-size: calc(22em/14)
+	&-right
+		position: relative
+	.button
+		&-blue,&-lightblue
+			font-size: calc(16em/14)
+	&-bottom
+		.link
+			font-size: calc(18em/14)
+	&-success
+		&-img
+			width: 400px
+		&-bgc
+			img
+				&:nth-child(8)
+					right: 171px
 
 
 .practice
-  &-schedule
-    &-row
-      padding: 0 0 12px
+	&-schedule
+		&-row
+			padding: 0 0 12px

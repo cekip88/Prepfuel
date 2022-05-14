@@ -16,6 +16,12 @@ class _loginModel{
 			'reset': `${env.backendUrl}/auth/reset-password`,
 		};
 		
+		this.dashboards = {
+			'admin': '/admin/dashboard',
+			'student': '/student/dashboard',
+			'parent': '/parent/dashboard',
+		};
+		
 	}
 	isSuccessStatus(status){
 		return (status < 300);
@@ -37,10 +43,10 @@ class _loginModel{
 		});
 		if(_.isSuccessStatus(rawResponse.status)){
 			let response = await rawResponse.json();
-			
 			if( _.isSuccessResponse(response) ){
+				let user = response['user'];
 				await G_Bus.trigger(_.componentName,'loginSuccess',response);
-				await G_Bus.trigger('router','changePage','/test');
+				await G_Bus.trigger('router','changePage',`/${user['role']}/dashboard`);
 			}else{
 				G_Bus.trigger(_.componentName,'loginFail',{
 					"response": response,

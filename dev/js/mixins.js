@@ -1,7 +1,38 @@
 export const mixins = {
 	/*Storage*/
+	ascent(item,targetSelector,endCls){
+		if (targetSelector[0] === '.') {
+			while(!item.classList.contains(targetSelector.substr(1))) {
+				item = item.parentElement;
+				if (item.classList.contains(endCls)) {
+					break;
+					return;
+				}
+			}
+		} else if (targetSelector[0] === '#') {
+			while(!item.id === targetSelector) {
+				item = item.parentElement;
+				if (item.classList.contains(endCls)) {
+					break;
+					return;
+				}
+			}
+		} else {
+			while(!item.tagName === targetSelector) {
+				item = item.parentElement;
+				if (item.classList.contains(endCls)) {
+					break;
+					return;
+				}
+			}
+		}
+		return item;
+	},
 	storageHas(key){
 		return localStorage.getItem(key) ? true : false;
+	},
+	removeCls(item,cls) {
+		if (item) item.classList.remove(cls)
 	},
 	storageGet(key,parse){
 		if (!this.storageHas(key)) return null;

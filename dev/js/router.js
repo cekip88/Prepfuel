@@ -7,23 +7,45 @@ export class router {
 		_.componentName = 'router';
 		_.pages = new Map();
 		_.systemComponents = ['router'];
+		this.baseHeaders = {
+			headers:{
+				"Content-type": "application/json"
+			}
+		}
 		this.endpoints = {
+			'me':`${env.backendUrl}/user/me`,
 			'logout': `${env.backendUrl}/auth/logout`,
 		};
 		G_Bus
 			.on(_,'changePage')
 			.on(_,'logout')
 	}
+	async getRole(){
+		const _ = this;
+		let rawResponse = await fetch(_.endpoints['me'],{
+			..._.baseHeaders,
+			method: 'GET'
+		});
+		if(rawResponse.status < 206){
+			let response = await rawResponse.json(),
+					user = response['response'];
+			if(user['role']) 	return Promise.resolve(user['role']);
+			else 	return Promise.resolve(user['user']['role']);
+		}else{
+			return 'guest';
+		}
+		
+	}
 	async changePage(route){
 		const _ = this;
-		_.currentPageRoute = _.definePageRoute(route);
-		
+		_.currentPageRoute = await _.definePageRoute(route);
 		_.clearComponents();
 		if(!_.pages.has(_.currentPageRoute['module'])){
 			let currentPage = await _.includePage(_.currentPageRoute);
 		}
+		
 	}
-	definePageRoute(route){
+	async definePageRoute(route){
 		const _ = this;
 		if(route) history.pushState(null, null, route);
 		let
@@ -31,11 +53,29 @@ export class router {
 			pathParts = pathName.split('/').splice(1),
 			module = pathParts.splice(0,1)[0],
 			params = pathParts;
-		let routesValues = Object.keys(_.routes);
-	
-		if(routesValues.indexOf(`${pathName}`) < 0){
+		
+		let role = await _.getRole();
+		let middles = Object.keys(_.middleware),
+				currentMiddleware = ['guest'];
+		if(middles){
+			for(let middle of middles){
+				if(middle.indexOf(role) > -1){
+					currentMiddleware.push(middle)
+				}
+			}
+		}
+		_.routes  = {};
+		_.routesValues = [];
+		for(let role of currentMiddleware){
+			let
+				rs = _.middleware[role]['routes'],
+				values = Object.keys(_.middleware[role]['routes']);
+			_.routes = {..._.routes,...rs};
+			_.routesValues.push(...values);
+		}
+		if(_.routesValues.indexOf(`${pathName}`) < 0){
 			let outRoute, difRoute;
-			for(let value of routesValues){
+			for(let value of _.routesValues){
 				if(value.indexOf('{') > 0){
 					let rawOutRoute = value.substring(value.indexOf('{')-1,-1);
 					difRoute = value;
@@ -57,12 +97,13 @@ export class router {
 				}
 			}
 		}
+		
 		return {
 			'module': _.routes[`${pathName}`],
 			'params': params
 		}
 	}
-	includePage(blockData){
+	async includePage(blockData){
 		const _ = this;
 		return new Promise(async function (resolve,reject) {
 			try{
@@ -124,6 +165,7 @@ export class router {
 		}
 		
 	}
+	
 	isSystemComponent(componentName){
 		if(this.systemComponents.indexOf(componentName) > -1){
 			return true;
@@ -132,7 +174,7 @@ export class router {
 	}
 	async init(params){
 		const _ = this;
-		_.routes = params['routes'];
+		_.middleware = params['middleware'];
 		await _.changePage();
 	}
 }
