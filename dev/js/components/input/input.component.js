@@ -79,15 +79,9 @@ export default class GInput extends GComponent {
 	
 	
 	
-	doValidate(text){
+	doValidate(){
 		const _ = this;
 		let isValidate = true;
-
-		if(text){
-			_.setError(text,false);
-			return false;
-		}
-
 		if(!_.checkMatch()){
 			_.setError('match',true);
 			_.matchedElement.setError('match',true);
@@ -139,9 +133,17 @@ export default class GInput extends GComponent {
 		if(day < 10) day = '0'+day;
 		if(month < 10) month = '0'+month;
 		let outValue = format;
-		outValue = outValue.replace('DD',day);
-		outValue = outValue.replace('YYYY',year);
-		outValue = outValue.replace('MM',month);
+		if (!format) {
+			let dateStr = year + '-' + month + '-' + day;
+			let date = new Date(dateStr);
+			let days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Sunday'];
+			let months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+			outValue = days[date.getDay()] + ', ' + months[month - 1] + ' ' + day + ', ' + year;
+		} else {
+			outValue = outValue.replace('DD',day);
+			outValue = outValue.replace('YYYY',year);
+			outValue = outValue.replace('MM',month);
+		}
 		item.parentNode.querySelector('.inpt-value').value = outValue;
 		item.parentNode.querySelector('.inpt-value').focus();
 	}

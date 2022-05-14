@@ -60,6 +60,18 @@
       &.active
         &:after
           background-color: rgb($blue)
+  &-header
+    flex-direction: row
+    flex-wrap: wrap
+    align-items: center
+    justify-content: space-between
+    &-input,&-select
+      margin-bottom: 0
+    &-input,&-select,.button-blue
+      width: calc(50% - 10px)
+      margin-top: 20px
+    .button-blue
+      height: 34px
 
 
 .pagination
@@ -67,7 +79,12 @@
   justify-content: space-between
   &-info
     margin-bottom: 0
-
+    margin-right: 16px
+  &-end
+    margin-left: 32px
+    margin-top: 0
+  &-top
+    justify-content: flex-start
 
 .head
   &-logo
@@ -139,8 +156,11 @@
     flex-direction: row
     align-items: center
     justify-content: flex-end
-    &-button,&-back,.button,.button-blue
+    &-button,&-back,.button,.button-blue,.pagination
+      width: initial
       margin-bottom: 0
+    .pagination
+      margin-right: 24px
     .button,.button-blue,&-back
       margin-right: 24px
       &:last-child
@@ -266,3 +286,26 @@
     width: 100%
     min-width: 380px
     max-width: 480px
+
+
+.practice
+  &-schedule
+    &-row
+      flex-wrap: nowrap
+    &-title
+      width: initial
+      white-space: nowrap
+    &-date
+      max-width: 395px
+      margin: 0 0 0 20px
+.remove-btn
+  width: 42px
+  flex: 0 0 42px
+  margin-top: 0
+  margin-left: 20px
+  background-color: initial
+  span
+    display: none
+  svg
+    fill: rgb($neutral-400)
+    display: block

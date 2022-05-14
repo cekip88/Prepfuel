@@ -1,0 +1,111 @@
+extends template/main
+append vars
+	-
+		page_title = 'Admin - Users'
+block content
+	main
+		include parts/admin-header
+		include ../img/sprite.svg
+		section.navigate(data-active='.navigate-item:nth-child(1)' data-tabs='.dashboard-tabs')
+			include parts/admin-nav
+			.subnavigate
+				.section
+					button.subnavigate-button.active
+						span Students
+					button.subnavigate-button
+						span Parents
+					button.subnavigate-button
+						span Admins
+		section
+			.section
+				.block
+					.block-header
+						h2.block-title Students (7,300)
+						g-input(type='text' value='Search' classname='form-input form-search').block-header-input
+						g-input(type='text' classname="form-input form-search").block-header-input.block-header-date
+						g-select.select.block-header-select(
+							action='testChange'
+							name='testField'
+							classname='filter-select'
+							arrowSvg="img/sprite.svg#select-arrow"
+							title='Course'
+							items=[
+								{"value": 1, "text": 'option 1'},
+								{"value": 2, "text": 'option 2'},
+								{"value": 3, "text": 'option 3'}
+							]
+						)
+						button.button-blue
+							span Add Student
+							svg.button-icon
+								use(xlink:href='#plus')
+					.pagination.pagination-top
+						.pagination-info
+							span 1 - 100 of 7300
+						.pagination-links
+							a(href='#').pagination-arrow.pagination-prev
+								svg.arrow
+									use(xlink:href='#arrow-left-transparent')
+							a(href='#').pagination-link.active
+								span 1
+							a(href='#').pagination-link
+								span 2
+							a(href='#').pagination-link
+								span 3
+							a(href='#').pagination-link
+								span 4
+							a(href='#').pagination-link
+								span 5
+							a(href='#').pagination-arrow.pagination-next
+								svg.arrow
+									use(xlink:href='#arrow-right-transparent')
+						.pagination-end
+							span Jump to
+							input(type='text' value='1')
+					.tbl
+						.tbl-head
+							.tbl-item
+								span USER Name
+								.tbl-sort-btns
+									button.tbl-sort-btn.top
+									button.tbl-sort-btn.bottom
+							.tbl-item Courses
+							.tbl-item
+								span date Registered
+								.tbl-sort-btns
+									button.tbl-sort-btn.top
+									button.tbl-sort-btn.bottom
+							.tbl-item Action
+						table
+							thead
+								tr
+									th.tbl-h
+									th.tbl-h
+									th.tbl-h
+									th.tbl-h
+							tbody.tbl-body
+								-for (let item of adminUsersTable)
+									tr.tbl-row
+										td
+											.tbl-item
+												.users-photo-icon
+													+img( [item['image']] )
+												.users-info
+													h6.users-info-name= item['name']
+													span.users-info-email exmplm@example.com
+										td
+											.tbl-item
+												-for (let course of item['courses'])
+													.users-course( class=[course[1]] )= course[0]
+										td
+											.tbl-item
+												.users-date March 17, 2022
+										td
+											.tbl-item
+												button.users-btn
+													svg
+														use(xlink:href='#write')
+												button.users-btn
+													svg
+														use(xlink:href='#trash')
+												button.users-btn Profile

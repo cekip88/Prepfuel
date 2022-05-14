@@ -1,0 +1,17 @@
+header.head
+	.section
+		.head-row
+			a(href="#").head-logo
+				img(src="/img/logo.svg" alt="")
+			.head-control
+				a(href="./studentDashboard.html").head-button
+					svg
+						use(xlink:href="#bell")
+				button.head-button
+					svg
+						use(xlink:href="#chat")
+				.head-info
+					span.head-name Courtney
+					span.head-position Super Admin
+				button(class="head-user" data-click="router:logout")
+					span C

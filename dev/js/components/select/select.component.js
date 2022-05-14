@@ -114,7 +114,7 @@ export default class GSelect extends GComponent {
 		if (!_.multiple) {
 			_.close();
 		}
-		
+
 	}
 	createHiddenInput(data){
 		const _ = this;
@@ -131,7 +131,8 @@ export default class GSelect extends GComponent {
 			title: this.getAttribute('title'),
 			name: this.getAttribute('name'),
 			arrow: this.getAttribute('arrow'),
-			arrowSvg: this.getAttribute('arrowSvg')
+			arrowSvg: this.getAttribute('arrowSvg'),
+			className: this.getAttribute('className')
 		});
 
 		_.append(_.createHiddenInput({

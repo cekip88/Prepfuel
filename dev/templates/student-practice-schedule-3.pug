@@ -1,0 +1,115 @@
+extends template/main
+append vars
+	-
+		page_title = 'Practice Schedule'
+block content
+	main
+		include ../img/sprite.svg
+		section.test
+			.section
+				.section-header
+					h1.title Create your practice schedule
+					button.button-white
+						span Exit creating your schedule
+			.section.row
+				.block.test-block
+					.test-header
+						h3.block-title.test-title
+							span Step 3 of 3 - Skill practice plan
+					.test-inner.narrow
+						h4.test-subtitle
+							span Practice test days
+						.practice-schedule-text
+							p.test-subtitle.small When preparing for a marathon, you also have to do sprints, strength work, and other exercises. For the ISEE, in addition to practice tests, you will also work on individual skills and short timed "mini-sections".
+							p.test-subtitle.small &nbsp;
+							p.test-subtitle.small With 15 weeks left until your test, we recommend you do skill practice 1.25 hours/week (hardcore: 3-5 hours/week). 15 minutes × 5 days = 1.25 hours/week
+							p.test-subtitle.small (Recommended)
+						.practice-schedule-rows
+							.practice-schedule-row
+								h5.practice-schedule-title Practice on
+								.practice-schedule-date
+									g-input(type='date' classname='input-date' value='February 19, 2022')
+								.practice-schedule-date
+									g-select(
+										title='8:00 AM'
+										items=[
+											{"text": '8:00 AM'},
+											{"text": '9:00 AM'},
+											{"text": '10:00 AM'},
+										]
+										classname='filter-select input-time'
+									).select
+								button.remove-btn
+									span Remove
+									svg
+										use(xlink:href='#close')
+							.practice-schedule-row
+								.blue-icon.reverse
+									svg
+										use(xlink:href="#badge")
+								h5.practice-schedule-title Practice test 2
+								.practice-schedule-date
+									g-input(type='date' classname='input-date' value='March 5, 2022')
+								.practice-schedule-date
+									g-select(
+										title='8:00 AM'
+										items=[
+											{"text": '8:00 AM'},
+											{"text": '9:00 AM'},
+											{"text": '10:00 AM'},
+										]
+										classname='filter-select input-time'
+									).select
+								button.remove-btn
+									span Remove
+									svg
+										use(xlink:href='#close')
+							.practice-schedule-row
+								.blue-icon.reverse
+									svg
+										use(xlink:href="#badge")
+								h5.practice-schedule-title Practice test 3
+								.practice-schedule-date
+									g-input(type='date' classname='input-date' value='March 19, 2022')
+								.practice-schedule-date
+									g-select(
+										title='8:00 AM'
+										items=[
+											{"text": '8:00 AM'},
+											{"text": '9:00 AM'},
+											{"text": '10:00 AM'},
+										]
+										classname='filter-select input-time'
+									).select
+								button.remove-btn
+									span Remove
+									svg
+										use(xlink:href='#close')
+							.practice-schedule-row
+								.blue-icon
+									svg
+										use(xlink:href="#badge")
+								h5.practice-schedule-title Your ISEE Date
+								.practice-schedule-date
+									span Saturday, May 7, 2022
+						button.button-lightblue
+							svg.button-icon
+								use(xlink:href='#plus')
+							span Schedule more practice tests
+					.test-footer
+						.pagination.pagination-top
+							.pagination-info
+								span 3 steps
+							.pagination-links
+								a(href='#').pagination-link.done
+									svg
+										use(xlink:href='#checkmark')
+								a(href='#').pagination-link.done
+									svg
+										use(xlink:href='#checkmark')
+								a(href='#').pagination-link.active
+									span 3
+						a(href='./student-practice-schedule-2.html').button
+							span Back
+						a(href='#').button-blue
+							span Create

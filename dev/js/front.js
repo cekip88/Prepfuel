@@ -2,6 +2,8 @@
 //import { G } from "./libs/G.js";
 import { router } from "./router.js";
 
+import GInput from "../../components/input/input.component.js";
+import GSelect from "../../components/select/select.component.js";
 /*class Front extends G{
   constructor(){
     super();

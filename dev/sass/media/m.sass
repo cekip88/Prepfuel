@@ -92,6 +92,12 @@ body
     line-height: 1.625
     letter-spacing: -0.02em
     font-family: $p_medium
+  &-header
+    @extend %df
+    @extend %fdc
+    margin-bottom: 20px
+    &-input,&-select
+      margin-bottom: 20px
 
 
 .title,.block-title
@@ -135,7 +141,7 @@ body
     border-radius: 6px
     border: 1px solid transparent
   &,&-blue
-    padding: 13px 24px
+    padding: 13px 12px
   &-lightblue,&-transparent
     color: rgb($blue-text)
   &-icon
@@ -212,8 +218,8 @@ body
 
 .pagination
   @extend %dfa
-  width: 100%
   @extend %fdc
+  width: 100%
   &-links
     @extend %dfa
   &-info,&-link
@@ -234,12 +240,39 @@ body
   &-next
     margin-left: 12px
   &-link
+    margin-right: 10px
+    &:last-child
+      margin-right: 0
     &.active
-      background-color: rgb($blue)
-      color: rgb($white)
+      background-color: rgb($blue-light)
+      border: 1px solid rgb($blue)
+      color: rgb($blue)
+    &.done
+      background-color: rgb($green-light)
+      svg
+        +wh(19px)
+        stroke: rgb($green)
   &-link,&-arrow
     &:hover
       background-color: rgb($neutral-100)
+  &-top
+    .pagination
+      &-info
+        color: rgb($neutral-800 )
+  &-end
+    margin-top: 10px
+    font-size: 12px
+    span
+      margin-right: 8px
+      color: rgb($neutral-800)
+      font-family: $f_medium
+    input
+      +wh(35px,34px)
+      background-color: rgb($neutral-100)
+      border-radius: 6px
+      text-align: center
+      font-family: $f_medium
+      color: rgb($neutral-500)
 
 
 .head
@@ -712,6 +745,11 @@ body
   &-subtitle
     font-family: $f_bold
     font-size: $fz18
+    &.small
+      color: rgb($neutral-400)
+      font-family: $f_medium
+      font-size: 1em
+      line-height: $fz24
   &-text
     margin-top: 16px
     font-size: $fz16
@@ -753,7 +791,7 @@ body
     &:first-child
       padding-top: 0
     &.narrow
-      max-width: 588px
+      max-width: 598px
     &.middle
       max-width: 620px
   &-row
@@ -813,10 +851,13 @@ body
       color: rgb($blue-text)
       font-size: $fz15
       font-family: $f_medium
-    &-button,&-back,.button,.button-blue
+    &-button,&-back,.button,.button-blue,.pagination
+      width: 100%
       margin-bottom: 10px
       &:last-child
         margin-bottom: 0
+    &-button,&-back,.button,.button-blue
+      justify-content: center
   &-result
     margin-top: 32px
     &-block
@@ -1568,3 +1609,74 @@ body
         color: rgb($neutral-700)
     &:checked ~ .form-checkbox-icon:after
       background-color: rgb($blue)
+
+
+.practice
+  &-schedule
+    &-text
+      margin-bottom: 20px
+      .test-subtitle
+        margin-top: 7px
+    &-rows
+      margin-bottom: 20px
+    &-row
+      @extend %dfa
+      @extend %fw
+      padding: 10px 0
+      .blue-icon
+        margin-right: 20px
+    &-title
+      width: calc(100% - 68px)
+      font-size: $fz15
+      font-family: $p_reg
+    &-date
+      margin-top: 10px
+      &,g-input
+        width: 100%
+      span
+        font-size: $fz15
+        font-family: $p_semi
+.blue-icon
+  +wh(48px)
+  padding: 10px
+  background-color: rgb($blue)
+  border-radius: 12px
+  svg
+    +wh(28px)
+    fill: #fff
+  &.reverse
+    background-color: rgb($neutral-100)
+    svg
+      fill: rgb($blue)
+
+.remove-btn
+  @extend %dfc
+  +wh(100%,42px)
+  font-family: $f_medium
+  background-color: rgb($neutral-100)
+  margin-top: 10px
+  svg
+    +wh(14px)
+    display: none
+
+.tbl
+  overflow: auto
+  &-head
+    @extend %dfa
+  &-item
+    @extend %dfa
+
+
+.users
+  &-photo-icon
+    @extend %dfc
+    flex: 0 0 36px
+    margin-right: 12px
+  &-info
+    &-name,&-email
+      white-space: nowrap
+  &-course,&-date
+    white-space: nowrap
+  &-btn
+    svg
+      +wh(18px)

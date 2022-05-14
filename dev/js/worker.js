@@ -1,4 +1,4 @@
-let cacheBD = 'staticV6';
+let cacheBD = 'staticV1';
 self.addEventListener('install', event=>{
 	console.log('Installed');
 	event.waitUntil(self.skipWaiting())
@@ -22,8 +22,8 @@ self.addEventListener('install', event=>{
 			//	'/front.js',
 			//	'/mixins.js',
 			//	'/router.js',
-				'/front.css',
-					'/components.css',
+		//		'/front.css',
+		//			'/components.css',
 			//	'/pages/login/login.page.js',
 			//	'/pages/login/loginModel.js',
 			]);

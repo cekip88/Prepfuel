@@ -1,0 +1,45 @@
+extends template/main
+append vars
+	-
+		page_title = 'Practice Schedule'
+block content
+	main
+		include ../img/sprite.svg
+		section.test
+			.section
+				.section-header
+					h1.title Create your practice schedule
+					button.button-white
+						span Exit creating your schedule
+			.section.row
+				.block.test-block
+					.test-header
+						h3.block-title.test-title
+							span Step 1 of 3 - Choose your test date
+					.test-inner.narrow
+						h4.test-subtitle
+							span Choose your test date
+						.practice-schedule-text
+							p.test-subtitle.small What is your test date?
+						.practice-schedule-row
+							.blue-icon
+								svg
+									use(xlink:href="#badge")
+							h5.practice-schedule-title Your ISEE Date
+							.practice-schedule-date
+								g-input(type="date" classname='input-date' placeholder="Choose your test date")
+					.test-footer
+						.pagination.pagination-top
+							.pagination-info
+								span 3 steps
+							.pagination-links
+								a(href='#').pagination-link.active
+									span 1
+								a(href='#').pagination-link
+									span 2
+								a(href='#').pagination-link
+									span 3
+						a(href='./').button
+							span Back
+						a(href='./student-practice-schedule-2.html').button-blue
+							span Next
