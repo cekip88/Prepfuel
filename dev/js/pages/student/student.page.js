@@ -26,12 +26,11 @@ class StudentPage extends G{
 	}
 	changeSection({item}){
 		const _ = this;
-		let section = item.getAttribute('section'),
-		part = (section == 'reset') ? 'row' : 'right';
-		if(section == 'welcome'){
-			_.welcomeTpl();
-		}else
-			_.renderPart({part:part,content: _.markup(_[`${section}Tpl`](),false)});
+		let
+			section = item.getAttribute('section'),
+			tpl = section.split('/')[2];
+		if(section) history.pushState(null, null, section);
+		_.renderPart({part:'body',content: _.markup(_[`${tpl}Tpl`](),false)});
 	}
 	async render(blockData){
 		const _ = this;
@@ -40,12 +39,14 @@ class StudentPage extends G{
 		if(params.length > 0){
 			initTpl = _[`${params[0]}Tpl`](params);
 		}
+		console.log(initTpl);
+		let type = 'user';
 		
 		
 		
 		_.header = await _.getBlock({name:'header'},'blocks');
 		_.fillPartsPage([
-			{ part:'header', content:_.markup(_.header.render(),false)},
+			{ part:'header', content:_.markup(_.header.render(type),false)},
 			{ part:'header-tabs', content:_.markup(_.tabsTpl(),false)},
 			{ part:'body', content: _.markup(initTpl,false)}
 		]);

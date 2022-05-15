@@ -159,6 +159,7 @@ new router().init({
 				'/profile': 'student',
 				'/student': 'student',
 				'/student/dashboard': 'student',
+				'/student/createschedule': 'student',
 			}
 		},
 		'student|admin':{

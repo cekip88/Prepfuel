@@ -32,7 +32,7 @@ export class G extends G_G{
 				const
 					module = await import(path),
 					moduleName = new module[moduleStr](params);
-				//Object.assign(module[moduleStr].prototype,mixins);
+				Object.assign(module[moduleStr].prototype,mixins);
 				_.components.set(name, moduleName);
 				resolve(moduleName);
 			} catch(e) {
