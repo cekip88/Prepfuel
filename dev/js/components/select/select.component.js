@@ -122,12 +122,13 @@ export default class GSelect extends GComponent {
 	}
 	async connectedCallback() {
 		const _ = this;
+		let items = JSON.parse(this.getAttribute('items'));
 		await _.importTpl('./select/template.js');
 		_.shadow = this.attachShadow({mode: 'open'});
 		_.mainTpl = _.getTpl('select');
 		_.baseTitle = this.getAttribute('title');
 		_.shadow.innerHTML = _.mainTpl({
-			items: JSON.parse(this.getAttribute('items')),
+			items: items,
 			title: this.getAttribute('title'),
 			name: this.getAttribute('name'),
 			arrow: this.getAttribute('arrow'),
@@ -136,6 +137,7 @@ export default class GSelect extends GComponent {
 		});
 
 		_.append(_.createHiddenInput({
+			items: items,
 			name: this.getAttribute('name')
 		}))
 

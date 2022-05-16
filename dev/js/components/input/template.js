@@ -28,7 +28,7 @@ export default {
 				data-input="doInput"
 				data-focusout="doFocusOut"
 				data-click="getCaretPosition"
-			>
+			> 
 		</label>`,
 	'check': ( data={})=>{
 		let items= ``;
@@ -36,11 +36,11 @@ export default {
 		data['items'].forEach( item =>{
 			let id = Math.random(9999);
 			items+=`
-				<input class=${data['type'] =='checkbox' ? 'inpt-checkbox' : 'inpt-radio'} type="${data['type']}" value="${item.value}" name="${data['name']}" id="${id}" data-input="setCheckboxValue">
-				<label class=${data['type'] =='checkbox' ? 'inpt-checkbox-label' : 'inpt-radio-label'} for="${id}" >${item.text ? '<span class="inpt-checkbox-label-text">'+item.text+'</span>' : '' } </label>
+				<input class=${data['type'] =='checkbox' ? 'inpt-checkbox' : 'inpt-radio'} type="${data['type']}" ${item.checked ? 'checked' : ''} ${item.disabled ? 'disabled' : ''} value="${item.value}" name="${data['name']}" id="${id}" data-input="setCheckboxValue">
+				<label class=${data['type'] =='checkbox' ? 'inpt-checkbox-label' : 'inpt-radio-label'} ${item.disabled ? 'disabled' : ''} for="${id}" >${item.text ? '<span class="inpt-checkbox-label-text">'+item.text+'</span>' : '' } </label>
 			`
 		});
-		return `
+		return `  
 			<div class="inpt ${data['className'] ?? ''}">
 				${data['title'] ? '<h6 class="inpt-title">'+data['title']+'</h6>' : ''}
 				<div ${data['type'] =='checkbox' ? "class='inpt-items-cont inpt-checkbox-cont'" : "class='inpt-items-cont inpt-radio-cont'"}>${items}</div>
@@ -52,9 +52,9 @@ export default {
 		if(!data['items'] || !data['items'].length) return '<span class="inpt-checkbox-items-fail">Items not found</span>';
 		data['items'].forEach( item =>{
 			let id = Math.random(9999);
-			items+=`
-				<input class=${data['type'] =='checkbox' ? 'inpt-checkbox' : 'inpt-radio'} type="${data['type']}" value="${item.value}" name="${data['name']}" id="${id}" data-input="setCheckboxValue">
-				<label class=${data['type'] =='checkbox' ? 'inpt-checkbox-label' : 'inpt-radio-label'} for="${id}" >${item.text ? '<span class="inpt-checkbox-label-text">'+item.text+'</span>' : '' } </label>
+			items+=`  
+				<input class=${data['type'] =='checkbox' ? 'inpt-checkbox' : 'inpt-radio'} ${item.checked ? 'checked' : ''} ${item.disabled ? 'disabled' : ''} type="${data['type']}" value="${item.value}" name="${data['name']}" id="${id}" data-input="setCheckboxValue">
+				<label class=${data['type'] =='checkbox' ? 'inpt-checkbox-label' : 'inpt-radio-label'} ${item.disabled ? 'disabled' : ''} for="${id}" >${item.text ? '<span class="inpt-checkbox-label-text">'+item.text+'</span>' : '' } </label>
 			`
 		});
 		return items;

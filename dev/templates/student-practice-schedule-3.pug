@@ -18,98 +18,79 @@ block content
 							span Step 3 of 3 - Skill practice plan
 					.test-inner.narrow
 						h4.test-subtitle
-							span Practice test days
+							span Skill practice plan
 						.practice-schedule-text
 							p.test-subtitle.small When preparing for a marathon, you also have to do sprints, strength work, and other exercises. For the ISEE, in addition to practice tests, you will also work on individual skills and short timed "mini-sections".
 							p.test-subtitle.small &nbsp;
-							p.test-subtitle.small With 15 weeks left until your test, we recommend you do skill practice 1.25 hours/week (hardcore: 3-5 hours/week). 15 minutes × 5 days = 1.25 hours/week
+							p.test-subtitle.small With 15 weeks left until your test, we recommend you do skill practice 1.25 hours/week (hardcore: 3-5 hours/week).
+							p.test-subtitle.small 15 minutes × 5 days = 1.25 hours/week
 							p.test-subtitle.small (Recommended)
 						.practice-schedule-rows
 							.practice-schedule-row
 								h5.practice-schedule-title Practice on
-								.practice-schedule-date
-									g-input(type='date' classname='input-date' value='February 19, 2022')
-								.practice-schedule-date
-									g-select(
-										title='8:00 AM'
-										items=[
-											{"text": '8:00 AM'},
-											{"text": '9:00 AM'},
-											{"text": '10:00 AM'},
-										]
-										classname='filter-select input-time'
-									).select
-								button.remove-btn
-									span Remove
-									svg
-										use(xlink:href='#close')
+								.practice-schedule-right
+									g-input(type='checkbox' name='day' classname='inpt-days' items=[
+										{'value':'S','text':'S','disabled':true},
+										{'value':'M','text':"M",'checked':true},
+										{'value':'T','text':"T",'checked':true},
+										{'value':'W','text':"W",'checked':true},
+										{'value':'Th','text':"Th",'checked':true},
+										{'value':'F','text':"F",'checked':true},
+										{'value':'Sa','text':"Sa",'disabled':true}
+									]).inpt-checkbox.inpt-days
 							.practice-schedule-row
-								.blue-icon.reverse
-									svg
-										use(xlink:href="#badge")
-								h5.practice-schedule-title Practice test 2
-								.practice-schedule-date
-									g-input(type='date' classname='input-date' value='March 5, 2022')
-								.practice-schedule-date
-									g-select(
-										title='8:00 AM'
-										items=[
-											{"text": '8:00 AM'},
-											{"text": '9:00 AM'},
-											{"text": '10:00 AM'},
-										]
-										classname='filter-select input-time'
-									).select
-								button.remove-btn
-									span Remove
-									svg
-										use(xlink:href='#close')
+								h5.practice-schedule-title Number of questions
+								.practice-schedule-right
+									g-select(items=[
+										{'text':'5 questions','value':5,'active':true},
+										{'text':'10 questions','value':10}
+									] value=5 classname='g-select-gray').g-select-gray
 							.practice-schedule-row
-								.blue-icon.reverse
-									svg
-										use(xlink:href="#badge")
-								h5.practice-schedule-title Practice test 3
-								.practice-schedule-date
-									g-input(type='date' classname='input-date' value='March 19, 2022')
-								.practice-schedule-date
-									g-select(
-										title='8:00 AM'
-										items=[
-											{"text": '8:00 AM'},
-											{"text": '9:00 AM'},
-											{"text": '10:00 AM'},
-										]
-										classname='filter-select input-time'
-									).select
-								button.remove-btn
-									span Remove
-									svg
-										use(xlink:href='#close')
+								h5.practice-schedule-title Practice at
+								.practice-schedule-right
+									g-select(items=[
+										{'text':'4:00 PM','value':'4:00','active':true},
+										{'text':'5:00 PM','value':'5:00'},
+										{'text':'6:00 PM','value':'6:00'},
+										{'text':'7:00 PM','value':'7:00'},
+										{'text':'8:00 PM','value':'8:00'},
+									] classname='g-select-gray').g-select-gray
 							.practice-schedule-row
-								.blue-icon
-									svg
-										use(xlink:href="#badge")
-								h5.practice-schedule-title Your ISEE Date
-								.practice-schedule-date
-									span Saturday, May 7, 2022
-						button.button-lightblue
-							svg.button-icon
-								use(xlink:href='#plus')
-							span Schedule more practice tests
+								h5.practice-schedule-title Daily target
+								.practice-schedule-dots
+								span.practice-schedule-title 10 questions
+							.practice-schedule-row
+								h5.practice-schedule-title Days per week
+								.practice-schedule-dots
+								span.practice-schedule-title 5 days / week
+							.practice-schedule-row
+								h5.practice-schedule-title Total weeks
+								.practice-schedule-dots
+								span.practice-schedule-title 15 weeks
+							.practice-schedule-row
+								h5.practice-schedule-title Questions completed to date
+								.practice-schedule-dots
+								span.practice-schedule-title 241 questions
+							.practice-schedule-row
+								.line
+							.practice-schedule-row
+								h5.practice-schedule-title.bold Goal (total practice until test date)
+								.practice-schedule-dots
+								span.practice-schedule-title 1000 questions
 					.test-footer
 						.pagination.pagination-top
 							.pagination-info
 								span 3 steps
 							.pagination-links
-								a(href='#').pagination-link.done
+								a(href='./student-practice-schedule.html').pagination-link.done
 									svg
 										use(xlink:href='#checkmark')
-								a(href='#').pagination-link.done
+								a(href='./student-practice-schedule-2.html').pagination-link.done
 									svg
 										use(xlink:href='#checkmark')
-								a(href='#').pagination-link.active
+								a(href='./student-practice-schedule-3.html').pagination-link.active
 									span 3
 						a(href='./student-practice-schedule-2.html').button
 							span Back
-						a(href='#').button-blue
+						a(href='./studentDashboard.html').button-blue
 							span Create
