@@ -17,27 +17,30 @@ export class router {
 			'logout': `${env.backendUrl}/auth/logout`,
 		};
 		G_Bus
-			.on(_,'changePage')
-			.on(_,'logout')
+			.on(_,['changePage','logout'])
 	}
-	async getRole(){
+	get role(){
+		const _ = this;
+		if(_.user['role']) 	return _.user['role'];
+		else 	return _.user['user']['role'];
+	}
+	async getMe(){
 		const _ = this;
 		let rawResponse = await fetch(_.endpoints['me'],{
 			..._.baseHeaders,
 			method: 'GET'
 		});
 		if(rawResponse.status < 206){
-			let response = await rawResponse.json(),
-					user = response['response'];
-			if(user['role']) 	return Promise.resolve(user['role']);
-			else 	return Promise.resolve(user['user']['role']);
-		}else{
-			return 'guest';
+			let response = await rawResponse.json();
+			_.user = response['response'];
+			return void 0;
 		}
+		_.user = { role:'guest' };
 		
 	}
 	async changePage(route){
 		const _ = this;
+		await _.getMe();
 		_.currentPageRoute = await _.definePageRoute(route);
 		_.clearComponents();
 		if(!_.pages.has(_.currentPageRoute['module'])){
@@ -54,7 +57,7 @@ export class router {
 			module = pathParts.splice(0,1)[0],
 			params = pathParts;
 		
-		let role = await _.getRole();
+		let role = _.role;
 		let middles = Object.keys(_.middleware),
 				currentMiddleware = ['guest'];
 		if(middles){
@@ -175,6 +178,7 @@ export class router {
 	async init(params){
 		const _ = this;
 		_.middleware = params['middleware'];
+		await _.getMe();
 		await _.changePage();
 	}
 }

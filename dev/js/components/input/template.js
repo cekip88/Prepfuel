@@ -71,7 +71,7 @@ export default {
 				data-input="doInput"
 				data-focusout="doFocusOut"
 			>
-			<span class="inpt-mask-placeholder">${data['format']}</span>
+			<span class="inpt-mask-placeholder">${data['format'] ? data['format'] : ''}</span>
 			<input
 				${data['value'] ? 'value='+data['value'] : ''}
 				type="date"
@@ -84,5 +84,3 @@ export default {
 				</svg>
 		</label>`
 }
-
-//${ (data['type'] == 'password') ? 'data-keydown="preparePassword"' : ''}
