@@ -37,7 +37,8 @@ class _G_Bus {
 		}
 		
 		let handle = (eventName,type,fn) =>{
-			if(!fn)	fn = component[eventName].bind(component)
+			if(!fn)	fn = component[eventName].bind(component);
+			prop  = fn.name;
 			if(!_.components[componentName]['events'].has(eventName)){
 				_.components[componentName]['events'][eventName] = new Map();
 			}

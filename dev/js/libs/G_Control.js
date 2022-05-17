@@ -34,9 +34,7 @@ class _G_Control{
 	focusOutHandler(e){
 		return prepareHandler(e,'outfocus');
 	}
-	changeHandler(e){
-		return prepareHandler(e,'change');
-	}
+	changeHandler(e){return prepareHandler(e,'change');}
 	inputHandler(e){
 		return prepareHandler(e,'input');
 	}

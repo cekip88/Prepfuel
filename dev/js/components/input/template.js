@@ -71,6 +71,7 @@ export default {
 				data-input="doInput"
 				data-focusout="doFocusOut"
 			>
+			<input type="hidden" id="inpt-value">
 			<span class="inpt-mask-placeholder">${data['format'] ? data['format'] : ''}</span>
 			<input
 				${data['value'] ? 'value='+data['value'] : ''}

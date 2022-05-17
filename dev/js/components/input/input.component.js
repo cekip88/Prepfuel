@@ -38,6 +38,9 @@ export default class GInput extends GComponent {
 	}
 	get value(){
 		const _ = this;
+		if(_.isDate()){
+			return _.shadow.querySelector('#inpt-value').value;
+		}
 		if(_.isSymbolPassword()) {
 			if(_.type == 'password') {
 				return _._value.toString().replace(/\,/g, '');
@@ -53,6 +56,7 @@ export default class GInput extends GComponent {
 			return _._value;
 		}
 		
+		
 	}
 	get title(){
 		const _ = this;
@@ -67,6 +71,7 @@ export default class GInput extends GComponent {
 		if(!_.isCheckbox()){
 			_.shadow.querySelector('.inpt-value').value = val;
 		}
+	
 		//_.value =
 	}
 	set title(value){
@@ -123,13 +128,14 @@ export default class GInput extends GComponent {
 	}
 	changeDate(changeData){
 		const _ = this;
-		let item = changeData['item'],
-		format = _.attr('format'),
-		timeStamp = item.valueAsNumber,
-		currentDate = new Date(timeStamp),
-		day = currentDate.getDate(),
-		month = currentDate.getMonth()+1,
-		year = currentDate.getFullYear();
+		let
+			item = changeData['item'],
+			format = _.attr('format'),
+			timeStamp = item.valueAsNumber,
+			currentDate = new Date(timeStamp),
+			day = currentDate.getDate(),
+			month = currentDate.getMonth()+1,
+			year = currentDate.getFullYear();
 		if(day < 10) day = '0'+day;
 		if(month < 10) month = '0'+month;
 		let outValue = format;
@@ -144,8 +150,10 @@ export default class GInput extends GComponent {
 			outValue = outValue.replace('YYYY',year);
 			outValue = outValue.replace('MM',month);
 		}
+		item.parentNode.querySelector('#inpt-value').value = `${year}-${month}-${day}`;
 		item.parentNode.querySelector('.inpt-value').value = outValue;
 		item.parentNode.querySelector('.inpt-value').focus();
+		_.triggerChangeEvent();
 	}
 	checkMatch(){
 		const _ =  this

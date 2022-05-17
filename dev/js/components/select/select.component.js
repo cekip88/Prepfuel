@@ -21,7 +21,7 @@ export default class GSelect extends GComponent {
 			.on('choose',_.choose.bind(_));
 	}
 
-	open(clickData){
+	open({item}){
 		const _ = this;
 		if(!_.opened){
 			_.setProperty('--body-max-height','182px');
@@ -38,6 +38,12 @@ export default class GSelect extends GComponent {
 		_.opened = false;
 	}
 
+	get name(){
+		return this.querySelector('[slot="value"]')['name']
+	}
+	get value(){
+		return 	this.selectedValues;
+	}
 
 	hasOption(prop,option){
 		const _ = this;
@@ -105,7 +111,8 @@ export default class GSelect extends GComponent {
 		_.handleOption('titles',item,'textContent',_.setTitle.bind(_));
 		_.changeActiveOption(item);
 		if( _.hasAttribute('action') ){
-			G_Bus.trigger(_.getAttribute('action'), {
+			let rawAction = _.getAttribute('action').split(':');
+			G_Bus.trigger(rawAction[0],rawAction[1], {
 				name:_.querySelector('[slot="value"]')['name'],
 				value: _.selectedValues,
 				event: clickData.event
@@ -114,7 +121,7 @@ export default class GSelect extends GComponent {
 		if (!_.multiple) {
 			_.close();
 		}
-
+		_.triggerChangeEvent();
 	}
 	createHiddenInput(data){
 		const _ = this;
@@ -123,10 +130,20 @@ export default class GSelect extends GComponent {
 	async connectedCallback() {
 		const _ = this;
 		let items = JSON.parse(this.getAttribute('items'));
+		
+		for(let item of items){
+			if(item['active']){
+				_.selectedValues.push(item['value']);
+				break;
+			}
+		}
+		
+		
 		await _.importTpl('./select/template.js');
 		_.shadow = this.attachShadow({mode: 'open'});
 		_.mainTpl = _.getTpl('select');
 		_.baseTitle = this.getAttribute('title');
+		
 		_.shadow.innerHTML = _.mainTpl({
 			items: items,
 			title: this.getAttribute('title'),

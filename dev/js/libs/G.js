@@ -9,6 +9,41 @@ export class G extends G_G{
 		_.parts = {}
   }
 	define(){	}
+	getModule(blockData){
+		/*
+		* Запрашивает блок страницы или модуль целой страницы
+		* */
+		const _ = this;
+		return new Promise(async function (resolve,reject) {
+			try{
+				let
+					rawParams = blockData.name.split('/'),
+					pageName = blockData.pageName,
+					moduleInc = 'Module',
+					fileType ='',
+					name = rawParams[0] ? rawParams[0] : rawParams[1],
+					params = blockData.params ? blockData.params : {},
+					moduleStr = name.charAt(0).toUpperCase() + name.substr(1)+ moduleInc,
+					pathModule = `/pages/${pageName}/modules/${name}/module.js`,
+					pathView = `/pages/${pageName}/modules/${name}/view.js`;
+			/*	if (_.components.has(name)) {
+					let comp = _.components.get(name);
+					resolve(comp);
+				}*/
+				const
+					module = await import(pathModule),
+					view = await import(pathView),
+					moduleName = new module[moduleStr](params);
+					Object.assign(module[moduleStr].prototype,mixins);
+					Object.assign(module[moduleStr].prototype,view['view']);
+					//_.components.set(name, moduleName);
+					
+				resolve(moduleName);
+			} catch(e) {
+				reject(e);
+			}
+		});
+	}
 	getBlock(blockData,type='pages'){
 		/*
 		* Запрашивает блок страницы или модуль целой страницы
@@ -25,15 +60,18 @@ export class G extends G_G{
 					params = blockData.params ? blockData.params : {},
 					moduleStr = name.charAt(0).toUpperCase() + name.substr(1)+ moduleInc,
 					path = `/${type}/${name}/${name}.${fileType}.js`;
-				if (_.components.has(name)) {
+				/*if (_.components.has(name)) {
 					let comp = _.components.get(name);
 					resolve(comp);
-				}
+				}*/
 				const
 					module = await import(path),
 					moduleName = new module[moduleStr](params);
 				Object.assign(module[moduleStr].prototype,mixins);
-				_.components.set(name, moduleName);
+			
+				
+				
+			//	_.components.set(name, moduleName);
 				resolve(moduleName);
 			} catch(e) {
 				reject(e);
