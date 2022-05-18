@@ -134,6 +134,7 @@ export class ScheduleModule extends G{
 					let
 						date = row.querySelector('.schedule-date').value,
 						time = row.querySelector('.schedule-time').value;
+
 					_.practiceDates.push(`${date}T${time}:00Z`);
 				}
 				_.innerCont.innerHTML = _.stepThreeTpl();

@@ -6,8 +6,7 @@ export class _Model{
 			"Content-Type": "application/json"
 		}
 		_.endpoints = {
-			shedules: `${env.backendUrl}/student/schedules`,
-			shedule: `${env.backendUrl}/student/schedule`,
+			shedules: `${env.backendUrl}/student/schedules`
 		};
 	}
 	getSchedules(){
@@ -27,7 +26,7 @@ export class _Model{
 	getSchedule(id){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.endpoints['shedule']}/${id}`,{
+			let rawResponse = await fetch(`${_.endpoints['shedules']}/${id}`,{
 				method: 'GET',
 				headers:_.baseHeaders
 			});
