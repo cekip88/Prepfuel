@@ -177,3 +177,58 @@
 				&:after
 					+wh(16px)
 					background-color: initial
+.date
+	&-picker
+		padding: 16px
+		display: flex
+		flex-direction: column
+		background-color: #fff
+		border-radius: 8px
+		box-shadow: 0 10px 60px rgba(192, 195, 200, 0.2)
+		font-size: 12px
+		position: absolute
+		z-index: 1
+		top: 40px
+		left: 0
+		&-header,&-days,&-body
+			width: calc(32px * 7)
+			display: flex
+			align-items: center
+		&-days,&-body
+			span,button
+				+wh(32px)
+		&-header
+			display: flex
+			align-items: center
+			justify-content: space-between
+			color: #7E8299
+			font-family: "Poppins-SemiBold", serif
+			text-transform: uppercase
+			button
+				+wh(32px)
+				+dfc
+				svg
+					+wh(11px,8px)
+					display: block
+		&-days
+			margin-bottom: 16px
+			border-bottom: 1px solid #ECF0F3
+			span
+				+dfc
+				color: #B5B5C3
+		&-body
+			flex-wrap: wrap
+			span,button
+				padding: 2px
+				display: flex
+				align-items: flex-end
+				justify-content: flex-start
+				border: 1px solid #ECF0F3
+				&:not(:nth-child(7n))
+					border-right: none
+				&:nth-child(n + 7)
+					border-top: none
+			.active
+				background-color: #00A3FF
+				color: #fff
+				font-family: "roboto-bold", serif
