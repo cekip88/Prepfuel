@@ -14,7 +14,7 @@ export class ScheduleModule extends G{
 		});
 		_.minStep = 1;
 		_.maxStep = 3;
-		_.testDate = '';
+		_.testDate = new Date();
 		
 		_.practiceDates = [];
 		_.practiceAt = '4:00 PM';

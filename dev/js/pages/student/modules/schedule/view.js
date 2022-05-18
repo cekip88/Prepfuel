@@ -175,7 +175,7 @@ export const view = {
 				</div>
 				<h5 class="practice-schedule-title">Practice test ${_.practiceRowsCnt}</h5>
 				<div class="practice-schedule-date">
-					<g-input type="date" class="input-date schedule-date" value=""></g-input>
+					<g-input type="date" class="input-date schedule-date" value="${new Date()}"></g-input>
 				</div>
 				<div class="practice-schedule-date">
 					<g-select class="select  schedule-time" title="Select time" items='[{"text":"4:00 PM","value":"4:00","active":true},{"text":"5:00 PM","value":"5:00"},{"text":"6:00 PM","value":"6:00"},{"text":"7:00 PM","value":"7:00"},{"text":"8:00 PM","value":"8:00"}]' classname="g-select-gray" style="--class:select; --classname:g-select-gray;">
