@@ -1,12 +1,13 @@
 import G_G from "./G_G.js";
 import { G_Bus } from "./G_Bus.js";
 import { mixins } from "../mixins.js";
+
 export class G extends G_G{
+	static parts = {};
   constructor() {
 		super();
     const _ = this;
     _.components = new Map();
-		_.parts = {}
   }
 	define(){	}
 	getModule(blockData){
@@ -80,6 +81,7 @@ export class G extends G_G{
 	}
 	fillPage(parts){
 		/* Рендер страницы компонентами */
+		G.parts = {};
 		const _ = this;
 		let
 			gSet = _.f('#g-set')
@@ -92,15 +94,22 @@ export class G extends G_G{
 			}
 		}
 	}
-	fillPartsPage(parts,clear=true){
+	fillPartsPage(parts,clear=false){
 		/* Рендер страницы компонентами */
 		const _ = this;
-		//_.parts = parts;
+		
 		let
 			gSet = _.f('#g-set');
 		if(clear)	_.clear(gSet);
+		
 		for(let part of parts){
-			_.parts[part['part']] = part;
+			if(G.parts[part['part']]){
+				for(let content of G.parts[part['part']]['content']){
+					_.clear(content);
+				}
+			}
+			G.parts[part['part']] = part;
+			
 			if(part['parent']) {
 				if(gSet.querySelector(`${part['parent']}`))
 				gSet =  gSet.querySelector(`${part['parent']}`)
@@ -110,20 +119,20 @@ export class G extends G_G{
 	}
 	renderPart(partObj){
 		const _ = this;
-		if(!(partObj['part'] in _.parts)) return;
+		if(!(partObj['part'] in G.parts)) return void 0;
 		let template = document.createElement('template');
 		template.classList.add('g-temp');
-		_.parts[partObj['part']]['content'].forEach( (p,i,arr)=>{
+		G.parts[partObj['part']]['content'].forEach( (p,i,arr)=>{
 			p.before(template);
 			p.remove();
 		});
-		_.parts[partObj['part']]['content'] = [];
+		G.parts[partObj['part']]['content'] = [];
 		let posToAppend = template;
 		partObj['content'].forEach( p =>{
 			posToAppend.after(p);
 			posToAppend = p;
 		});
-		_.parts[partObj['part']] = partObj;
+		G.parts[partObj['part']] = partObj;
 		template.remove();
 		template = null;
 	}

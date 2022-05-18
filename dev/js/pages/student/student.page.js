@@ -11,72 +11,50 @@ class StudentPage extends G{
 		});
 		_.maxPage = 3;*/
 		_.componentName = 'StudentPage';
-		
 		G_Bus
 			.on(_,['changeSection','navigate'])
 	}
 	
-	getHeaderType(route){
-		const _ = this;
-		let
-			headerType = 'full',
-			routesWithoutHeader = ['schedule'];
-		if(routesWithoutHeader.indexOf(route) > -1){
-			headerType = 'simple';
-		}
-		return headerType;
-	}
-	
-	
 	navigate(clickData){
 		const _ = this;
 		let
-		list = clickData.item,
-		target = clickData.event.target,
-		btn = _.ascent(target,'.navigate-item','navigate-list');
-		
+			list = clickData.item,
+			target = clickData.event.target,
+			btn = _.ascent(target,'.navigate-item','navigate-list');
 		_.showActiveNavItem(btn,list);
 		_.changeActiveNavItem(btn);
 	}
-	changeSection({item}){
+	changeSection({item,event}){
 		const _ = this;
 		let
 			section = item.getAttribute('section'),
 			tpl = section.split('/')[2];
+
 		if(section) history.pushState(null, null, section);
-		_.renderPart({part:'body',content: _.markup(_[`${tpl}Tpl`](),false)});
+		G_Bus.trigger('router','changePage',section);
+		//_.renderPart({part:'body',content: _.markup(_[`${tpl}Tpl`](),false)});
 	}
-	
-	
-	
 	
 	async render(blockData){
 		const _ = this;
 		let
-			initTpl = _.dashboardTpl(),
+			initTpl = '',
 			params = blockData['params'];
 		_.header = await _.getBlock({name:'header'},'blocks')
-		let type = _.getHeaderType(params[0]);
 		let parts = [
-			{ part:'header', content:_.markup(_.header.render(type),false)},
+			{ part:'header', content:_.markup(_.header.render('full'),false)},
 		];
-		if(type == 'full'){
-			parts.push(	{ part:'header-tabs', content:_.markup(_.tabsTpl(),false)});
-		}
-		
-		
-
+		parts.push(	{ part:'header-tabs', content:_.markup(_.tabsTpl(),false)});
+		_.fillPartsPage(parts,true);
 		if(params.length > 0){
 			let module = await _.getModule({
 				'pageName':'student',
 				'name': params[0]
 			});
-			initTpl = module.render();
+			initTpl = module.render({
+				header: _.header
+			});
 		}
-		parts.push({ part:'body', content: _.markup(initTpl,false)});
-		
-		
-		_.fillPartsPage(parts);
 		
 		_.navigationInit(document.querySelector('.navigate-list'));
 	}

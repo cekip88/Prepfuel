@@ -53,7 +53,7 @@ export const loginView = {
 			{ part:'row', content: _.markup(_.rowTpl(),false)},
 			{ part:'left', parent:'.login', content: _.markup(_.leftTpl(),false)},
 			{ part:'right', parent:'.login', content: _.markup(initTpl,false)}
-		]);
+		],true);
 	},
 	registerTpl(){
 		const _ = this;

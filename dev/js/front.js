@@ -157,9 +157,9 @@ new router().init({
 		'student':{
 			routes:{
 				'/profile': 'student',
-				'/student': 'student',
+				'/student/profile': 'student',
 				'/student/dashboard': 'student',
-				'/student/schedule': 'student',
+				'/student/practice': 'student',
 			}
 		},
 		'student|admin':{

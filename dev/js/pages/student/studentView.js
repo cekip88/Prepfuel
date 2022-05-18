@@ -22,11 +22,15 @@ export const studentView = {
 	},
 	setActiveNavItem(list){
 		const _ = this;
+		let route = location.pathname.split('/')[2];
 		let
 			container = list.closest('.navigate'),
 			activeItemSelector = container.getAttribute('data-active'),
-			newActiveBtn = list.querySelector(activeItemSelector),
+			newActiveBtn = list.querySelector(`.${route}`),
 			activeBtn = list.querySelector('.active');
+		if(!newActiveBtn) {
+			_.f('.navigate-label').style = `display:block;width: 0px;left: 999999px;`;
+		}
 		if (newActiveBtn) {
 			container.removeAttribute('data-active');
 			_.navigate({item:list, event:{target:newActiveBtn}})
@@ -52,10 +56,10 @@ export const studentView = {
 	changeTab(btn,parentCls){
 		const _ = this;
 		let
-		list = btn.parentElement.children,
-		parent = btn.closest('.' + parentCls),
-		targetSelector = parent.getAttribute('data-tabs'),
-		tabsContainer = _.f(targetSelector);
+			list = btn.parentElement.children,
+			parent = btn.closest('.' + parentCls),
+			targetSelector = parent.getAttribute('data-tabs'),
+			tabsContainer = _.f(targetSelector);
 		
 		if (!targetSelector || !tabsContainer) return;
 		
@@ -65,47 +69,24 @@ export const studentView = {
 		}
 	},
 	tabsTpl(){
-			const _ = this;
-			return `
-				<section class="navigate" data-active=".navigate-item:nth-child(1)" data-tabs=".dashboard-tabs">
-					<div class="section">
-						<nav class="navigate-list" data-click="${_.componentName}:changeSection;${_.componentName}:navigate;">
-							<button class="navigate-item active" section="/student/dashboard"><span>Dashboard</span></button>
-							<button class="navigate-item" section="/student/practice"><span>Practice</span></button>
-							<button class="navigate-item" section="/student/tests"><span>Tests</span></button>
-							<button class="navigate-item" section="/student/review"><span>Review</span></button>
-							<button class="navigate-item" section="/student/bookmarks"><span>Bookmarks&Notes</span></button>
-							<button class="navigate-item" section="/student/tips"><span>Tips&Strategies</span></button>
-							<div class="navigate-label" style="width: 210px;left: 15px;">
-								<div class="navigate-label-left"></div>
-								<div class="navigate-label-right"></div>
-							</div>
-						</nav>
-						</div>
-					<div class="subnavigate">
-						<div class="section">
-							<button class="subnavigate-button active"><span>Overview</span></button>
-							<button class="subnavigate-button"><span>Tutoring Sessions</span></button>
-							<button class="subnavigate-button"><span>Recent Activity</span></button>
-							<button class="subnavigate-button"><span>Achievements</span></button>
-						</div>
-					</div>
-				</section>
-			`;
-		},
-	dashboardTpl(params){
 		const _ = this;
 		return `
-			<div class="section">
-				<div class="block student-main">
-					<h1 class="main-title"><span>Today's goal</span><strong>Choose your practice schedule</strong></h1>
-					<p class="student-main-text">
-						Based on your test date, we'll put together a practice plan
-						to ensure you're ready for the real deal.
-					</p>
-					<button class="button-blue" data-click="${_.componentName}:changeSection;" section="/student/createschedule" ><span>Choose your practice schedule</span></button>
-				</div>
-			</div>
-	`;
-	}
+			<section class="navigate" data-active=".navigate-item:nth-child(1)" data-tabs=".dashboard-tabs">
+				<div class="section">
+					<nav class="navigate-list" data-click="StudentPage:navigate;">
+						<button class="navigate-item dashboard" data-click="StudentPage:changeSection" section="/student/dashboard"><span>Dashboard</span></button>
+						<button class="navigate-item practice" data-click="StudentPage:changeSection" section="/student/practice"><span>Practice</span></button>
+						<button class="navigate-item tests" data-click="StudentPage:changeSection" section="/student/tests"><span>Tests</span></button>
+						<button class="navigate-item review" data-click="StudentPage:changeSection" section="/student/review"><span>Review</span></button>
+						<button class="navigate-item bookmarks" data-click="StudentPage:changeSection" section="/student/bookmarks"><span>Bookmarks&Notes</span></button>
+						<button class="navigate-item tips" data-click="StudentPage:changeSection" section="/student/tips"><span>Tips&Strategies</span></button>
+						<div class="navigate-label" style="width: 210px;left: 15px;">
+							<div class="navigate-label-left"></div>
+							<div class="navigate-label-right"></div>
+						</div>
+					</nav>
+					</div>
+			</section>
+			`;
+	},
 }

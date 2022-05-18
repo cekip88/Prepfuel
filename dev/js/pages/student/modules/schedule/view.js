@@ -6,7 +6,7 @@ export const view = {
 				<div class="section">
 					<div class="section-header">
 						<h2 class="title">Create your practice schedule</h2>
-						<button class="button-white" data-click="${_.componentName}:changeSection" section="/student/dashboard">
+						<button class="button-white" data-click="StudentPage:changeSection" section="/student/dashboard">
 							<span>Exit creating your schedule</span>
 						</button>
 					</div>
@@ -189,5 +189,5 @@ export const view = {
 				</button>
 			</div>
 		`;
-	}
+	},
 }

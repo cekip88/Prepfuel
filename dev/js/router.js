@@ -33,19 +33,27 @@ export class router {
 		if(rawResponse.status < 206){
 			let response = await rawResponse.json();
 			_.user = response['response'];
+			console.log(_.user);
 			return void 0;
+		}else{
+			_.user = { role:'guest' };
 		}
-		_.user = { role:'guest' };
+		
 		
 	}
 	async changePage(route){
 		const _ = this;
 		await _.getMe();
+		
 		_.currentPageRoute = await _.definePageRoute(route);
+		
 		_.clearComponents();
-		if(!_.pages.has(_.currentPageRoute['module'])){
-			let currentPage = await _.includePage(_.currentPageRoute);
-		}
+	
+	//	if(!_.pages.has(_.currentPageRoute['module'])){
+		let currentPage = await _.includePage(_.currentPageRoute);
+	//	}else{
+		
+	//	}
 		
 	}
 	async definePageRoute(route){
@@ -56,7 +64,6 @@ export class router {
 			pathParts = pathName.split('/').splice(1),
 			module = pathParts.splice(0,1)[0],
 			params = pathParts;
-		
 		let role = _.role;
 		let middles = Object.keys(_.middleware),
 				currentMiddleware = ['guest'];
@@ -88,11 +95,16 @@ export class router {
 				}
 			}
 			if(!outRoute){
+			
+				if(!location.pathname != '/login'){
+					location.href='/login';
+				}
 				return {
-					'module': 'NotFound',
+					'module': 'login',
 					'params': null
 				}
 			}else{
+				
 				pathName = difRoute;
 				return {
 					'module': _.routes[`${pathName}`],
@@ -100,7 +112,7 @@ export class router {
 				}
 			}
 		}
-		
+	
 		return {
 			'module': _.routes[`${pathName}`],
 			'params': params
@@ -130,8 +142,9 @@ export class router {
 					viewObj = view[`${name}View`];
 				Object.assign(module[moduleStr].prototype,mixins);
 				Object.assign(module[moduleStr].prototype,viewObj);
-
-				_.pages.set(name, moduleName);
+				if (!_.pages.has(name)) {
+					_.pages.set(name, moduleName);
+				}
 				if('asyncDefine' in moduleName)	await moduleName.asyncDefine();
 				moduleName.render(blockData);
 				resolve(moduleName);
@@ -178,7 +191,7 @@ export class router {
 	async init(params){
 		const _ = this;
 		_.middleware = params['middleware'];
-		await _.getMe();
+		//await _.getMe();
 		await _.changePage();
 	}
 }
