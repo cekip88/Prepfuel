@@ -38,12 +38,10 @@ export default class GComponent extends HTMLElement {
 		if(!_.tpls) return;
 		return _.tpls[tplName] ?? '';
 	}
-	markup(domStr,isFragment=true){
-		const _ = this;
-		let
-			fragment = document.createDocumentFragment(),
-			parser= new DOMParser().parseFromString(domStr,'text/html');
+	markup(domStr,isFragment= true){
+		let parser = new DOMParser().parseFromString(domStr,'text/html');
 		if(isFragment){
+			let fragment = document.createDocumentFragment();
 			fragment.append(...parser.body.children);
 			return fragment;
 		}

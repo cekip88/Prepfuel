@@ -27,6 +27,7 @@ export default class GInput extends GComponent {
 			.on('doKeyDown',_.doKeyDown.bind(_))
 			.on('fillMask',_.fillMask.bind(_))
 			.on('getCaretPosition',_.getCaretPosition.bind(_))
+			.on('datePick',_.datePick.bind(_))
 			.on('changeDate',_.changeDate.bind(_))
 			.on('setCheckboxValue',_.setCheckboxValue.bind(_))
 	}
@@ -38,6 +39,9 @@ export default class GInput extends GComponent {
 	}
 	get value(){
 		const _ = this;
+		if (_.isDate()) {
+			return _.shadow.querySelector('.inpt-date').value
+		}
 		if(_.isSymbolPassword()) {
 			if(_.type == 'password') {
 				return _._value.toString().replace(/\,/g, '');
@@ -52,6 +56,7 @@ export default class GInput extends GComponent {
 		}else{
 			return _._value;
 		}
+
 		
 	}
 	get title(){
@@ -104,6 +109,98 @@ export default class GInput extends GComponent {
 	
 	/* Outside methods*/
 	/* Inside methods*/
+
+
+	datePick({item:input}) {
+		const _ = this;
+		let
+			label = input.closest('LABEL'),
+			dateInput = label.querySelector('INPUT[type="date"]'),
+			date = new Date(dateInput.value ?? ''),
+			tpl = _.datePicker(date);
+
+		let activeDate = _.getAttribute('value');
+		if (activeDate) {
+			activeDate = activeDate.split('-');
+			let
+				body = tpl.querySelector('.date-picker-body'),
+				sameMonth = (body.getAttribute('data-month') == activeDate[1]),
+				sameYear = (body.getAttribute('data-year') == activeDate[0]);
+			if (sameMonth && sameYear) {
+				body.querySelector(`BUTTON[data-day="${parseInt(activeDate[2])}"]`).classList.add('active')
+			}
+		}
+
+		_.shadow.append(tpl);
+	}
+	datePicker(date){
+		const _ = this;
+		let
+			tpl = document.createElement('DIV'),
+			headTpl = _.datePickerHeadTpl(date),
+			days = _.datePickerDays(),
+			body = _.datePickerBody(date);
+
+		tpl.className = 'date-picker';
+		tpl.append(headTpl,days,body);
+		return tpl;
+	}
+	datePickerHeadTpl(date){
+		const _ = this;
+		let tpl = _.getTpl('datePickerHead');
+		return _.markup(tpl(date),false)[0];
+	}
+	datePickerDays(){
+		const _ = this;
+		let tpl = _.getTpl('datePickerDays');
+		return _.markup(tpl(),false)[0];
+	}
+	datePickerBody(date){
+		const _ = this;
+		let tpl = _.getTpl('datePickerBody');
+		return _.markup(tpl(date),false)[0];
+	}
+
+	changeDate(clickData){
+		const _ = this;
+		let
+			btn = clickData['item'],
+			cont = btn.closest('.date-picker-body'),
+			label = _.shadow.querySelector('LABEL'),
+			DD = btn.getAttribute('data-day'),
+			MM = cont.getAttribute('data-month'),
+			YYYY = cont.getAttribute('data-year'),
+			dateInfo = new Date (`${YYYY} ${MM} ${DD}`);
+		_.fillDate(dateInfo,label);
+		cont.closest('.date-picker').remove();
+		_.setAttribute('value',`${YYYY}-${MM}-${DD < 10 ? '0'+DD : DD}`);
+		_.triggerChangeEvent();
+	}
+	fillDate(date,label){
+		const _ = this;
+		let
+			format = _.attr('format') ?? 'MM-DD-YYYY',
+			outValue = format,
+			days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Sunday'],
+			months = ['January','February','March','April','May','June','July','August','September','October','November','December'],
+			DD = date.getDate(),
+			month = date.getMonth() + 1,
+			MM = month >= 10 ? month : '0' + month,
+			YYYY = date.getFullYear();
+
+		if (DD < 10) DD = '0' + DD;
+
+		outValue = outValue.replace('DD',DD.toString());
+		outValue = outValue.replace('MM',MM.toString());
+		outValue = outValue.replace('YYYY',YYYY.toString());
+		outValue = outValue.replace('month',months[month - 1]);
+		outValue = outValue.replace('weekDay',days[date.getDay()]);
+
+		let outDate = YYYY + '-' + MM + '-' + DD;
+
+		label.querySelector('.inpt-value').value = outValue;
+		label.querySelector('.inpt-date').value = outDate;
+	}
 	
 	
 	setCheckboxValue(changeData){
@@ -121,32 +218,7 @@ export default class GInput extends GComponent {
 		}
 		_.triggerChangeEvent();
 	}
-	changeDate(changeData){
-		const _ = this;
-		let item = changeData['item'],
-		format = _.attr('format'),
-		timeStamp = item.valueAsNumber,
-		currentDate = new Date(timeStamp),
-		day = currentDate.getDate(),
-		month = currentDate.getMonth()+1,
-		year = currentDate.getFullYear();
-		if(day < 10) day = '0'+day;
-		if(month < 10) month = '0'+month;
-		let outValue = format;
-		if (!format) {
-			let dateStr = year + '-' + month + '-' + day;
-			let date = new Date(dateStr);
-			let days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Sunday'];
-			let months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-			outValue = days[date.getDay()] + ', ' + months[month - 1] + ' ' + day + ', ' + year;
-		} else {
-			outValue = outValue.replace('DD',day);
-			outValue = outValue.replace('YYYY',year);
-			outValue = outValue.replace('MM',month);
-		}
-		item.parentNode.querySelector('.inpt-value').value = outValue;
-		item.parentNode.querySelector('.inpt-value').focus();
-	}
+
 	checkMatch(){
 		const _ =  this
 		let
@@ -388,8 +460,6 @@ export default class GInput extends GComponent {
 		return _.hasAttribute('symbolImg')
 	}
 	
-	
-	
 	async connectedCallback() {
 		const _ = this;
 		await _.initShadow();
@@ -411,8 +481,14 @@ export default class GInput extends GComponent {
 			name: _.attr('name'),
 			title: _.attr('title'),
 			placeholder: _.attr('placeholder'),
+			icon: _.attr('data-icon'),
+			svg: _.attr('data-svg'),
 			value: _.attr('value')
 		});
+		if (_.isDate()) {
+			_.setAttribute('style','position:relative;')
+			_.fillDate(new Date(_.attr('value')),_.shadow)
+		}
 		_.type = _.attr('type');
 		if(_.attr('symbol'))
 		_.symbol = _.attr('symbol');
