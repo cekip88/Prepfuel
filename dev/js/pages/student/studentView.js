@@ -83,13 +83,13 @@ export const studentView = {
 						</nav>
 						</div>
 					<div class="subnavigate">
-            <div class="section">
-              <button class="subnavigate-button active"><span>Overview</span></button>
-              <button class="subnavigate-button"><span>Tutoring Sessions</span></button>
-              <button class="subnavigate-button"><span>Recent Activity</span></button>
-              <button class="subnavigate-button"><span>Achievements</span></button>
-            </div>
-          </div>
+						<div class="section">
+							<button class="subnavigate-button active"><span>Overview</span></button>
+							<button class="subnavigate-button"><span>Tutoring Sessions</span></button>
+							<button class="subnavigate-button"><span>Recent Activity</span></button>
+							<button class="subnavigate-button"><span>Achievements</span></button>
+						</div>
+					</div>
 				</section>
 			`;
 		},
@@ -107,51 +107,5 @@ export const studentView = {
 				</div>
 			</div>
 	`;
-	},
-	createscheduleTpl(){
-		const _ = this;
-		return `
-			<section class="test">
-				<div class="section">
-					<div class="section-header">
-						<h2 class="title">Create your practice schedule</h2>
-						<button class="button-white" data-click="${_.componentName}:changeSection" section="/student/dashboard">
-							<span>Exit creating your schedule</span>
-						</button>
-					</div>
-				</div>
-				<div class="section row">
-					<div class="block test-block">
-			      <div class="test-header">
-			        <h3 class="block-title test-title"><span>Step 1 of 3 - Choose your test date</span></h3>
-			      </div>
-			      <div class="test-inner narrow">
-			        <h4 class="test-subtitle"><span>Choose your test date</span></h4>
-			        <div class="practice-schedule-text">
-			          <p class="test-subtitle small">What is your test date?</p>
-			        </div>
-			        <div class="practice-schedule-row">
-			          <div class="blue-icon">
-			            <svg>
-			              <use xlink:href="#badge"></use>
-			            </svg>
-			          </div>
-			          <h5 class="practice-schedule-title">Your ISEE Date</h5>
-			          <div class="practice-schedule-date">
-			            <g-input type="date" class="input-date" placeholder="Choose your test date"></g-input>
-			          </div>
-			        </div>
-			      </div>
-			      <div class="test-footer">
-			        <div class="pagination pagination-top">
-			          <div class="pagination-info"><span>3 steps</span></div>
-			          <div class="pagination-links"><a class="pagination-link active" href="#"><span>1</span></a><a class="pagination-link" href="#"><span>2</span></a><a class="pagination-link" href="#"><span>3</span></a></div>
-			        </div><a class="button" href="./"><span>Back</span></a><a class="button-blue" href="./student-practice-schedule-2.html"><span>Next</span></a>
-			      </div>
-		    </div>
-	      </div>
-      </section>
-		`;
 	}
-	
 }

@@ -8,8 +8,15 @@ class _G_Bus {
 		const _ = this;
 		let prop;
 		if (!component) return _;
-		if(!fn)
-			fn = component[eventName].bind(component);
+		if(!fn){
+			if(eventName instanceof Array){
+				for(let event of eventName){
+					fn = component[event].bind(component);
+				}
+			}else{
+				fn = component[eventName].bind(component);
+			}
+		}
 		prop  = component.busProp;
 		if(!component.busProp){
 			prop = fn.name;
@@ -23,20 +30,32 @@ class _G_Bus {
 		}else{
 			componentName = component;
 		}
+		
 		if(!_.components[componentName]){
 			_.components[componentName] = {};
 			_.components[componentName]['events'] = _.components[componentName]['events'] || new Map();
-		//	_.components[componentName]['events'] = {};
 		}
-		if(!_.components[componentName]['events'].has(eventName)){
-			_.components[componentName]['events'][eventName] = new Map();
+		
+		let handle = (eventName,type,fn) =>{
+			if(!fn)	fn = component[eventName].bind(component);
+			prop  = fn.name;
+			if(!_.components[componentName]['events'].has(eventName)){
+				_.components[componentName]['events'][eventName] = new Map();
+			}
+			if(!_.components[componentName]['events'][eventName].has(prop)) {
+				_.components[componentName]['events'][eventName].set(prop, fn);
+				return _;
+			}
+			if(_.flag === 'dev'){
+				console.warn(`Subscribe on event ${eventName} on fn: ${fn.name}`);
+			}
 		}
-		if(!_.components[componentName]['events'][eventName].has(prop)) {
-			_.components[componentName]['events'][eventName].set(prop, fn);
-			return _;
-		}
-		if(_.flag === 'dev'){
-			console.warn(`Subscribe on event ${eventName} on fn: ${fn.name}`);
+		if(eventName instanceof Array){
+			for(let event of eventName){
+				handle(event,'arr')
+			}
+		}else{
+			handle(eventName,'',fn)
 		}
 		return _;
 	}

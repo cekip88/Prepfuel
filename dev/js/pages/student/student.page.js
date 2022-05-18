@@ -6,13 +6,27 @@ import GInput           from "../../components/input/input.component.js";
 class StudentPage extends G{
 	define(){
 		const _ = this;
-		_.set({});
+/*		_.set({
+			currentPage: 1
+		});
+		_.maxPage = 3;*/
 		_.componentName = 'StudentPage';
 		
 		G_Bus
-			.on(_,'changeSection')
-			.on(_,'navigate')
+			.on(_,['changeSection','navigate'])
 	}
+	
+	getHeaderType(route){
+		const _ = this;
+		let
+			headerType = 'full',
+			routesWithoutHeader = ['schedule'];
+		if(routesWithoutHeader.indexOf(route) > -1){
+			headerType = 'simple';
+		}
+		return headerType;
+	}
+	
 	
 	navigate(clickData){
 		const _ = this;
@@ -32,26 +46,47 @@ class StudentPage extends G{
 		if(section) history.pushState(null, null, section);
 		_.renderPart({part:'body',content: _.markup(_[`${tpl}Tpl`](),false)});
 	}
+	
+	
+	
+	
 	async render(blockData){
 		const _ = this;
-		let initTpl = _.dashboardTpl();
-		let params = blockData['params'];
-		if(params.length > 0){
-			initTpl = _[`${params[0]}Tpl`](params);
-		}
-		console.log(initTpl);
-		let type = 'user';
-		
-		
-		
-		_.header = await _.getBlock({name:'header'},'blocks');
-		_.fillPartsPage([
+		let
+			initTpl = _.dashboardTpl(),
+			params = blockData['params'];
+		_.header = await _.getBlock({name:'header'},'blocks')
+		let type = _.getHeaderType(params[0]);
+		let parts = [
 			{ part:'header', content:_.markup(_.header.render(type),false)},
-			{ part:'header-tabs', content:_.markup(_.tabsTpl(),false)},
-			{ part:'body', content: _.markup(initTpl,false)}
-		]);
+		];
+		if(type == 'full'){
+			parts.push(	{ part:'header-tabs', content:_.markup(_.tabsTpl(),false)});
+		}
+		
+		
+
+		if(params.length > 0){
+			let module = await _.getModule({
+				'pageName':'student',
+				'name': params[0]
+			});
+			initTpl = module.render();
+		}
+		parts.push({ part:'body', content: _.markup(initTpl,false)});
+		
+		
+		_.fillPartsPage(parts);
+		
 		_.navigationInit(document.querySelector('.navigate-list'));
 	}
+	
+	
+	init(){
+		const _ = this;
+		
+	}
+	
 }
 
 export { StudentPage }

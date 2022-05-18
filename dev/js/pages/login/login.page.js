@@ -10,7 +10,7 @@ class LoginPage extends G{
 	define(){
 		const _ = this;
 		_.componentName = 'LoginPage';
-		G_Bus
+		/*G_Bus
 			.on(_,'doFormAction')
 			.on(_,'loginSuccess')
 			.on(_,'loginFail')
@@ -21,7 +21,21 @@ class LoginPage extends G{
 			.on(_,'resetSuccess')
 			.on(_,'resetFail')
 			.on(_,'changeSection')
-			.on(_,'changeAgree')
+			.on(_,'changeAgree')*/
+		G_Bus
+			.on(_,[
+				'doFormAction',
+				'loginSuccess',
+				'loginFail',
+				'registerFail',
+				'forgotSuccess',
+				'forgotFail',
+				'resetSuccess',
+				'resetFail',
+				'changeSection',
+				'changeAgree'
+		]);
+		console.log(G_Bus);
 
 	}
 	async doFormAction({item:form,event:e}){

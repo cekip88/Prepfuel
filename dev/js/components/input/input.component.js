@@ -57,7 +57,8 @@ export default class GInput extends GComponent {
 			return _._value;
 		}
 
-		
+
+
 	}
 	get title(){
 		const _ = this;
@@ -72,6 +73,7 @@ export default class GInput extends GComponent {
 		if(!_.isCheckbox()){
 			_.shadow.querySelector('.inpt-value').value = val;
 		}
+
 		//_.value =
 	}
 	set title(value){
@@ -201,7 +203,7 @@ export default class GInput extends GComponent {
 		label.querySelector('.inpt-value').value = outValue;
 		label.querySelector('.inpt-date').value = outDate;
 	}
-	
+
 	
 	setCheckboxValue(changeData){
 		const _ = this;
@@ -459,7 +461,7 @@ export default class GInput extends GComponent {
 		const _ = this;
 		return _.hasAttribute('symbolImg')
 	}
-	
+
 	async connectedCallback() {
 		const _ = this;
 		await _.initShadow();

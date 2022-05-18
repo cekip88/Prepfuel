@@ -12,11 +12,8 @@ class HeaderBlock extends G{
 	}
 	init(){
 		const _ = this;
-	/*	_._( ()=>{
-			_.f('.head-name').textContent = _._$.headerName;
-		},['headerName']);*/
 	}
-	userHeader(){
+	fullHeader(){
 			return `<header class="head">
 				<div class="section">
 					<div class="head-row">
@@ -46,14 +43,20 @@ class HeaderBlock extends G{
 				</div>
 			</header>`;
 	}
-	cleanHeader(){
-		return ``;
+	simpleHeader(){
+		return `<header class="head">
+				<div class="section">
+					<div class="head-row">
+						<a class="head-logo" href="/" style="margin: auto">
+							<img src="/img/logo.svg" alt="">
+						</a>
+					</div>
+				</div>
+			</header>`;
 	}
 	
-	render(type = 'user'){
-		let tpl = this[`${type}Header`]();
-		console.log(tpl);
-		return tpl;
+	render(type = 'full'){
+		return this[`${type}Header`]();
 	}
 }
 export { HeaderBlock }
