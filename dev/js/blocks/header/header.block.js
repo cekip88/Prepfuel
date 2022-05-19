@@ -4,44 +4,57 @@ import { G } from "../../libs/G.js";
 class HeaderBlock extends G{
 		define(){
 		const _ = this;
+		_.componentName = 'header';
 		_.set({
 			firstName: localStorage.getItem('firstName'),
 			lastName: localStorage.getItem('lastName'),
 			role: localStorage.getItem('role'),
 		});
+		G_Bus
+			.on(_,['showUserList'])
+	}
+	
+	showUserList({item}) {
+		const _ = this;
+		item.classList.toggle('show');
 	}
 	init(){
 		const _ = this;
 	}
 	fullHeader(){
-			return `<header class="head">
-				<div class="section">
-					<div class="head-row">
-						<a class="head-logo" href="/">
-							<img src="/img/logo.svg" alt="">
+		const _ = this;
+		return `<header class="head">
+			<div class="section">
+				<div class="head-row">
+					<a class="head-logo" href="/">
+						<img src="/img/logo.svg" alt="">
+					</a>
+					<div class="head-control">
+						<a class="head-button" href="./studentDashboard.html">
+							<svg>
+								<use xlink:href="/img/sprite.svg#bell"></use>
+							</svg>
 						</a>
-						<div class="head-control">
-							<a class="head-button" href="./studentDashboard.html">
-								<svg>
-									<use xlink:href="/img/sprite.svg#bell"></use>
-								</svg>
-							</a>
-							<button class="head-button">
-								<svg>
-									<use xlink:href="/img/sprite.svg#chat"></use>
-								</svg>
-							</button>
-							<div class="head-info">
-								<span class="head-name">${this._$.firstName}</span>
-								<span class="head-position">${this._$.role}</span>
-							</div>
-							<button class="head-user" data-click="router:logout">
-								<span>${this._$.firstName[0].toUpperCase()}</span>
-							</button>
+						<button class="head-button">
+							<svg>
+								<use xlink:href="/img/sprite.svg#chat"></use>
+							</svg>
+						</button>
+						<div class="head-info">
+							<span class="head-name">${this._$.firstName}</span>
+							<span class="head-position">${this._$.role}</span>
 						</div>
+						<button class="head-user" data-click="${_.componentName}:showUserList">
+							<span>${this._$.firstName[0].toUpperCase()}</span>
+							<span class="head-user-list">
+								<strong data-click="StudentPage:changeSection" section="/student/profile">My profile</strong>
+								<strong data-click="router:logout">Log Out</strong>
+							</span>
+						</button>
 					</div>
 				</div>
-			</header>`;
+			</div>
+		</header>`;
 	}
 	simpleHeader(){
 		return `<header class="head">

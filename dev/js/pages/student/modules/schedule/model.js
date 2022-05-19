@@ -1,4 +1,5 @@
 import { env }   from "/env.js";
+import {G_Bus} from "../../../../libs/G_Bus.js";
 export class _Model{
 	constructor(){
 		const _ = this;
@@ -18,10 +19,9 @@ export class _Model{
 				headers:_.baseHeaders,
 				body: JSON.stringify(scheduleData)
 			});
-			console.log(rawResponse);
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
-				console.log(response);
+				G_Bus.trigger('router','changePage','/student/dashboard');
 			}
 		});
 	}

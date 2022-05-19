@@ -5,7 +5,7 @@ import { Model }    from "./model.js";
 export class ScheduleModule extends G{
 	define(){
 		const _ = this;
-		_.componentName = 'StudentPage';
+		_.componentName = 'Schedule';
 		_.set({
 			currentStep: 1,
 			daysPerWeek: [],
@@ -14,7 +14,7 @@ export class ScheduleModule extends G{
 		});
 		_.minStep = 1;
 		_.maxStep = 3;
-		_.testDate = '';
+		_.testDate = new Date();
 		
 		_.practiceDates = [];
 		_.practiceAt = '4:00 PM';
@@ -26,7 +26,7 @@ export class ScheduleModule extends G{
 		
 		_.practiceRowsCnt = 0;
 		_.practiceRows = [];
-		G_Bus.on(_,[
+		G_Bus.on(_, [
 			'changeSchedulePage',
 			'changeScheduleDate',
 			'addPracticeRow',
@@ -134,6 +134,7 @@ export class ScheduleModule extends G{
 					let
 						date = row.querySelector('.schedule-date').value,
 						time = row.querySelector('.schedule-time').value;
+
 					_.practiceDates.push(`${date}T${time}:00Z`);
 				}
 				_.innerCont.innerHTML = _.stepThreeTpl();
@@ -153,7 +154,6 @@ export class ScheduleModule extends G{
 			_.f('#daysPerWeek').textContent = _._$.daysPerWeek.length;
 			_.f('#totalQuestionsCnt').textContent = _._$.daysPerWeek.length * _._$.numberOfQuestions;
 		}, ["daysPerWeek",'numberOfQuestions']);
-		
 	}
 	render(){
 		return this.createscheduleTpl();
