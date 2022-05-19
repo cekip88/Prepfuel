@@ -55,7 +55,7 @@ export const view = {
 				</div>
 				<h5 class="practice-schedule-title">Your ISEE Date</h5>
 				<div class="practice-schedule-date">
-					<g-input type="date" class="input-date " id='schedule-date' placeholder="Choose your test date" value="${_.testDate}"  data-change="${_.componentName}:changeScheduleDate"></g-input>
+					<g-input type="date" class="input-date" icon=false id='schedule-date' placeholder="Choose your test date" value="${_.testDate}" format="weekDay, month DD, YYYY" data-change="${_.componentName}:changeScheduleDate"></g-input>
 				</div>
 			</div>
 		`;
@@ -175,7 +175,7 @@ export const view = {
 				</div>
 				<h5 class="practice-schedule-title">Practice test ${_.practiceRowsCnt}</h5>
 				<div class="practice-schedule-date">
-					<g-input type="date" class="input-date schedule-date" value="${new Date()}"></g-input>
+					<g-input type="date" class="input-date schedule-date" icon='false' format="month DD, YYYY" value="${new Date()}"></g-input>
 				</div>
 				<div class="practice-schedule-date">
 					<g-select class="select  schedule-time" title="Select time" items='[{"text":"4:00 PM","value":"04:00","active":true},{"text":"5:00 PM","value":"05:00"},{"text":"6:00 PM","value":"06:00"},{"text":"7:00 PM","value":"07:00"},{"text":"8:00 PM","value":"08:00"}]' classname="g-select-gray">

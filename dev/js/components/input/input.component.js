@@ -594,8 +594,8 @@ export default class GInput extends GComponent {
 			name: _.attr('name'),
 			title: _.attr('title'),
 			placeholder: _.attr('placeholder'),
-			icon: _.attr('data-icon'),
-			svg: _.attr('data-svg'),
+			icon: _.attr('icon'),
+			svg: _.attr('svg'),
 			value: _.attr('value')
 		});
 		if (_.isDate()) {

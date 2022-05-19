@@ -113,4 +113,4 @@ class _G_Bus {
 	}
 }
 export const G_Bus = new _G_Bus('prod');
-window['G_Bus'] = G_Bus;
+//window['G_Bus'] = G_Bus;
