@@ -28,6 +28,9 @@ export default class GInput extends GComponent {
 			.on('fillMask',_.fillMask.bind(_))
 			.on('getCaretPosition',_.getCaretPosition.bind(_))
 			.on('datePick',_.datePick.bind(_))
+			.on('nextMonth',_.nextMonth.bind(_))
+			.on('prevMonth',_.prevMonth.bind(_))
+			.on('dateInputFocusOut',_.dateInputFocusOut.bind(_))
 			.on('changeDate',_.changeDate.bind(_))
 			.on('setCheckboxValue',_.setCheckboxValue.bind(_))
 	}
@@ -113,29 +116,89 @@ export default class GInput extends GComponent {
 	/* Inside methods*/
 
 
-	datePick({item:input}) {
+	datePick({value:value}) {
 		const _ = this;
+
+		if (_.getAttribute('active')) return;
+		_.setAttribute('active',true);
+
+		if (!value) value = _.getAttribute('value');
 		let
-			label = input.closest('LABEL'),
-			dateInput = label.querySelector('INPUT[type="date"]'),
-			date = new Date(dateInput.value ?? ''),
-			tpl = _.datePicker(date);
+			date = _.getDate(value),
+			tpl = _.datePickerTpl(date);
+
+		let
+			year = date.getFullYear(),
+			month = date.getMonth() + 1,
+			day = date.getDate();
+		if (month < 10) month = '0' + month;
+		if (day < 10) day = '0' + day;
+		_.setAttribute('data-current-date',`${year}-${month}-${day}`);
 
 		let activeDate = _.getAttribute('value');
-		if (activeDate) {
-			activeDate = activeDate.split('-');
-			let
-				body = tpl.querySelector('.date-picker-body'),
-				sameMonth = (body.getAttribute('data-month') == activeDate[1]),
-				sameYear = (body.getAttribute('data-year') == activeDate[0]);
-			if (sameMonth && sameYear) {
-				body.querySelector(`BUTTON[data-day="${parseInt(activeDate[2])}"]`).classList.add('active')
+		if (_.isThatMonth(activeDate,year + '-' + month)) {
+			let day = activeDate.substring(activeDate.length - 2);
+			_.markerPickedDay(tpl,day);
+		}
+
+		if (!_.getAttribute('data-previous')) {
+			let currentDate = new Date();
+			if (_.isThatMonth(currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1),year + '-' + month)) {
+				_.disablePrev(tpl,currentDate.getDate());
 			}
 		}
 
 		_.shadow.append(tpl);
 	}
-	datePicker(date){
+	getDate(value){
+		const _ = this;
+		if (value) {
+			if (!_.getAttribute('data-previous')) {
+				let date = new Date();
+				let valueItems = value.split('-');
+				if (parseInt(valueItems[0]) > date.getFullYear()) return new Date(value);
+				else if (parseInt(valueItems[0]) === date.getFullYear()) {
+					if (parseInt(valueItems[1]) >= date.getMonth()) return new Date(value);
+				}
+			} else {
+				return new Date(value);
+			}
+		} else {
+			return new Date();
+		}
+		return new Date();
+	}
+	isThatMonth(firstDate,secondDate){
+		if (firstDate && secondDate) {
+			firstDate = firstDate.split('-');
+			secondDate = secondDate.split('-');
+			if (parseInt(firstDate[0]) === parseInt(secondDate[0])) {
+				if (parseInt(firstDate[1]) === parseInt(secondDate[1])) {
+					return true;
+				}
+			}
+		}
+		return false
+	}
+	markerPickedDay(tpl,day){
+		tpl.querySelector(`BUTTON[data-day="${parseInt(day)}"]`).classList.add('active');
+	}
+	disablePrev(tpl,curDay){
+		const _ = this;
+		let prevButton = tpl.querySelector('[data-click="prevMonth"]');
+		prevButton.classList.add('disabled')
+		let btns = tpl.querySelector('.date-picker-body').querySelectorAll('BUTTON');
+		for (let i = 0; i < btns.length; i++) {
+			let
+				btn = btns[i],
+				day = btn.getAttribute('data-day');
+			if (parseInt(day) < curDay) {
+				btn.setAttribute('disabled',true)
+			}
+		}
+	}
+
+	datePickerTpl(date){
 		const _ = this;
 		let
 			tpl = document.createElement('DIV'),
@@ -168,19 +231,18 @@ export default class GInput extends GComponent {
 		let
 			btn = clickData['item'],
 			cont = btn.closest('.date-picker-body'),
-			label = _.shadow.querySelector('LABEL'),
 			DD = btn.getAttribute('data-day'),
 			MM = cont.getAttribute('data-month'),
-			YYYY = cont.getAttribute('data-year'),
-			dateInfo = new Date (`${YYYY} ${MM} ${DD}`);
-		_.fillDate(dateInfo,label);
-		cont.closest('.date-picker').remove();
-		_.setAttribute('value',`${YYYY}-${MM}-${DD < 10 ? '0'+DD : DD}`);
+			YYYY = cont.getAttribute('data-year');
+		_.fillDate(`${YYYY}-${MM}-${DD}`);
+		_.removeAttribute('data-current-date');
 		_.triggerChangeEvent();
+		_.datePickerClose(clickData);
 	}
-	fillDate(date,label){
+	fillDate(dateValue){
 		const _ = this;
 		let
+			date = new Date(dateValue),
 			format = _.attr('format') ?? 'MM-DD-YYYY',
 			outValue = format,
 			days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Sunday'],
@@ -200,10 +262,59 @@ export default class GInput extends GComponent {
 
 		let outDate = YYYY + '-' + MM + '-' + DD;
 
-		label.querySelector('.inpt-value').value = outValue;
-		label.querySelector('.inpt-date').value = outDate;
+		_.shadow.querySelector('.inpt-value').value = outValue;
+		_.shadow.querySelector('.inpt-date').value = outDate;
+		_.setAttribute('value',outDate);
 	}
+	dateInputFocusOut({event}){
+		if (event.type === 'click') return;
+		this.datePickerClose();
+	}
+	datePickerClose(){
+		const _ = this;
+		_.removeAttribute('active');
+		_.shadow.querySelector('.date-picker').remove();
+	}
+	nextMonth(){
+		const _ = this;
+		let date = _.getDateDetails();
 
+		date.month++;
+		if (date.month > 12) {
+			date.month = '01';
+			date.year++;
+		} else if (date.month < 10) date.month = '0' + date.month;
+		_.anotherMonth(`${date.year}-${date.month}`)
+	}
+	prevMonth(clickData){
+		const _ = this;
+		let btn = clickData.item;
+		if (btn.classList.contains('disabled')) {
+			_.shadow.querySelector('.inpt-value').focus();
+			return;
+		}
+		let date = _.getDateDetails();
+
+		date.month--;
+		if (date.month === 0) {
+			date.month = '12';
+			date.year--;
+		} else if (date.month < 10) date.month = '0' + date.month;
+		_.anotherMonth(`${date.year}-${date.month}`)
+	}
+	getDateDetails(){
+		let
+			dateValue = this.getAttribute('data-current-date'),
+			dateValues = dateValue.split('-');
+		return {year:parseInt(dateValues[0]),month:parseInt(dateValues[1])}
+	}
+	anotherMonth(date){
+		const _ = this;
+		_.shadow.querySelector('.date-picker').remove();
+		_.removeAttribute('active');
+		_.datePick({value:date});
+		_.shadow.querySelector('.inpt-value').focus();
+	}
 	
 	setCheckboxValue(changeData){
 		const _ = this;
@@ -489,7 +600,7 @@ export default class GInput extends GComponent {
 		});
 		if (_.isDate()) {
 			_.setAttribute('style','position:relative;')
-			_.fillDate(new Date(_.attr('value')),_.shadow)
+			if (_.attr('value')) _.fillDate(_.attr('value'))
 		}
 		_.type = _.attr('type');
 		if(_.attr('symbol'))

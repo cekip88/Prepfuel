@@ -75,7 +75,7 @@ export default {
 		<label class="inpt ${data['className'] ?? ''}">
 			${data['title'] ? '<h6 class="inpt-title">' + data['title']+'</h6>' : ''}
 			<div class="date-cont" data-mouseDown="datePick">
-				<input type="text" class="date-value inpt-value" ${placeholder ? 'placeholder="' + placeholder+'"' : ''}>
+				<input type="text" class="date-value inpt-value" data-focusout='dateInputFocusOut' ${placeholder ? 'placeholder="' + placeholder+'"' : ''}>
 				<input class="inpt-date" hidden type="date">
 				${(icon != false && icon != null && icon != 'false') ? icon : ''}
 			</div>
@@ -93,7 +93,7 @@ export default {
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 12"><path d="M5.78033 1.8413C6.07322 1.53446 6.07322 1.03697 5.78033 0.73013C5.48744 0.42329 5.01256 0.42329 4.71967 0.73013L0.219671 5.44441C-0.0642633 5.74187 -0.0741975 6.22083 0.197135 6.53092L4.32213 11.2452C4.60203 11.5651 5.07645 11.5867 5.38179 11.2935C5.68713 11.0003 5.70776 10.5032 5.42787 10.1834L1.7881 6.02363L5.78033 1.8413Z"/></svg>
 				</button>
 				<span>${months[month]} ${year}</span>
-				<button data-click="prevMonth">
+				<button data-click="nextMonth">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 12"><path d="M0.219669 10.1587C-0.0732236 10.4655 -0.0732236 10.963 0.219669 11.2699C0.512563 11.5767 0.987436 11.5767 1.28033 11.2699L5.78033 6.55559C6.06426 6.25813 6.0742 5.77917 5.80286 5.46908L1.67787 0.754792C1.39797 0.434913 0.923545 0.413303 0.618206 0.706526C0.312867 0.999748 0.29224 1.49677 0.572134 1.81664L4.2119 5.97637L0.219669 10.1587Z"/></svg>
 				</button>
 			</div>
