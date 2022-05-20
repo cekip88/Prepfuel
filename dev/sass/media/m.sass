@@ -249,9 +249,12 @@ body
 			color: rgb($blue)
 		&.done
 			background-color: rgb($green-light)
-			svg
+			span
+				display: none
+			&:after
 				+wh(19px)
-				stroke: rgb($green)
+				content: url("img/checkmark-green.svg")
+				display: block
 	&-link,&-arrow
 		&:hover
 			background-color: rgb($neutral-100)
@@ -1726,3 +1729,4 @@ body
 	&-btn
 		svg
 			+wh(18px)
+
