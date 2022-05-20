@@ -31,7 +31,7 @@ block content
 										use(xlink:href="#badge")
 								h5.practice-schedule-title Practice test 1
 								.practice-schedule-date
-									g-input(type='date' data-previous='true' value='2022-03-04' classname='input-date' format='month DD, YYYY' data-icon='false' placeholder='Choose date')
+									g-input(type='date' data-previous='true' value='2022-03-04' classname='input-date' format='month DD, YYYY' icon='false')
 								.practice-schedule-date
 									g-select(
 										title='8:00 AM'
@@ -54,7 +54,7 @@ block content
 										use(xlink:href="#badge")
 								h5.practice-schedule-title Practice test 2
 								.practice-schedule-date
-									g-input(type='date' classname='input-date' format='month DD, YYYY' data-icon='false' value='2022-03-05')
+									g-input(type='date' classname='input-date' format='month DD, YYYY' icon='false' value='2022-03-05')
 								.practice-schedule-date
 									g-select(
 										title='8:00 AM'
@@ -77,7 +77,7 @@ block content
 										use(xlink:href="#badge")
 								h5.practice-schedule-title Practice test 3
 								.practice-schedule-date
-									g-input(type='date' classname='input-date' format='month DD, YYYY' data-icon='false' value='2022-06-19')
+									g-input(type='date' classname='input-date' format='month DD, YYYY' icon='false' value='2022-06-19')
 								.practice-schedule-date
 									g-select(
 										items=[
@@ -110,8 +110,7 @@ block content
 								span 3 steps
 							.pagination-links
 								a(href='./student-practice-schedule.html').pagination-link.done
-									svg
-										use(xlink:href='#checkmark')
+									span 1
 								a(href='./student-practice-schedule-2.html').pagination-link.active
 									span 2
 								a(href='./student-practice-schedule-3.html').pagination-link
