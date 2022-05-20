@@ -1,125 +1,148 @@
 :host
-  --body-display: none
-  --body-max-height: 0px
- 
-.g-select
-  +wh(100%)
-  min-width: 80px
-  position: relative
-  border: 1px solid #dbdbdb
-  &-head
-    +wh(100%,30px)
-    cursor: pointer
-    display: flex
-    align-items: center
-    justify-content: space-between
-    background-color: #fff
-    white-space: normal
-    transition: .35s ease
-    padding: 5px 10px
-  &-body
-    width: 100%
-    max-height: var(--body-max-height)
-    display: flex
-    flex-direction: column
-    align-items: flex-start
-    background-color: #fff
-    overflow: hidden
-    position: absolute
-    left: 0
-    top: 100%
-    z-index: 2
-    transition: .2s ease
-  &.active &-body
-    overflow: auto
-    border: 1px solid #dbdbdb
-  &.active &-head:after
-    transform: rotate(-45deg)
-  &-option
-    flex: 0 0 30px
-    width: 100%
-    margin-bottom: 1px
-    padding: 0 10px
-    text-align: left
-    display: flex
-    justify-content: flex-start
-    align-items: center
-    &:hover,&.active
-      background-color: #dbdbdb
-  &-arrow
-    width: 20px
-    svg
-      +wh(10px)
-  &-gray
-    width: 100%
-    height: 42px
-    background-color: #F5F8FA
-    border: none
-    border-radius: 6px
-    .g-select
-      &-head
-        height: 100%
-        padding: 5px 16px
-        background-color: initial
-        color: #5E6278
-      &-title
-        font-family: $f_medium
-      &-body
-        padding: 0 4px
-        background: #FFF
-        box-shadow: 0 0 1px rgba(15, 23, 42, 0.06), 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0px 4px 6px -2px rgba(15, 23, 42, 0.05)
-        border-radius: 8px
-      &-option
-        flex: 0 0 32px
-        padding: 7px 8px
-        margin-bottom: 4px
-        display: flex
-        align-items: center
-        position: relative
-        font-family: $f_medium
-        &:first-child
-          border-radius: 4px 4px 0 0
-        &:last-child
-          border-radius: 0 0 4px 4px
-          margin-bottom: 0
-        &.hover,&.active
-          background-color: #ECF8FF
-          color: #00A3FF
-        &.active
-          &:after
-            +af
-            +wh(16px)
-            content: url('img/checkmark-blue.svg')
-            position: absolute
-            right: 10px
-    &.active
-      .g-select-body
-        padding: 4px
-        border: none
-.filter-select
-  +wh(100%,initial)
-  border: none
-  .g-select-head
-    height: 34px
-    padding: 0 12px
-    border-radius: 6px
-    background-color: rgb($neutral-100)
-    color: rgb($neutral-500)
-    font-family: $f_bold
-.with-arrow:after
-  +wh(5px)
-  content: ''
-  display: block
-  flex: 0 0 5px
-  margin-left: 5px
-  border-top: 2px solid #000
-  border-right: 2px solid #000
-  transform: rotate(135deg)
-  transition: .35s ease
-.input-time
-  .g-select-head
-    height: 50px
-  .g-select-title
-    font-weight: 400
-    color: #5E6278
+	--body-display: none
+	--body-max-height: 0px
 
+.g-select
+	+wh(100%)
+	min-width: 80px
+	position: relative
+	border: 1px solid #dbdbdb
+	&-head
+		+wh(100%,30px)
+		cursor: pointer
+		display: flex
+		align-items: center
+		justify-content: space-between
+		background-color: #fff
+		white-space: normal
+		transition: .35s ease
+		padding: 5px 10px
+	&-body
+		width: 100%
+		max-height: var(--body-max-height)
+		display: flex
+		flex-direction: column
+		align-items: flex-start
+		background-color: #fff
+		overflow: hidden
+		position: absolute
+		left: 0
+		top: 100%
+		z-index: 2
+		transition: .2s ease
+	&.active &-body
+		overflow: auto
+		border: 1px solid #dbdbdb
+	&.active &-head:after
+		transform: rotate(-45deg)
+	&-option
+		flex: 0 0 30px
+		width: 100%
+		margin-bottom: 1px
+		padding: 0 10px
+		text-align: left
+		display: flex
+		justify-content: flex-start
+		align-items: center
+		&:hover,&.active
+			background-color: #dbdbdb
+	&-arrow
+		width: 20px
+		svg
+			+wh(10px)
+	&-gray
+		width: 100%
+		height: 42px
+		background-color: #F5F8FA
+		border: none
+		border-radius: 6px
+		.g-select
+			&-head
+				height: 100%
+				padding: 5px 16px
+				background-color: initial
+				color: #5E6278
+			&-title
+				font-family: $f_medium
+			&-body
+				padding: 0 4px
+				background: #FFF
+				box-shadow: 0 0 1px rgba(15, 23, 42, 0.06), 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0px 4px 6px -2px rgba(15, 23, 42, 0.05)
+				border-radius: 8px
+			&-option
+				flex: 0 0 32px
+				padding: 7px 8px
+				margin-bottom: 4px
+				display: flex
+				align-items: center
+				position: relative
+				font-family: $f_medium
+				&:first-child
+					border-radius: 4px 4px 0 0
+				&:last-child
+					border-radius: 0 0 4px 4px
+					margin-bottom: 0
+				&.hover,&.active
+					background-color: #ECF8FF
+					color: #00A3FF
+				&.active
+					&:after
+						+af
+						+wh(16px)
+						content: url('img/checkmark-blue.svg')
+						position: absolute
+						right: 10px
+		&.active
+			.g-select-body
+				padding: 4px
+				border: none
+.filter-select
+	+wh(100%,initial)
+	border: none
+	.g-select-head
+		height: 34px
+		padding: 0 12px
+		border-radius: 6px
+		background-color: rgb($neutral-100)
+		color: rgb($neutral-500)
+		font-family: $f_bold
+.with-arrow:after
+	+wh(5px)
+	content: ''
+	display: block
+	flex: 0 0 5px
+	margin-left: 5px
+	border-top: 2px solid #000
+	border-right: 2px solid #000
+	transform: rotate(135deg)
+	transition: .35s ease
+.input-time
+	.g-select-head
+		height: 50px
+	.g-select-title
+		font-weight: 400
+		color: #5E6278
+
+.head
+	&-select
+		+dfc
+		min-width: initial
+		border: none
+		color: #fff
+		font-size: 12px
+		.g-select
+			&-head
+				height: 100%
+				background-color: rgba(#fff,.08)
+				border-radius: 8px
+		.with-arrow:after
+			border-color: #fff
+			transform: rotate(135deg) translate(-2px, 2px)
+
++mq(768px)
+	.head
+		&-select
+			.g-select
+				&-head
+					padding: 5px 14px
+					font-family: $f_medium

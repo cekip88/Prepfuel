@@ -288,7 +288,7 @@ body
 	&-control
 		@extend %dfa
 	&-button
-		margin-right: 24px
+		margin-right: 14px
 		svg
 			+wh(28px)
 			fill: rgb($white)
@@ -348,6 +348,15 @@ body
 				margin-bottom: 28px
 				&:last-child
 					margin-bottom: 0
+	&-select
+		+wh(60px,20px)
+		display: block
+		&-block
+			margin-right: 14px
+			span
+				font-family: $p_reg
+				font-size: $fz12
+				color: rgb($white)
 
 .navigate
 	background-color: rgb($blue)
@@ -1729,4 +1738,5 @@ body
 	&-btn
 		svg
 			+wh(18px)
+
 

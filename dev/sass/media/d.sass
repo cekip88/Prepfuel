@@ -1,312 +1,312 @@
 %transition-d
-  transition: .35s ease
+	transition: .35s ease
 .section
-  +w($desk)
-  &.row
-    display: flex
-    justify-content: space-between
-  &-buttons
-    margin-bottom: 0
-  &-button
-    margin-right: 24px
-    white-space: nowrap
-    &:last-child
-      margin-right: 0
-    &:hover
-      color: rgb($neutral-800)
-    &.active:hover
-      color: rgb($white)
-  .col
-    width: 588px
-    &.wide
-      width: 894px
-    &.narrow
-      width: 282px
-      .block
-        padding: 24px 16px
+	+w($desk)
+	&.row
+		display: flex
+		justify-content: space-between
+	&-buttons
+		margin-bottom: 0
+	&-button
+		margin-right: 24px
+		white-space: nowrap
+		&:last-child
+			margin-right: 0
+		&:hover
+			color: rgb($neutral-800)
+		&.active:hover
+			color: rgb($white)
+	.col
+		width: 588px
+		&.wide
+			width: 894px
+		&.narrow
+			width: 282px
+			.block
+				padding: 24px 16px
 
 
 .button
-  &-white
-    border: 1px solid transparent
-    @extend %transition-d
-    &:hover
-      background-color: rgb($neutral-500)
-      color: rgb($white)
-      border-color: rgb($white)
+	&-white
+		border: 1px solid transparent
+		@extend %transition-d
+		&:hover
+			background-color: rgb($neutral-500)
+			color: rgb($white)
+			border-color: rgb($white)
 
 
 .block
-  width: 100%
-  &-filter
-    margin-bottom: 32px
-    &-button
-      &:hover
-        color: rgb($neutral-800)
-  &-header
-    flex-wrap: nowrap
-    .block-title
-      width: initial
-    &-input
-      width: 240px
-      flex: 0 0 240px
-    &-select
-      width: 340px
-      flex: 0 0 340px
-    &-date
-      width: 200px
-      flex-basis: 200px
-    .button-blue
-      margin-left: auto
-      white-space: nowrap
-      width: initial
-    &-input,&-select,.button-blue
-      margin-top: 0
-    &-input,&-select
-      margin-left: 16px
+	width: 100%
+	&-filter
+		margin-bottom: 32px
+		&-button
+			&:hover
+				color: rgb($neutral-800)
+	&-header
+		flex-wrap: nowrap
+		.block-title
+			width: initial
+		&-input
+			width: 240px
+			flex: 0 0 240px
+		&-select
+			width: 340px
+			flex: 0 0 340px
+		&-date
+			width: 200px
+			flex-basis: 200px
+		.button-blue
+			margin-left: auto
+			white-space: nowrap
+			width: initial
+		&-input,&-select,.button-blue
+			margin-top: 0
+		&-input,&-select
+			margin-left: 16px
 
 
 
 .title
-  margin-bottom: 0
+	margin-bottom: 0
 
 
 .head
-  &-button
-    border-radius: 4px
-    svg
-      display: block
-    &,svg
-      @extend %transition-d
-    &:hover
-      background-color: rgb($white)
-      svg
-        fill: rgb($blue)
-  &-user
-    @extend %transition-d
-    &:hover
-      background-color: rgb($white)
-      color: rgb($blue)
+	&-button
+		border-radius: 4px
+		svg
+			display: block
+		&,svg
+			@extend %transition-d
+		&:hover
+			background-color: rgb($white)
+			svg
+				fill: rgb($blue)
+	&-user
+		@extend %transition-d
+		&:hover
+			background-color: rgb($white)
+			color: rgb($blue)
 
 
 .student
-  &-main
-    padding: 40px calc(50% + 12px) 40px 102px
-    background-size: 510px auto
-    background-position: calc(100% - 102px) 50%
+	&-main
+		padding: 40px calc(50% + 12px) 40px 102px
+		background-size: 510px auto
+		background-position: calc(100% - 102px) 50%
 
 
 .upcoming
-  &-instructor
-    .info-button
-      position: relative
-      &:after
-        +af
-        +wh(0,1px)
-        background-color: rgb($blue-text)
-        position: absolute
-        left: 50%
-        bottom: 0
-        @extend %transition-d
-      &:hover
-        &:after
-          width: 100%
-          left: 0
-  &-right
-    .action
-      &-button
-        &:not([disabled])
-          &:hover
-            border-color: rgb($blue-text)
-            background-color: rgb($white)
-            color: rgb($blue-text)
-        &[disabled]
-          cursor: initial
+	&-instructor
+		.info-button
+			position: relative
+			&:after
+				+af
+				+wh(0,1px)
+				background-color: rgb($blue-text)
+				position: absolute
+				left: 50%
+				bottom: 0
+				@extend %transition-d
+			&:hover
+				&:after
+					width: 100%
+					left: 0
+	&-right
+		.action
+			&-button
+				&:not([disabled])
+					&:hover
+						border-color: rgb($blue-text)
+						background-color: rgb($white)
+						color: rgb($blue-text)
+				&[disabled]
+					cursor: initial
 
 
 .hidden
-  &-show
-    border-radius: 4px
-    @extend %transition-d
-    &:hover
-      background-color: rgb($neutral-100)
+	&-show
+		border-radius: 4px
+		@extend %transition-d
+		&:hover
+			background-color: rgb($neutral-100)
 
 
 .skill
-  &-level
-    &-item
-      .link
-        span
-          &:after
-            @extend %transition-d
-        &:hover
-          span
-            &:after
-              width: 0
-              left: 50%
+	&-level
+		&-item
+			.link
+				span
+					&:after
+						@extend %transition-d
+				&:hover
+					span
+						&:after
+							width: 0
+							left: 50%
 
 
 .achievements
-  &-item
-    &:nth-child(n)
-      margin-right: 28px
-    &:nth-child(6n)
-      margin-right: 0
+	&-item
+		&:nth-child(n)
+			margin-right: 28px
+		&:nth-child(6n)
+			margin-right: 0
 
 
 .test
-  &-header
-    &-button
-      span,svg
-        @extend %transition-d
-      &:hover
-        span
-          color: rgb($blue-text)
-        svg
-          fill: rgb($blue-text)
-  &-footer
-    &-button,&-back
-      span
-        position: relative
-        &:after
-          @extend %transition-d
-          +af
-          +wh(0,2px)
-          background-color: rgb($blue-text)
-          position: absolute
-          left: 50%
-      &:hover
-        span
-          &:after
-            width: 100%
-            left: 0
-    &-back
-      span:after
-        background-color: rgb($neutral-400)
+	&-header
+		&-button
+			span,svg
+				@extend %transition-d
+			&:hover
+				span
+					color: rgb($blue-text)
+				svg
+					fill: rgb($blue-text)
+	&-footer
+		&-button,&-back
+			span
+				position: relative
+				&:after
+					@extend %transition-d
+					+af
+					+wh(0,2px)
+					background-color: rgb($blue-text)
+					position: absolute
+					left: 50%
+			&:hover
+				span
+					&:after
+						width: 100%
+						left: 0
+		&-back
+			span:after
+				background-color: rgb($neutral-400)
 
 
 .questions,.test-block
-  height: calc(100vh - 190px)
+	height: calc(100vh - 190px)
 .questions
-  overflow: hidden
-  &-cont
-    height: calc(100% - 40px)
-    margin-top: 24px
-    overflow: auto
-  &-list
-    &-title
-      &:first-child
-        margin-top: 0
-  &-item
-    width: 100px
-  &-button
-    &,svg
-      @extend %transition-d
-    &:hover
-      background-color: transparent
-      color: rgb($blue)
-      svg
-        stroke: rgb($blue)
-  &-variant
-    @extend %transition-d
-    &:hover
-      background-color: rgb($neutral-600)
-      color: rgb($white)
+	overflow: hidden
+	&-cont
+		height: calc(100% - 40px)
+		margin-top: 24px
+		overflow: auto
+	&-list
+		&-title
+			&:first-child
+				margin-top: 0
+	&-item
+		width: 100px
+	&-button
+		&,svg
+			@extend %transition-d
+		&:hover
+			background-color: transparent
+			color: rgb($blue)
+			svg
+				stroke: rgb($blue)
+	&-variant
+		@extend %transition-d
+		&:hover
+			background-color: rgb($neutral-600)
+			color: rgb($white)
 
 
 .grid
-  &-button
-    @extend %transition-d
-    &:hover
-      color: rgb($white)
-      background-color: rgb($neutral-600)
+	&-button
+		@extend %transition-d
+		&:hover
+			color: rgb($white)
+			background-color: rgb($neutral-600)
 
 
 .answer
-  &-variant
-    @extend %transition-d
-  &-item
-    &:not(.correct):not(.wrong):not([disabled])
-      .answer-button
-        &:hover
-          .answer
-            &-variant
-              background-color: rgb($blue)
-              color: rgb($white)
-    &.correct,&.wrong,&[disabled]
-      .answer-button
-        cursor: initial
-  &-wrong
-    @extend %transition-d
-    &:hover
-      background-color: rgb($neutral-600)
-      svg
-        transform: scale(1.15)
-        fill: rgb($white)
+	&-variant
+		@extend %transition-d
+	&-item
+		&:not(.correct):not(.wrong):not([disabled])
+			.answer-button
+				&:hover
+					.answer
+						&-variant
+							background-color: rgb($blue)
+							color: rgb($white)
+		&.correct,&.wrong,&[disabled]
+			.answer-button
+				cursor: initial
+	&-wrong
+		@extend %transition-d
+		&:hover
+			background-color: rgb($neutral-600)
+			svg
+				transform: scale(1.15)
+				fill: rgb($white)
 
 
 .login
-  .link
-    position: relative
-    &:after
-      @extend %transition-d
-      +af
-      +wh(0,1px)
-      background-color: rgb($blue-text)
-      position: absolute
-      left: 50%
-      bottom: -2px
-    &:hover:after
-      width: 100%
-      left: 0
-  &-bottom
-    .link:after
-      background-color: rgb($neutral-400)
-  .button-lightblue
-    &:hover
-      background-color: rgb($blue-text)
-  &-success
-    &-bgc
-      img
-        &:nth-child(1),&:nth-child(4),&:nth-child(5),&:nth-child(6)
-          left: 50%
-        &:nth-child(1)
-          bottom: 179px
-          transform: translateX(-640px)
-        &:nth-child(2)
-          left: 0
-          bottom: 60px
-        &:nth-child(3)
-          left: 0
-        &:nth-child(4),&:nth-child(5),&:nth-child(6)
-          transform: translateX(-550px)
-        &:nth-child(4)
-          bottom: 117px
-        &:nth-child(5)
-          bottom: 12px
-        &:nth-child(6)
-          bottom: 0
-        &:nth-child(7)
-          right: initial
-          left: 50%
-          transform: translateX(70px)
-        &:nth-child(8)
-          transform: translateX(-150px)
-        &:nth-child(9)
-          right: 0
+	.link
+		position: relative
+		&:after
+			@extend %transition-d
+			+af
+			+wh(0,1px)
+			background-color: rgb($blue-text)
+			position: absolute
+			left: 50%
+			bottom: -2px
+		&:hover:after
+			width: 100%
+			left: 0
+	&-bottom
+		.link:after
+			background-color: rgb($neutral-400)
+	.button-lightblue
+		&:hover
+			background-color: rgb($blue-text)
+	&-success
+		&-bgc
+			img
+				&:nth-child(1),&:nth-child(4),&:nth-child(5),&:nth-child(6)
+					left: 50%
+				&:nth-child(1)
+					bottom: 179px
+					transform: translateX(-640px)
+				&:nth-child(2)
+					left: 0
+					bottom: 60px
+				&:nth-child(3)
+					left: 0
+				&:nth-child(4),&:nth-child(5),&:nth-child(6)
+					transform: translateX(-550px)
+				&:nth-child(4)
+					bottom: 117px
+				&:nth-child(5)
+					bottom: 12px
+				&:nth-child(6)
+					bottom: 0
+				&:nth-child(7)
+					right: initial
+					left: 50%
+					transform: translateX(70px)
+				&:nth-child(8)
+					transform: translateX(-150px)
+				&:nth-child(9)
+					right: 0
 
 
 
 .practice
-  &-schedule
-    &-row
-      padding-bottom: 16px
-      .line
-        margin-top: 16px
+	&-schedule
+		&-row
+			padding-bottom: 16px
+			.line
+				margin-top: 16px
 .remove-btn
-  svg
-    @extend %transition-d
-  &:hover
-    svg
-      transform: rotate(180deg)
-      fill: rgb($blue)
+	svg
+		@extend %transition-d
+	&:hover
+		svg
+			transform: rotate(180deg)
+			fill: rgb($blue)

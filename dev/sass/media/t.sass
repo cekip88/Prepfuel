@@ -1,316 +1,325 @@
 .section
-  +w($tablet)
-  padding: 0
-  margin: 0 auto
-  &-header
-    display: flex
-    justify-content: space-between
-    align-items: center
-    flex-wrap: wrap
+	+w($tablet)
+	padding: 0
+	margin: 0 auto
+	&-header
+		display: flex
+		justify-content: space-between
+		align-items: center
+		flex-wrap: wrap
 .section,.block-filter
-  &-buttons
-    margin-bottom: 24px
-    flex-direction: row
-    justify-content: space-between
-  &-button
-    margin-bottom: 0
+	&-buttons
+		margin-bottom: 24px
+		flex-direction: row
+		justify-content: space-between
+	&-button
+		margin-bottom: 0
 .block
-  margin-top: 24px
-  padding: 30px
-  &-title
-    &:not(:last-child)
-      margin-bottom: 0
-    &-control
-      min-height: 34px
-      .block-title
-        width: initial
-        margin-right: auto
-      .button
-        margin-right: 16px
-    &-left
-      margin-right: auto
-  &-filter
-    margin-bottom: 32px
-    padding-bottom: 18px
-    display: flex
-    align-items: center
-    position: relative
-    &:after
-      +af
-      +wh(100%,1px)
-      background-color: rgb($neutral-200)
-      position: absolute
-      left: 0
-      bottom: 0
-    &-buttons
-      margin-bottom: 0
-    &-button
-      margin-right: 10px
-      padding: 0 10px
-      position: relative
-      &:last-child
-        margin-right: 0
-      &:after
-        +af
-        +wh(100%,1px)
-        position: absolute
-        left: 0
-        bottom: -21px
-        z-index: 1
-      &.active
-        &:after
-          background-color: rgb($blue)
-  &-header
-    flex-direction: row
-    flex-wrap: wrap
-    align-items: center
-    justify-content: space-between
-    &-input,&-select
-      margin-bottom: 0
-    &-input,&-select,.button-blue
-      width: calc(50% - 10px)
-      margin-top: 20px
-    .button-blue
-      height: 34px
+	margin-top: 24px
+	padding: 30px
+	&-title
+		&:not(:last-child)
+			margin-bottom: 0
+		&-control
+			min-height: 34px
+			.block-title
+				width: initial
+				margin-right: auto
+			.button
+				margin-right: 16px
+		&-left
+			margin-right: auto
+	&-filter
+		margin-bottom: 32px
+		padding-bottom: 18px
+		display: flex
+		align-items: center
+		position: relative
+		&:after
+			+af
+			+wh(100%,1px)
+			background-color: rgb($neutral-200)
+			position: absolute
+			left: 0
+			bottom: 0
+		&-buttons
+			margin-bottom: 0
+		&-button
+			margin-right: 10px
+			padding: 0 10px
+			position: relative
+			&:last-child
+				margin-right: 0
+			&:after
+				+af
+				+wh(100%,1px)
+				position: absolute
+				left: 0
+				bottom: -21px
+				z-index: 1
+			&.active
+				&:after
+					background-color: rgb($blue)
+	&-header
+		flex-direction: row
+		flex-wrap: wrap
+		align-items: center
+		justify-content: space-between
+		&-input,&-select
+			margin-bottom: 0
+		&-input,&-select,.button-blue
+			width: calc(50% - 10px)
+			margin-top: 20px
+		.button-blue
+			height: 34px
 
 
 .pagination
-  flex-direction: row
-  justify-content: space-between
-  &-info
-    margin-bottom: 0
-    margin-right: 16px
-  &-end
-    margin-left: 32px
-    margin-top: 0
-  &-top
-    justify-content: flex-start
+	flex-direction: row
+	justify-content: space-between
+	&-info
+		margin-bottom: 0
+		margin-right: 16px
+	&-end
+		margin-left: 32px
+		margin-top: 0
+	&-top
+		justify-content: flex-start
 
 .head
-  &-logo
-    max-width: initial
-  &-user
-    +wh(40px)
+	&-logo
+		max-width: initial
+	&-button,&-select-block
+		margin-right: 24px
+	&-user
+		+wh(40px)
+	&-select
+		+wh(80px,40px)
+		&-block
+			display: flex
+			align-items: center
+			span
+				margin-right: 8px
 
 
 .navigate
-  &-item
-    width: calc(100% / 3)
+	&-item
+		width: calc(100% / 3)
 
 
 .student
-  &-main
-    padding-right: 50%
-    background-image: url(img/multitasking.png)
-    background-size: auto 100%
-    background-position: calc(100% - 30px) 50%
-    background-repeat: no-repeat
+	&-main
+		padding-right: 50%
+		background-image: url(img/multitasking.png)
+		background-size: auto 100%
+		background-position: calc(100% - 30px) 50%
+		background-repeat: no-repeat
 
 
 .upcoming
-  &-item
-    flex-direction: row
-    align-items: center
-  &-center
-    margin: 0 0 0 auto
-  &-right
-    margin-left: 44px
+	&-item
+		flex-direction: row
+		align-items: center
+	&-center
+		margin: 0 0 0 auto
+	&-right
+		margin-left: 44px
 
 
 .schedule
-  &-item
-    &:not(:last-child)
-      margin-bottom: 32px
-    .icon
-      +wh(64px)
-      padding: 12px
-    .info
-      margin-left: 32px
-      &-item
-        margin-top: 12px
-      &-text
-        font-size: $fz16
+	&-item
+		&:not(:last-child)
+			margin-bottom: 32px
+		.icon
+			+wh(64px)
+			padding: 12px
+		.info
+			margin-left: 32px
+			&-item
+				margin-top: 12px
+			&-text
+				font-size: $fz16
 
 
 .frequently
-  &-row
-    justify-content: space-between
+	&-row
+		justify-content: space-between
 
 
 .test
-  &-scores
-    &-item
-      width: calc((100% - 60px) / 4)
-      flex-basis: calc((100% - 60px) / 4)
-      margin-bottom: 0
-    .table
-      white-space: nowrap
-  &-header
-    padding-bottom: 20px
-    flex-wrap: nowrap
-    &-button
-      margin-left: 24px
-  &-timer
-    margin-bottom: 0
-  &-footer
-    flex-direction: row
-    align-items: center
-    justify-content: flex-end
-    &-button,&-back,.button,.button-blue,.pagination
-      width: initial
-      margin-bottom: 0
-    .pagination
-      margin-right: 24px
-    .button,.button-blue,&-back
-      margin-right: 24px
-      &:last-child
-        margin-right: 0
-    &-button
-      padding: 12px 20px
-      margin-right: auto
-  &-inner
-    padding: 32px 10px 0 0
-  &-result
-    display: flex
-    flex-wrap: wrap
-    justify-content: space-between
-    &-block
-      flex: 0 0 calc((100% - 48px) / 3)
-      margin-bottom: 24px
-      &:nth-child(4),&:nth-child(5)
-        flex-basis: calc(50% - 12px)
-  &-label
-    &-title
-      margin-bottom: 20px
+	&-scores
+		&-item
+			width: calc((100% - 60px) / 4)
+			flex-basis: calc((100% - 60px) / 4)
+			margin-bottom: 0
+		.table
+			white-space: nowrap
+	&-header
+		padding-bottom: 20px
+		flex-wrap: nowrap
+		&-button
+			margin-left: 24px
+	&-timer
+		margin-bottom: 0
+	&-footer
+		flex-direction: row
+		align-items: center
+		justify-content: flex-end
+		&-button,&-back,.button,.button-blue,.pagination
+			width: initial
+			margin-bottom: 0
+		.pagination
+			margin-right: 24px
+		.button,.button-blue,&-back
+			margin-right: 24px
+			&:last-child
+				margin-right: 0
+		&-button
+			padding: 12px 20px
+			margin-right: auto
+	&-inner
+		padding: 32px 10px 0 0
+	&-result
+		display: flex
+		flex-wrap: wrap
+		justify-content: space-between
+		&-block
+			flex: 0 0 calc((100% - 48px) / 3)
+			margin-bottom: 24px
+			&:nth-child(4),&:nth-child(5)
+				flex-basis: calc(50% - 12px)
+	&-label
+		&-title
+			margin-bottom: 20px
 
 
 .skill
-  &-level
-    &-item
-      margin-bottom: 0
-      flex-basis: initial
+	&-level
+		&-item
+			margin-bottom: 0
+			flex-basis: initial
 
 
 .achievements
-  &-item
-    width: 64px
-    margin-right: 20px
-    margin-bottom: 0
-    &:nth-child(3n)
-      margin-right: 20px
+	&-item
+		width: 64px
+		margin-right: 20px
+		margin-bottom: 0
+		&:nth-child(3n)
+			margin-right: 20px
 
 
 .stars
-  &-row
-    display: flex
-    align-items: flex-start
-  &-circle
-    +wh(310px)
-    &>svg
-      +wh(310px)
-    circle
-      r: 134
-  &-info
-    margin-left: 48px
-    margin-top: 0
+	&-row
+		display: flex
+		align-items: flex-start
+	&-circle
+		+wh(310px)
+		&>svg
+			+wh(310px)
+		circle
+			r: 134
+	&-info
+		margin-left: 48px
+		margin-top: 0
 
 
 .questions
-  &-item
-    width: 17%
+	&-item
+		width: 17%
 
 .modal
-  &-row
-    flex-direction: row
-    .button,.button-blue
-      width: initial
-      margin-bottom: 0
-      margin-right: 16px
-      &:last-child
-        margin-right: 0
+	&-row
+		flex-direction: row
+		.button,.button-blue
+			width: initial
+			margin-bottom: 0
+			margin-right: 16px
+			&:last-child
+				margin-right: 0
 
 
 .login
-  overflow: hidden
-  &-subtitle
-    font-size: calc(18em/14)
-  &-right
-    width: 100%
-  &-span
-    font-size: calc(18em/14)
-  &-row
-    width: 100%
-    max-width: 480px
-    display: flex
-    .form-block
-      margin-right: 32px
-      min-width: initial
-      &:last-child
-        margin-right: 0
-  &-success
-    &-img
-      position: relative
-      z-index: 1
-    &-bgc
-      width: 100%
-      display: block
-      position: absolute
-      img
-        position: absolute
-        bottom: 0
-        &:nth-child(2)
-          left: -100px
-        &:nth-child(3)
-          left: -100px
-        &:nth-child(7)
-          bottom: -24px
-          right: 10%
-        &:nth-child(8)
-          right: 10%
-          bottom: 210px
-        &:nth-child(9)
-          right: -210px
-    .button-blue
-      margin-bottom: 0
-    .login
-      &-main
-        &-title,&-subtitle
-          margin-bottom: 16px
-  &-left,&-success
-    &-img
-      margin-top: 15vh
+	overflow: hidden
+	&-subtitle
+		font-size: calc(18em/14)
+	&-right
+		width: 100%
+	&-span
+		font-size: calc(18em/14)
+	&-row
+		width: 100%
+		max-width: 480px
+		display: flex
+		.form-block
+			margin-right: 32px
+			min-width: initial
+			&:last-child
+				margin-right: 0
+	&-success
+		&-img
+			position: relative
+			z-index: 1
+		&-bgc
+			width: 100%
+			display: block
+			position: absolute
+			img
+				position: absolute
+				bottom: 0
+				&:nth-child(2)
+					left: -100px
+				&:nth-child(3)
+					left: -100px
+				&:nth-child(7)
+					bottom: -24px
+					right: 10%
+				&:nth-child(8)
+					right: 10%
+					bottom: 210px
+				&:nth-child(9)
+					right: -210px
+		.button-blue
+			margin-bottom: 0
+		.login
+			&-main
+				&-title,&-subtitle
+					margin-bottom: 16px
+	&-left,&-success
+		&-img
+			margin-top: 15vh
 
 
 .form
-  &-block
-    width: 100%
-    min-width: 380px
-    max-width: 480px
+	&-block
+		width: 100%
+		min-width: 380px
+		max-width: 480px
 
 
 .practice
-  &-schedule
-    &-row
-      flex-wrap: nowrap
-    &-title
-      width: initial
-      white-space: nowrap
-    &-date
-      max-width: 395px
-      margin: 0 0 0 20px
-    &-dots
-      width: 100%
-      height: 15px
-      margin: 0 5px
-      border-bottom: 2px dotted
+	&-schedule
+		&-row
+			flex-wrap: nowrap
+		&-title
+			width: initial
+			white-space: nowrap
+		&-date
+			max-width: 395px
+			margin: 0 0 0 20px
+		&-dots
+			width: 100%
+			height: 15px
+			margin: 0 5px
+			border-bottom: 2px dotted
 .remove-btn
-  width: 42px
-  flex: 0 0 42px
-  margin-top: 0
-  margin-left: 20px
-  background-color: initial
-  span
-    display: none
-  svg
-    fill: rgb($neutral-400)
-    display: block
+	width: 42px
+	flex: 0 0 42px
+	margin-top: 0
+	margin-left: 20px
+	background-color: initial
+	span
+		display: none
+	svg
+		fill: rgb($neutral-400)
+		display: block
