@@ -4,6 +4,7 @@ append vars
 		page_title = 'Student - Dashboard'
 block content
 	main
+		include ../img/sprite.svg
 		section.navigate(data-active='.navigate-item:nth-child(1)' data-tabs='.dashboard-tabs')
 			include parts/student-nav
 		section
@@ -21,3 +22,11 @@ block content
 					include parts/test-scores
 					include parts/recent-achievements
 					include parts/skills
+			div.hidden
+				.schedule-result.new.modal#schedule-result(slot='modal-item')
+					.schedule-result-icon
+						svg
+							use(xlink:href='#calendar')
+					.schedule-result-right
+						h5.schedule-result-title Practice Schedule Created!
+						p.schedule-result-text Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.

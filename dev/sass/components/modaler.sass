@@ -6,6 +6,7 @@
 .modaler
 	&-cont
 		+wh(100vw,100vh)
+		padding-right: 5px
 		position: fixed
 		top: 0
 		left: 0
@@ -19,14 +20,34 @@
 	&-inner
 		position: relative
 		background-color: #fff
-		padding: 20px
-		border-radius: 5px
+		border-radius: 12px
 		box-shadow: 0 0 40px rgba(56, 71, 109, 0.29)
+	&-header
+		padding: 14px 10px 9px
+		display: flex
+		align-items: center
+		border-bottom: 1px solid #EBEDF3
+	&-body
+		padding: 14px 10px 9px
 	&-close
-		font-family: inherit
-		font-weight: 700
-		position: absolute
-		top: 10px
-		right: 10px
+		+wh(42px)
+		+dfc
+		margin-left: auto
 		cursor: pointer
-	 
+		position: relative
+		&:before,&:after
+			+wh(3px,15px)
+			+af
+			background-color: #DADADA
+			position: absolute
+		&:before
+			transform: rotate(45deg)
+		&:after
+			transform: rotate(-45deg)
+
++mq(768px)
+	.modaler
+		&-header
+			padding: 24px 32px 19px
+		&-body
+			padding: 32px 32px 48px

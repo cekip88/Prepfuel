@@ -2,6 +2,7 @@ import { G_Bus }        from "../../libs/G_Control.js";
 import { G }            from "../../libs/G.js";
 import { studentModel } from "./studentModel.js";
 import GInput           from "../../components/input/input.component.js";
+import GModaler         from "../../components/modaler/modaler.component.js";
 
 class StudentPage extends G{
 	define(){
@@ -13,6 +14,8 @@ class StudentPage extends G{
 		_.componentName = 'StudentPage';
 		G_Bus
 			.on(_,['changeSection','navigate'])
+
+		_.showForm('schedule-result')
 	}
 	
 	navigate(clickData){
@@ -33,6 +36,13 @@ class StudentPage extends G{
 		if(section) history.pushState(null, null, section);
 		G_Bus.trigger('router','changePage',section);
 		//_.renderPart({part:'body',content: _.markup(_[`${tpl}Tpl`](),false)});
+	}
+	showForm(id){
+		this.f(`#${id}`).reset();
+		G_Bus.trigger('modaler','showModal',{
+			type: 'html',
+			target: `#${id}`
+		});
 	}
 	
 	async render(blockData){

@@ -540,6 +540,37 @@ body
 	&-title
 		font-size: $fz20
 		font-family: $p_semi
+	&-result
+		padding: 16px
+		display: flex
+		background-color: rgb($blue-light)
+		border-radius: 6px
+		&-icon
+			margin-right: 16px
+			&,svg
+				+wh(32px)
+			svg
+				fill: rgb($blue)
+		&-title
+			margin-bottom: 4px
+			font-weight: 600
+			color: rgb($neutral-800)
+			font-size: $fz16
+		&-text
+			color: rgb($neutral-600)
+			font-size: $fz16
+		&.new
+			.schedule
+				&-result-icon
+					position: relative
+					&:after
+						+af
+						+wh(8px)
+						border-radius: 100%
+						background-color: rgb($red)
+						position: absolute
+						top: 0
+						left: 0
 
 
 .calendar
@@ -1438,7 +1469,7 @@ body
 
 
 .modal
-	width: calc(90vw - 48px)
+	width: 95vw
 	&-title
 		padding: 4px 0
 		font-family: $p_semi

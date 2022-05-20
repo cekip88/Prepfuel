@@ -1,6 +1,7 @@
-//import { G_Bus } from "./libs/G_Control.js";
+import { G_Bus } from "./libs/G_Control.js";
 //import { G } from "./libs/G.js";
 import { router } from "./router.js";
+import GModaler from "./components/modaler/modaler.component.js";
 
 import GInput from "../../components/input/input.component.js";
 import GSelect from "../../components/select/select.component.js";
@@ -86,7 +87,7 @@ import GSelect from "../../components/select/select.component.js";
     if (!starsCont) return;
 
     let svg = `</svg>`;
-    let radius = window.innerWidth < 768 ? 106 : 134;
+	    let radius = window.innerWidth < 768 ? 106 : 134;
     let sum = 0;
     let last;
     let count = 0;
@@ -137,6 +138,11 @@ import GSelect from "../../components/select/select.component.js";
 	let worker = navigator.serviceWorker.register('/worker.js',{scope:'/'});
 	if(!navigator.serviceWorker.controller) location.reload();
 })()
+
+setTimeout(function (){
+	G_Bus.trigger('modaler','showModal', {type:'html',target:'#schedule-result'});
+},100)
+
 
 
 new router().init({

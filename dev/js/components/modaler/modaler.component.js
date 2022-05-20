@@ -10,10 +10,10 @@ export default class GModaler extends GComponent {
 		const _ = this;
 		_.componentName = 'modaler';
 		G_Bus
-			.on('showModal',_.showModal.bind(_))
-		_.on('closeModal',_.closeModal())
-		_.on('cancelCloseModal',_.cancelCloseModal())
-		
+			.on(_,'showModal')
+		_.on(_,'closeModal')
+		_.on(_,'cancelCloseModal')
+
 		
 	}
 	cancelCloseModal(mouseupData){
@@ -38,7 +38,6 @@ export default class GModaler extends GComponent {
 	}
 	showModal(modalData){
 		const _ = this;
-		
 		let
 			showShadow = modalData['showShadow'] ?? true,
 			targetContent = document.querySelector(modalData['target']);
@@ -53,8 +52,8 @@ export default class GModaler extends GComponent {
 			let shadowClass = modalData['shadowClass'] ?? '';
 			_.modalCont.classList.add('shadowClass');
 		}
-		
-		
+
+
 		
 		_.append(targetContent);
 	}
@@ -75,7 +74,7 @@ export default class GModaler extends GComponent {
 		_.mainTpl = _.getTpl('modaler');
 		
 		_.setContent(_.mainTpl);
-		
+
 		_.trigger('appended');
 	}
 	disconnectedCallback(){

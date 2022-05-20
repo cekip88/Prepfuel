@@ -1,4 +1,5 @@
 import  { TestModel } from "./TestModel.js";
+import { G_Bus }      from "../../libs/G_Control.js";
 export const testView = {
 	noteTpl(question){
 		const _ = this;
