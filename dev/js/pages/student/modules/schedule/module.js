@@ -16,7 +16,7 @@ export class ScheduleModule extends G{
 		_.maxStep = 3;
 		_.testDate = new Date();
 		
-		_.practiceDates = [];
+		_.practiceTests = [];
 		_.practiceAt = '4:00 PM';
 		
 		
@@ -40,11 +40,11 @@ export class ScheduleModule extends G{
 	finishSchedule({item}) {
 		const _ = this;
 		Model.finishSchedule({
-			date: _.testDate,
-			days: _._$.daysPerWeek,
-			time: _.practiceAt,
-			skill: _._$.numberOfQuestions,
-			practiceDates: _.practiceDates
+			testDate: _.testDate,
+			practiceDays: _._$.daysPerWeek,
+			practiceTime: _.practiceAt,
+			practiceSkill: _._$.numberOfQuestions,
+			practiceTests: _.practiceTests
 		});
 	}
 	changeNumberOfQuestions({item}) {
@@ -128,14 +128,14 @@ export class ScheduleModule extends G{
 			if(_._$.currentStep  === 3 ){
 				let practiceRows = _.f('#shedule-rows .practice-schedule-row');
 				_.practiceRows = [];
-				_.practiceDates = [];
+				_.practiceTests = [];
 				for(let row of practiceRows){
 					_.practiceRows.push(row);
 					let
 						date = row.querySelector('.schedule-date').value,
 						time = row.querySelector('.schedule-time').value;
 
-					_.practiceDates.push(`${date}T${time}:00Z`);
+					_.practiceTests.push({date:`${date}T${time}:00Z`});
 				}
 				_.innerCont.innerHTML = _.stepThreeTpl();
 				_.changeBtnToCreate();

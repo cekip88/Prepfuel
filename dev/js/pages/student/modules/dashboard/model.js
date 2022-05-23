@@ -6,13 +6,27 @@ export class _Model{
 			"Content-Type": "application/json"
 		}
 		_.endpoints = {
-			shedules: `${env.backendUrl}/student/schedules`
+			schedule: `${env.backendUrl}/student/schedule`,
+			dashSchedule: `${env.backendUrl}/student/schedule/dashboard`
 		};
 	}
-	getSchedules(){
+	getSchedule(){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.endpoints['shedules']}`,{
+			let rawResponse = await fetch(`${_.endpoints['schedule']}`,{
+				method: 'GET',
+				headers:_.baseHeaders
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				resolve(response['response']);
+			}
+		});
+	}
+	getDashSchedule(){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['dashSchedule']}`,{
 				method: 'GET',
 				headers:_.baseHeaders
 			});
@@ -20,20 +34,6 @@ export class _Model{
 				let response = await rawResponse.json();
 				console.log(response);
 				resolve(response['response']);
-			}
-		});
-	}
-	getSchedule(id){
-		const _ = this;
-		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.endpoints['shedules']}/${id}`,{
-				method: 'GET',
-				headers:_.baseHeaders
-			});
-			if(rawResponse.status == 200){
-				let response = await rawResponse.json();
-				console.log(response);
-				resolve(response);
 			}
 		});
 	}

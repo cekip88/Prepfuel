@@ -12,6 +12,17 @@ export const view = {
 					<button class="button-blue" data-click="${_.componentName}:changeModule;" module="schedule" ><span>Choose your practice schedule</span></button>
 				</div>
 			</div>
+			${_.scheduleBlock()}
+			<br><br>
+		`;
+	},
+	scheduleBlock(){
+		const _ = this;
+		let
+			practiceDate = new Date(_._$.dashSchedule['practiceTest']['date']),
+			testDate = new Date(_._$.dashSchedule['test']['date']),
+			months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+		return `
 			<div class="section row">
 				<div class="col">
 					<div class="block">
@@ -61,7 +72,7 @@ export const view = {
 												<use xlink:href="#clock"></use>
 											</svg>
 										</div>
-										<div class="info-text"><span>Saturday March 26</span></div>
+										<div class="info-text"><span>${_._$.dashSchedule['practiceTest']['dayName']} ${months[practiceDate.getMonth()]} ${practiceDate.getDate()}</span></div>
 									</div>
 								</div>
 							</li>
@@ -72,14 +83,14 @@ export const view = {
 									</svg>
 								</div>
 								<div class="info">
-									<h5 class="schedule-title"><span>Your ISEE Date</span></h5>
+									<h5 class="schedule-title"><span>${_._$.dashSchedule['test']['title']}</span></h5>
 									<div class="info-item">
 										<div class="info-icon">
 											<svg>
 												<use xlink:href="#clock"></use>
 											</svg>
 										</div>
-										<div class="info-text"><span>79 days until test, Saturday May 7</span></div>
+										<div class="info-text"><span>${_._$.dashSchedule['test']['daysLeft']} days until test, ${_._$.dashSchedule['test']['dayName']} ${months[testDate.getMonth()]} ${testDate.getDate()}</span></div>
 									</div>
 								</div>
 							</li>
@@ -479,10 +490,8 @@ export const view = {
 					</div>
 				</div>
 			</div>
-			<br><br>
 		`;
 	},
-	
 	dashboardTabsTpl(){
 		return `
 			<div class="subnavigate">

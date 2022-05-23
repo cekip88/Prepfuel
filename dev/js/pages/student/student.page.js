@@ -14,8 +14,7 @@ class StudentPage extends G{
 		_.componentName = 'StudentPage';
 		G_Bus
 			.on(_,['changeSection','navigate'])
-
-		_.showForm('schedule-result')
+		
 	}
 	
 	navigate(clickData){
@@ -38,7 +37,6 @@ class StudentPage extends G{
 		//_.renderPart({part:'body',content: _.markup(_[`${tpl}Tpl`](),false)});
 	}
 	showForm(id){
-		this.f(`#${id}`).reset();
 		G_Bus.trigger('modaler','showModal',{
 			type: 'html',
 			target: `#${id}`
@@ -57,6 +55,7 @@ class StudentPage extends G{
 		parts.push(	{ part:'header-tabs', content:_.markup(_.tabsTpl(),false)});
 		_.fillPartsPage(parts,true);
 		if(params.length > 0){
+			console.log(params);
 			let module = await _.getModule({
 				'pageName':'student',
 				'name': params[0]
@@ -72,7 +71,7 @@ class StudentPage extends G{
 	
 	init(){
 		const _ = this;
-		
+		console.log(G.modules);
 	}
 	
 }

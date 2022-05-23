@@ -12,7 +12,6 @@ export class _Model{
 	}
 	finishSchedule(scheduleData){
 		const _ = this;
-		//practiceDates
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['finish']}`,{
 				method: 'POST',

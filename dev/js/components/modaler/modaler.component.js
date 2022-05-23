@@ -41,9 +41,9 @@ export default class GModaler extends GComponent {
 		let
 			showShadow = modalData['showShadow'] ?? true,
 			targetContent = document.querySelector(modalData['target']);
+		if(!targetContent) return void 0;
 		targetContent.classList.add('modaler-content');
 		_.targetContentParent = targetContent.parentNode;
-		
 		_.modalCont.classList.add('active');
 		
 		if(!showShadow) {
@@ -52,9 +52,6 @@ export default class GModaler extends GComponent {
 			let shadowClass = modalData['shadowClass'] ?? '';
 			_.modalCont.classList.add('shadowClass');
 		}
-
-
-		
 		_.append(targetContent);
 	}
 	
