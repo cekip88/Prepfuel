@@ -1,0 +1,87 @@
+extends template/main
+append vars
+	-
+		page_title = 'Student - Quiz'
+block content
+	main
+		section.test
+			include ../img/sprite.svg
+			.section
+				.section-header
+					h1.title Diagnostic Quiz: Section Name
+					button.button-white
+						span Exit this review
+			.section
+				.block.test-block
+					.test-header
+						h5.block-title.test-title
+							span Complete
+					.test-inner
+						.test-result
+							.test-result-block.blue.half
+								h6.test-result-title
+									span Questions Answered
+								p.test-result-score 4
+							.test-result-block.turquoise.half
+								h6.test-result-title
+									span Questions Correct
+								p.test-result-score 3
+							.test-result-block.red.half
+								h6.test-result-title
+									span Stars for section of the Test
+								p.test-result-score +150
+								.test-result-img
+									svg
+										use(xlink:href='#stars')
+									svg
+										use(xlink:href='#stars')
+									svg
+										use(xlink:href='#stars')
+							.test-result-block.violet.half
+								h6.test-result-title
+									span Score
+								p.test-result-score 300
+								.test-result-img.solo
+									svg
+										use(xlink:href='#graphic-3')
+						.test-result-list-block
+							h6.test-result-list-title
+								span List of skill levels:
+							ul.test-result-list
+								li.test-result-list-item
+									.test-result-list-img
+										svg
+											use(xlink:href='#graphic-1')
+									span Name of Skil Level
+								li.test-result-list-item
+									.test-result-list-img
+										svg
+											use(xlink:href='#graphic-2')
+									span Name of Skil Level
+								li.test-result-list-item
+									.test-result-list-img
+										svg
+											use(xlink:href='#graphic-1')
+									span Name of Skil Level
+								li.test-result-list-item
+									.test-result-list-img
+										svg
+											use(xlink:href='#graphic-1')
+									span Name of Skil Level
+					.test-footer
+						.pagination.pagination-top
+							.pagination-info
+								span Jump to a question:
+							.pagination-links
+								a(href='./quiz-question-1.html').pagination-link.done
+									span 1
+								a(href='./quiz-question-1.html').pagination-link.done
+									span 2
+								a(href='./quiz-question-1.html').pagination-link.error
+									span 3
+								a(href='./quiz-question-1.html').pagination-link.done
+									span 4
+						a(href='./test-review-correct.html').test-footer-back
+							span Exit this Quiz
+						button.button-blue
+							span Review your answers

@@ -132,7 +132,7 @@ body
 	&,&-blue,&-lightblue,&-transparent,&-icon
 		@extend %transition
 	&,&-blue,&-lightblue,&-transparent
-		@extend %dfi
+		@extend %dfc
 		font-family: $f_semi
 		&[disabled]
 			opacity: .3
@@ -249,12 +249,21 @@ body
 			color: rgb($blue)
 		&.done
 			background-color: rgb($green-light)
+		&.error
+			background-color: rgb($red-light)
+		&.done,&.error
 			span
 				display: none
 			&:after
+				display: block
+		&.done
+			&:after
 				+wh(19px)
 				content: url("img/checkmark-green.svg")
-				display: block
+		&.error
+			&:after
+				+wh(13px)
+				content: url("img/close-red.svg")
 	&-link,&-arrow
 		&:hover
 			background-color: rgb($neutral-100)
@@ -541,10 +550,18 @@ body
 		font-size: $fz20
 		font-family: $p_semi
 	&-result
+		margin-top: 85px
 		padding: 16px
 		display: flex
 		background-color: rgb($blue-light)
 		border-radius: 6px
+		&:after
+			+wh(100%,2px)
+			+af
+			background-color: rgb($neutral-200)
+			position: absolute
+			left: 0
+			top: 75px
 		&-icon
 			margin-right: 16px
 			&,svg
@@ -861,6 +878,8 @@ body
 						fill: rgb($blue)
 				span
 					color: rgb($blue)
+		&-text
+			color: rgb($neutral-400)
 	&-inner
 		width: 100%
 		margin: 0 auto 20px
@@ -922,6 +941,9 @@ body
 		align-items: flex-start
 		border-top: 1px solid rgb($neutral-200)
 		&-back
+			@extend %dfc
+			+w(100%)
+			padding: 13px 12px
 			color: rgb($neutral-400)
 			font-family: $f_medium
 		&-button
@@ -937,6 +959,8 @@ body
 			justify-content: center
 	&-result
 		margin-top: 32px
+		&:first-child
+			margin-top: 0
 		&-block
 			@extend %df
 			+wh(100%,139px)
@@ -955,12 +979,21 @@ body
 			&.violet
 				background-color: rgb($viol-light)
 				color: rgb($viol)
+				.test-result-img svg
+					fill: rgb($viol)
 			&.green
 				background-color: rgb($green-light)
 				color: rgb($green)
 			&.blue
 				background-color: rgb($blue-light)
 				color: rgb($blue)
+				.test-result-img svg
+					fill: rgb($blue)
+			&.red
+				background-color: rgb($red-light)
+				color: rgb($red)
+				.test-result-img svg
+					fill: rgb($red)
 		&-title
 			font-family: $p_semi
 			font-size: $fz15
@@ -973,19 +1006,44 @@ body
 			right: 24px
 			bottom: 24px
 			svg
-				+wh(27px)
-				fill: rgb($blue)
 				position: absolute
-				&:nth-child(1)
-					+wh(37px)
-					right: 46px
-					bottom: 6px
-				&:nth-child(2)
-					right: 4px
+			&:not(.solo)
+				svg
+					+wh(27px)
+					&:nth-child(1)
+						+wh(37px)
+						right: 46px
+						bottom: 6px
+					&:nth-child(2)
+						right: 4px
+						bottom: 0
+					&:nth-child(3)
+						right: 0
+						bottom: 36px
+			&.solo
+				svg
+					+wh(54px,58px)
+					right: 0
 					bottom: 0
-				&:nth-child(3)
-					right: 0px
-					bottom: 36px
+		&-list
+			&-title
+				margin-bottom: 20px
+				font-family: $f_bold
+				font-size: $fz18
+			&-item
+				@extend %dfa
+				margin-bottom: 12px
+				span
+					font-family: $p_reg
+			&-img
+				@extend %dfc
+				+wh(48px)
+				margin-right: 16px
+				border-radius: 12px
+				background-color: rgb($blue-light)
+				svg
+					+wh(32px)
+					fill: rgb($blue)
 	&-label
 		&-block
 			@extend %df
@@ -1040,6 +1098,234 @@ body
 				color: rgb($neutral-600)
 				&:last-child
 					margin-bottom: 0
+	&-aside
+		margin-bottom: 30px
+		&-title
+			margin-bottom: 16px
+			font-family: $p_bold
+		&-label
+			@extend %df
+			@extend %fdc
+			padding: 7px 14px 10px
+			border-radius: 6px
+			font-family: $p_reg
+			color: rgb($neutral-500)
+			&-title
+				font-size: $fz15
+				line-height: $fz22
+			&-desc
+				margin-bottom: 4px
+				font-size: $fz12
+				line-height: $fz18
+			&-date
+				@extend %dfa
+				font-size: $fz12
+				letter-spacing: -.01em
+				svg
+					+wh(16px)
+					margin-right: 4px
+					fill: rgb($blue)
+	&-tabs
+		width: 100%
+		position: relative
+		&-body
+			@extend %transition
+			width: 100%
+			position: absolute
+			left: 0
+			top: 0
+			opacity: 0
+			visibility: hidden
+	&-pick
+		&-list
+			margin-bottom: 55px
+		&-item
+			@extend %df
+			margin-top: 16px
+			padding: 17px 19px
+			border-radius: 6px
+			flex-wrap: wrap
+			.button
+				width: 100%
+				margin-top: 12px
+				padding: 12px 20px
+				color: rgb($white)
+			&.green
+				background-color: rgb($green-light)
+				.test-pick
+					&-time
+						background-color: rgb($green)
+						&:before
+							background-color: rgba($green,.3)
+					&-desc
+						color: rgb($green)
+				.button
+					background-color: rgb($green)
+			&.blue
+				background-color: rgb($blue-light)
+				.test-pick
+					&-time
+						background-color: rgb($blue)
+						&:before
+							background-color: rgba($blue,.3)
+					&-desc
+						color: rgb($blue)
+				.button
+					background-color: rgb($blue)
+			&.brown
+				background-color: rgb($brown-light)
+				.test-pick
+					&-time
+						background-color: rgb($brown)
+						&:before
+							background-color: rgba($brown,.3)
+					&-desc
+						color: rgb($brown)
+				.button
+					background-color: rgb($brown)
+			&.violet
+				background-color: rgb($viol-light)
+				.test-pick
+					&-time
+						background-color: rgb($viol)
+						&:before
+							background-color: rgba($viol,.3)
+					&-desc
+						color: rgb($viol)
+				.button
+					background-color: rgb($viol)
+			&.turquoise
+				background-color: rgb($turquoise-light)
+				.test-pick
+					&-time
+						background-color: rgb($turquoise)
+						&:before
+							background-color: rgba($turquoise,.3)
+					&-desc
+						color: rgb($turquoise)
+				.button
+					background-color: rgb($turquoise)
+			&.red
+				background-color: rgb($red-light)
+				.test-pick
+					&-time
+						background-color: rgb($red)
+						&:before
+							background-color: rgba($red,.3)
+					&-desc
+						color: rgb($red)
+				.button
+					background-color: rgb($red)
+			&.done
+				.test-pick
+					&-time
+						span
+							display: none
+						&:after
+							content: url("img/checkmark.svg")
+							display: block
+							+wh(20px)
+							position: absolute
+						&:before
+							+af
+							+wh(24px)
+							border-radius: 100%
+				.button
+					background-color: rgb($neutral-100)
+					color: rgb($neutral-600)
+			&.disabled,&.done
+				border: 1px dashed
+				background-color: transparent
+				.test-pick
+					&-title
+						color: rgb($neutral-800)
+				.text
+					color: rgb($neutral-600)
+				&.blue
+					border-color: rgb($blue)
+					.test-pick
+						&-time
+							background-color: rgb($blue-light)
+							color: rgb($blue)
+				&.red
+					border-color: rgb($red)
+					.test-pick
+						&-time
+							background-color: rgb($red-light)
+							color: rgb($red)
+				&.violet
+					border-color: rgb($viol)
+					.test-pick
+						&-time
+							background-color: rgb($viol-light)
+							color: rgb($viol)
+				&.turquoise
+					border-color: rgb($turquoise)
+					.test-pick
+						&-time
+							background-color: rgb($turquoise-light)
+							color: rgb($turquoise)
+				&.brown
+					border-color: rgb($brown)
+					.test-pick
+						&-time
+							background-color: rgb($brown-light)
+							color: rgb($brown)
+				&.green
+					border-color: rgb($green)
+					.test-pick
+						&-time
+							background-color: rgb($green-light)
+							color: rgb($green)
+		&-time
+			@extend %dfc
+			@extend %fdc
+			+wh(48px)
+			margin-top: 3px
+			margin-right: 12px
+			border-radius: 12px
+			font-family: $p_semi
+			color: rgb($white)
+		&-title,&-desc .text
+			margin-bottom: 2px
+			font-size: $fz16
+			line-height: $fz22
+		&-title
+			font-family: $f_bold
+		&-desc
+			width: calc(100% - 60px)
+			.text
+				@extend %dfa
+			svg
+				+wh(16px)
+				flex: 0 0 16px
+				margin-right: 8px
+				fill: rgb($neutral-600)
+		&-result
+			margin-bottom: 55px
+			.text
+				margin: 8px 0 16px
+				color: rgb($neutral-400)
+				font-size: $fz12
+
+
+#test-tab-1:checked ~ .test-aside .test-aside-item:first-child,
+#test-tab-2:checked ~ .test-aside .test-aside-item:nth-child(2),
+#test-tab-3:checked ~ .test-aside .test-aside-item:nth-child(3),
+#test-tab-4:checked ~ .test-aside .test-aside-item:nth-child(4)
+	.test-aside-label
+		background-color: rgb($blue-light)
+		&-title,&-desc
+			color: rgb($blue)
+#test-tab-1:checked ~ .test-tabs .body-1,
+#test-tab-2:checked ~ .test-tabs .body-2,
+#test-tab-3:checked ~ .test-tabs .body-3,
+#test-tab-4:checked ~ .test-tabs .body-4
+	opacity: 1
+	visibility: visible
+	position: static
+
+
 .grid
 	&-row
 		@extend %df
@@ -1475,7 +1761,7 @@ body
 		font-family: $p_semi
 		color: rgb($neutral-900)
 	&-text
-		color: rgb($neutral-900)
+		color: rgb($neutral-600)
 		font-family: $p_reg
 		line-height: $fz24
 	&-text,&-title,&-area,.check-list
@@ -1497,6 +1783,10 @@ body
 		background-color: rgb($neutral-200)
 		resize: none
 		border: none
+	iframe
+		width: 100%
+		height: 180px
+
 
 .check
 	&-list
@@ -1725,6 +2015,41 @@ body
 			span
 				font-size: $fz15
 				font-family: $p_semi
+	&-desc
+		&-list
+			padding-top: 20px
+		&-item
+			margin-bottom: 13px
+			&-button
+				@extend %df
+				&.active,&:hover
+					.img
+						background-color: rgb($blue)
+						svg
+							fill: rgb($white)
+				.img
+					@extend %dfc
+					@extend %transition
+					+wh(32px)
+					margin-right: 15px
+					border-radius: 100%
+					background-color: rgb($turquoise-light)
+					svg
+						@extend %transition
+						+wh(15px)
+						fill: rgb($turquoise)
+				.desc
+					@extend %df
+					@extend %fdc
+					align-items: flex-start
+					&-title
+						font-family: $p_semi
+						line-height: $fz21
+					&-text
+						font-family: $p_reg
+						font-size: $fz13
+						color: rgb($neutral-400)
+						line-height: $fz19
 .blue-icon
 	+wh(48px)
 	padding: 10px
@@ -1771,3 +2096,5 @@ body
 			+wh(18px)
 
 
+.hidden
+	display: none

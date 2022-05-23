@@ -50,7 +50,7 @@ import GSelect from "../../components/select/select.component.js";
   }
 
 
- 
+
 
 
   showHidden(clickData){
@@ -120,7 +120,7 @@ import GSelect from "../../components/select/select.component.js";
   }
 
 
- 
+
 
   async init(){
     const _ = this;
@@ -139,9 +139,9 @@ import GSelect from "../../components/select/select.component.js";
 	if(!navigator.serviceWorker.controller) location.reload();
 })()
 
-setTimeout(function (){
+/*setTimeout(function (){
 	G_Bus.trigger('modaler','showModal', {type:'html',target:'#schedule-result'});
-},100)
+},100)*/
 
 
 

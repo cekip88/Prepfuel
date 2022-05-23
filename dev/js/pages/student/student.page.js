@@ -15,7 +15,6 @@ class StudentPage extends G{
 		G_Bus
 			.on(_,['changeSection','navigate'])
 
-		_.showForm('schedule-result')
 	}
 	
 	navigate(clickData){
