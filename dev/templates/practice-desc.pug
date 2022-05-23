@@ -1,0 +1,59 @@
+extends template/main
+append vars
+	-
+		page_title = 'Student - Practice'
+block content
+	main
+		section.test
+			include ../img/sprite.svg
+			.section
+				.section-header
+					h1.title Math basics: Converting between decimals, fractions, and percents
+					button.button-white
+						span Exit this Practice
+			.section.row
+				.block.test-block
+					.test-header
+						h5.block-title.test-title
+							span How-to examples
+					.test-inner.narrow
+						h6.test-subtitle
+							span Brush up on your foundations!
+						p.test-text
+							span Check out these resources before diving into practice to help reinforce the concepts, level up in this skill, and ultimately boost your scores!
+						ul.practice-desc-list
+							li.practice-desc-item
+								button.practice-desc-item-button(data-id='video' data-click='showModal')
+									.img
+										svg
+											use(xlink:href='#play-icon')
+									.desc
+										h6.desc-title Section, concept
+										span.desc-text Video
+							li.practice-desc-item
+								button.practice-desc-item-button(data-id='video' data-click='showModal')
+									.img
+										svg
+											use(xlink:href='#play-icon')
+									.desc
+										h6.desc-title Section, concept
+										span.desc-text Video
+							li.practice-desc-item
+								button.practice-desc-item-button(data-id='article' data-click='showModal')
+									.img
+										svg
+											use(xlink:href='#hwcompleted')
+									.desc
+										h6.desc-title Section, concept
+										span.desc-text Video
+							li.practice-desc-item
+								button.practice-desc-item-button(data-id='video' data-click='showModal')
+									.img
+										svg
+											use(xlink:href='#play-icon')
+									.desc
+										h6.desc-title Section, concept
+										span.desc-text Video
+					.test-footer
+						a(href='./quiz-question-1.html').button-blue
+							span Start skill practice

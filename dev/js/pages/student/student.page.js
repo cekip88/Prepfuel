@@ -15,6 +15,7 @@ class StudentPage extends G{
 		G_Bus
 			.on(_,['changeSection','navigate'])
 		
+
 	}
 	
 	navigate(clickData){
@@ -55,7 +56,6 @@ class StudentPage extends G{
 		parts.push(	{ part:'header-tabs', content:_.markup(_.tabsTpl(),false)});
 		_.fillPartsPage(parts,true);
 		if(params.length > 0){
-			console.log(params);
 			let module = await _.getModule({
 				'pageName':'student',
 				'name': params[0]

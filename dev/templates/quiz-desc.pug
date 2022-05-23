@@ -1,0 +1,29 @@
+extends template/main
+append vars
+	-
+		page_title = 'Student - Quiz'
+block content
+	main
+		section.test
+			.section
+				.section-header
+					h1.title Diagnostic Quiz: Section Name
+					button.button-white
+						span Exit this Quiz
+			.section.row
+				.block.test-block
+					.test-header
+						h5.block-title.test-title
+							span Directions
+					.test-inner.narrow
+						h6.test-subtitle
+							span Directions for this quiz
+						p.test-text
+							span You will review your answers at the end of this quiz.
+						p.test-text
+							span This quiz is not timed.
+						p.test-text
+							span On this diagnostic, you should select "I don’t know" if you don't know the answer. But on the real test, there's no penalty for guessing and you should always choose an answer.
+					.test-footer
+						a(href='./quiz-question-1.html').button-blue
+							span Start the quiz

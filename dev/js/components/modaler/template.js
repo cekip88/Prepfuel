@@ -8,7 +8,7 @@ export default {
 					</div>
 					<div class="modaler-body">
 						<slot name="modal-item"></slot>
-					</div>
+					</div> 
 				</div>
 			</div>
 		`;

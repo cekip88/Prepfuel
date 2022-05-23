@@ -22,11 +22,6 @@
 		background-color: #fff
 		border-radius: 12px
 		box-shadow: 0 0 40px rgba(56, 71, 109, 0.29)
-	&-header
-		padding: 14px 10px 9px
-		display: flex
-		align-items: center
-		border-bottom: 1px solid #EBEDF3
 	&-body
 		padding: 14px 10px 9px
 	&-close
@@ -34,7 +29,9 @@
 		+dfc
 		margin-left: auto
 		cursor: pointer
-		position: relative
+		position: absolute
+		right: 10px
+		top: 23px
 		&:before,&:after
 			+wh(3px,15px)
 			+af
@@ -47,7 +44,7 @@
 
 +mq(768px)
 	.modaler
-		&-header
-			padding: 24px 32px 19px
 		&-body
 			padding: 32px 32px 48px
+		&-close
+			right: 32px
