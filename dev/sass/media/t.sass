@@ -182,6 +182,9 @@
 			margin-right: auto
 	&-inner
 		padding: 32px 10px 0 0
+	&-left
+		&-text
+			font-size: $fz16
 	&-result
 		display: flex
 		flex-wrap: wrap
@@ -191,6 +194,8 @@
 			margin-bottom: 24px
 			&:nth-child(4),&:nth-child(5),&.half
 				flex-basis: calc(50% - 12px)
+			&.full
+				flex-basis: 100%
 	&-label
 		&-title
 			margin-bottom: 20px
@@ -311,6 +316,11 @@
 		&-img
 			margin-top: 15vh
 
+
+.essay
+	&-textarea
+		font-size: $fz16
+		line-height: $fz24
 
 .form
 	&-block

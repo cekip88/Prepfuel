@@ -142,6 +142,8 @@ body
 		border: 1px solid transparent
 	&,&-blue
 		padding: 13px 12px
+		&[disabled]
+			background-color: rgb($neutral-200)
 	&-lightblue,&-transparent
 		color: rgb($blue-text)
 	&-icon
@@ -997,6 +999,7 @@ body
 		&-title
 			font-family: $p_semi
 			font-size: $fz15
+			line-height: $fz22
 		&-score
 			font-family: $p_bold
 			color: rgb($neutral-900)
@@ -1044,6 +1047,11 @@ body
 				svg
 					+wh(32px)
 					fill: rgb($blue)
+		&-text
+			margin-bottom: auto
+			line-height: $fz18
+			color: rgb($neutral-500)
+			font-size: $fz12
 	&-label
 		&-block
 			@extend %df
@@ -1103,13 +1111,19 @@ body
 		&-title
 			margin-bottom: 16px
 			font-family: $p_bold
-		&-label
+		&-btn
 			@extend %df
 			@extend %fdc
+			width: 100%
 			padding: 7px 14px 10px
 			border-radius: 6px
 			font-family: $p_reg
 			color: rgb($neutral-500)
+			&.active
+				background-color: rgb($blue-light)
+				.test-aside-btn
+					&-desc,&-title
+						color: rgb($blue)
 			&-title
 				font-size: $fz15
 				line-height: $fz22
@@ -1128,14 +1142,6 @@ body
 	&-tabs
 		width: 100%
 		position: relative
-		&-body
-			@extend %transition
-			width: 100%
-			position: absolute
-			left: 0
-			top: 0
-			opacity: 0
-			visibility: hidden
 	&-pick
 		&-list
 			margin-bottom: 55px
@@ -1309,21 +1315,24 @@ body
 				font-size: $fz12
 
 
-#test-tab-1:checked ~ .test-aside .test-aside-item:first-child,
-#test-tab-2:checked ~ .test-aside .test-aside-item:nth-child(2),
-#test-tab-3:checked ~ .test-aside .test-aside-item:nth-child(3),
-#test-tab-4:checked ~ .test-aside .test-aside-item:nth-child(4)
-	.test-aside-label
-		background-color: rgb($blue-light)
-		&-title,&-desc
-			color: rgb($blue)
-#test-tab-1:checked ~ .test-tabs .body-1,
-#test-tab-2:checked ~ .test-tabs .body-2,
-#test-tab-3:checked ~ .test-tabs .body-3,
-#test-tab-4:checked ~ .test-tabs .body-4
-	opacity: 1
-	visibility: visible
-	position: static
+.essay
+	&-textarea
+		width: 100%
+		height: 100%
+		margin-top: 32px
+		padding: 12px
+		background-color: rgb($neutral-100)
+		border-radius: 9px
+		border: none
+		resize: none
+	&-right
+		height: 100%
+		padding-bottom: 0
+		border: none
+		@extend %df
+		@extend %fdc
+		.test-text
+			flex-shrink: 0
 
 
 .grid
