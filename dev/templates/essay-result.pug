@@ -1,0 +1,49 @@
+extends template/main
+append vars
+	-
+		page_title = 'Student - Quiz'
+block content
+	main
+		section.test
+			include ../img/sprite.svg
+			.section
+				.section-header
+					h1.title Essay Practice
+					button.button-white
+						span Exit this section
+			include parts/essay-result-loader
+			.section
+				.block.test-block
+					.test-inner
+						.test-result
+							.test-result-block.violet
+								h6.test-result-title
+									span Reading
+								p.test-result-text 8 is the max score for the catecory
+								p.test-result-score 3
+							.test-result-block.turquoise
+								h6.test-result-title
+									span Analysis
+								p.test-result-text 8 is the max score for the catecory
+								p.test-result-score 2
+							.test-result-block.gray
+								h6.test-result-title
+									span Writing
+								p.test-result-text 8 is the max score for the catecory
+								p.test-result-score 2
+							.test-result-block.blue.full
+								h6.test-result-title
+									span Stars for section of the Test
+								p.test-result-score +150
+								.test-result-img
+									svg
+										use(xlink:href='#stars')
+									svg
+										use(xlink:href='#stars')
+									svg
+										use(xlink:href='#stars')
+					.test-footer
+						a(href='./test-review-correct.html').test-footer-back
+							span Exit this section
+						button.button-blue
+							span Resubmit this essay

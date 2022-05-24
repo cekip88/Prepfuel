@@ -1,0 +1,29 @@
+extends template/main
+append vars
+	-
+		page_title = 'Student - Essay'
+block content
+	main
+		section.test
+			.section
+				.section-header
+					h1.title Essay Practice
+					button.button-white
+						span Don’t start this section now
+			.section.row
+				.block.test-block
+					.test-header
+						h5.block-title.test-title
+							span Welcome
+					.test-inner.narrow
+						h6.test-subtitle
+							span Welcome to the optional essay
+						p.test-text
+							span You have 50 minutes to read the passage and write an essay in response to the prompt.
+						p.test-text
+							span Your essay text will be submited to Scoring Engine for automated grading. In the text of your essay, please do not include your name or other information that personally identifies you.
+						p.test-text
+							span Once you start the timer, you cannot pause this section.
+					.test-footer
+						a(href='./essay-page-2.html').button-blue
+							span Let’s go, start the timer!

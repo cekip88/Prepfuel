@@ -12,47 +12,43 @@ block content
 					p.test-text.test-header-text Your test scores will appear here once you complete your first practice test.
 			.section
 				.block.test-row
-					input(type='radio' name='test-tab' checked)#test-tab-1
-					input(type='radio' name='test-tab')#test-tab-2
-					input(type='radio' name='test-tab')#test-tab-3
-					input(type='radio' name='test-tab')#test-tab-4
 					.test-aside
 						h5.test-aside-title Tests
 						ul.test-aside-list
 							li.test-aside-item
-								label(for='test-tab-1').test-aside-label
-									h6.test-aside-label-title Practice test 1
-									span.test-aside-label-desc 0 of 4 sections complete
-									.test-aside-label-date
+								button.test-aside-btn.active
+									h6.test-aside-btn-title Practice test 1
+									span.test-aside-btn-desc 0 of 4 sections complete
+									.test-aside-btn-date
 										svg
 											use(xlink:href='#calendar')
 										span Friday, March 18
 							li.test-aside-item
-								label(for='test-tab-2').test-aside-label
-									h6.test-aside-label-title Practice test 2
-									span.test-aside-label-desc 0 of 4 sections complete
-									.test-aside-label-date
+								button.test-aside-btn
+									h6.test-aside-btn-title Practice test 2
+									span.test-aside-btn-desc 0 of 4 sections complete
+									.test-aside-btn-date
 										svg
 											use(xlink:href='#calendar')
 										span Monday, March 28
 							li.test-aside-item
-								label(for='test-tab-3').test-aside-label
-									h6.test-aside-label-title Practice test 3
-									span.test-aside-label-desc 0 of 4 sections complete
-									.test-aside-label-date
+								button.test-aside-btn
+									h6.test-aside-btn-title Practice test 3
+									span.test-aside-btn-desc 0 of 4 sections complete
+									.test-aside-btn-date
 										svg
 											use(xlink:href='#calendar')
 										span Monday, March 28
 							li.test-aside-item
-								label(for='test-tab-4').test-aside-label
-									h6.test-aside-label-title Practice test 4
-									span.test-aside-label-desc 0 of 4 sections complete
-									.test-aside-label-date
+								button.test-aside-btn
+									h6.test-aside-btn-title Practice test 4
+									span.test-aside-btn-desc 0 of 4 sections complete
+									.test-aside-btn-date
 										svg
 											use(xlink:href='#calendar')
 										span Monday, March 28
 					.test-tabs
-						.test-tabs-body.body-1
+						.test-tabs-body
 							h5.block-title.test-title
 								span Start Practice test 1
 							p.test-text
@@ -113,72 +109,6 @@ block content
 							.test-pick-result
 								h5.title
 									span Reset Practice test 1
-								p.text You can discard your current progress and re-take this test from the beginning
-								button.button(disabled)
-									span Reset this test
-						.test-tabs-body.body-2
-							h5.block-title.test-title
-								span Start Practice test 2
-							p.test-text
-								span After completing a section, you can stop or review
-							ul.test-pick-list
-								li.test-pick-item.brown
-									.test-pick-time
-										span 30
-										span min
-									.test-pick-desc
-										h6.test-pick-title Essay (Optional)
-										p.text Your essay is not scored
-									button.button
-										span Start this section
-								li.test-pick-item.blue.disabled
-									.test-pick-time
-										span 35
-										span min
-									.test-pick-desc
-										h6.test-pick-title Quantitative Reasoning
-										p.text 37 questions
-										p.text
-											svg
-												use(xlink:href='#lock')
-											| Complete previous sections to unlock
-								li.test-pick-item.turquoise.disabled
-									.test-pick-time
-										span 40
-										span min
-									.test-pick-desc
-										h6.test-pick-title Mathematics Achievement
-										p.text 47 questions
-										p.text
-											svg
-												use(xlink:href='#lock')
-											| Complete previous sections to unlock
-								li.test-pick-item.violet.disabled
-									.test-pick-time
-										span 35
-										span min
-									.test-pick-desc
-										h6.test-pick-title Reading Comprehension
-										p.text 36 questions
-										p.text
-											svg
-												use(xlink:href='#lock')
-											| Complete previous sections to unlock
-							ul.test-pick-list
-								li.test-pick-item.green.disabled
-									.test-pick-time
-										span 20
-										span min
-									.test-pick-desc
-										h6.test-pick-title Verbal Reasoning
-										p.text 40 questions
-										p.text
-											svg
-												use(xlink:href='#lock')
-											| Complete previous sections to unlock
-							.test-pick-result
-								h5.title
-									span Reset Practice test 2
 								p.text You can discard your current progress and re-take this test from the beginning
 								button.button(disabled)
 									span Reset this test

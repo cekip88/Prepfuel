@@ -1,0 +1,14 @@
+.essay-result-loader
+	.section
+		.block
+			.loader-title Essay complete
+			.loader-subtitle Time's up! Scoring your essay...
+			.loader-progress
+				+img('008-abstract.svg')
+				.loader-progress-title Scoring Progress
+				.loader-progress-percent 0%
+				.loader-progress-line
+					.inner
+			.loader-img
+				+img('confirmation-on-white.png')
+script function load (){let i = -1;let percent = document.querySelector('.loader-progress-percent');let line = document.querySelector('.loader-progress-line .inner');let int = setInterval(()=>{i++;percent.textContent = i + '%';line.style = 'width:' + i + '%';if (i === 100) {clearInterval(int);document.querySelector('.essay-result-loader').remove();}},25)} load();

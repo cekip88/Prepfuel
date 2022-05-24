@@ -182,6 +182,9 @@
 			margin-right: auto
 	&-inner
 		padding: 32px 10px 0 0
+	&-left
+		&-text
+			font-size: $fz16
 	&-result
 		display: flex
 		flex-wrap: wrap
@@ -191,6 +194,8 @@
 			margin-bottom: 24px
 			&:nth-child(4),&:nth-child(5),&.half
 				flex-basis: calc(50% - 12px)
+			&.full
+				flex-basis: 100%
 	&-label
 		&-title
 			margin-bottom: 20px
@@ -209,6 +214,21 @@
 		&-item
 			margin-bottom: 0
 			flex-basis: initial
+
+.essay
+	&-result
+		&-loader
+			.loader
+				&-title
+					font-size: $fz30
+					line-height: calc(39em / 14)
+				&-subtitle
+					font-size: $fz22
+				&-progress
+					&-title
+						font-size: $fz15
+					&-percent
+						font-size: $fz25
 
 
 .achievements
@@ -311,6 +331,11 @@
 		&-img
 			margin-top: 15vh
 
+
+.essay
+	&-textarea
+		font-size: $fz16
+		line-height: $fz24
 
 .form
 	&-block
