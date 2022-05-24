@@ -165,6 +165,7 @@ new router().init({
 				'/profile': 'student',
 				'/student/profile': 'student',
 				'/student/dashboard': 'student',
+				'/student/tests': 'student',
 				'/student/practice': 'student',
 			}
 		},

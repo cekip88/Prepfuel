@@ -26,6 +26,7 @@ export class router {
 	}
 	async getMe(){
 		const _ = this;
+		if(_.user) return _.user;
 		let rawResponse = await fetch(_.endpoints['me'],{
 			..._.baseHeaders,
 			method: 'GET'
@@ -33,13 +34,10 @@ export class router {
 		if(rawResponse.status < 206){
 			let response = await rawResponse.json();
 			_.user = response['response'];
-			console.log(_.user);
 			return void 0;
 		}else{
 			_.user = { role:'guest' };
 		}
-		
-		
 	}
 	async changePage(route){
 		const _ = this;

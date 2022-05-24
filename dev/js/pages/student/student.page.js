@@ -14,6 +14,7 @@ class StudentPage extends G{
 		_.componentName = 'StudentPage';
 		G_Bus
 			.on(_,['changeSection','navigate'])
+		
 
 	}
 	
@@ -37,7 +38,6 @@ class StudentPage extends G{
 		//_.renderPart({part:'body',content: _.markup(_[`${tpl}Tpl`](),false)});
 	}
 	showForm(id){
-		this.f(`#${id}`).reset();
 		G_Bus.trigger('modaler','showModal',{
 			type: 'html',
 			target: `#${id}`
@@ -71,7 +71,7 @@ class StudentPage extends G{
 	
 	init(){
 		const _ = this;
-		
+		console.log(G.modules);
 	}
 	
 }

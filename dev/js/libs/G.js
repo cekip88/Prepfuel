@@ -4,11 +4,13 @@ import { mixins } from "../mixins.js";
 
 export class G extends G_G{
 	static parts = {};
-  constructor() {
+	static modules = new Map();
+	static blocks = new Map();
+	
+	constructor() {
 		super();
-    const _ = this;
-    _.components = new Map();
-  }
+		const _ = this;
+	}
 	define(){	}
 	getModule(blockData){
 		/*
@@ -27,18 +29,18 @@ export class G extends G_G{
 					moduleStr = name.charAt(0).toUpperCase() + name.substr(1)+ moduleInc,
 					pathModule = `/pages/${pageName}/modules/${name}/module.js`,
 					pathView = `/pages/${pageName}/modules/${name}/view.js`;
-			/*	if (_.components.has(name)) {
-					let comp = _.components.get(name);
+				if (G.modules.has(name)) {
+					let comp = G.modules.get(name);
 					resolve(comp);
-				}*/
+				}
 				const
 					module = await import(pathModule),
 					view = await import(pathView),
 					moduleName = new module[moduleStr](params);
 					Object.assign(module[moduleStr].prototype,mixins);
 					Object.assign(module[moduleStr].prototype,view['view']);
-					//_.components.set(name, moduleName);
-					
+				if('asyncDefine' in moduleName)	await moduleName.asyncDefine();
+				G.modules.set(name, moduleName);
 				resolve(moduleName);
 			} catch(e) {
 				reject(e);
@@ -61,18 +63,15 @@ export class G extends G_G{
 					params = blockData.params ? blockData.params : {},
 					moduleStr = name.charAt(0).toUpperCase() + name.substr(1)+ moduleInc,
 					path = `/${type}/${name}/${name}.${fileType}.js`;
-				/*if (_.components.has(name)) {
-					let comp = _.components.get(name);
+				if (G.blocks.has(name)) {
+					let comp = G.blocks.get(name);
 					resolve(comp);
-				}*/
+				}
 				const
 					module = await import(path),
 					moduleName = new module[moduleStr](params);
 				Object.assign(module[moduleStr].prototype,mixins);
-			
-				
-				
-			//	_.components.set(name, moduleName);
+				G.blocks.set(name, moduleName);
 				resolve(moduleName);
 			} catch(e) {
 				reject(e);
@@ -97,11 +96,9 @@ export class G extends G_G{
 	fillPartsPage(parts,clear=false){
 		/* Рендер страницы компонентами */
 		const _ = this;
-		
 		let
 			gSet = _.f('#g-set');
 		if(clear)	_.clear(gSet);
-		
 		for(let part of parts){
 			if(G.parts[part['part']]){
 				for(let content of G.parts[part['part']]['content']){
@@ -109,10 +106,9 @@ export class G extends G_G{
 				}
 			}
 			G.parts[part['part']] = part;
-			
 			if(part['parent']) {
 				if(gSet.querySelector(`${part['parent']}`))
-				gSet =  gSet.querySelector(`${part['parent']}`)
+				gSet =	gSet.querySelector(`${part['parent']}`)
 			}
 			gSet.append(...part['content']);
 		}
@@ -136,8 +132,7 @@ export class G extends G_G{
 		template.remove();
 		template = null;
 	}
-  init(){
-    const _ = this;
-  }
-
+	init(){
+		const _ = this;
+	}
 }

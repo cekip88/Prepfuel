@@ -3,6 +3,12 @@ import {G} from "../../../../libs/G.js";
 import { Model } from "./model.js";
 
 export class DashboardModule extends G{
+	async asyncDefine(){
+		const _ = this;
+		_.set({
+			dashSchedule: await Model.getDashSchedule()
+		});
+	}
 	define() {
 		const _ = this;
 		_.componentName = 'Dashboard';
@@ -17,15 +23,13 @@ export class DashboardModule extends G{
 			'name': module
 		});
 		let tpl = innerModule.render();
-		_.renderPart({part:'header',content: _.markup(_.header.render('simple'),false)});
+		_.renderPart({part:'header',content: _.markup(G.blocks.get('header').render('simple'),false)});
 		_.renderPart({part:'header-tabs',content: []});
 		_.renderPart({part:'dashboard-tabs',content: []});
 		_.renderPart({part:'body',content: _.markup(tpl,false)});
 	}
 	async init() {
 		const _ = this;
-		let schedules = await Model.getSchedules();
-		Model.getSchedule(schedules[0]['_id']);
 		//6284be308e932a712a707192
 	}
 	render(blocks){
