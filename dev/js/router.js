@@ -95,7 +95,7 @@ export class router {
 			if(!outRoute){
 			
 				if(!location.pathname != '/login'){
-					location.href='/login';
+					//location.href='/login';
 				}
 				return {
 					'module': 'login',

@@ -18,6 +18,7 @@ export const view = {
 	},
 	scheduleBlock(){
 		const _ = this;
+		if(!_._$.dashSchedule['practiceTest']) return void 0;
 		let
 			practiceDate = new Date(_._$.dashSchedule['practiceTest']['date']),
 			testDate = new Date(_._$.dashSchedule['test']['date']),
