@@ -139,10 +139,18 @@ import GSelect from "../../components/select/select.component.js";
 	if(!navigator.serviceWorker.controller) location.reload();
 })()
 
-/*setTimeout(function (){
-	G_Bus.trigger('modaler','showModal', {type:'html',target:'#schedule-result'});
-},100)*/
 
+let pops = [];
+//pops = ['#reminder','#article','#finish'];
+//pops = ['.report','#schedule-result'];
+pops.forEach(function (ident){
+	let item = document.querySelector(ident);
+	if (item) {
+		setTimeout(function (){
+			G_Bus.trigger('modaler','showModal', {type:'html',target:ident});
+		},100)
+	}
+})
 
 
 new router().init({

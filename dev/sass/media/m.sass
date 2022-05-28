@@ -243,6 +243,7 @@ body
 		margin-left: 12px
 	&-link
 		margin-right: 10px
+		background-color: rgb($neutral-100)
 		&:last-child
 			margin-right: 0
 		&.active
@@ -251,8 +252,12 @@ body
 			color: rgb($blue)
 		&.done
 			background-color: rgb($green-light)
+			&.active
+				border-color: rgb($green)
 		&.error
 			background-color: rgb($red-light)
+			&.active
+				border-color: rgb($red)
 		&.done,&.error
 			span
 				display: none
@@ -954,6 +959,11 @@ body
 				color: rgb($red)
 				.test-result-img svg
 					fill: rgb($red)
+			&.gold
+				background-color: rgb($gold-light)
+				color: rgb($gold)
+				.test-result-img svg
+					fill: rgb($gold)
 		&-title
 			font-family: $p_semi
 			font-size: $fz15
@@ -1807,6 +1817,12 @@ body
 		color: rgb($neutral-600)
 		font-family: $p_reg
 		line-height: $fz24
+		&-cont
+			height: 70vh
+			max-height: 638px
+			padding: 24px
+			background-color: rgb($neutral-100)
+			overflow: auto
 	&-text,&-title,&-area,.check-list
 		margin-bottom: 24px
 	&-row

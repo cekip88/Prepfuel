@@ -5,7 +5,7 @@
 	--green: 131, 191, 110
 	--gap: 10px
 .inpt
-	+wh(100%)
+	+w(100%)
 	position: relative
 	display: inline-block
 	&.form-input
@@ -90,10 +90,12 @@
 		border-bottom-color: rgb(var(--green))
 	&-checkbox
 		display: none
-		&:checked+&-label:after
-			+wh(12px)
-			transform: scale(1)
-			background-color: rgb(54, 153, 255)
+		&:checked+&-label
+			&:after
+				+wh(20px)
+				transform: scale(1)
+			&:before
+				background-color: rgb(54, 153, 255)
 		&-label
 			position: relative
 			display: flex
@@ -105,7 +107,6 @@
 				font-family: "Roboto-Medium"
 			&:after,&:before
 				content: ''
-				transition: .35s ease
 				border-radius: 40px
 				transition: .35s ease
 			&:before
@@ -114,10 +115,11 @@
 				border-radius: 6px
 				background-color: rgb(245, 248, 250)
 			&:after
+				content: url("../../img/checkmark.svg")
 				transform: scale(.5)
 				position: absolute
-				left: 7px
-				top: 6px
+				left: 2px
+				top: 2px
 	&-radio
 		display: none
 		&:checked+&-label:after
