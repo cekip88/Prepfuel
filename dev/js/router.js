@@ -41,7 +41,6 @@ export class router {
 	}
 	async changePage(route){
 		const _ = this;
-		//return;
 		await _.getMe();
 		
 		_.currentPageRoute = await _.definePageRoute(route);

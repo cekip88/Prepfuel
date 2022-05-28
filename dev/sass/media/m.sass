@@ -2201,5 +2201,26 @@ body
 			+wh(18px)
 
 
+.tips
+	max-width: 652px
+	margin: 12px auto 0
+	&-list
+		margin-top: 20px
+		margin-bottom: 34px
+		&:last-child
+			margin-bottom: 0
+	&-item
+		@extend %dfa
+		margin-bottom: 14px
+		padding-bottom: 14px
+		border-bottom: 1px dashed rgb($neutral-400)
+		&-img
+			margin-right: 8px
+			svg
+				+wh(24px)
+				fill: rgb($blue)
+		&-text
+
+
 .hidden
 	display: none
