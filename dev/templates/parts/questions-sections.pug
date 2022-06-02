@@ -1,0 +1,21 @@
+.block.questions
+	h5.block-title.small
+		span Questions
+	.questions-nav
+		h6.questions-list-title Click on to go to the question
+		.questions-nav-list
+			button.questions-nav-btn.active Section Name
+			button.questions-nav-btn Section Name
+			button.questions-nav-btn Section Name
+			button.questions-nav-btn Section Name
+	.questions-cont
+		include ./questions-list
+		include ./questions-list
+		include ./questions-list
+		include ./questions-list
+		button.questions-button
+			svg
+				use(xlink:href='img/sprite.svg#arrow-bottom')
+			span Scroll for more
+			svg
+				use(xlink:href='img/sprite.svg#arrow-bottom')

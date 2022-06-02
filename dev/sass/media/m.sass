@@ -1738,6 +1738,8 @@ body
 			font-size: $fz12
 			font-family: $p_reg
 			color: rgb($neutral-700)
+			&:first-child
+				margin-top: 0
 		&:last-of-type
 			margin-bottom: auto
 	&-item
@@ -1764,6 +1766,28 @@ body
 			.questions-variant
 				background-color: rgb($red-light)
 				color: rgb($red)
+	&-nav
+		&-list
+			margin: 16px 0 24px
+			display: flex
+			justify-content: space-between
+			.questions-list-title
+				color: rgb($neutral-400)
+		&-btn
+			width: calc((100% - 90px) / 4)
+			text-align: left
+			font-size: $fz12
+			color: rgb($neutral-400)
+			font-family: $f_medium
+			line-height: $fz16
+			&:after
+				+af
+				+wh(100%,2px)
+				margin-top: 16px
+			&.active
+				color: rgb($neutral-800)
+				&:after
+					background-color: rgb($blue)
 	&-number
 		width: 20px
 		text-align: center
