@@ -1,20 +1,39 @@
 import {G_Bus} from "../../../../libs/G_Control.js";
 import {G} from "../../../../libs/G.js";
 import { Model } from "./model.js";
+import {StudentPage} from "../../student.page.js";
 
-export class DashboardModule extends G{
+export class DashboardModule extends StudentPage{
+	constructor(props) {
+		super(props);
+		this.moduleStructure = {
+			'header':'fullHeader',
+			'header-tabs':'studentTabs',
+			'body-tabs':'dashboardTabs',
+			'body':'dashboardBody',
+		};
+	}
+
+
 	async asyncDefine(){
 		const _ = this;
 		_.set({
 			dashSchedule: await Model.getDashSchedule()
 		});
 	}
+
+
 	define() {
 		const _ = this;
 		_.componentName = 'Dashboard';
-		G_Bus.on(_,['changeModule'])
+	//	G_Bus.on(_,['changeModule'])
+
+
+
+
+
 	}
-	async changeModule({item}){
+	/*async changeModule({item}){
 		const _ = this;
 		let
 			module = item.getAttribute('module');
@@ -25,21 +44,36 @@ export class DashboardModule extends G{
 		let tpl = innerModule.render();
 		_.renderPart({part:'header',content: _.markup(G.blocks.get('header').render('simple'),false)});
 		_.renderPart({part:'header-tabs',content: []});
-		_.renderPart({part:'dashboard-tabs',content: []});
+		_.renderPart({part:'body-tabs',content: []});
 		_.renderPart({part:'body',content: _.markup(tpl,false)});
-	}
+	}*/
 	async init() {
 		const _ = this;
 		//6284be308e932a712a707192
+
+	/*	_.updateStructure(
+			{
+				prop:'header',
+				id:'full-header'
+			});
+*/
+
+
+
 	}
-	render(blocks){
+/*	render(params){
 		const _ = this;
-		let initTpl = _.dashboardTpl();
-		_.header = blocks['header'];
-		_.fillPartsPage(	[
-			{ part:'dashboard-tabs', content:_.markup(_.dashboardTabsTpl(),false)},
+		//_.header = blocks['header'];
+
+	//	_.headerBlock = params['blocks']['header'];
+		_.fillModuleStucture();
+	/!*	_.fillPartsPage(	[
+			{ part:'body-tabs', content:_.markup(_.dashboardTabsTpl(),false)},
 			{ part:'body', content: _.markup(initTpl,false)}]
-		);
-	}
+		);*!/
+
+
+
+	}*/
 	
 }

@@ -1,0 +1,30 @@
+extends template/main
+append vars
+	-
+		page_title = 'Student - Bookmarks & Notes'
+block content
+	main
+		section.test
+			include ../img/sprite.svg
+			.section
+				.section-header
+					h1.title Bookmarked questions
+					.section-buttons
+						button.section-button.active
+							span All
+						button.section-button
+							span Test
+						button.section-button
+							span Practice
+						button.section-button
+							span Quiz
+						button.section-button
+							span Homework
+			.section
+				.block.test-block
+					table.table
+						thead
+							tr
+								th
+
+						tbody

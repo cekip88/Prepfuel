@@ -1,5 +1,8 @@
 export const view = {
-	dashboardTpl(params){
+
+
+
+	dashboardBody(params){
 		const _ = this;
 		return `
 			<div class="section">
@@ -9,7 +12,7 @@ export const view = {
 						Based on your test date, we'll put together a practice plan
 						to ensure you're ready for the real deal.
 					</p>
-					<button class="button-blue" data-click="${_.componentName}:changeModule;" module="schedule" ><span>Choose your practice schedule</span></button>
+					<button class="button-blue" data-click="StudentPage:changeSection;" section="/student/schedule" ><span>Choose your practice schedule</span></button>
 				</div>
 			</div>
 			${_.scheduleBlock()}
@@ -493,7 +496,7 @@ export const view = {
 			</div>
 		`;
 	},
-	dashboardTabsTpl(){
+	dashboardTabs(){
 		return `
 			<div class="subnavigate">
 				<div class="section">

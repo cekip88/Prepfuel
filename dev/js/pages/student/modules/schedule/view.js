@@ -1,5 +1,8 @@
 export const view = {
-	createscheduleTpl(){
+	header(){
+		return this.headerBlock.render('simple');
+	},
+	body(){
 		const _ = this;
 		return `
 			<section class="test">

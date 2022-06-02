@@ -7,7 +7,7 @@
 	&-button
 		&.active
 			padding: 8px 16px
-			border-radius: 6px
+			border-radius: 12px
 			background-color: rgb($neutral-800)
 			color: rgb($white)
 			&:after
@@ -47,10 +47,13 @@
 			background: none
 			color: rgb($neutral-800)
 	&-label
+		width: 0
 		height: 61px
+		display: block
 		border-radius: 12px 12px 0 0
 		background-color: rgb($white)
 		position: absolute
+		left: 0
 		bottom: 0
 		transition: .35s ease
 		&-left,&-right
@@ -71,8 +74,6 @@
 			right: -20px
 			&:before
 				border-bottom-left-radius: 12px
-.navigate-label
-	display: block
 
 .student
 	&-main

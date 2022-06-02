@@ -51,7 +51,7 @@ export const studentView = {
 			width = btn.clientWidth,
 			x = btn.offsetLeft,
 			label = list.querySelector('.navigate-label');
-		label.style = `display:block;width: ${width}px;left: ${x}px;`;
+		label.style = `opacity:1;width: ${width}px;left: ${x}px;`;
 	},
 	changeTab(btn,parentCls){
 		const _ = this;
@@ -68,7 +68,15 @@ export const studentView = {
 			if (list[i] === btn && tabsContainer.children[i]) tabsContainer.children[i].classList.add('active');
 		}
 	},
-	tabsTpl(){
+	simpleHeader(){
+		const _ = this;
+		return _.headerBlock.render('simple');
+	},
+	fullHeader(){
+		const _ = this;
+		return _.headerBlock.render('full');
+	},
+	studentTabs(){
 		const _ = this;
 		return `
 			<section class="navigate" data-active=".navigate-item:nth-child(1)" data-tabs=".dashboard-tabs">

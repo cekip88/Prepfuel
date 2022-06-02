@@ -107,9 +107,9 @@ export const view = {
 	
 	
 	/* Cacrass templates*/
-	async directionsCarcass(){
+	directionsCarcass(){
 		const _ = this;
-		return _.markup(`
+		return `
 			<div class="section">
 				<div class="section-header">
 					<h1 class="title">${Model.currentSection['directions'].headerTitle}</h1>
@@ -137,15 +137,15 @@ export const view = {
 					</div>
 				</div>
 			</div>
-		`,false);
+		`;
 	},
 	welcomeCarcass(){
 		const _ = this;
-		return	_.markup(`
+		return	`
 			<div class="section">
 				<div class="section-header">
 					<h1 class="title">${Model.currentSection['welcome'].headerTitle}</h1>
-					<button class="button-white">
+					<button class="button-white" data-click="StudentPage:changeSection" section="/student/tests">
 						<span>Don’t start this section now</span>
 					</button>
 				</div>
@@ -170,11 +170,11 @@ export const view = {
 					</div>
 				</div>
 			</div>
-		`,false);
+		`;
 	},
 	async questionsCarcass(){
 		const _ = this;
-		return	_.markup(`
+		return	`
 		 ${await _.questionHeader()}
 		 <div class="section row">
 				<div class="col wide">
@@ -229,7 +229,7 @@ export const view = {
 					</div>
 				</form>
 			</div>
-		`,false);
+		`;
 	},
 
 	/* Cacrass templates*/
@@ -324,12 +324,30 @@ export const view = {
 			</button>
 		</div>`;
 	},
+
+	questionsListNavTabs(){
+		const _ = this;
+		let tpl = `
+			<div class="questions-nav">
+				<h6 class="questions-list-title">Click on to go to the question</h6>
+				<div class="questions-nav-list">`,
+			sections = Model.test.sections;
+		for (let i = 0; i < sections.length; i++) {
+			let section = sections[i];
+			tpl += `<button class="questions-nav-btn${i === 0 ? ' active' : ''}">${section.sectionName}</button>`
+		}
+		tpl += `
+				</div>
+			</div>`;
+		return tpl;
+	},
 	questionsList(){
 		const _ = this;
 		let tpl =	`
 			<div class="col narrow">
 				<div class="block questions">
 				<h5 class="block-title small"><span>Questions</span></h5>
+				${_.questionsListNavTabs()}
 				<div class="questions-cont">
 					<h6 class="questions-list-title"><span>Question 1 - ${_.questionsLength}</span></h6>
 					<ul class="questions-list">
@@ -801,7 +819,9 @@ export const view = {
 			</div>
 		`;
 	},
-	testFirstScreenTpl(){
+
+
+	testsBody(){
 		const _ = this;
 		//${_.testScoreHeaderTpl()}
 		return `

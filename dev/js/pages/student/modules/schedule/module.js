@@ -1,8 +1,18 @@
 import { G_Bus }    from "../../../../libs/G_Control.js";
 import { G }        from "../../../../libs/G.js";
 import { Model }    from "./model.js";
+import {StudentPage} from "../../student.page.js";
 
-export class ScheduleModule extends G{
+export class ScheduleModule extends StudentPage{
+	constructor() {
+		super();
+		this.moduleStructure = {
+			'header':'simple-header',
+			'header-tabs': null,
+			//'body-tabs':'dashboard-tabs',
+			'body':'schedule-body',
+		};
+	}
 	define(){
 		const _ = this;
 		_.componentName = 'Schedule';
@@ -154,8 +164,5 @@ export class ScheduleModule extends G{
 			_.f('#daysPerWeek').textContent = _._$.daysPerWeek.length;
 			_.f('#totalQuestionsCnt').textContent = _._$.daysPerWeek.length * _._$.numberOfQuestions;
 		}, ["daysPerWeek",'numberOfQuestions']);
-	}
-	render(){
-		return this.createscheduleTpl();
 	}
 }

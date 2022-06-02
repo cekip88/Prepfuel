@@ -89,7 +89,7 @@ export default class G_G{
 			}
 		})
 	}
-	defineInitMethod(props){
+/*	defineInitMethod(props){
 		const _ = this;
 		return new Promise( (resolve) =>{
 			if(!( (props?.init ?? 'init') in _) ){
@@ -98,7 +98,7 @@ export default class G_G{
 				resolve(_[props?.init ?? 'init']());
 			}
 		})
-	}
+	}*/
 
 
 	set(state){
@@ -190,7 +190,7 @@ export default class G_G{
 	async start(props){
 		const _ = this;
 		await _.defineDefineMethod(props);
-		await _.defineInitMethod(props);
+		//await _.defineInitMethod(props);
 		await _.update();
 		_.initedUpdate = true;
 	}

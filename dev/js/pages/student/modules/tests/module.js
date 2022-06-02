@@ -3,10 +3,16 @@ import { G }        from "../../../../libs/G.js";
 import { Model }    from "./model.js";
 import Modaler        from "../../../../components/modaler/modaler.component.js";
 import GInput         from "../../../../components/input/input.component.js";
-export class TestsModule extends G{
+import {StudentPage} from "../../student.page.js";
+export class TestsModule extends StudentPage{
 	constructor() {
 		super();
 		const _ = this;
+		_.moduleStructure = {
+			'header':'fullHeader',
+			'header-tabs': 'studentTabs',
+			'body':'testsBody',
+		};
 	}
 	async asyncDefine(){
 		const _ = this;
@@ -230,6 +236,11 @@ export class TestsModule extends G{
 	async changeSection({item,event}){
 		const _ = this;
 		let section = item.getAttribute('section');
+		_.moduleStructure = {
+			'header':'simpleHeader',
+			'body': _.flexible(section),
+		};
+
 		if(section == 'score') {
 			if(!Model.isFinished()){
 				await _.saveAnswerToDB();
@@ -249,8 +260,8 @@ export class TestsModule extends G{
 				Model.getTestResultsByResultId();
 			}*/
 		}
+
 		_._$.currentSection = section;
-		_.renderPart({part:'body',content: await _.flexible(section)});
 		if(section == 'questions'){
 			_.fillCheckedAnswers();
 			if(Model.isFinished()){
@@ -258,6 +269,9 @@ export class TestsModule extends G{
 				_.markCorrectAnswer();
 			}
 		}
+
+		_.render();
+
 	}
 	changeQuestion({ item, event }){
 		const _ = this;
@@ -460,18 +474,18 @@ export class TestsModule extends G{
 		const _ = this;
 		return await _[`${_.types[_._$.currentQuestion['type']]}Question`]();
 	}
-	async flexible(section){
+	flexible(section){
 		const _ = this;
 		// welcome | directions | questions
-		return await _[`${section}Carcass`]();
+		return `${section}Carcass`;
 	}
-	async render(){
+/*	async render(){
 		const _ = this;
 		//_.header = await _.getBlock({name:'header'},'blocks');
 		_.fillPartsPage([
 			{ part:'body', content: _.markup(_.testFirstScreenTpl(),false)}
 		]);
-	}
+	}*/
 	async init(){
 		const _ = this;
 		

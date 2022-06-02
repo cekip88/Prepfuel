@@ -5,6 +5,27 @@ import GInput           from "../../components/input/input.component.js";
 import GModaler         from "../../components/modaler/modaler.component.js";
 
 class StudentPage extends G{
+	constructor() {
+		super();
+		this.pageStructure = {
+			'header':{
+				id:'',
+				container: document.createElement('g-header')
+			},
+			'header-tabs':{
+				id:'',
+				container: document.createElement('g-header-tabs')
+			},
+			'body-tabs':{
+				id:'',
+				container: document.createElement('g-body-tabs')
+			},
+			'body':{
+				id:'',
+				container: document.createElement('g-body')
+			},
+		};
+	}
 	define(){
 		const _ = this;
 /*		_.set({
@@ -12,12 +33,16 @@ class StudentPage extends G{
 		});
 		_.maxPage = 3;*/
 		_.componentName = 'StudentPage';
+
 		G_Bus
 			.on(_,['changeSection','navigate'])
-		
-
 	}
-	
+
+
+
+
+
+
 	navigate(clickData){
 		const _ = this;
 		let
@@ -32,9 +57,12 @@ class StudentPage extends G{
 		let
 			section = item.getAttribute('section'),
 			tpl = section.split('/')[2];
-
 		if(section) history.pushState(null, null, section);
-		G_Bus.trigger('router','changePage',section);
+
+		_.moduleRender([tpl]);
+
+
+		//G_Bus.trigger('router','changePage',section);
 		//_.renderPart({part:'body',content: _.markup(_[`${tpl}Tpl`](),false)});
 	}
 	showForm(id){
@@ -43,10 +71,32 @@ class StudentPage extends G{
 			target: `#${id}`
 		});
 	}
-	
-	async render(blockData){
+
+
+	async moduleRender(params){
 		const _ = this;
+		let module = await _.getModule({
+			'pageName':'student',
+			'name': params[0],
+			'structure':_.pageStructure
+		});
+		module.headerBlock = _.header;
+		module.render({
+			structure: _.pageStructure
+		});
+	}
+	async init(blockData){
+		const _ = this;
+		_.createPageStructure(_.pageStructure);
 		let
+			initTpl = '',
+			params = blockData['params'];
+		_.header = await _.getBlock({name:'header'},'blocks');
+		if(params.length > 0){
+			_.moduleRender(params);
+		}
+
+		/*let
 			initTpl = '',
 			params = blockData['params'];
 		_.header = await _.getBlock({name:'header'},'blocks')
@@ -64,14 +114,7 @@ class StudentPage extends G{
 				header: _.header
 			});
 		}
-		
-		_.navigationInit(document.querySelector('.navigate-list'));
-	}
-	
-	
-	init(){
-		const _ = this;
-//		console.log(G.modules);
+		_.navigationInit(_.f('.navigate-list'));*/
 	}
 	
 }

@@ -144,7 +144,7 @@ export class router {
 					_.pages.set(name, moduleName);
 				}
 				if('asyncDefine' in moduleName)	await moduleName.asyncDefine();
-				moduleName.render(blockData);
+				moduleName.init(blockData);
 				resolve(moduleName);
 			} catch(e) {
 				reject(e);
@@ -192,4 +192,5 @@ export class router {
 		//await _.getMe();
 		await _.changePage();
 	}
+
 }

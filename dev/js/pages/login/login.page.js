@@ -81,10 +81,7 @@ class LoginPage extends G{
 	resetFail({response}){
 		this.handleErrors({response});
 	}
-	async init(){
-		const _ = this;
-	}
-	async render(blockData){
+	async init(blockData){
 		const _ = this;
 		let initTpl = _.loginTpl();
 		let params = blockData['params'];
