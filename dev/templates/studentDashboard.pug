@@ -23,10 +23,31 @@ block content
 					include parts/recent-achievements
 					include parts/skills
 			div.hidden
-				.schedule-result.new.modal#schedule-result(slot='modal-item')
-					.schedule-result-icon
-						svg
-							use(xlink:href='#calendar')
-					.schedule-result-right
-						h5.schedule-result-title Practice Schedule Created!
-						p.schedule-result-text Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.
+				.modal.modal-blue-cont#schedule-result(slot='modal-item')
+					.modal-blue.new
+						.modal-blue-icon
+							svg
+								use(xlink:href='#calendar')
+						.modal-blue-right
+							h5.modal-blue-title Practice Schedule Created!
+							p.modal-blue-text Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.
+				.modal.modal-blue-cont#reminder(slot='modal-item')
+					.modal-blue.new
+						.modal-blue-icon
+							svg
+								use(xlink:href='#graphic-3')
+						.modal-blue-right
+							h5.modal-blue-title Skill Practice: Verbal
+							p.modal-blue-text Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.
+					.modal-title
+						.modal-title-icon
+							svg
+								use(xlink:href='#bell')
+						span Today’s reminder
+					.modal-blue.new
+						.modal-blue-icon
+							svg
+								use(xlink:href='#graphic-4')
+						.modal-blue-right
+							h5.modal-blue-title Skill Practice: Mathematics
+							p.modal-blue-text Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.

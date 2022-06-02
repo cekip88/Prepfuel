@@ -243,6 +243,7 @@ body
 		margin-left: 12px
 	&-link
 		margin-right: 10px
+		background-color: rgb($neutral-100)
 		&:last-child
 			margin-right: 0
 		&.active
@@ -251,8 +252,12 @@ body
 			color: rgb($blue)
 		&.done
 			background-color: rgb($green-light)
+			&.active
+				border-color: rgb($green)
 		&.error
 			background-color: rgb($red-light)
+			&.active
+				border-color: rgb($red)
 		&.done,&.error
 			span
 				display: none
@@ -516,80 +521,38 @@ body
 
 
 .schedule
+	&-list
+		display: flex
 	&-item
-		@extend %df
-		align-items: flex-start
-		&:not(:last-child)
-			margin-bottom: 20px
 		.icon
 			@extend %dfc
-			+wh(40px)
+			@extend %fdc
+			+wh(90px)
 			padding: 5px
-			border-radius: 12px
-			background-color: rgb($neutral-100)
+			position: relative
 			svg
-				fill: rgb($blue)
+				+wh(100%)
+				position: absolute
+				top: 0
+				left: 0
+				stroke: rgb($orange)
+				circle
+					stroke-width: 5px
+					r: 40
+					fill: none
+					stroke-dashoffset: -167
 			&.blue
-				background-color: rgb($blue-text)
 				svg
-					fill: rgb($white)
+					stroke: rgb($blue)
+			&.green
+				svg
+					stroke: rgb($green)
 		.info
-			margin-left: 10px
-			&-item
-				@extend %df
-				align-items: flex-start
-			&-icon
-				margin-right: 4px
-				svg
-					+wh(22px)
-					display: block
-					fill: rgb($blue)
-			&-text
-				margin-top: 4px
-				font-family: $p_medium
-				color: rgb($neutral-400)
+			text-align: center
 	&-title
-		font-size: $fz20
+		text-align: center
+		font-size: $fz16
 		font-family: $p_semi
-	&-result
-		margin-top: 85px
-		padding: 16px
-		display: flex
-		background-color: rgb($blue-light)
-		border-radius: 6px
-		&:after
-			+wh(100%,2px)
-			+af
-			background-color: rgb($neutral-200)
-			position: absolute
-			left: 0
-			top: 75px
-		&-icon
-			margin-right: 16px
-			&,svg
-				+wh(32px)
-			svg
-				fill: rgb($blue)
-		&-title
-			margin-bottom: 4px
-			font-weight: 600
-			color: rgb($neutral-800)
-			font-size: $fz16
-		&-text
-			color: rgb($neutral-600)
-			font-size: $fz16
-		&.new
-			.schedule
-				&-result-icon
-					position: relative
-					&:after
-						+af
-						+wh(8px)
-						border-radius: 100%
-						background-color: rgb($red)
-						position: absolute
-						top: 0
-						left: 0
 
 
 .calendar
@@ -996,6 +959,11 @@ body
 				color: rgb($red)
 				.test-result-img svg
 					fill: rgb($red)
+			&.gold
+				background-color: rgb($gold-light)
+				color: rgb($gold)
+				.test-result-img svg
+					fill: rgb($gold)
 		&-title
 			font-family: $p_semi
 			font-size: $fz15
@@ -1430,7 +1398,6 @@ body
 			height: 356px
 
 
-
 .skill
 	&-level
 		&-list
@@ -1771,6 +1738,8 @@ body
 			font-size: $fz12
 			font-family: $p_reg
 			color: rgb($neutral-700)
+			&:first-child
+				margin-top: 0
 		&:last-of-type
 			margin-bottom: auto
 	&-item
@@ -1797,6 +1766,28 @@ body
 			.questions-variant
 				background-color: rgb($red-light)
 				color: rgb($red)
+	&-nav
+		&-list
+			margin: 16px 0 24px
+			display: flex
+			justify-content: space-between
+			.questions-list-title
+				color: rgb($neutral-400)
+		&-btn
+			width: calc((100% - 90px) / 4)
+			text-align: left
+			font-size: $fz12
+			color: rgb($neutral-400)
+			font-family: $f_medium
+			line-height: $fz16
+			&:after
+				+af
+				+wh(100%,2px)
+				margin-top: 16px
+			&.active
+				color: rgb($neutral-800)
+				&:after
+					background-color: rgb($blue)
 	&-number
 		width: 20px
 		text-align: center
@@ -1831,15 +1822,31 @@ body
 
 
 .modal
-	width: 95vw
+	width: 90vw
 	&-title
+		@extend %dfa
 		padding: 4px 0
 		font-family: $p_semi
 		color: rgb($neutral-900)
+		&-icon
+			@extend %dfc
+			+wh(32px)
+			margin-right: 12px
+			border-radius: 8px
+			background-color: rgb($blue-light)
+			svg
+				+wh(20px)
+				fill: rgb($blue)
 	&-text
 		color: rgb($neutral-600)
 		font-family: $p_reg
 		line-height: $fz24
+		&-cont
+			height: 70vh
+			max-height: 638px
+			padding: 24px
+			background-color: rgb($neutral-100)
+			overflow: auto
 	&-text,&-title,&-area,.check-list
 		margin-bottom: 24px
 	&-row
@@ -1862,6 +1869,52 @@ body
 	iframe
 		width: 100%
 		height: 180px
+	&-blue
+		margin-top: 16px
+		padding: 16px
+		display: flex
+		background-color: rgb($blue-light)
+		border-radius: 6px
+		&:first-child
+			margin-top: 0
+		&:after
+			+wh(100%,2px)
+			+af
+			background-color: rgb($neutral-200)
+			position: absolute
+			left: 0
+			top: 75px
+		&-icon
+			margin-right: 16px
+			&,svg
+				+wh(32px)
+			svg
+				fill: rgb($blue)
+		&-title
+			margin-bottom: 4px
+			font-weight: 600
+			color: rgb($neutral-800)
+			font-size: $fz16
+		&-text
+			color: rgb($neutral-600)
+			font-size: $fz16
+		&.new
+			.modal
+				&-blue-icon
+					position: relative
+					&:after
+						+af
+						+wh(8px)
+						border-radius: 100%
+						background-color: rgb($red)
+						position: absolute
+						top: 0
+						left: 0
+		&-cont
+			padding-top: 85px
+			.modal-title
+				position: absolute
+				top: 25px
 
 
 .check
@@ -2170,6 +2223,27 @@ body
 	&-btn
 		svg
 			+wh(18px)
+
+
+.tips
+	max-width: 652px
+	margin: 12px auto 0
+	&-list
+		margin-top: 20px
+		margin-bottom: 34px
+		&:last-child
+			margin-bottom: 0
+	&-item
+		@extend %dfa
+		margin-bottom: 14px
+		padding-bottom: 14px
+		border-bottom: 1px dashed rgb($neutral-400)
+		&-img
+			margin-right: 8px
+			svg
+				+wh(24px)
+				fill: rgb($blue)
+		&-text
 
 
 .hidden

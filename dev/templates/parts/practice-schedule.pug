@@ -8,50 +8,35 @@
 			span Edit
 	ul.schedule-list
 		li.schedule-item
+			h5.schedule-title
+				span Next Practice
 			.icon
 				svg
-					use(xlink:href='img/sprite.svg#tablet')
-			.info
-				h5.schedule-title
-					span Next Practice
-				.info-item
-					.info-icon
-						svg
-							use(xlink:href='img/sprite.svg#clock')
-					.info-text
-						span Monday March 14, 5:00 PM
-				.info-item
-					.info-icon
-						svg
-							use(xlink:href='img/sprite.svg#questions')
-					.info-text
-						span 10 questions (15 minutes)
+					circle(stroke-dasharray="25 250" stroke-linecap="round" cx="50%" cy="50%")
+				span 1
+				.info
+					i Day
+					span until next practice
 		li.schedule-item
-			.icon
-				svg
-					use(xlink:href='img/sprite.svg#badge')
-			.info
-				h5.schedule-title
-					span Next Practice Test
-				.info-item
-					.info-icon
-						svg
-							use(xlink:href='img/sprite.svg#clock')
-					.info-text
-						span Saturday March 26
-		li.schedule-item
+			h5.schedule-title
+				span Next Practice Test
 			.icon.blue
 				svg
-					use(xlink:href='img/sprite.svg#badge')
-			.info
-				h5.schedule-title
-					span Your ISEE Date
-				.info-item
-					.info-icon
-						svg
-							use(xlink:href='img/sprite.svg#clock')
-					.info-text
-						span 79 days until test, Saturday May 7
+					circle(stroke-dasharray="25 250" stroke-linecap="round" cx="50%" cy="50%")
+				span 10
+				.info
+					i Days
+					span until next practice test
+		li.schedule-item
+			h5.schedule-title
+				span Your ISEE Date
+			.icon.green
+				svg
+					circle(stroke-linecap="round" cx="50%" cy="50%")
+				span 79
+				.info
+					i Days
+					span until ISEE test
 	button.hidden-show(data-click='showHidden')
 		.hidden-show-text
 			span Open calendar

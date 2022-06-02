@@ -1,0 +1,64 @@
+extends template/main
+append vars
+	-
+		page_title = 'Student - Practice'
+block content
+	main
+		section.test
+			include ../img/sprite.svg
+			.section
+				.section-header
+					h1.title Math basics: Converting between decimals, fractions, and percents
+					button.button-white
+						span Exit this review
+			.section
+				.block.test-block
+					.test-header
+						h5.block-title.test-title
+							span Complete
+					.test-inner
+						h5.block-title.test-title
+							span You finished Verbal Reasoning
+						p.test-text Description text about rules at the real test - if there will be break or not etc.
+						.test-result
+							.test-result-block.half.violet
+								h6.test-result-title
+									span Questions Answered
+								p.test-result-score 3
+							.test-result-block.half.turquoise
+								h6.test-result-title
+									span Questions Correct
+								p.test-result-score 2
+							.test-result-block.half.gold
+								h6.test-result-title
+									span Stars for section of the Test
+								p.test-result-score +150
+								.test-result-img
+									svg
+										use(xlink:href='#stars')
+									svg
+										use(xlink:href='#stars')
+									svg
+										use(xlink:href='#stars')
+							.test-result-block.blue.half
+								h6.test-result-title
+									span Skill Level: Converting between decimals, fractions, and percents
+								p.test-result-score 3
+								.test-result-img.solo
+									svg
+										use(xlink:href='#graphic-3')
+					.test-footer
+						.pagination.pagination-top
+							.pagination-info
+								span Jump to a question:
+							.pagination-links
+								a(href='./practice-question-1.html').pagination-link.done
+									span 1
+								a(href='./practice-check-wrong.html').pagination-link.error
+									span 2
+								a(href='./practice-check-correct.html').pagination-link.done
+									span 3
+						a(href='./practice-review-correct.html').test-footer-back
+							span Exit this Practice
+						a(href='./practice-review-correct.html').button-blue
+							span Review your answers

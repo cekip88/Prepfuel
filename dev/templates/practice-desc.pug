@@ -26,7 +26,7 @@ block content
 								button.practice-desc-item-button(data-id='video' data-click='showModal')
 									.img
 										svg
-											use(xlink:href='#play-icon')
+											use(xlink:href='#video-clip')
 									.desc
 										h6.desc-title Section, concept
 										span.desc-text Video
@@ -34,7 +34,7 @@ block content
 								button.practice-desc-item-button(data-id='video' data-click='showModal')
 									.img
 										svg
-											use(xlink:href='#play-icon')
+											use(xlink:href='#video-clip')
 									.desc
 										h6.desc-title Section, concept
 										span.desc-text Video
@@ -55,5 +55,19 @@ block content
 										h6.desc-title Section, concept
 										span.desc-text Video
 					.test-footer
-						a(href='./quiz-question-1.html').button-blue
+						a(href='./practice-directions.html').button-blue
 							span Start skill practice
+			section.hidden
+				.modal.narrow(slot='modal-item')#video-lesson
+					h5.modal-title Title of the video
+					.modal-text Watch Paul work through a section
+					iframe()
+				.modal.narrow(slot='modal-item')#article
+					h5.modal-title Tilte of the article
+					.modal-text-cont
+						.modal-text Nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt aliquip deserunt reprehenderit elit laborum.
+						.modal-text Aliqua id fugiat nostrud irure ex duis ea quis id quis ad et. Sunt qui esse pariatur duis deserunt mollit dolore cillum minim tempor enim. Elit aute irure tempor cupidatat incididunt sint deserunt ut voluptate aute id deserunt nisi.
+						.modal-text Nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt aliquip deserunt reprehenderit elit laborum.
+						.modal-text Aliqua id fugiat nostrud irure ex duis ea quis id quis ad et. Sunt qui esse pariatur duis deserunt mollit dolore cillum minim tempor enim. Elit aute irure tempor cupidatat incididunt sint deserunt ut voluptate aute id deserunt nisi.
+						.modal-text Nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt aliquip deserunt reprehenderit elit laborum.
+						.modal-text Aliqua id fugiat nostrud irure ex duis ea quis id quis ad et. Sunt qui esse pariatur duis deserunt mollit dolore cillum minim tempor enim. Elit aute irure tempor cupidatat incididunt sint deserunt ut voluptate aute id deserunt nisi.
