@@ -30,10 +30,11 @@ export class _Model{
 				method: 'GET',
 				headers:_.baseHeaders
 			});
-			if(rawResponse.status == 200){
+			if(rawResponse.status <= 210){
 				let response = await rawResponse.json();
-				console.log(response);
 				resolve(response['response']);
+			}else{
+				resolve({});
 			}
 		});
 	}

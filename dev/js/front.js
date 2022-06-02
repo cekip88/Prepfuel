@@ -176,3 +176,31 @@ new router().init({
 		}
 	},
 });
+
+
+
+window.MathJax = {
+	loader: {load: ['input/asciimath']},
+	startup: {
+		pageReady: function () {
+			let
+				renderer = MathJax.startup.document.menu.settings.renderer,
+				menu = MathJax.startup.document.menu.menu,
+				item = (menu.getPool ? menu.getPool() : menu.pool).lookup('renderer');
+			if (renderer !== 'CHTML') item.setValue(renderer);
+			return MathJax.startup.defaultPageReady();
+		}
+	},
+	tex: {
+		inlineMath: [['$', '$'], ['\\(', '\\)']],
+		processEscapes: true
+	}
+};
+
+//
+//  Load MathJax
+//
+var script = document.createElement('script');
+script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+script.setAttribute('id', 'MathJax-script');
+document.head.appendChild(script);

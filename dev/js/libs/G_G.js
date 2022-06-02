@@ -10,7 +10,7 @@ export default class G_G{
 		_.stateName = Symbol('state');
 		let validator = {
 			get:(target,key) =>{
-				if (typeof target[key] === 'object') {
+				if (typeof target[key] === 'object' && !_.isNull(target[key])) {
 					if(!target['isProxy']){
 						target['isProxy'] = false;
 						return new Proxy(target[key], validator)
@@ -21,16 +21,23 @@ export default class G_G{
 				return target[key];
 			},
 			set:(t,p,v)=>{
+			
 				Reflect.set(t,p,v);
 				if(!_.deepEqual(t,_.tempObj)){
 					_.tempObj = Object.assign({},t);
 				}
+				
 				_.update([p]);
 				return true;
 			}
 		}
+		
 		_[_.stateName] = new Proxy({},validator);
 		_.start(props);
+	}
+	isNull(value){
+		const _ =this;
+		return value === null;
 	}
 	isObjects(obj1,obj2){
 		return (typeof obj1 === 'object') && (typeof obj2 === 'object');
@@ -148,12 +155,6 @@ export default class G_G{
 			});
 		}
 		if( (!props)  ){
-			/*_[_.handlersName].forEach( fnObj => {
-				for(let innerProp in fnObj) {
-
-					fnObj[innerProp]();
-				}
-			});*/
 			return void 0;
 		}
 		_[_.handlersName].forEach( fnObj => {
@@ -165,9 +166,7 @@ export default class G_G{
 				}
 			}
 		});
-
 		//
-
 	}
 	_(fn,deps = []){
 		const _ = this;

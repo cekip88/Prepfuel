@@ -71,7 +71,7 @@ class StudentPage extends G{
 	
 	init(){
 		const _ = this;
-		console.log(G.modules);
+//		console.log(G.modules);
 	}
 	
 }

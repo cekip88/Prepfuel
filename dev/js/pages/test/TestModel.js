@@ -7,7 +7,7 @@ class _TestModel{
 			"Content-Type": "application/json"
 		}
 		_.endpoints = {
-			tests: `${env.backendUrl}/practice-tests`,
+			tests: `${env.backendUrl}/tests`,
 			create: `${env.backendUrl}/practice-test-results/create`,
 			results: `${env.backendUrl}/practice-test-results`,
 			resultsBy: `${env.backendUrl}/practice-tests/get-test-by-result/`,

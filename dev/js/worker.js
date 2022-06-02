@@ -1,4 +1,4 @@
-let cacheBD = 'staticV8';
+let cacheBD = 'staticV9';
 self.addEventListener('install', event=>{
 	console.log('Installed');
 	event.waitUntil(self.skipWaiting())
@@ -18,7 +18,7 @@ self.addEventListener('install', event=>{
 			//	'/libs/G.js',
 			//	'/libs/G_Bus.js',
 			//	'/libs/G_Control.js',
-				'/libs/G_G.js',
+			//	'/libs/G_G.js',
 			//	'/front.js',
 			//	'/mixins.js',
 			//	'/router.js',
@@ -49,11 +49,18 @@ self.addEventListener('fetch', event => {
 		const cachedResponse = await caches.match(event.request);
 		if (cachedResponse) return cachedResponse;
 		let request = event.request;
-		const newRequest = new Request(request, {
-	
-			credentials: "include"
-		});
-		newRequest['credentials'] = 'include';
-		return fetch(newRequest);
+		
+		let newR;
+		
+		if(request.url.match('localhost') || request.url.match('prepfuel') ){
+			const newRequest = new Request(request, {
+				credentials: "include"
+			});
+			newRequest['credentials'] = 'include';
+			newR = newRequest;
+		}else{
+			newR = new Request(request);
+		}
+		return fetch(newR);
 	}());
 });

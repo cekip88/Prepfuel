@@ -7,13 +7,13 @@ class _Model{
 			"Content-Type": "application/json"
 		}
 		_.endpoints = {
-			tests: `${env.backendUrl}/practice-tests`,
+			tests: `${env.backendUrl}/tests`,
 			create: `${env.backendUrl}/practice-test-results/create`,
 			results: `${env.backendUrl}/practice-test-results`,
 			resultsBy: `${env.backendUrl}/practice-tests/get-test-by-result/`,
 		};
-		
 		_.testStatus = 'in progress';
+		_.currentSectionPos = 0;
 	}
 	async getTests(testId){
 		const _ = this;
@@ -24,9 +24,8 @@ class _Model{
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
-				console.log(response);
 				if(response['status'] == 'success'){
-					resolve(response);
+					resolve(response['tests']);
 				}
 			}else{
 				_.logout(rawResponse);
@@ -42,9 +41,9 @@ class _Model{
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
-				console.log(response);
 				if(response['status'] == 'success'){
 					_.test = response['test'];
+					_.catchCurrentQuestion(_.test);
 					_.catchQuestions(_.test);
 					resolve(_.test);
 				}
@@ -185,7 +184,7 @@ class _Model{
 	
 	get firstQuestion(){
 		const _ = this;
-		return _.test['sections']['questionPages'][0];
+		return _.currentSection['subSections'][0]['questionDatas'][0];
 	}
 	
 	
@@ -197,15 +196,20 @@ class _Model{
 	catchQuestions(test){
 		const _ = this;
 		_.questions = {};
-		test['sections']['questionPages'].forEach((page,i) => {
+		_.currentSection['subSections'][0]['questionDatas'].forEach((page,i) => {
 			page['questions'].forEach(quest =>{
-				_.questions[quest['id']] = quest;
+				_.questions[quest['_id']] = quest;
 			});
 		});
 	}
+	catchCurrentQuestion(test){
+		const _ = this;
+		_.currentSection = test['sections'][_.currentSectionPos];
+	}
+	
 	currentPage(pos){
 		const _ = this;
-		return _.test['sections']['questionPages'][pos];
+		return _.currentSection['subSections'][0]['questionDatas'][pos];
 	}
 	innerQuestion(id){
 		const _ = this;
@@ -214,24 +218,25 @@ class _Model{
 	questionPos(pos){
 		const _ = this;
 		let outPos = 1;
+		//console.log(_.currentSection['subSections'][0]['questionDatas']);
 		for(let i=0;i < pos;i++){
-			outPos+= _.test['sections']['questionPages'][i]['questions'].length;
+			outPos+= _.currentSection['subSections'][0]['questionDatas'][i].questions.length;
 		}
 		return outPos;
 	}
 	currentPos(id){
 		const _ = this;
 		let index = -1;
-		_.test['sections']['questionPages'].forEach((page,i) => {
+		_.currentSection['subSections'][0]['questionDatas'].forEach((page,i) => {
 			page['questions'].forEach(quest =>{
-				if( quest['id'] == id ) index = page['pageId']-1;
+				if( quest['_id'] == id ) index = i;//page['pageId']-1;
 			});
 		});
-		if(index < 0){
-			_.test['sections']['questionPages'].forEach((page,i) => {
+	/*	if(index < 0){
+			_.currentSection['subSections'][0]['questionDatas'].forEach((page,i) => {
 				if(page['pageId'] == id) index = i;
 			});
-		}
+		}*/
 		return index;
 	}
 	logout(response){

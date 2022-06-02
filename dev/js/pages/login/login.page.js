@@ -88,8 +88,10 @@ class LoginPage extends G{
 		const _ = this;
 		let initTpl = _.loginTpl();
 		let params = blockData['params'];
-		if(params.length > 0){
-			initTpl = _[`${params[0]}Tpl`](params);
+		if(params){
+			if(params.length > 0){
+				initTpl = _[`${params[0]}Tpl`](params);
+			}
 		}
 		_.welcomeTpl(initTpl);
 	}
