@@ -333,14 +333,16 @@ export class TestsModule extends StudentPage{
 		let handle = async (answer)=>{
 			return Promise.resolve(await Model.saveAnswer({
 				answer:{
-					sectionName: Model.currentSection['sectionName'],
-					subSectionName: Model.currentSection['subSections'][0]['subSectionName'],
-					questionDatasId: _._$.currentQuestion['_id'],
-					questionId: answer['questionId'],
-					answer: answer['answer'],
-					disabledAnswers: answer['disabledAnswers'],
-					note: answer['note'],
-					report: answer['report']
+					"answer":{
+						sectionName: Model.currentSection['sectionName'],
+						subSectionName: Model.currentSection['subSections'][0]['subSectionName'],
+						questionDatasId: _._$.currentQuestion['_id'],
+						questionId: answer['questionId'],
+						answer: answer['answer'],
+						disabledAnswers: answer['disabledAnswers'],
+						note: answer['note'],
+						report: answer['report']
+					}
 				}
 			}))
 		}

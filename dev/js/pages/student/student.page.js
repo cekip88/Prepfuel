@@ -37,12 +37,6 @@ class StudentPage extends G{
 		G_Bus
 			.on(_,['changeSection','navigate'])
 	}
-
-
-
-
-
-
 	navigate(clickData){
 		const _ = this;
 		let
@@ -96,25 +90,6 @@ class StudentPage extends G{
 			_.moduleRender(params);
 		}
 
-		/*let
-			initTpl = '',
-			params = blockData['params'];
-		_.header = await _.getBlock({name:'header'},'blocks')
-		let parts = [
-			{ part:'header', content:_.markup(_.header.render('full'),false)},
-		];
-		parts.push(	{ part:'header-tabs', content:_.markup(_.tabsTpl(),false)});
-		_.fillPartsPage(parts,true);
-		if(params.length > 0){
-			let module = await _.getModule({
-				'pageName':'student',
-				'name': params[0]
-			});
-			initTpl = module.render({
-				header: _.header
-			});
-		}
-		_.navigationInit(_.f('.navigate-list'));*/
 	}
 	
 }

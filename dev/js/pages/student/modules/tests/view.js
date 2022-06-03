@@ -674,9 +674,9 @@ export const view = {
 			</div>
 		`;
 	},
-	tempTestListTpl() {
+	tempTestListTpl(){
 		const _ = this;
-		console.log(Model.test);
+		//console.log(Model.test);
 		return `
 			<div class="section">
 				<div class="block test-row">
@@ -685,20 +685,19 @@ export const view = {
 						<div class="test-tabs-body">
 							<h5 class="block-title test-title"><span>Start ${Model.test['title']}</span></h5>
 							<p class="test-text"><span>After completing a section, you can stop or review</span></p>
-							<ul class="test-pick-list">
+							<ul class="test-pick-list shsat">
 								<li class="test-pick-item green">
 									<div class="test-pick-time"><span>${Model.test['testTime']}</span><span>min</span></div>
-									<div class="test-pick-desc">
-										<h6 class="test-pick-title">
-											<strong>${Model.test.sections[0]['sectionName']}</strong>
-											<span>${Model.test.sections[0]['subSections'][0]['questionDatas'].length} questions</span>
-										</h6>
-										<h6 class="test-pick-title">
-											<strong>${Model.test.sections[1]['sectionName']}</strong>
-											<span>${Model.test.sections[1]['subSections'][0]['questionDatas'].length} questions</span>
-										</h6>
-										<!--<p class="text">40 questions</p>-->
-									</div>
+									<ul class="test-pick-desc">
+										<li class="test-pick-desc-item">
+											<h6 class="test-pick-title">${Model.test.sections[0]['sectionName']}</h6>
+											<p class="text">${Model.test.sections[0]['subSections'][0]['questionDatas'].length} questions</p>
+										</li>
+										<li class="test-pick-desc-item">
+											<h6 class="test-pick-title">${Model.test.sections[1]['sectionName']}</h6>
+											<p class="text">${Model.test.sections[1]['subSections'][0]['questionDatas'].length} questions</p>
+										</li>
+									</ul>
 									<button class="button" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="welcome"><span>Start this test</span></button>
 								</li>
 							</ul>

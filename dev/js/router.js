@@ -26,7 +26,6 @@ export class router {
 	}
 	async getMe(){
 		const _ = this;
-		if(_.user) return _.user;
 		let rawResponse = await fetch(_.endpoints['me'],{
 			..._.baseHeaders,
 			method: 'GET'
@@ -45,10 +44,12 @@ export class router {
 		
 		_.currentPageRoute = await _.definePageRoute(route);
 		
+		//console.log(_.currentPageRoute,route);
+		
 		_.clearComponents();
 	
 		let currentPage = await _.includePage(_.currentPageRoute);
-
+		
 		
 	}
 	async definePageRoute(route){
@@ -61,7 +62,7 @@ export class router {
 			params = pathParts;
 		let role = _.role;
 		let middles = Object.keys(_.middleware),
-				currentMiddleware = ['guest'];
+				currentMiddleware = [];
 		if(middles){
 			for(let middle of middles){
 				if(middle.indexOf(role) > -1){
@@ -71,6 +72,8 @@ export class router {
 		}
 		_.routes  = {};
 		_.routesValues = [];
+		
+		
 		for(let role of currentMiddleware){
 			let
 				rs = _.middleware[role]['routes'],
@@ -90,16 +93,16 @@ export class router {
 				}
 			}
 			if(!outRoute){
-			
 				if(!location.pathname != '/login'){
+					
 					//location.href='/login';
 				}
+				history.pushState(null, null, '/login');
 				return {
 					'module': 'login',
 					'params': null
 				}
 			}else{
-				
 				pathName = difRoute;
 				return {
 					'module': _.routes[`${pathName}`],
