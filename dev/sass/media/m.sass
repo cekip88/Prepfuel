@@ -1119,6 +1119,15 @@ body
 	&-pick
 		&-list
 			margin-bottom: 55px
+			&.shsat
+				.test
+					&-pick
+						&-desc
+							padding-left: 20px
+							&-item
+								list-style: disc
+						&-time
+							height: initial
 		&-item
 			@extend %df
 			margin-top: 16px
@@ -1127,6 +1136,7 @@ body
 			flex-wrap: wrap
 			.button
 				width: 100%
+				height: 42px
 				margin-top: 12px
 				padding: 12px 20px
 				color: rgb($white)
@@ -1649,7 +1659,6 @@ body
 		width: 100%
 		margin-bottom: 16px
 		padding-right: 8px
-		flex-wrap: wrap
 		border-radius: 12px
 		&.active
 			background-color: rgb($blue-light)
@@ -1713,19 +1722,21 @@ body
 		@extend %dfa
 		font-family: $p_reg
 	&-value
-		+w(235px)
 		color: rgb($neutral-900)
 		font-size: $fz13
 		text-align: left
 	&-variant
 		@extend %dfc
 		+wh(24px)
+		flex: 0 0 24px
 		margin-right: 12px
 		border-radius: 100%
 		border: 2px solid rgb($blue-text)
 		text-transform: uppercase
 		color: rgb($blue-text)
 	&-wrong
+		width: 16px
+		flex: 0 0 16px
 		border-radius: 100%
 		svg
 			+wh(16px)
@@ -1819,7 +1830,7 @@ body
 				display: none
 	&-button
 		@extend %dfa
-		margin: 0 auto
+		margin: 20px auto 0
 		padding: 4px 8px
 		background-color: rgb($blue)
 		border-radius: 8px 8px 0 0

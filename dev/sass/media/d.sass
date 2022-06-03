@@ -184,6 +184,8 @@
 			span:after
 				background-color: rgb($neutral-400)
 	&-pick
+		&-cont
+			min-height: calc(100vh - 190px)
 		&-item
 			.button
 				&:hover
@@ -218,6 +220,12 @@
 					&:hover
 						border: 1px solid rgb($brown)
 						color: rgb($brown)
+		&-time
+			margin-top: 0
+	&-tabs
+		.test-text
+			font-size: $fz12
+			color: rgb($neutral-400)
 
 
 .questions,.test-block
@@ -280,7 +288,6 @@
 				transform: scale(1.15)
 				fill: rgb($white)
 	&-value
-		+w(270px)
 		padding: 10px 5px
 		font-size: $fz16
 
