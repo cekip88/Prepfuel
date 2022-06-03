@@ -237,15 +237,15 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		let pos = item.getAttribute('data-section-pos');
 		Model.changeSectionPos(parseInt(pos));
-		Model.catchCurrentQuestion(Model.test);
 		_._$.currentQuestion = _.questionsPages[0];
 		
-		let questionCont = _.f('.qq-ii');
+		let questionCont = _.f('.questions-list');
 		_.clear(questionCont);
 		questionCont.append(_.markup(_.questionsList()));
-		
 		_.f('.questions-nav-list .active').classList.remove('active')
 		item.classList.add('active')
+		
+		_.f('.questions-length')
 		
 	}
 	async changeSection({item,event}){
@@ -290,7 +290,7 @@ export class TestsModule extends StudentPage{
 		
 
 	}
-	changeQuestion({ item, event }){
+	async changeQuestion({ item, event }){
 		const _ = this;
 		let dir = item.getAttribute('data-dir');
 		let index = _.currentPos;
@@ -302,13 +302,13 @@ export class TestsModule extends StudentPage{
 			_._$.currentQuestion= _.questionsPages[index-1];
 		}else{
 			if( index == _.questionsPages.length-1){
-				//_.saveAnswerToDB();
+				await _.saveAnswerToDB();
 				Model.finishTest({});
 				Model.getTestResultsByResultId();
 				return void 0;
 			}
 			if(!Model.isFinished()){
-		//		_.saveAnswerToDB();
+				await _.saveAnswerToDB();
 			}
 			_.currentPos+=1;
 			_._$.currentQuestion= _.questionsPages[index+1];
@@ -328,13 +328,14 @@ export class TestsModule extends StudentPage{
 	}
 	async saveAnswerToDB(){
 		const _ = this;
-		return void 0;
-		_.currentQuestion = Model.innerQuestion(_.questionPos);
+		_.currentQuestion = _._$.currentQuestion['questions'][0];// Model.innerQuestion(_.questionPos);
 		_.currentPage = Model.currentPage(_.currentPos);
 		let handle = async (answer)=>{
 			return Promise.resolve(await Model.saveAnswer({
 				answer:{
-					questionPageId: _.currentPage['pageId'],
+					sectionName: Model.currentSection['sectionName'],
+					subSectionName: Model.currentSection['subSections'][0]['subSectionName'],
+					questionDatasId: _._$.currentQuestion['_id'],
 					questionId: answer['questionId'],
 					answer: answer['answer'],
 					disabledAnswers: answer['disabledAnswers'],
@@ -347,19 +348,18 @@ export class TestsModule extends StudentPage{
 			if(_.currentPage['questions'].length > 1){
 				for(let i=0; i < _.currentPage['questions'].length;i++){
 					let quest = _.currentPage['questions'][i];
-					let answer = _.storageTest[quest['id']];
+					let answer = _.storageTest[quest['_id']];
 					if(!answer){
-						let bookmarkedButton = _.f(`.bookmarked-button[data-question-id="${quest['id']}"]`);
+						let bookmarkedButton = _.f(`.bookmarked-button[data-question-id="${quest['_id']}"]`);
 						_.saveBookmark({
 							item: bookmarkedButton
 						});
 						continue;
 					}
 					await handle(answer);
-					console.log(i);
 				}
 			}else{
-				let answer = _.storageTest[_.currentQuestion['id']];
+				let answer = _.storageTest[_.currentQuestion['_id']];
 				if(answer){
 					// if user choosed answer save it to db
 					handle(answer);

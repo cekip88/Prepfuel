@@ -47,11 +47,8 @@ export class router {
 		
 		_.clearComponents();
 	
-	//	if(!_.pages.has(_.currentPageRoute['module'])){
 		let currentPage = await _.includePage(_.currentPageRoute);
-	//	}else{
-		
-	//	}
+
 		
 	}
 	async definePageRoute(route){

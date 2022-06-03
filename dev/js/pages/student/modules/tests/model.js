@@ -86,6 +86,7 @@ class _Model{
 		if(answer){
 			answer['status'] = 'in progress';
 		}
+		console.log(answer);
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['results']}/${_.test['resultId']}`,{
 				method: 'PUT',
@@ -125,7 +126,6 @@ class _Model{
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
-				
 				G_Bus.trigger('TestPage','showResults',response)
 				_.testServerAnswers = response['result']['answers'];
 				_.testStatus = response['result']['status'];
@@ -186,31 +186,31 @@ class _Model{
 	
 	changeSectionPos(pos=0){
 		this.currentSectionPos = pos;
+		this.refreshModelTest();
 	}
 	
-	get firstQuestion(){
+	get firstQuestion() {
 		const _ = this;
 		return _.currentSection['subSections'][_.currentSectionPos]['questionDatas'][0];
 	}
-	
-	
 	refreshModelTest(){
 		const _ = this;
-		_.catchQuestions(_.test);
+		_.catchQuestions();
+		_.catchCurrentQuestion();
 	}
-	
-	catchQuestions(test){
+	catchQuestions(){
 		const _ = this;
 		_.questions = {};
-		_.currentSection['subSections'][_.currentSectionPos]['questionDatas'].forEach((page,i) => {
+		//console.log(_.currentSection,_.currentSectionPos);
+		_.currentSection['subSections'][0]['questionDatas'].forEach((page,i) => {
 			page['questions'].forEach(quest =>{
 				_.questions[quest['_id']] = quest;
 			});
 		});
 	}
-	catchCurrentQuestion(test){
+	catchCurrentQuestion(){
 		const _ = this;
-		_.currentSection = test['sections'][_.currentSectionPos];
+		_.currentSection = _.test['sections'][_.currentSectionPos];
 	}
 	
 	currentPage(pos){
@@ -219,6 +219,7 @@ class _Model{
 	}
 	innerQuestion(id){
 		const _ = this;
+		console.log(_.questions);
 		return _.questions[id];
 	}
 	questionPos(pos){
@@ -249,8 +250,8 @@ class _Model{
 		if(response.status == 401){
 			localStorage.removeItem('g-route-prev')
 			localStorage.removeItem('g-route-current')
-			localStorage.removeItem('token');
-			G_Bus.trigger('router','changePage','/login');
+		//	localStorage.removeItem('token');
+		//	G_Bus.trigger('router','changePage','/login');
 		}
 	}
 	

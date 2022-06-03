@@ -345,7 +345,7 @@ export const view = {
 	questionsList(){
 		const _ = this;
 		let
-			tpl = `<ul class="questions-list">`,
+			tpl = ``,
 			cnt = 1;
 		for(let questionPage of _.questionsPages){
 			for(let question of questionPage['questions']){
@@ -365,7 +365,6 @@ export const view = {
 				`;
 			}
 		}
-		tpl+=`</ul>`;
 		return tpl;
 	},
 	questionsListCont(){
@@ -376,9 +375,10 @@ export const view = {
 				<h5 class="block-title small"><span>Questions</span></h5>
 				${Model.test.testStandard == "SHSAT" ? _.questionsListNavTabs() : ''}
 				<div class="questions-cont">
-					<h6 class="questions-list-title"><span>Question 1 - ${_.questionsLength}</span></h6>
-					<div class="qq-ii">
+					<h6 class="questions-list-title"><span>Question 1 - <i class="questions-length">${_.questionsLength}</i></span></h6>
+					<ul class="questions-list">
 						${_.questionsList()}
+					</ul>
 			</div>
 				<button class="questions-button" data-click="${this.componentName}:scrollForMore">
 					<svg>
