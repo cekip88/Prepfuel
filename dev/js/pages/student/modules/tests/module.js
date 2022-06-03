@@ -34,7 +34,7 @@ export class TestsModule extends StudentPage{
 		G_Bus.on(_,[
 			'isGrid','showResults','showSummary','changeSection','setWrongAnswer','setCorrectAnswer','changeQuestion',
 			'jumpToQuestion','jumpToQuestion','saveBookmark','saveNote','changeInnerQuestionId','showForm','deleteNote',
-			'editNote','showTestLabelModal','startTimer','updateStorageTest','saveReport'
+			'editNote','showTestLabelModal','startTimer','updateStorageTest','saveReport','changeTestSection'
 		]);
 		//TestModel = new TestModel();
 		_.isLastQuestion = false;
@@ -42,7 +42,7 @@ export class TestsModule extends StudentPage{
 		_.types = {
 			'text only':'standart',
 			'text and images':'graphic',
-			3:'passage',
+			'passage':'passage',
 			4:'compare',
 			'grid in':'grid'
 		};
@@ -194,9 +194,8 @@ export class TestsModule extends StudentPage{
 		});
 		G_Bus.trigger(_.componentName,'updateStorageTest')
 		let question = Model.innerQuestion(_.innerQuestionId);
-	
 		// Add note after answer list
-		let answerList = _.f(`.answer-list[data-question-id="${question['id']}"]`);
+		let answerList = _.f(`.answer-list[data-question-id="${question['_id']}"]`);
 		if(answerList.nextElementSibling) {
 			if(answerList.nextElementSibling.classList.contains('note-block')){
 				answerList.nextElementSibling.remove();
@@ -205,7 +204,7 @@ export class TestsModule extends StudentPage{
 		answerList.after(_.markup(_.noteTpl(question)));
 		G_Bus.trigger('modaler','closeModal');
 		// Show active note button
-		_.f(`.note-button[data-question-id="${question['id']}"]`).classList.add('active');
+		_.f(`.note-button[data-question-id="${question['_id']}"]`).classList.add('active');
 		// Нижнего переднего рычага задний сайлентблоки
 	}
 	
@@ -233,6 +232,22 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		_.innerQuestionId = item.getAttribute('data-question-id');
 	}
+	
+	changeTestSection({item}) {
+		const _ = this;
+		let pos = item.getAttribute('data-section-pos');
+		Model.changeSectionPos(parseInt(pos));
+		Model.catchCurrentQuestion(Model.test);
+		_._$.currentQuestion = _.questionsPages[0];
+		
+		let questionCont = _.f('.qq-ii');
+		_.clear(questionCont);
+		questionCont.append(_.markup(_.questionsList()));
+		
+		_.f('.questions-nav-list .active').classList.remove('active')
+		item.classList.add('active')
+		
+	}
 	async changeSection({item,event}){
 		const _ = this;
 		let section = item.getAttribute('section');
@@ -252,16 +267,18 @@ export class TestsModule extends StudentPage{
 		}
 		if(section == 'directions') {
 			// start of test
-	/*		let started = await Model.start();
+			let started = await Model.start();
 			if(!started) return void 0;
 			let results = await Model.getTestResults();
 			if(results['status'] === 'finished'){
 				section = 'score';
 				Model.getTestResultsByResultId();
-			}*/
+			}
 		}
 
+		
 		_._$.currentSection = section;
+		await _.render();
 		if(section == 'questions'){
 			_.fillCheckedAnswers();
 			if(Model.isFinished()){
@@ -270,7 +287,7 @@ export class TestsModule extends StudentPage{
 			}
 		}
 
-		_.render();
+		
 
 	}
 	changeQuestion({ item, event }){
@@ -306,7 +323,7 @@ export class TestsModule extends StudentPage{
 		if(currentQuestionPos == jumpQuestionPos) return void 0;
 		_.currentPos = jumpQuestionPos;
 		
-		console.log(_.questionsPages[jumpQuestionPos]);
+		//console.log(_.questionsPages[jumpQuestionPos]);
 		_._$.currentQuestion = _.questionsPages[jumpQuestionPos];
 	}
 	async saveAnswerToDB(){
@@ -479,22 +496,13 @@ export class TestsModule extends StudentPage{
 		// welcome | directions | questions
 		return `${section}Carcass`;
 	}
-/*	async render(){
-		const _ = this;
-		//_.header = await _.getBlock({name:'header'},'blocks');
-		_.fillPartsPage([
-			{ part:'body', content: _.markup(_.testFirstScreenTpl(),false)}
-		]);
-	}*/
 	async init(){
 		const _ = this;
-		
 		_._( async ()=>{
 			let cont = _.f('.tt-ii');
 			if(!cont) return;
 			_.clear(cont);
 			_.questionPos = Model.questionPos(_.currentPos);
-			
 			cont.append(
 				_.markup(await _.getQuestionTpl()),
 				_.markup(_.questionFooter())

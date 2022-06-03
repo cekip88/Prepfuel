@@ -8,12 +8,14 @@ class _Model{
 		}
 		_.endpoints = {
 			tests: `${env.backendUrl}/tests`,
-			create: `${env.backendUrl}/practice-test-results/create`,
-			results: `${env.backendUrl}/practice-test-results`,
-			resultsBy: `${env.backendUrl}/practice-tests/get-test-by-result/`,
+			create: `${env.backendUrl}/tests-results/create`,
+			results: `${env.backendUrl}/tests-results`,
+		//	resultsBy: `${env.backendUrl}/tests/get-test-by-result/`,
 		};
 		_.testStatus = 'in progress';
-		_.currentSectionPos = 0;
+		_.currentSectionPos = 0;// Section position in array section list
+		
+//		_.sectionPos = 0;
 	}
 	async getTests(testId){
 		const _ = this;
@@ -182,9 +184,13 @@ class _Model{
 		});
 	}
 	
+	changeSectionPos(pos=0){
+		this.currentSectionPos = pos;
+	}
+	
 	get firstQuestion(){
 		const _ = this;
-		return _.currentSection['subSections'][0]['questionDatas'][0];
+		return _.currentSection['subSections'][_.currentSectionPos]['questionDatas'][0];
 	}
 	
 	
@@ -196,7 +202,7 @@ class _Model{
 	catchQuestions(test){
 		const _ = this;
 		_.questions = {};
-		_.currentSection['subSections'][0]['questionDatas'].forEach((page,i) => {
+		_.currentSection['subSections'][_.currentSectionPos]['questionDatas'].forEach((page,i) => {
 			page['questions'].forEach(quest =>{
 				_.questions[quest['_id']] = quest;
 			});

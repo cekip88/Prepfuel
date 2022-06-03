@@ -4,8 +4,8 @@ export const view = {
 	noteTpl(question){
 		const _ = this;
 		let tpl = ``;
-		if(!_.storageTest[question['id']]) return tpl;
-		if(_.storageTest[question['id']].note) {
+		if(!_.storageTest[question['_id']]) return tpl;
+		if(_.storageTest[question['_id']].note) {
 			tpl = `<div class="test-label-block note-block">
 				<div class="test-label-icon">
 					<svg>
@@ -14,7 +14,7 @@ export const view = {
 				</div>
 				<div class="test-label-text">
 					<p>
-						${_.storageTest[question['id']].note}
+						${_.storageTest[question['_id']].note}
 					</p>
 				</div>
 				<button class="test-label-button" data-click="${this.componentName}:showTestLabelModal">
@@ -23,8 +23,8 @@ export const view = {
 					</svg>
 				</button>
 				<div class="test-label-modal">
-					<button class="test-label-modal-button" data-click="${this.componentName}:editNote" data-question-id="${question['id']}"><span>Edit</span></button>
-					<button class="test-label-modal-button" data-click="${this.componentName}:deleteNote" data-question-id="${question['id']}"><span>Delete</span></button>
+					<button class="test-label-modal-button" data-click="${this.componentName}:editNote" data-question-id="${question['_id']}"><span>Edit</span></button>
+					<button class="test-label-modal-button" data-click="${this.componentName}:deleteNote" data-question-id="${question['_id']}"><span>Delete</span></button>
 				</div>
 			</div>`;
 		}
@@ -183,7 +183,8 @@ export const view = {
 							${_.questionFooter()}
 					</div>
 				</div>
-				${_.questionsList()}
+					${_.questionsListCont()}
+				</div>
 			</div>
 		 <div hidden>
 				<form class="modal report" slot="modal-item" id="report" data-submit="${_.componentName}:saveReport">
@@ -319,7 +320,7 @@ export const view = {
 			<button class="test-footer-button dir-button" data-click="${this.componentName}:changeSection" section="directions">
 				<span>Directions</span>
 			</button>
-			<button class="button skip-to-question-button" data-click="${this.componentName}:changeQuestion">
+			<button class="button skip-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="next">
 				<span><em class="skip-to-question-title">Skip to questions</em> <b class="skip-to-question">2</b></span>
 			</button>
 		</div>`;
@@ -334,7 +335,7 @@ export const view = {
 			sections = Model.test.sections;
 		for (let i = 0; i < sections.length; i++) {
 			let section = sections[i];
-			tpl += `<button class="questions-nav-btn${i === 0 ? ' active' : ''}">${section.sectionName}</button>`
+			tpl += `<button class="questions-nav-btn${i === 0 ? ' active' : ''}"  data-section-pos="${i}"  data-click="${_.componentName}:changeTestSection" >${section.sectionName}</button>`
 		}
 		tpl += `
 				</div>
@@ -343,16 +344,9 @@ export const view = {
 	},
 	questionsList(){
 		const _ = this;
-		let tpl =	`
-			<div class="col narrow">
-				<div class="block questions">
-				<h5 class="block-title small"><span>Questions</span></h5>
-				${_.questionsListNavTabs()}
-				<div class="questions-cont">
-					<h6 class="questions-list-title"><span>Question 1 - ${_.questionsLength}</span></h6>
-					<ul class="questions-list">
-		`;
-		let cnt = 1;
+		let
+			tpl = `<ul class="questions-list">`,
+			cnt = 1;
 		for(let questionPage of _.questionsPages){
 			for(let question of questionPage['questions']){
 				tpl+=`
@@ -371,8 +365,21 @@ export const view = {
 				`;
 			}
 		}
-		tpl+=`
-			</ul>
+		tpl+=`</ul>`;
+		return tpl;
+	},
+	questionsListCont(){
+		const _ = this;
+		let tpl =	`
+			<div class="col narrow">
+				<div class="block questions">
+				<h5 class="block-title small"><span>Questions</span></h5>
+				${Model.test.testStandard == "SHSAT" ? _.questionsListNavTabs() : ''}
+				<div class="questions-cont">
+					<h6 class="questions-list-title"><span>Question 1 - ${_.questionsLength}</span></h6>
+					<div class="qq-ii">
+						${_.questionsList()}
+			</div>
 				<button class="questions-button" data-click="${this.componentName}:scrollForMore">
 					<svg>
 						<use xlink:href="#arrow-bottom"></use>
@@ -400,8 +407,9 @@ export const view = {
 	},
 	gridQuestion(){
 		const _ = this;
-		let currentQuestion = _._$.currentQuestion['questions'][0];
-		let tpl =	`
+		let
+			currentQuestion = _._$.currentQuestion['questions'][0],
+			tpl =	`
 			<div class="test-header">
 				<h5 class="block-title test-title"><span>Question ${_.questionPos} of ${_.questionsLength}</span></h5>
 				${_.actionsTpl(_._$.currentQuestion['questions'][0])}
@@ -415,13 +423,13 @@ export const view = {
 			}
 		}
 		tpl+=`
-					<p class="test-text">
-						<span>${currentQuestion['mathFormula']}</span>
-					</p>
-					<p class="test-text">
-						<span>${currentQuestion['questionText']}</span>
-					</p>
-					<br><br>
+			<p class="test-text">
+				<span>${currentQuestion['title']}</span>
+			</p>
+			<p class="test-text">
+				<span>${currentQuestion['questionText']}</span>
+			</p>
+			<br><br>
 			</div>
 				<div class="test-col narrow grid">
 			<div class="grid-row">
@@ -488,7 +496,7 @@ export const view = {
 							<p class="test-text">${_._$.currentQuestion['columnRight']}</p>
 						</div>
 					</div>
-					<ul class="answer-list" data-question-id="${currentQuestion['id']}">`;
+					<ul class="answer-list" data-question-id="${currentQuestion['_id']}">`;
 		for(let answer in	currentQuestion['answers']){
 			tpl+=await _.answerTpl(currentQuestion,answer);
 		}
@@ -527,7 +535,6 @@ export const view = {
 	},
 	async graphicQuestion(){
 		const _ = this;
-		
 		let
 			currentQuestion = _._$.currentQuestion['questions'][0],
 		tpl= `
@@ -552,7 +559,7 @@ export const view = {
 					</div>
 					<p class="test-text"><span>${currentQuestion['title']}</span></p>
 					<p class="test-text"><span>${text}</span></p>
-					<ul class="answer-list" data-question-id="${currentQuestion['id']}">
+					<ul class="answer-list" data-question-id="${currentQuestion['_id']}">
 				`;
 		for(let answer in	currentQuestion['answers']){
 			tpl+=await _.answerTpl(currentQuestion,answer);
@@ -566,28 +573,29 @@ export const view = {
 	},
 	async passageQuestion(){
 		const _ = this;
+		
 		let tpl= `
 			<div class="test-inner test-row">
 				<div class="test-col">
 					<div class="test-left">
-						<p class="test-left-text">${_._$.currentQuestion['title']}</p>
-						<p class="test-left-text">${_._$.currentQuestion['textPassage']}</p>
+						<p class="test-left-text">${_._$.currentQuestion['passageType']}</p>
+						<p class="test-left-text">${_._$.currentQuestion['passageText']}</p>
 					</div>
 				</div>
 				<div class="test-col">
 					<div class="test-right">
-						<p class="test-text">${_._$.currentQuestion['description']}</p>
+						<p class="test-text">${_._$.currentQuestion['passageType']}</p>
 				`;
 		let cnt = 0;
 		for(let question of _._$.currentQuestion['questions']){
 			tpl+= `
 					<div class="test-sec">
 					<div class="test-header">
-						<h5 class="block-title test-title"><span>Question ${Model.questionPos(_.currentPos)+cnt++} of 40</span></h5>
+						<h5 class="block-title test-title"><span>Question ${Model.questionPos(_.currentPos)+cnt++} of ${_.questionsLength}</span></h5>
 						${_.actionsTpl(question)}
 					</div>
-					<p class="test-text"><span>${question['questionText']}</span></p>
-					<ul class="answer-list" data-question-id="${question['id']}">`;
+					<p class="test-text"><span>${question['title']}</span></p>
+					<ul class="answer-list" data-question-id="${question['_id']}">`;
 			for(let answer in question['answers']){
 				let ans = question['answers'][answer];
 				tpl+= await _.answerTpl(question,answer);
@@ -621,7 +629,7 @@ export const view = {
 				<p class="test-text">
 					${text}
 				</p>
-			<ul class="answer-list" data-question-id="${currentQuestion['id']}">
+			<ul class="answer-list" data-question-id="${currentQuestion['_id']}">
 		`;
 		for(let answer in	currentQuestion['answers']){
 			tpl+=await _.answerTpl(currentQuestion,answer)
@@ -668,6 +676,7 @@ export const view = {
 	},
 	tempTestListTpl() {
 		const _ = this;
+		console.log(Model.test);
 		return `
 			<div class="section">
 				<div class="block test-row">
@@ -677,13 +686,20 @@ export const view = {
 							<h5 class="block-title test-title"><span>Start ${Model.test['title']}</span></h5>
 							<p class="test-text"><span>After completing a section, you can stop or review</span></p>
 							<ul class="test-pick-list">
-								<li class="test-pick-item red">
+								<li class="test-pick-item green">
 									<div class="test-pick-time"><span>${Model.test['testTime']}</span><span>min</span></div>
 									<div class="test-pick-desc">
-										<h6 class="test-pick-title">${Model.test['testType']}</h6>
+										<h6 class="test-pick-title">
+											<strong>${Model.test.sections[0]['sectionName']}</strong>
+											<span>${Model.test.sections[0]['subSections'][0]['questionDatas'].length} questions</span>
+										</h6>
+										<h6 class="test-pick-title">
+											<strong>${Model.test.sections[1]['sectionName']}</strong>
+											<span>${Model.test.sections[1]['subSections'][0]['questionDatas'].length} questions</span>
+										</h6>
 										<!--<p class="text">40 questions</p>-->
 									</div>
-									<button class="button" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="welcome"><span>Start this section</span></button>
+									<button class="button" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="welcome"><span>Start this test</span></button>
 								</li>
 							</ul>
 						</div>

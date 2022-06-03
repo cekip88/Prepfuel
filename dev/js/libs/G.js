@@ -67,6 +67,7 @@ export class G extends G_G{
 				if('asyncDefine' in moduleName)	await moduleName.asyncDefine();
 			//	G.modules.set(name, moduleName);
 				moduleName['pageStructure'] = blockData['structure'];
+				moduleName.init();
 				resolve(moduleName);
 			} catch(e) {
 				reject(e);
