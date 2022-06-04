@@ -34,7 +34,7 @@ export class TestsModule extends StudentPage{
 		G_Bus.on(_,[
 			'isGrid','showResults','showSummary','changeSection','setWrongAnswer','setCorrectAnswer','changeQuestion',
 			'jumpToQuestion','jumpToQuestion','saveBookmark','saveNote','changeInnerQuestionId','showForm','deleteNote',
-			'editNote','showTestLabelModal','startTimer','updateStorageTest','saveReport','changeTestSection'
+			'editNote','showTestLabelModal','startTimer','updateStorageTest','saveReport','changeTestSection','enterGridAnswer'
 		]);
 		//TestModel = new TestModel();
 		_.isLastQuestion = false;
@@ -487,6 +487,38 @@ export class TestsModule extends StudentPage{
 		if(_.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${currentTestObj['answer']}"]`)){
 			_.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${currentTestObj['answer']}"]`).classList.add('active');
 		}
+	}
+
+	enterGridAnswer({item,event}){
+		const _ = this;
+		let btn = event.target;
+		if (btn.tagName !== 'BUTTON') return;
+
+		let
+			col = btn.closest('.grid-col'),
+			parent = col.parentElement,
+			index = 0;
+
+		for (let i = 0; i < parent.childElementCount; i++) {
+			let unit = parent.children[i];
+			if (unit === col) index = i;
+		}
+
+		let
+			input = item.querySelector('#grid-value'),
+			shower = item.querySelector('.grid-input');
+
+		shower.children[index].textContent = btn.textContent;
+		input.value = '';
+		for (let i = 0; i < shower.childElementCount; i++) {
+			input.value += (shower.children[i].textContent ?? '*');
+		}
+
+		let activeBtn = item.querySelector(`.grid-col:nth-child(${index + 1}) .active`);
+		if (activeBtn) {
+			activeBtn.classList.remove('active');
+		}
+		btn.classList.add('active');
 	}
 	
 	async getQuestionTpl(){

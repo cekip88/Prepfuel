@@ -431,9 +431,16 @@ export const view = {
 			</p>
 			<br><br>
 			</div>
-				<div class="test-col narrow grid">
+				<div class="test-col narrow grid" data-click="TestPage:enterGridAnswer">
 			<div class="grid-row">
-				<input class="grid-input" type="text" disabled="">
+				<input id="grid-value" type="hidden">
+				<div class="grid-input">
+				<span> </span>
+				<span> </span>
+				<span> </span>
+				<span> </span>
+				<span> </span>
+			</div>
 			</div>
 			<div class="grid-row">
 				<div class="grid-col">

@@ -1400,16 +1400,23 @@ body
 		@extend %dfi
 		flex-direction: column
 	&-input
+		@extend %dfa
 		+wh(100%,48px)
-		padding: 0 20px
+		justify-content: space-around
 		border-radius: 8px
 		border: 1px solid rgb($neutral-300)
+		span
+			@extend %dfc
+			+wh(32px)
 	&-button
 		@extend %dfc
 		+wh(32px)
 		border-radius: 6px
 		background-color: rgb($neutral-300)
 		color: rgb($neutral-600)
+		&.active
+			background-color: rgb($blue)
+			color: rgb($white)
 		&.high
 			height: 356px
 
