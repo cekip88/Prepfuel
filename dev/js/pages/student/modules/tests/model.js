@@ -10,32 +10,64 @@ class _Model{
 			tests: `${env.backendUrl}/tests`,
 			create: `${env.backendUrl}/tests-results/create`,
 			results: `${env.backendUrl}/tests-results`,
-		//	resultsBy: `${env.backendUrl}/tests/get-test-by-result/`,
+			resultsBy: `${env.backendUrl}/tests/test-by-result`,
 		};
 		_.testStatus = 'in progress';
-		_.currentSectionPos = 0;// Section position in array section list
-		
+		_.currentSectionPos = 0; // Section position in array section list
+		_.currentSubSectionPos = 0;
 //		_.sectionPos = 0;
 	}
-	async getTests(testId){
+	get currentSection(){
 		const _ = this;
+		return _.test['sections'][_.currentSectionPos];
+	}
+	get questions(){
+		const _ = this;
+		let questions = [];
+		for(let subSection of _.currentSection['subSections']){
+			subSection['questionDatas'].forEach((page,i) => {
+				page['questions'].forEach(quest =>{
+					//questions[quest['_id']] = quest;
+					questions.push(quest);
+				});
+			});
+		}
+		return questions;
+	}
+	get questionsDatas(){
+		const _ = this;
+		return _.currentSection['subSections']['questionsDatas'][_.currentSubSectionPos];
+	}
+	
+	async getTests(){
+		const _ = this;
+		// get all tests from Database
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(_.endpoints['tests'],{
 				method: 'GET',
 				headers:_.baseHeaders,
 			});
-			if(rawResponse.status == 200){
+			if(rawResponse.status < 210){
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
-					resolve(response['tests']);
+					_.tests = response['response'];
+					await Model.getTest();
+					resolve(_.tests);
 				}
 			}else{
-				_.logout(rawResponse);
+				G.trigger('TestPage','showResults',response);
 			}
 		});
 	}
-	async getTest(testId){
+	async getTest(){
 		const _ = this;
+		/*
+		*   Current test structure
+		*   {
+		*     _id title description testTime testType testStandard sections number
+		*   }
+		* */
+		let testId = _.tests[0]['_id']; // temp test id
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['tests']}/${testId}`,{
 				method: 'GET',
@@ -44,17 +76,26 @@ class _Model{
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
-					_.test = response['test'];
-					_.catchCurrentQuestion(_.test);
-					_.catchQuestions(_.test);
+					_.test = response['response'];
+					console.log(_.test);
 					resolve(_.test);
 				}
-			}else{
-				_.logout(rawResponse);
 			}
 		});
 	}
-	
+	changeSectionPos(pos=0){
+		this.currentSectionPos = pos;
+	}
+	get firstQuestion() {
+		const _ = this;
+		/*let question;
+		for(let questionId in _.questions){
+			question = _.questions[questionId];
+			break;
+		}
+		return question;*/
+		return  _.questions[0]; //_.currentSection['subSections'][_.currentSectionPos]['questionDatas'][0];
+	}
 	async start(){
 		const _ =this;
 		if(localStorage.getItem('resultId')){
@@ -69,9 +110,10 @@ class _Model{
 			if(rawResponse.status < 206){
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
-					_.test['resultId'] = response['resultId'];
-					localStorage.setItem('resultId', response['resultId']);
-					resolve(response['resultId']);
+					let resultId = response['response']['resultId'];
+					_.test['resultId'] = resultId;
+					localStorage.setItem('resultId', resultId);
+					resolve(resultId);
 				}
 			}else{
 				resolve(false);
@@ -86,7 +128,6 @@ class _Model{
 		if(answer){
 			answer['status'] = 'in progress';
 		}
-		console.log(answer);
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['results']}/${_.test['resultId']}`,{
 				method: 'PUT',
@@ -126,10 +167,11 @@ class _Model{
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
-				G_Bus.trigger('TestPage','showResults',response)
-				_.testServerAnswers = response['result']['answers'];
-				_.testStatus = response['result']['status'];
-				resolve(response['result']);
+				G_Bus.trigger('TestPage','showResults',response);
+				//console.log(response['response']);
+				_.testServerAnswers = response['response']['sections'][_.currentSectionPos]['subSections'][_.currentSubSectionPos]['answers'];
+				_.testStatus = response['response']['status'];
+				resolve(response['response']);
 			}
 		});
 	}
@@ -142,8 +184,8 @@ class _Model{
 			});
 			if(rawResponse.status < 206){
 				let response = await rawResponse.json();
-				let resultId = _.test['resultId']
-				_.test = response['test'];
+				let resultId = _.test['resultId'];
+				_.test = response['response'];
 				_.test['resultId'] = resultId;
 				_.refreshModelTest();
 			}
@@ -158,8 +200,8 @@ class _Model{
 			});
 			if(rawResponse.status < 206){
 				let response = await rawResponse.json();
-				G_Bus.trigger('TestPage','showSummary',response);
-				resolve(response)
+				G_Bus.trigger('TestPage','showSummary',response['response']);
+				resolve(response['response'])
 			}
 		});
 	}
@@ -178,49 +220,30 @@ class _Model{
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					_.testStatus = 'finished';
-					resolve(response);
+					resolve(response['response']);
 				}
 			}
 		});
 	}
 	
-	changeSectionPos(pos=0){
-		this.currentSectionPos = pos;
-		this.refreshModelTest();
+	currentQuestionPosById(questionId){
+		const _ = this;
+		let pos = _.questions.findIndex( question => {
+			return question['_id'] == questionId
+		} );
+		if(pos >= 0)	return pos;
+		return null;
 	}
 	
-	get firstQuestion() {
-		const _ = this;
-		return _.currentSection['subSections'][_.currentSectionPos]['questionDatas'][0];
-	}
-	refreshModelTest(){
-		const _ = this;
-		_.catchQuestions();
-		_.catchCurrentQuestion();
-	}
-	catchQuestions(){
-		const _ = this;
-		_.questions = {};
-		//console.log(_.currentSection,_.currentSectionPos);
-		_.currentSection['subSections'][0]['questionDatas'].forEach((page,i) => {
-			page['questions'].forEach(quest =>{
-				_.questions[quest['_id']] = quest;
-			});
-		});
-	}
-	catchCurrentQuestion(){
-		const _ = this;
-		_.currentSection = _.test['sections'][_.currentSectionPos];
-	}
 	
-	currentPage(pos){
+	
+	currentQuestionData(pos){
 		const _ = this;
-		return _.currentSection['subSections'][0]['questionDatas'][pos];
+		return _.currentSection['subSections'][_.currentSubSectionPos]['questionDatas'][pos];
 	}
-	innerQuestion(id){
+	innerQuestion(pos){
 		const _ = this;
-		console.log(_.questions);
-		return _.questions[id];
+		return _.questions[pos];
 	}
 	questionPos(pos){
 		const _ = this;
@@ -231,21 +254,7 @@ class _Model{
 		}
 		return outPos;
 	}
-	currentPos(id){
-		const _ = this;
-		let index = -1;
-		_.currentSection['subSections'][0]['questionDatas'].forEach((page,i) => {
-			page['questions'].forEach(quest =>{
-				if( quest['_id'] == id ) index = i;//page['pageId']-1;
-			});
-		});
-	/*	if(index < 0){
-			_.currentSection['subSections'][0]['questionDatas'].forEach((page,i) => {
-				if(page['pageId'] == id) index = i;
-			});
-		}*/
-		return index;
-	}
+
 	logout(response){
 		if(response.status == 401){
 			localStorage.removeItem('g-route-prev')

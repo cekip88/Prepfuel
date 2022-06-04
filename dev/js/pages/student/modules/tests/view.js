@@ -49,15 +49,20 @@ export const view = {
 					</button>
 				</li>`;
 		if(Model.isFinished()){
+			//console.log(Model);
+			
 			let
 				status = 'wrong',
 				answeredQuestion = Model.testServerAnswers[currentQuestionId],
 				currentQuestion = Model.questions[currentQuestionId];
-				if(answeredQuestion){
-					 if( (currentQuestion['correctAnswer'] !== answeredQuestion['answer']) && (answeredQuestion['answer'] == answer) ) {
+			if(answeredQuestion){
+				if( (currentQuestion['correctAnswer'] !== answeredQuestion['answer']) && (answeredQuestion['answer'] == answer) ) {
 						status = 'incorrect';
 					}
-				}
+			}
+			/*<p class="answer-desc">
+						${currentQuestion['explanationText']}
+					</p>*/
 				tpl = `
 					<li class="answer-item ${status}" data-question-id="${question['id']}" data-variant="${answer}">
 						<button class="answer-button">
@@ -69,9 +74,7 @@ export const view = {
 								<use xlink:href="img/sprite.svg#${status}"></use>
 							</svg>
 						</div>
-						<p class="answer-desc">
-							${currentQuestion['descriptions'][answer]}
-						</p>
+						
 					</li>
 				`;
 		}
@@ -237,6 +240,7 @@ export const view = {
 	async scoreCarcass(){
 		const _ = this;
 		let response = await Model.getTestSummary();
+		console.log(Model.test);
 		return	_.markup(`
 			<div class="section">
 				<div class="section-header">
@@ -253,10 +257,10 @@ export const view = {
 					</div>
 					<div class="test-inner">
 						<h5 class="block-title test-title">
-							<span>You finished ${_.test['title']}</span>
+							<span>You finished ${Model.test['title']}</span>
 						</h5>
 						<p class="test-text">
-							${_.test['description']}
+							${Model.test['description']}
 						</p>
 					<div class="test-result">
 						<div class="test-result-block violet">
@@ -535,8 +539,9 @@ export const view = {
 	},
 	async graphicQuestion(){
 		const _ = this;
+		
 		let
-			currentQuestion = _._$.currentQuestion['questions'][0],
+			currentQuestion = _._$.currentQuestion,//['questions'][0],
 		tpl= `
 				<div class="test-row test-inner">
 					<div class="test-col">
@@ -609,7 +614,7 @@ export const view = {
 	},
 	async standartQuestion(){
 		const _ = this;
-		let currentQuestion = _._$.currentQuestion['questions'][0];
+		let currentQuestion = _._$.currentQuestion//['questions'][0];
 		let output = document.createElement('div');
 		output.innerHTML = currentQuestion['questionText'];
 		MathJax.texReset();
