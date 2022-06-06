@@ -75,9 +75,9 @@ class StudentPage extends G{
 			'structure':_.pageStructure
 		});
 		module.headerBlock = _.header;
-		module.render({
+		return Promise.resolve(module.render({
 			structure: _.pageStructure
-		});
+		}));
 	}
 	async init(blockData){
 		const _ = this;
@@ -87,9 +87,9 @@ class StudentPage extends G{
 			params = blockData['params'];
 		_.header = await _.getBlock({name:'header'},'blocks');
 		if(params.length > 0){
-			_.moduleRender(params);
+			await _.moduleRender(params);
 		}
-
+		_.navigationInit(_.f('.navigate-list'))
 	}
 	
 }

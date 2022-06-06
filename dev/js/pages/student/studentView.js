@@ -46,11 +46,11 @@ export const studentView = {
 		_.removeCls(curItem,'active');
 		item.classList.add('active')
 	},
-	showActiveNavItem(btn,list){
+	showActiveNavItem(btn){
 		let
 			width = btn.clientWidth,
 			x = btn.offsetLeft,
-			label = list.querySelector('.navigate-label');
+			label = this.f('.navigate-label');
 		label.style = `opacity:1;width: ${width}px;left: ${x}px;`;
 	},
 	changeTab(btn,parentCls){
@@ -81,10 +81,10 @@ export const studentView = {
 		return `
 			<section class="navigate" data-active=".navigate-item:nth-child(1)" data-tabs=".dashboard-tabs">
 				<div class="section">
-					<nav class="navigate-list" data-click="StudentPage:navigate;">
-						<button class="navigate-item dashboard" data-click="StudentPage:changeSection" section="/student/dashboard"><span>Dashboard</span></button>
-						<button class="navigate-item practice" data-click="StudentPage:changeSection" section="/student/practice"><span>Practice</span></button>
-						<button class="navigate-item tests" data-click="StudentPage:changeSection" section="/student/tests"><span>Tests</span></button>
+					<nav class="navigate-list" data-click="StudentPage:navigate">
+						<button class="navigate-item dashboard" data-click="StudentPage:changeSection;StudentPage:navigate" section="/student/dashboard"><span>Dashboard</span></button>
+						<button class="navigate-item practice" data-click="StudentPage:changeSection;StudentPage:navigate" section="/student/practice"><span>Practice</span></button>
+						<button class="navigate-item tests" data-click="StudentPage:changeSection;StudentPage:navigate" section="/student/tests"><span>Tests</span></button>
 						<button class="navigate-item review" data-click="StudentPage:changeSection" section="/student/review"><span>Review</span></button>
 						<button class="navigate-item bookmarks" data-click="StudentPage:changeSection" section="/student/bookmarks"><span>Bookmarks&Notes</span></button>
 						<button class="navigate-item tips" data-click="StudentPage:changeSection" section="/student/tips"><span>Tips&Strategies</span></button>

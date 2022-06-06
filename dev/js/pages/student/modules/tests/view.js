@@ -31,6 +31,7 @@ export const view = {
 		return tpl;
 	},
 	async answerTpl(question,answer){
+		const _ = this;
 		let output = document.createElement('div');
 		output.innerHTML = question['answers'][answer];
 		let text = await MathJax.typesetPromise([output]).then( () => output.innerHTML);
@@ -50,31 +51,29 @@ export const view = {
 				</li>`;
 		if(Model.isFinished()){
 			//console.log(Model);
-			
 			let
 				status = 'wrong',
 				answeredQuestion = Model.testServerAnswers[currentQuestionId],
-				currentQuestion = Model.questions[currentQuestionId];
+				currentQuestion = _._$.currentQuestion;
+			
 			if(answeredQuestion){
-				if( (currentQuestion['correctAnswer'] !== answeredQuestion['answer']) && (answeredQuestion['answer'] == answer) ) {
+				if(currentQuestion['correctAnswer']){
+					if( (currentQuestion['correctAnswer'].toUpperCase() !== answeredQuestion['answer'].toUpperCase())  && (answeredQuestion['answer'].toUpperCase() == answer.toUpperCase()) ) {
 						status = 'incorrect';
 					}
+				}
 			}
-			/*<p class="answer-desc">
-						${currentQuestion['explanationText']}
-					</p>*/
 				tpl = `
-					<li class="answer-item ${status}" data-question-id="${question['id']}" data-variant="${answer}">
+					<li class="answer-item ${status}" data-question-id="${question['_id']}" data-variant="${answer}">
 						<button class="answer-button">
 							<span class="answer-variant">${answer}</span>
 							<span class="answer-value">${question['answers'][answer]}</span>
 						</button>
 						<div class="answer-review-icon">
 							<svg>
-								<use xlink:href="img/sprite.svg#${status}"></use>
+								<use xlink:href="/img/sprite.svg#${status}"></use>
 							</svg>
 						</div>
-						
 					</li>
 				`;
 		}
@@ -239,9 +238,9 @@ export const view = {
 	/* Cacrass templates*/
 	async scoreCarcass(){
 		const _ = this;
-		let response = await Model.getTestSummary();
-		console.log(Model.test);
-		return	_.markup(`
+		let summary = await Model.getTestSummary();
+//		console.log(summary);
+		return	`
 			<div class="section">
 				<div class="section-header">
 					<h2 class="title">Practice Test Score - Section Name</h2>
@@ -265,23 +264,23 @@ export const view = {
 					<div class="test-result">
 						<div class="test-result-block violet">
 							<h6 class="test-result-title"><span>Questions Answered</span></h6>
-							<p class="test-result-score">${response['summary']['questionsAnswered']}</p>
+							<p class="test-result-score">${summary['answered']}</p>
 						</div>
 						<div class="test-result-block turquoise">
 							<h6 class="test-result-title"><span>Questions Correct</span></h6>
-							<p class="test-result-score">${response['summary']['questionsCorrect']}</p>
+							<p class="test-result-score">${summary['correct']}</p>
 						</div>
 						<div class="test-result-block gray">
 							<h6 class="test-result-title"><span>Not answered</span></h6>
-							<p class="test-result-score">${response['summary']['questionsNotAnswered']}</p>
+							<p class="test-result-score">${summary['notAnswered']}</p>
 						</div>
 						<div class="test-result-block green">
 							<h6 class="test-result-title"><span>Score</span></h6>
-							<p class="test-result-score">${response['summary']['score']}</p>
+							<p class="test-result-score">${summary['score']}</p>
 						</div>
 						<div class="test-result-block blue">
 							<h6 class="test-result-title"><span>Stars for section of the Test</span></h6>
-						<p class="test-result-score">+${response['summary']['stars']}</p>
+						<p class="test-result-score">+${summary['stars']}</p>
 						<div class="test-result-img">
 							<svg>
 								<use xlink:href="#stars"></use>
@@ -300,11 +299,11 @@ export const view = {
 						<a class="test-footer-back" data-click="${_.componentName}:changeSection" section="questions">
 							<span>Review this section</span>
 						</a>
-					<button class="button-blue"><span>Start the next section: Quantitative Reasoning</span></button>
+						<!--button class="button-blue"><span>Start the next section: Quantitative Reasoning</span></button -->
 					</div>
 				</div>
 			</div>
-		`,false);
+		`;
 	},
 	questionHeader(){
 		const _ = this;
@@ -411,12 +410,13 @@ export const view = {
 	},
 	gridQuestion(){
 		const _ = this;
+		
 		let
-			currentQuestion = _._$.currentQuestion['questions'][0],
+			currentQuestion = _._$.currentQuestion,
 			tpl =	`
 			<div class="test-header">
-				<h5 class="block-title test-title"><span>Question ${_.questionPos} of ${_.questionsLength}</span></h5>
-				${_.actionsTpl(_._$.currentQuestion['questions'][0])}
+				<h5 class="block-title test-title"><span>Question ${_.questionPos+1} of ${_.questionsLength}</span></h5>
+				${_.actionsTpl(_._$.currentQuestion)}
 			</div>
 			<div class="test-inner test-row">
 				<div class="test-col wide">
@@ -521,26 +521,31 @@ export const view = {
 	async markCorrectAnswer(){
 		const _ = this;
 		let isGrid = await G_Bus.trigger(_.componentName,'isGrid');
-		if(isGrid) return void 0;
+		if(isGrid){
+			return void 0;
+		}
 		let handle = (questionId,correctVariant)=>{
 			let
 				answerItem = _.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${correctVariant}"]`);
-				answerItem.classList.remove('wrong');
-				answerItem.classList.add('correct');
+			if(!answerItem) return void 0;
+			answerItem.classList.remove('wrong');
+			answerItem.classList.add('correct');
 		};
-		if(_._$.currentQuestion['questions'].length > 1){
-			for(let question of _._$.currentQuestion['questions']){
-				let
-					answeredQuestion = Model.questions[question['id']],
+		if(_._$.currentQuestion['questions']){
+			if(_._$.currentQuestion['questions'].length > 1){
+				for(let question of _._$.currentQuestion['questions']){
+					let
+						answeredQuestion = Model.questions[_.questionPos],//Model.questions[question['id']],
 					correctVariant = answeredQuestion['correctAnswer'];
-				handle(question['id'],correctVariant);
+					handle(question['_id'],correctVariant);
+				}
 			}
 		}else{
 			let
-				currentQuestion = _._$.currentQuestion['questions'][0],
-				answeredQuestion = Model.questions[currentQuestion['id']],
+				currentQuestion = _._$.currentQuestion,
+				answeredQuestion = Model.questions[_.questionPos],
 				correctVariant = answeredQuestion['correctAnswer'];
-			handle(currentQuestion['id'],correctVariant);
+			handle(currentQuestion['_id'],correctVariant);
 		}
 		
 	},
@@ -565,7 +570,7 @@ export const view = {
 				<div class="test-col">
 					<div class="test-header">
 						<h5 class="block-title test-title">
-							<span>Question ${_.questionPos} of ${_.questionsLength}</span>
+							<span>Question ${_.questionPos+1} of ${_.questionsLength}</span>
 						</h5>
 						${_.actionsTpl(currentQuestion)}
 					</div>
@@ -603,7 +608,7 @@ export const view = {
 			tpl+= `
 					<div class="test-sec">
 					<div class="test-header">
-						<h5 class="block-title test-title"><span>Question ${Model.questionPos(_.currentPos)+cnt++} of ${_.questionsLength}</span></h5>
+						<h5 class="block-title test-title"><span>Question ${_.questionPos+1} of ${_.questionsLength}</span></h5>
 						${_.actionsTpl(question)}
 					</div>
 					<p class="test-text"><span>${question['title']}</span></p>
@@ -630,7 +635,7 @@ export const view = {
 		let tpl = `
 			<div class="test-header">
 				<h5 class="block-title test-title ddss">
-					<span>Question ${_.questionPos} of ${_.questionsLength}</span>
+					<span>Question ${_.questionPos+1} of ${_.questionsLength}</span>
 				</h5>
 				${_.actionsTpl(currentQuestion)}
 			</div>

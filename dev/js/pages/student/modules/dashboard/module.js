@@ -21,17 +21,11 @@ export class DashboardModule extends StudentPage{
 			dashSchedule: await Model.getDashSchedule()
 		});
 	}
-
-
+	
 	define() {
 		const _ = this;
 		_.componentName = 'Dashboard';
 	//	G_Bus.on(_,['changeModule'])
-
-
-
-
-
 	}
 	/*async changeModule({item}){
 		const _ = this;
@@ -49,17 +43,7 @@ export class DashboardModule extends StudentPage{
 	}*/
 	async init() {
 		const _ = this;
-		//6284be308e932a712a707192
-
-	/*	_.updateStructure(
-			{
-				prop:'header',
-				id:'full-header'
-			});
-*/
-
-
-
+		
 	}
 /*	render(params){
 		const _ = this;

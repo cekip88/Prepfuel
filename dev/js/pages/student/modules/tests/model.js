@@ -77,7 +77,6 @@ class _Model{
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					_.test = response['response'];
-					console.log(_.test);
 					resolve(_.test);
 				}
 			}
@@ -98,10 +97,10 @@ class _Model{
 	}
 	async start(){
 		const _ =this;
-		if(localStorage.getItem('resultId')){
+/*		if(localStorage.getItem('resultId')){
 			_.test['resultId'] = localStorage.getItem('resultId');
 			return Promise.resolve(_.test['resultId']);
-		}
+		}*/
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['create']}/${_.test['_id']}`,{
 				'method': 'POST',
@@ -168,7 +167,6 @@ class _Model{
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
 				G_Bus.trigger('TestPage','showResults',response);
-				//console.log(response['response']);
 				_.testServerAnswers = response['response']['sections'][_.currentSectionPos]['subSections'][_.currentSubSectionPos]['answers'];
 				_.testStatus = response['response']['status'];
 				resolve(response['response']);
@@ -187,7 +185,6 @@ class _Model{
 				let resultId = _.test['resultId'];
 				_.test = response['response'];
 				_.test['resultId'] = resultId;
-				_.refreshModelTest();
 			}
 		});
 	}
@@ -234,9 +231,6 @@ class _Model{
 		if(pos >= 0)	return pos;
 		return null;
 	}
-	
-	
-	
 	currentQuestionData(pos){
 		const _ = this;
 		return _.currentSection['subSections'][_.currentSubSectionPos]['questionDatas'][pos];
@@ -245,16 +239,6 @@ class _Model{
 		const _ = this;
 		return _.questions[pos];
 	}
-	questionPos(pos){
-		const _ = this;
-		let outPos = 1;
-		//console.log(_.currentSection['subSections'][0]['questionDatas']);
-		for(let i=0;i < pos;i++){
-			outPos+= _.currentSection['subSections'][0]['questionDatas'][i].questions.length;
-		}
-		return outPos;
-	}
-
 	logout(response){
 		if(response.status == 401){
 			localStorage.removeItem('g-route-prev')
