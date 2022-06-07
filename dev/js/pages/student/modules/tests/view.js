@@ -403,8 +403,8 @@ export const view = {
 	gridDigitButtons(){
 		const _ = this;
 		let tpl = ``;
-		for(let i=0; i < 10; i++){
-			tpl+=`<button class="grid-button">${i}</button>`;
+		for(let i = 0; i < 10; i++){
+			tpl+=`<button class="grid-button" value="${i}">${i}</button>`;
 		}
 		return tpl;
 	},
@@ -427,60 +427,60 @@ export const view = {
 			}
 		}
 		tpl+=`
-			<p class="test-text">
-				<span>${currentQuestion['title']}</span>
-			</p>
-			<p class="test-text">
-				<span>${currentQuestion['questionText']}</span>
-			</p>
-			<br><br>
-			</div>
-				<div class="test-col narrow grid" data-click="TestPage:enterGridAnswer">
-			<div class="grid-row">
-				<input id="grid-value" type="hidden">
-				<div class="grid-input">
-				<span> </span>
-				<span> </span>
-				<span> </span>
-				<span> </span>
-				<span> </span>
-			</div>
-			</div>
-			<div class="grid-row">
-				<div class="grid-col">
-				<button class="grid-button">-</button>
-			</div>
-				<div class="grid-col">
-					<button class="grid-button">.</button>
+							<p class="test-text">
+								<span>${currentQuestion['title']}</span>
+							</p>
+							<p class="test-text">
+								<span>${currentQuestion['questionText']}</span>
+							</p>
+							<br><br>
+						</div>
+						<div class="test-col narrow grid" data-click="TestPage:enterGridAnswer">
+							<div class="grid-row">
+								<input id="grid-value" type="hidden">
+								<div class="grid-input">
+									<span class="grid-input-1"> </span>
+									<span class="grid-input-2"> </span>
+									<span class="grid-input-3"> </span>
+									<span class="grid-input-4"> </span>
+									<span class="grid-input-5"> </span>
+								</div>
+							</div>
+						<div class="grid-row">
+							<div class="grid-col" data-number="1">
+							<button class="grid-button" value="-">-</button>
+						</div>
+							<div class="grid-col" data-number="2">
+								<button class="grid-button" value=".">.</button>
+							</div>
+							<div class="grid-col" data-number="3">
+								<button class="grid-button" value=".">.</button>
+							</div>
+							<div class="grid-col" data-number="4">
+								<button class="grid-button" value=".">.</button>
+							</div>
+							<div class="grid-col" data-number="5">
+								<button class="grid-button" value=".">.</button>
+							</div>
+						</div>
+						<div class="grid-row">
+							<div class="grid-col" data-number="1">
+								<button class="grid-button high" value=" "> </button>
+							</div>
+						<div class="grid-col" data-number="2">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col" data-number="3">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col" data-number="4">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col" data-number="5">
+							${_.gridDigitButtons()}
+						</div>
+					</div>
 				</div>
-				<div class="grid-col">
-					<button class="grid-button">.</button>
-				</div>
-				<div class="grid-col">
-					<button class="grid-button">.</button>
-				</div>
-				<div class="grid-col">
-					<button class="grid-button">.</button>
-				</div>
-			</div>
-			<div class="grid-row">
-				<div class="grid-col">
-					<button class="grid-button high"></button>
-				</div>
-			<div class="grid-col">
-				${_.gridDigitButtons()}
-			</div>
-			<div class="grid-col">
-				${_.gridDigitButtons()}
-			</div>
-			<div class="grid-col">
-				${_.gridDigitButtons()}
-			</div>
-			<div class="grid-col">
-				${_.gridDigitButtons()}
-			</div>
-			</div>
-			</div>
 			</div>
 		`;
 		return tpl;

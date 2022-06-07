@@ -71,7 +71,6 @@ export class TestsModule extends StudentPage{
 			'header':'simpleHeader',
 			'body': _.flexible(section),
 		};
-		
 		if(section == 'score') {
 			if(!Model.isFinished()){
 				await _.saveAnswerToDB();
@@ -97,6 +96,10 @@ export class TestsModule extends StudentPage{
 	//	_._$.currentSection = section;
 		await _.render();
 		if(section == 'questions'){
+			let questionCont = _.f(`.answer-list[data-question-id]`);
+			let ansId = questionCont.getAttribute('data-question-id');
+			let currentStorageTest = _.storageTest[ansId];
+			_.markChoosedAnswer(currentStorageTest);
 			_.fillCheckedAnswers();
 			if(Model.isFinished()){
 				_.markAnswers();
@@ -129,6 +132,7 @@ export class TestsModule extends StudentPage{
 			_.datasPos-=1;
 			_.questionPos-=1;
 			_._$.currentQuestion=  Model.questions[index-1]; //_.questionsPages[index-1];
+			//await _.saveAnswerToDB();
 		}else{
 			if( index == _.questionsLength.length-1){
 				await _.saveAnswerToDB();
@@ -144,7 +148,6 @@ export class TestsModule extends StudentPage{
 			_.questionPos+=1;
 			_._$.currentQuestion=  Model.questions[index+1]; //_.questionsPages[index+1];
 		}
-		
 	}
 	jumpToQuestion({item,event}){
 		const _ = this;
@@ -239,7 +242,7 @@ export class TestsModule extends StudentPage{
 		let test = Model.getTestFromStorage();
 		for(let t in test){
 			let currentTestObj = test[t],
-			questionId= currentTestObj['questionId']; // if request was not in local storage, try another prop for questionId
+			questionId = currentTestObj['questionId']; // if request was not in local storage, try another prop for questionId
 			if(currentTestObj['bookmarked']) {
 				_.f(`.questions-list .questions-item[data-question-id="${questionId}"]`).classList.add('checked');
 			}
@@ -350,8 +353,6 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		_.innerQuestionId = item.getAttribute('data-question-id');
 	}
-	
-
 	
 
 	async saveAnswerToDB(){
@@ -531,30 +532,54 @@ export class TestsModule extends StudentPage{
 
 		let
 			col = btn.closest('.grid-col'),
-			parent = col.parentElement,
-			index = 0;
-
-		for (let i = 0; i < parent.childElementCount; i++) {
-			let unit = parent.children[i];
-			if (unit === col) index = i;
-		}
-
-		let
+			index = parseInt(col.getAttribute('data-number')),
+			value = btn.hasAttribute('value') ? btn.getAttribute('value') : btn.textContent,
 			input = item.querySelector('#grid-value'),
-			shower = item.querySelector('.grid-input');
+			valueData = {cont:item,index,btn,value,input},
+			btnData = {cont:item,index,btn,value};
 
-		shower.children[index].textContent = btn.textContent;
+		_.setValueForGrid(valueData);
+		_.setGridActiveBtn(btnData);
+		_.setCorrectAnswer({item:item,type:'grid'})
+	}
+	setValueForGrid({value,index,cont,input}){
+		let shower = cont.querySelector('.grid-input');
+		if (!input) input = cont.querySelector('#grid-value');
+		shower.querySelector(`.grid-input-${index}`).textContent = value;
 		input.value = '';
 		for (let i = 0; i < shower.childElementCount; i++) {
 			input.value += (shower.children[i].textContent ?? '*');
 		}
+	}
+	setGridActiveBtn({cont,value,index,btn = null}){
+		const _ = this;
+		let activeBtn = cont.querySelector(`.grid-col[data-number="${index}"] .active`);
+		if (activeBtn) activeBtn.classList.remove('active');
 
-		let activeBtn = item.querySelector(`.grid-col:nth-child(${index + 1}) .active`);
-		if (activeBtn) {
-			activeBtn.classList.remove('active');
+		let targetBtn = btn ?? cont.querySelector(`.grid-col[data-number="${index}"] BUTTON[value="${value}"]`);
+		if (!targetBtn) {
+			let buttons = cont.querySelectorAll(`.grid-col[data-number="${index}"] BUTTON`);
+			buttons.forEach((item) => {
+				if (item.textContent == value) targetBtn = item;
+			})
 		}
-		btn.classList.add('active');
-		_.setCorrectAnswer({item:item,type:'grid'})
+		if (targetBtn) targetBtn.classList.add('active')
+	}
+	fillGridAnswer(value){
+		const _ = this;
+		let
+			count = value.length,
+			cont = _.f('.grid'),
+			input = cont.querySelector('#grid-value'),
+			valueData = {cont,input},
+			btnData = {cont};
+
+		for (let i = 1; i <= count; i++) {
+			valueData.index = btnData.index = i;
+			valueData.value = btnData.value = value[i - 1];
+			_.setValueForGrid(valueData);
+			_.setGridActiveBtn(btnData);
+		}
 	}
 	
 	async getQuestionTpl(){
@@ -594,12 +619,10 @@ export class TestsModule extends StudentPage{
 				_.removeBackToQuestionBtn();
 				_.addBackToQuestionBtn(_.questionPos-1);
 			}
-			
 
 			G_Bus.trigger(_.componentName,'updateStorageTest'); // update test info in storage
 
 			_.currentQuestion = _._$.currentQuestion;//['questions'][0]//Model.innerQuestion(_.questionPos);
-
 
 			if(Model.isFinished()) {
 				_.markCorrectAnswer();
@@ -609,11 +632,11 @@ export class TestsModule extends StudentPage{
 			// work on marked answers
 			
 			let currentStorageTest = _.storageTest[_.currentQuestion['_id']];
-			
+
 			if(!currentStorageTest) return void 0;
 			if(currentStorageTest['answer']){
 				// mark choosed answer
-				_.f(`.answer-list .answer-item[data-question-id="${currentStorageTest['questionId']}"][data-variant="${currentStorageTest['answer']}"]`).classList.add('active');
+				_.markChoosedAnswer(currentStorageTest);
 				_.changeSkipButtonToNext();
 			}
 			if(currentStorageTest['disabledAnswers']){
@@ -629,6 +652,14 @@ export class TestsModule extends StudentPage{
 		
 			
 		},['currentQuestion']);
+	}
+	markChoosedAnswer(currentStorageTest){
+		const _ = this;
+		if (_.f('.grid')) {
+			_.fillGridAnswer(currentStorageTest['answer'])
+		} else {
+			_.f(`.answer-list .answer-item[data-question-id="${currentStorageTest['questionId']}"][data-variant="${currentStorageTest['answer']}"]`).classList.add('active');
+		}
 	}
 	
 }
