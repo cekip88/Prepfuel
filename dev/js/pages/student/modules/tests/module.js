@@ -29,7 +29,8 @@ export class TestsModule extends StudentPage{
 		G_Bus.on(_,[
 			'isGrid','showResults','showSummary','changeSection','setWrongAnswer','setCorrectAnswer','changeQuestion',
 			'jumpToQuestion','jumpToQuestion','saveBookmark','saveNote','changeInnerQuestionId','showForm','deleteNote',
-			'editNote','showTestLabelModal','startTimer','updateStorageTest','saveReport','changeTestSection','enterGridAnswer'
+			'editNote','showTestLabelModal','startTimer','updateStorageTest','saveReport','changeTestSection','enterGridAnswer',
+			'resetTest'
 		]);
 		//TestModel = new TestModel();
 		_.isLastQuestion = false;
@@ -107,6 +108,13 @@ export class TestsModule extends StudentPage{
 		
 	}
 	
+	//
+	resetTest({item}){
+		const _ = this;
+		localStorage.removeItem('resultId');
+		localStorage.removeItem('test');
+		localStorage.removeItem('_id');
+	}
 	// Change current question
 	async changeQuestion({ item, event }){
 		const _ = this;
@@ -166,6 +174,8 @@ export class TestsModule extends StudentPage{
 		}
 	}
 
+	
+	
 	isGrid(){
 		const _ = this;
 		return _._$.currentQuestion.type == 'grid in';

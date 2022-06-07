@@ -715,6 +715,7 @@ export const view = {
 											<p class="text">${Model.test.sections[1]['subSections'][0]['questionDatas'].length} questions</p>
 										</li>
 									</ul>
+									<button class="button red"  data-test-id="${Model.test['_id']}" data-click="${_.componentName}:resetTest">Reset test</button>
 									<button class="button" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="welcome"><span>Start this test</span></button>
 								</li>
 							</ul>

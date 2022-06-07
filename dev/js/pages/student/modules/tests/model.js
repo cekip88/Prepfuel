@@ -97,10 +97,10 @@ class _Model{
 	}
 	async start(){
 		const _ =this;
-/*		if(localStorage.getItem('resultId')){
+		if(localStorage.getItem('resultId')){
 			_.test['resultId'] = localStorage.getItem('resultId');
 			return Promise.resolve(_.test['resultId']);
-		}*/
+		}
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['create']}/${_.test['_id']}`,{
 				'method': 'POST',
