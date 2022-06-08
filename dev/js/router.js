@@ -144,6 +144,7 @@ export class router {
 					_.pages.set(name, moduleName);
 				}
 				if('asyncDefine' in moduleName)	await moduleName.asyncDefine();
+				moduleName.createPageStructure(moduleName.pageStructure);
 				moduleName.init(blockData);
 				resolve(moduleName);
 			} catch(e) {

@@ -51,12 +51,17 @@ export const view = {
 				</li>`;
 		if(Model.isFinished()){
 			//console.log(Model);
-			let
-				status = 'wrong',
-				answeredQuestion = Model.testServerAnswers[currentQuestionId],
-				currentQuestion = _._$.currentQuestion;
 			
-			if(answeredQuestion){
+			let
+				status = 'wrong',answeredQuestion,
+				currentQuestion = _._$.currentQuestion;
+			if( Model.testServerAnswers ){
+				answeredQuestion = Model.testServerAnswers[currentQuestionId]
+			}
+			if(currentQuestion['type'] == 'passage'){
+				currentQuestion = currentQuestion.questions.find( question => question['_id'] == currentQuestionId )
+			}
+			if( answeredQuestion ){
 				if(currentQuestion['correctAnswer']){
 					if( (currentQuestion['correctAnswer'].toUpperCase() !== answeredQuestion['answer'].toUpperCase())  && (answeredQuestion['answer'].toUpperCase() == answer.toUpperCase()) ) {
 						status = 'incorrect';
@@ -437,7 +442,7 @@ export const view = {
 			</div>
 				<div class="test-col narrow grid" data-click="TestPage:enterGridAnswer">
 			<div class="grid-row">
-				<input id="grid-value" type="hidden">
+				<input id="grid-value" type="hidden" data-question-id="${currentQuestion['_id']}">
 				<div class="grid-input">
 				<span> </span>
 				<span> </span>
@@ -626,13 +631,16 @@ export const view = {
 	},
 	async standartQuestion(){
 		const _ = this;
-		let currentQuestion = _._$.currentQuestion//['questions'][0];
-		let output = document.createElement('div');
+		let
+			currentQuestion = _._$.currentQuestion,
+			output = document.createElement('div');
+		if(!currentQuestion['title']) currentQuestion = currentQuestion['questions'][0];
 		output.innerHTML = currentQuestion['questionText'];
 		MathJax.texReset();
 		MathJax.typesetClear();
-		let text = await MathJax.typesetPromise([output]).then( () => output.innerHTML);
-		let tpl = `
+		let
+			text = await MathJax.typesetPromise([output]).then( () => output.innerHTML),
+			tpl = `
 			<div class="test-header">
 				<h5 class="block-title test-title ddss">
 					<span>Question ${_.questionPos+1} of ${_.questionsLength}</span>
@@ -715,10 +723,15 @@ export const view = {
 											<p class="text">${Model.test.sections[1]['subSections'][0]['questionDatas'].length} questions</p>
 										</li>
 									</ul>
-									<button class="button red"  data-test-id="${Model.test['_id']}" data-click="${_.componentName}:resetTest">Reset test</button>
+							
 									<button class="button" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="welcome"><span>Start this test</span></button>
 								</li>
 							</ul>
+							<div class="test-pick-result">
+								<h5 class="title"><span>Reset ${Model.test['title']}</span></h5>
+								<p class="text">You can discard your current progress and re-take this test from the beginning</p>
+								<button class="button" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:resetTest"><span>Reset this test</span></button>
+							</div>
 						</div>
 					</div>
 				</div>

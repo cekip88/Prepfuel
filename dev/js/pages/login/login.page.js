@@ -1,3 +1,4 @@
+
 import { G_Bus }      from "../../libs/G_Control.js";
 import { G }          from "../../libs/G.js";
 import { loginModel } from "./loginModel.js";
@@ -6,6 +7,34 @@ import GInput         from "../../components/input/input.component.js";
 class LoginPage extends G{
 	constructor() {
 		super();
+		const _ = this;
+		let gRow= document.createElement('g-row'),
+				gLeft = document.createElement('g-left'),
+				gRight = document.createElement('g-right');
+		gRow.className = 'login';
+		gLeft.className = 'login-left';
+		gRight.className = 'login-right';
+		_.pageStructure = {
+			'row':{
+				id:'',
+				container: gRow
+			},
+			'left':{
+				id:'',
+				parent: 'row',
+				container: gLeft
+			},
+			'right':{
+				id:'',
+				parent: 'row',
+				container: gRight
+			},
+		};
+		_.moduleStructure = {
+		//	'row':'rowTpl',
+			'left':'leftTpl',
+			'right':'loginTpl',
+		};
 	}
 	define(){
 		const _ = this;
@@ -25,6 +54,11 @@ class LoginPage extends G{
 		]);
 	}
 	async doFormAction({item:form,event:e}){
+		/**
+		 * @param { string } handle - form attribute for LoginModel action exmp 'doLogin'
+		 * @param { object } formData - capture form data
+		 * @return void;
+		 */
 		const _ = this;
 		e.preventDefault();
 		let handle = form.getAttribute('data-handle');
@@ -36,10 +70,14 @@ class LoginPage extends G{
 		const _ = this;
 		let section = item.getAttribute('section'),
 				part = (section == 'reset') ? 'row' : 'right';
+		
+		
 		if(section == 'welcome'){
-			_.welcomeTpl();
-		}else
-		_.renderPart({part:part,content: _.markup(_[`${section}Tpl`](),false)});
+			//_.welcomeTpl();
+		}else{
+			_.moduleStructure['right'] = `${section}Tpl`;
+		}
+		_.render();
 	}
 
 	changeAgree({item}){
@@ -69,8 +107,6 @@ class LoginPage extends G{
 	forgotFail(){
 		const _ = this;
 	}
-	
-	
 	registerFail({response}){
 		this.handleErrors({response});
 	}
@@ -83,14 +119,16 @@ class LoginPage extends G{
 	}
 	async init(blockData){
 		const _ = this;
-		let initTpl = _.loginTpl();
+/*		let initTpl = _.loginTpl();
 		let params = blockData['params'];
 		if(params){
 			if(params.length > 0){
 				initTpl = _[`${params[0]}Tpl`](params);
 			}
 		}
-		_.welcomeTpl(initTpl);
+		_.welcomeTpl(initTpl);*/
+		
+		_.render();
 	}
 }
 export { LoginPage }

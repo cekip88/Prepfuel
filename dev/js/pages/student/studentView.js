@@ -15,15 +15,15 @@ export const studentView = {
 		const _ = this;
 		if (!clickData) return;
 		let
-		target = clickData.event.target,
-		btn = _.ascent(target,'.subnavigate-button','subnavigate');
-		
+			target = clickData.event.target,
+			btn = _.ascent(target,'.subnavigate-button','subnavigate');
+			
 		_.changeActiveNavItem(btn);
 	},
 	setActiveNavItem(list){
 		const _ = this;
-		let route = location.pathname.split('/')[2];
 		let
+			route = location.pathname.split('/')[2],
 			container = list.closest('.navigate'),
 			activeItemSelector = container.getAttribute('data-active'),
 			newActiveBtn = list.querySelector(`.${route}`),
@@ -51,6 +51,7 @@ export const studentView = {
 			width = btn.clientWidth,
 			x = btn.offsetLeft,
 			label = this.f('.navigate-label');
+		if(!label) return void 'Navigate label not found';
 		label.style = `opacity:1;width: ${width}px;left: ${x}px;`;
 	},
 	changeTab(btn,parentCls){

@@ -8,7 +8,7 @@ const gulp = require('gulp'),
     concat = require('gulp-concat'),
     flatten = require('gulp-flatten'),
     clean_CSS = require('gulp-clean-css'),
-    minifyjs = require('gulp-js-minify');
+		minifyjs = require('gulp-terser');
 /* --==[ Пути ]==--*/
 const
     projectName = "Sample",
@@ -183,7 +183,9 @@ gulp.task('browserSync', function() {
 });
 gulp.task('min_js',function() {
     return gulp.src(js['src_all'])
-        .pipe(minifyjs())
+    .pipe(minifyjs({
+	    module: true
+    }))
         .pipe(
             gulp.dest(js['dest'])
         );

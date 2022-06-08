@@ -18,7 +18,13 @@ export class G extends G_G{
 		_.clear(gSet);
 		for(let prop in struct){
 			let part = struct[prop];
-			gSet.append(part['container']);
+			if(!part['parent']){
+				gSet.append(part['container']);
+			}else{
+				setTimeout(  ()=>{
+					struct[part['parent']]['container'].append(part['container'])
+				});
+			}
 		}
 	}
 	updateStructure({prop,id}){
@@ -33,7 +39,11 @@ export class G extends G_G{
 			if (part['id'] !== _.moduleStructure[key]) {
 				_.pageStructure[key]['id'] = _.moduleStructure[key];
 				_.clear(part['container']);
-				if ( _[_.moduleStructure[key]] && _.moduleStructure[key]) part['container'].append(_.markup(await _[_.moduleStructure[key]]()))
+		//		if(!part['parent']){
+					if ( _[_.moduleStructure[key]] && _.moduleStructure[key]) part['container'].append(_.markup(await _[_.moduleStructure[key]]()))
+			//	}else{
+			//		if ( _[_.moduleStructure[key]] && _.moduleStructure[key]) _.pageStructure[part['parent']]['container'].append(_.markup(await _[_.moduleStructure[key]]()))
+		//		}
 			}
 		}
 	}

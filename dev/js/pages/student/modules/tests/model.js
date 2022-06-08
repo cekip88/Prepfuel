@@ -167,7 +167,17 @@ class _Model{
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
 				G_Bus.trigger('TestPage','showResults',response);
-				_.testServerAnswers = response['response']['sections'][_.currentSectionPos]['subSections'][_.currentSubSectionPos]['answers'];
+				let sections = response['response']['sections'];
+				_.testServerAnswers = {};
+				if(sections) {
+					for(let section of sections) {
+						let subSections = section['subSections'];
+						for(let subSection of subSections) {
+							Object.assign(_.testServerAnswers, subSection['answers'])
+						}
+					}
+				}
+				//_.testServerAnswers = response['response']['sections'][_.currentSectionPos]['subSections'][_.currentSubSectionPos]['answers'];
 				_.testStatus = response['response']['status'];
 				resolve(response['response']);
 			}
@@ -185,6 +195,7 @@ class _Model{
 				let resultId = _.test['resultId'];
 				_.test = response['response'];
 				_.test['resultId'] = resultId;
+				resolve(_.test);
 			}
 		});
 	}

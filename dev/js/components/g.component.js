@@ -144,6 +144,7 @@ export default class GComponent extends HTMLElement {
 		for(let i=0,len=eventPath.length; i < len;i++){
 			let item = eventPath[i];
 			if( (!item == _.container ) || (!item) || (!item.tagName) ) break;
+			
 			if( item.hasAttribute(`data-${dataEvent}`) ){
 				_.triggerWithEvent({'item':item,'event':e},dataEvent);
 				break;
@@ -151,7 +152,7 @@ export default class GComponent extends HTMLElement {
 		}
 	}
 
-	clickHandler(e){ return this.prepareHandler(e,'click');}
+	clickHandler(e){this.prepareHandler(e,'click');}
 	focusOutHandler(e){
 		return this.prepareHandler(e,'focusout');
 	}

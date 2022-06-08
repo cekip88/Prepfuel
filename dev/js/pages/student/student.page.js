@@ -1,3 +1,6 @@
+/**
+	* @module StudentPage
+**/
 import { G_Bus }        from "../../libs/G_Control.js";
 import { G }            from "../../libs/G.js";
 import { studentModel } from "./studentModel.js";
@@ -28,12 +31,7 @@ class StudentPage extends G{
 	}
 	define(){
 		const _ = this;
-/*		_.set({
-			currentPage: 1
-		});
-		_.maxPage = 3;*/
 		_.componentName = 'StudentPage';
-
 		G_Bus
 			.on(_,['changeSection','navigate'])
 	}
@@ -46,18 +44,15 @@ class StudentPage extends G{
 		_.showActiveNavItem(btn,list);
 		_.changeActiveNavItem(btn);
 	}
+	
+
 	changeSection({item,event}){
 		const _ = this;
 		let
 			section = item.getAttribute('section'),
 			tpl = section.split('/')[2];
 		if(section) history.pushState(null, null, section);
-
 		_.moduleRender([tpl]);
-
-
-		//G_Bus.trigger('router','changePage',section);
-		//_.renderPart({part:'body',content: _.markup(_[`${tpl}Tpl`](),false)});
 	}
 	showForm(id){
 		G_Bus.trigger('modaler','showModal',{
@@ -81,9 +76,7 @@ class StudentPage extends G{
 	}
 	async init(blockData){
 		const _ = this;
-		_.createPageStructure(_.pageStructure);
 		let
-			initTpl = '',
 			params = blockData['params'];
 		_.header = await _.getBlock({name:'header'},'blocks');
 		if(params.length > 0){

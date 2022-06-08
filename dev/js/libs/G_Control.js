@@ -12,7 +12,6 @@ let prepareHandler = (e,dataEvent)=>{
 		if (!data['item'])  return void 0;
 		let
 			rawActions = data['item'].getAttribute(`data-${currentAction}`).split(';');
-		
 		for(let rAction of rawActions){
 			let rawAction = rAction.split(':'),
 				component = rawAction.splice(0,1)[0];

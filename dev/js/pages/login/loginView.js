@@ -49,11 +49,11 @@ export const loginView = {
 	},
 	welcomeTpl(initTpl=this.loginTpl()){
 		const _ =  this;
-		_.fillPartsPage([
+	/*	_.fillPartsPage([
 			{ part:'row', content: _.markup(_.rowTpl(),false)},
 			{ part:'left', parent:'.login', content: _.markup(_.leftTpl(),false)},
 			{ part:'right', parent:'.login', content: _.markup(initTpl,false)}
-		],true);
+		],true);*/
 	},
 	registerTpl(){
 		const _ = this;
@@ -164,7 +164,6 @@ export const loginView = {
 	leftTpl(){
 		const _ = this;
 		return `
-			<div class="login-left">
 			<div class="login-left-logo">
 				<svg width="81" height="117" viewBox="0 0 81 117" fill="none" xmlns="http://www.w3.org/2000/svg">
 					<path d="M33.0779 0C63.3803 13.6349 72.7801 41.4913 57.6359 70.1441C56.065 73.2754 54.1732 76.2387 51.9904 78.9872C42.9858 89.8141 37.3967 101.591 42.2942 117C27.6723 112.208 15.4779 106.173 6.72735 94.7595C-0.498928 85.3856 -1.2893 74.866 3.59408 64.4722C6.61444 58.046 11.2438 52.3042 15.4779 46.4647C20.0932 40.0384 25.5693 34.171 29.7188 27.4933C34.6869 19.4185 37.3544 10.5195 33.0779 0Z" fill="white"></path>
@@ -185,13 +184,11 @@ export const loginView = {
 				<span>with our adaptive learning technology.</span>
 			</div>
 			<img class="login-left-img" src="/img/S_confirmation.png" alt="">
-			</div>
 		`;
 	},
 	loginTpl(){
 		const _ = this;
 		return `
-			<div class="login-right">
 				<form class="login-form" data-submit="${_.componentName}:doFormAction" data-handle="doLogin">
 					<h2 class="login-title">
 						<span>Sing In to Prepfuel</span>
@@ -247,7 +244,6 @@ export const loginView = {
 				<a class="link" href="#">
 					<span>Contact Us</span>
 				</a>
-			</div>
 			</div>
 		`;
 	},
