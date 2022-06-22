@@ -2319,6 +2319,107 @@ body
 		&-title
 			margin-bottom: 25px
 			
-			
+
 .table
 	+w(100%)
+
+.adding
+	&-list
+		padding-top: 32px
+		&-title
+			font: 16px $f_medium
+			line-height: 20px
+		&-subtitle
+			font: 12px $f_medium
+			margin-top: 6px
+			color: #B5B5C3
+		&-item
+			@extend %dfa
+			margin-bottom: 38px
+			&:last-child
+				.adding-list-digit:after
+					display: none
+		&-digit
+			+wh(40px)
+			@extend %dfc
+			margin-right: 20px
+			font-family: $p_semi
+			color: rgb($blue-text)
+			border-radius: 9px
+			background-color: #F1FAFF
+			position: relative
+			&:after
+				+af
+				+wh(0px,30px)
+				position: absolute
+				bottom: -35px
+				border: 1px dashed #E4E6EF
+	&-title
+		font: 26px $f_bold
+		letter-spacing: -2%
+	&-section
+		margin-top: 32px
+	&-label
+		font: 14px $f_bold
+	&-buttons
+		@extend %dfa
+		margin-top: 12px
+		column-gap: 10px
+	&-button
+		+wh(100%,56px)
+		+bdrs(6px)
+		font: 18px $f_bold
+		border: 1px dashed rgb($neutral-400)
+		background-color: rgba(245,248,250,.4)
+		&.active
+			color: rgb($blue-text)
+			border-color: rgb($blue-text)
+		&.disabled
+			color: rgb($neutral-400)
+	&-plan
+		+w(100%)
+		+bdrs(18px)
+		@extend %dfc
+		padding: 32px
+		flex-direction: column
+		border: 1px dashed rgb($neutral-400)
+		background-color: rgba(245,248,250,.4)
+		margin-bottom: 20px
+		&.active
+			border-color: rgb($blue-text)
+			background-color: rgb(241,250,255,.4)
+			.adding-plan-title
+				color: rgb($blue-text)
+		&-row
+			margin-top: 12px
+		&-title
+			font: 22px $p_bold
+		&-subtitle
+			font: 14px $p_medium
+			color: rgb($neutral-400)
+		&-price
+			margin-top: 20px
+			em
+				font: 16px $f_bold
+				color: rgb($blue-text)
+			strong
+				font: 38px $f_bold
+				color: rgb($blue-text)
+			i
+				font: 12px $f_reg
+				color: rgb($neutral-400)
+		&-list
+			margin-top: 14px
+		&-item
+			@extend %dfa
+			margin-bottom: 16px
+			span
+				+w(90px)
+				font: 14px $f_medium
+				line-height: 20px
+				display: inline-block
+			&:after
+				+af
+				+wh(18px)
+				margin-left: 29px
+				background-color: rgb($green)

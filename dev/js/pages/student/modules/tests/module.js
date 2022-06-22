@@ -99,14 +99,14 @@ export class TestsModule extends StudentPage{
 	//	_._$.currentSection = section;
 		await _.render();
 		if(section == 'questions'){
+
 			_.fillCheckedAnswers();
 			if(Model.isFinished()){
+				await Model.getTestResults();
 				_.markAnswers();
 				_.markCorrectAnswer();
 			}
 		}
-		
-		
 		
 	}
 	
@@ -123,7 +123,7 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		let dir = item.getAttribute('data-dir');
 		let index = _.questionPos;
-		
+
 		if(dir == 'prev'){
 			if( index == 0){
 				return void 0;
@@ -132,7 +132,8 @@ export class TestsModule extends StudentPage{
 			_.datasPos-=1;
 			_.questionPos-=1;
 			_._$.currentQuestion=  Model.questions[index-1]; //_.questionsPages[index-1];
-		}else{
+		}
+		if(dir== 'next'){
 			if( index == _.questionsLength.length-1){
 				await _.saveAnswerToDB();
 				Model.finishTest({});
@@ -140,7 +141,7 @@ export class TestsModule extends StudentPage{
 				return void 0;
 			}
 			if(!Model.isFinished()){
-				await _.saveAnswerToDB();
+				let test = await _.saveAnswerToDB();
 			}
 			//_.currentPos+=1;
 			_.datasPos+=1;
@@ -238,8 +239,10 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		let test = Model.getTestFromStorage();
 		for(let t in test){
-			let currentTestObj = test[t],
-			questionId= currentTestObj['questionId']; // if request was not in local storage, try another prop for questionId
+			let
+				currentTestObj = test[t],
+				questionId= currentTestObj['questionId']; // if request was not in local storage, try another prop for questionId
+
 			if(currentTestObj['bookmarked']) {
 				let listAnswerItem = _.f(`.questions-list .questions-item[data-question-id="${questionId}"]`);
 				if(listAnswerItem) listAnswerItem.classList.add('checked');
@@ -264,13 +267,15 @@ export class TestsModule extends StudentPage{
 				serverQuestion = serverQuestions[cnt],
 				variant = item.querySelector('.questions-variant').textContent;
 			if(Model.testServerAnswers && Model.testServerAnswers[id]){
-				let
-					answer = Model.testServerAnswers[id]['answer'].toUpperCase(),
-					serverAnswer = serverQuestion['correctAnswer'].toUpperCase();
-				if(answer === serverAnswer){
-					item.classList.add('correct')
-				}else{
-					item.classList.add('wrong')
+				if(Model.testServerAnswers[id]['answer']){
+					let
+						answer = Model.testServerAnswers[id]['answer'].toUpperCase(),
+						serverAnswer = serverQuestion['correctAnswer'].toUpperCase();
+					if(answer === serverAnswer){
+						item.classList.add('correct')
+					}else{
+						item.classList.add('wrong')
+					}
 				}
 			}else{
 				item.classList.add('wrong');
@@ -361,10 +366,10 @@ export class TestsModule extends StudentPage{
 	async saveAnswerToDB(){
 		const _ = this;
 		//_.currentQuestion = _._$.currentQuestion['questions'][0];// Model.innerQuestion(_.questionPos);
-		return new Promise(  async (resolve, reject) => {
+		return new Promise(  async (resolve) => {
 			let questionData = Model.currentQuestionData(_.questionPos);
-			let handle = async (answer)=>{
-				return Promise.resolve(await Model.saveAnswer({
+			let handle = (answer)=>{
+				return Model.saveAnswer({
 					answer:{
 						sectionName: Model.currentSection['sectionName'],
 						subSectionName: Model.currentSection['subSections'][0]['subSectionName'],
@@ -376,7 +381,7 @@ export class TestsModule extends StudentPage{
 						note: answer['note'],
 						report: answer['report']
 					}
-				}))
+				});
 			}
 			if(questionData['questions'].length > 1){
 				for(let i=0; i < questionData['questions'].length;i++){
@@ -389,18 +394,20 @@ export class TestsModule extends StudentPage{
 						});
 						continue;
 					}
-					resolve(await handle(answer));
+					resolve(handle(answer));
 				}
 			}else{
 				let answer = _.storageTest[_._$.currentQuestion['_id']];
 				if(answer){
 					// if user choosed answer save it to db
-					resolve(await handle(answer));
+					resolve(handle(answer));
 				}else{
 					// else set bookmarked this answer
+
 					_.saveBookmark({
 						item: _.f('.bookmarked-button')
 					});
+					resolve(true);
 				}
 			}
 		});
@@ -586,7 +593,7 @@ export class TestsModule extends StudentPage{
 			);
 			_.isLastQuestion = false;
 			_.setActions(['bookmarked','note']);
-			let step = 1,
+			let step = 2,
 					len = Model.currentQuestionData(_.datasPos)['questions'].length;
 			if( len > 1 ){
 				step= len;

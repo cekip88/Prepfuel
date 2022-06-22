@@ -42,12 +42,12 @@ class _G_Bus {
 			if(!_.components[componentName]['events'].has(eventName)){
 				_.components[componentName]['events'][eventName] = new Map();
 			}
-			if(!_.components[componentName]['events'][eventName].has(prop)) {
+			if(!_.components[componentName]['events'][eventName].has(prop)){
 				_.components[componentName]['events'][eventName].set(prop, fn);
-				return _;
+				return _
 			}
 			if(_.flag === 'dev'){
-				console.warn(`Subscribe on event ${eventName} on fn: ${fn.name}`);
+				console.warn(`Subscribe on event ${ eventName } on fn: ${ fn.name }`);
 			}
 		}
 		if(eventName instanceof Array){
@@ -57,7 +57,7 @@ class _G_Bus {
 		}else{
 			handle(eventName,'',fn)
 		}
-		return _;
+		return _
 	}
 	trigger(componentName,eventName,data){
 		const _ = this;

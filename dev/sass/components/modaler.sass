@@ -5,29 +5,31 @@
 
 .modaler
 	&-cont
-		+wh(100vw,100vh)
-		padding-right: 5px
+		+wh(100vw,100%)
 		position: fixed
+		padding-right: 5px
 		top: 0
 		left: 0
-		align-items: center
-		justify-content: center
 		display: none
 		z-index: 900
+		overflow-y: scroll
 		&.active
 			display: flex
+			justify-content: center
+			flex-direction: column
+			align-items: center
 	&-shadow
-		background-color: rgba(0,0,0,.6)
 		background-color: #B5B5C3
 	&-inner
+		overflow-y: scroll
 		position: relative
 		background-color: #fff
 		border-radius: 12px
 		box-shadow: 0 0 40px rgba(56, 71, 109, 0.29)
 	&-body
-		padding: 24px 10px 19px
+		//padding: 24px 10px 19px
 	&-close
-		+wh(42px)
+		+wh(22px)
 		+dfc
 		margin-left: auto
 		cursor: pointer
@@ -47,7 +49,12 @@
 +mq(768px)
 	.modaler
 		&-body
-			padding: 32px 32px 48px
+			//padding: 32px 32px 48px
 		&-close
-			top: 23px
-			right: 32px
+			top: 26px
+			right: 38px
++mq(1170px)
+	.modaler
+		&-cont
+			align-items: center
+			justify-content: center

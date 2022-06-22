@@ -35,7 +35,8 @@ export const view = {
 					    <svg class="arrow">
 					      <use xlink:href="#arrow-right-transparent"></use>
 					    </svg></a></div>
-					<div class="pagination-end"><span>Jump to</span>
+					<div class="pagination-end">
+					<span>Jump to</span>
 					  <input type="text" value="1">
 					</div>
 					</div>
@@ -264,22 +265,117 @@ export const view = {
 		return `
 			<div hidden>
 				<div class="admin-modal"  id="addingForm">
-					<div class="block test-block profile-block">
+					<div class="block test-block adding-block">
 					<div class="test-header">
-						<h5 class="block-title test-title">
+						<h5 class="block-title test-title adding-header-title">
 							<span>Adding a Student</span>
 						</h5>
 					</div>
-					<div class="test-inner profile-inner">
-						<ol class="adding-list">
-							<li class="adding-list-item">
-								<strong class="adding-list-digit">1</strong>
-								<div class="adding-list-desc">
-									<h5 class="adding-list-title">Course & Plan</h5>
-									<h6 class="adding-list-subtitle">Set Type of a Test & Membership </h6>
+					<div class="adding-inner">
+						<div class="adding-row">
+							<ol class="adding-list">
+								<li class="adding-list-item active">
+									<strong class="adding-list-digit">1</strong>
+									<div class="adding-list-desc">
+										<h5 class="adding-list-title">Course & Plan</h5>
+										<h6 class="adding-list-subtitle">Set Type of a Test & Membership </h6>
+									</div>
+								</li>
+								<li class="adding-list-item">
+									<strong class="adding-list-digit">2</strong>
+									<div class="adding-list-desc">
+										<h5 class="adding-list-title">Account Settings</h5>
+										<h6 class="adding-list-subtitle">Setup Student Account Settings</h6>
+									</div>
+								</li>
+								<li class="adding-list-item">
+									<strong class="adding-list-digit">3</strong>
+									<div class="adding-list-desc">
+										<h5 class="adding-list-title">Parent Information</h5>
+										<h6 class="adding-list-subtitle">Assign Or Add a Parent</h6>
+									</div>
+								</li>
+								<li class="adding-list-item">
+									<strong class="adding-list-digit">4</strong>
+									<div class="adding-list-desc">
+										<h5 class="adding-list-title">School Information</h5>
+										<h6 class="adding-list-subtitle">Student's School Related Info</h6>
+									</div>
+								</li>
+								<li class="adding-list-item">
+									<strong class="adding-list-digit">5</strong>
+									<div class="adding-list-desc">
+										<h5 class="adding-list-title">Test Information</h5>
+										<h6 class="adding-list-subtitle">Set Test Info</h6>
+									</div>
+								</li>
+								<li class="adding-list-item">
+									<strong class="adding-list-digit">6</strong>
+									<div class="adding-list-desc">
+										<h5 class="adding-list-title">Summary</h5>
+										<h6 class="adding-list-subtitle">Review and Confirm</h6>
+									</div>
+								</li>
+							</ol>
+							<div class="adding-body">
+								<h3 class="adding-title">Course & Plan</h3>
+								<div class="adding-section">
+									<div class="adding-label">What test is the student purchasing?</div>
+									<div class="adding-buttons">
+										<button class="adding-button">ISEE</button>
+										<button class="adding-button active">SSAT</button>
+										<button class="adding-button">SHSAT</button>
+									</div>
 								</div>
-							</li>
-						</ol>
+								<div class="adding-section">
+									<div class="adding-label">What level of the test student plan to take?</div>
+									<div class="adding-buttons">
+										<button class="adding-button active">Middle (5-7th Grade)</button>
+										<button class="adding-button">Upper (8-11th Grade)</button>
+									</div>
+								</div>
+								<div class="adding-section">
+									<div class="adding-label">Type of membership?</div>
+									<div class="adding-buttons">
+										<button class="adding-button disabled">Pay Monthly</button>
+										<button class="adding-button disabled">Pay Yearly</button>
+									</div>
+								</div>
+								<div class="adding-section">
+									<div class="adding-label">Type of a plan?</div>
+									<div class="adding-plan-row">
+										<span class="adding-plan active">
+											<h5 class="adding-plan-title">Free</h5>
+											<h6 class="adding-plan-subtitle">Best for self-preparation</h6>
+											<span class="adding-plan-price">
+											 <em>$</em><strong>0</strong><i>/ Mon</i>
+											</span>
+											<ul class="adding-plan-list">
+												<li class="adding-plan-item"><span>Skill Practice</span></li>
+												<li class="adding-plan-item"><span>Practice Tests</span></li>
+												<li class="adding-plan-item feat"><span>Feature</span></li>
+												<li class="adding-plan-item feat"><span>Feature</span></li>
+												<li class="adding-plan-item feat"><span>Feature</span></li>
+											</ul>
+										</span>
+										<span class="adding-plan">
+											<h5 class="adding-plan-title">App</h5>
+											<h6 class="adding-plan-subtitle">Best for self-preparation</h6>
+											<span class="adding-plan-price">
+											 <em>$</em><strong>20</strong><i>/ Mon</i>
+											</span>
+											<ul class="adding-plan-list">
+												<li class="adding-plan-item"><span>Skill Practice</span></li>
+												<li class="adding-plan-item"><span>Practice Tests</span></li>
+												<li class="adding-plan-item"><span>Feature</span></li>
+												<li class="adding-plan-item"><span>Feature</span></li>
+												<li class="adding-plan-item"><span>Feature</span></li>
+											</ul>
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 					<div class="test-footer">
 						<button class="test-footer-back" data-click="AdminPage:changeSection" section="/admin/dashboard">

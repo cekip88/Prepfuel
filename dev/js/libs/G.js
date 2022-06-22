@@ -41,8 +41,7 @@ export class G extends G_G{
 				_.pageStructure[key]['id'] = _.moduleStructure[key];
 				_.clear(part['container']);
 				if ( _[_.moduleStructure[key]] && _.moduleStructure[key]) {
-					part['container'].append(_.markup(await _[_.moduleStructure[key]]()))
-					console.log(part['container']);
+					part['container'].append(_.markup(await _[_.moduleStructure[key]]()));
 				}
 			}
 		}

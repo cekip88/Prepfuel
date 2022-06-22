@@ -24,6 +24,19 @@ export class _Model{
 			}
 		});
 	}
+	getSchedule(){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['schedule']}`,{
+				method: 'GET',
+				headers:_.baseHeaders
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				resolve(response['response']);
+			}
+		});
+	}
 }
 
 export const Model = new _Model();
