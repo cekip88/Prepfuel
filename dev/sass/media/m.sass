@@ -2103,10 +2103,16 @@ body
 			color: $neutral-400
 	&-label
 		font-family: $f_bold
-		color: rgb($neutral-900)
+		color: rgb($neutral-800)
 		&-row
 			@extend %dfi
 			padding-bottom: 12px
+		&-hr
+			+wh(100%,1px)
+			display: block
+			margin: 35px 0
+			border: 0
+			background-color: #E5E5E5
 	&-input
 		@extend %transition
 		height: 54px
@@ -2282,3 +2288,37 @@ body
 
 .hidden
 	display: none
+	
+	
+.profile
+	&-img
+		@extend %dfc
+		+wh(85px)
+		+bdrs(100%)
+		flex: 0 0 85px
+		background-color: #F1FAFF
+		color: rgb($blue-text)
+		font: 32px $f_medium
+		&-row
+			@extend %dfa
+			margin-bottom: 32px
+		&-desc
+			margin-left: 16px
+			font-size: 12px
+			line-height: 16px
+			color: #A1A5B7
+	&-form
+		&-value
+			font: 14px 'Roboto-Medium'
+			color: #5E6278
+		&-row
+			margin-bottom: 1em
+		&-label
+			font: 15px $f_medium
+			margin-bottom: 1em
+		&-title
+			margin-bottom: 25px
+			
+			
+.table
+	+w(100%)

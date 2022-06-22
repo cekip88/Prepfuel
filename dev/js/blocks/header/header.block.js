@@ -3,15 +3,15 @@ import { G } from "../../libs/G.js";
 
 class HeaderBlock extends G{
 		define(){
-		const _ = this;
-		_.componentName = 'header';
-		_.set({
-			firstName: localStorage.getItem('firstName'),
-			lastName: localStorage.getItem('lastName'),
-			role: localStorage.getItem('role'),
-		});
-		G_Bus
-			.on(_,['showUserList'])
+			const _ = this;
+			_.componentName = 'header';
+			_.set({
+				firstName: localStorage.getItem('firstName'),
+				lastName: localStorage.getItem('lastName'),
+				role: localStorage.getItem('role'),
+			});
+			G_Bus
+				.on(_,['showUserList'])
 	}
 	
 	showUserList({item}) {
@@ -51,7 +51,7 @@ class HeaderBlock extends G{
 						<button class="head-user" data-click="${_.componentName}:showUserList">
 							<span>${this._$.firstName[0].toUpperCase()}</span>
 							<span class="head-user-list">
-								<strong data-click="StudentPage:changeSection" section="/student/profile">My profile</strong>
+								<strong data-click="StudentPage:changeSection" section="/student/profile">Profile</strong>
 								<strong data-click="router:logout">Log Out</strong>
 							</span>
 						</button>

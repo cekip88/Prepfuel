@@ -1,7 +1,4 @@
 export const view = {
-
-
-
 	dashboardBody(params){
 		const _ = this;
 		return `

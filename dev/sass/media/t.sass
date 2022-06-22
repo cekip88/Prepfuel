@@ -355,3 +355,30 @@
 	svg
 		fill: rgb($neutral-400)
 		display: block
+		
+		
+.profile
+	&-block
+		padding: 0
+		.test
+			&-title
+				padding: 20px 0 0 20px
+			&-footer
+				padding: 20px
+	&-inner
+		max-width: 647px
+	&-form
+		.form-label
+			font-size: 15px
+			&.profile-form-title
+				font-size: 16px
+		&-row
+			display: flex
+			align-items: center
+			margin-bottom: 20px
+			.form-label-row
+				+w(165px)
+				flex: 0 0 165px
+				padding-bottom: 0
+			.g-form-item
+				+w(100%)

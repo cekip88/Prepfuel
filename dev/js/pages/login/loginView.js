@@ -203,7 +203,7 @@ export const loginView = {
 						<div class="form-label-row">
 							<label class="form-label">Email</label>
 						</div>
-						<g-input class="g-form-item" type="email"  value="student@mail.ru" name="email" className="form-input" required></g-input>
+						<g-input class="g-form-item" type="email"  value="admin@mail.ru" name="email" className="form-input" required></g-input>
 					</div>
 					<div class="form-block">
 						<div class="form-label-row">
@@ -212,7 +212,7 @@ export const loginView = {
 								<span>Forgot Password?</span>
 							</a>
 						</div>
-						<g-input class="g-form-item" type="password" name="password"  className="form-input"  value="student123" required></g-input>
+						<g-input class="g-form-item" type="password" name="password"  className="form-input"  value="admin123" required></g-input>
 					</div>
 					<div class="form-block">
 						<g-input type="checkbox" class="g-form-item" items='[{"value":1,"text":"Remember me"}]' name="remember"></g-input>

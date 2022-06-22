@@ -32,18 +32,18 @@ export class G extends G_G{
 		_.pageStructure[prop] = id;
 	}
 	define(){	}
-	async render(){
+	async render(params){
 		const _ = this;
 		for (let key in _.pageStructure) {
 			let part = _.pageStructure[key];
+			
 			if (part['id'] !== _.moduleStructure[key]) {
 				_.pageStructure[key]['id'] = _.moduleStructure[key];
 				_.clear(part['container']);
-		//		if(!part['parent']){
-					if ( _[_.moduleStructure[key]] && _.moduleStructure[key]) part['container'].append(_.markup(await _[_.moduleStructure[key]]()))
-			//	}else{
-			//		if ( _[_.moduleStructure[key]] && _.moduleStructure[key]) _.pageStructure[part['parent']]['container'].append(_.markup(await _[_.moduleStructure[key]]()))
-		//		}
+				if ( _[_.moduleStructure[key]] && _.moduleStructure[key]) {
+					part['container'].append(_.markup(await _[_.moduleStructure[key]]()))
+					console.log(part['container']);
+				}
 			}
 		}
 	}

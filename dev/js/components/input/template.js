@@ -20,8 +20,8 @@ export default {
 		<label class="inpt ${data['className'] ?? ''}">
 			${data['title'] ? '<h6 class="inpt-title">'+data['title']+'</h6>' : ''}
 			<input
-				${data['placeholder'] ? 'placeholder='+data['placeholder'] : ''}
-				${data['value'] ? 'value='+data['value'] : ''}
+				${data['placeholder'] ? 'placeholder="'+data['placeholder']+'"' : ''}
+				${data['value'] ? 'value="'+data['value'] +'"' : ''}
 				${ (data['type']=='phone') || (data['type']=='numeric') ? 'data-keydown="doKeyDown"' : '' }
 				type="${data['type']}"
 				class="inpt-value"

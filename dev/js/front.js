@@ -1,75 +1,15 @@
 import { G_Bus } from "./libs/G_Control.js";
-//import { G } from "./libs/G.js";
+import { G } from "./libs/G.js";
 import { router } from "./router.js";
 import GModaler from "./components/modaler/modaler.component.js";
 
 import GInput from "../../components/input/input.component.js";
 import GSelect from "../../components/select/select.component.js";
-/*class Front extends G{
+class Front extends G{
   constructor(){
     super();
-    const _ = this;
-/!*    G_Bus
-      .on('navigate',_.navigate.bind(_))
-      .on('subnavigate',_.subnavigate.bind(_))
-      .on('showHidden',_.showHidden.bind(_))
-      .on('setRoute',_.setRoute.bind(_))*!/
+    const _ = this
   }
-
-
-  ascent(item,targetSelector,endCls){
-    if (targetSelector[0] === '.') {
-      while(!item.classList.contains(targetSelector.substr(1))) {
-        item = item.parentElement;
-        if (item.classList.contains(endCls)) {
-          break;
-          return;
-        }
-      }
-    } else if (targetSelector[0] === '#') {
-      while(!item.id === targetSelector) {
-        item = item.parentElement;
-        if (item.classList.contains(endCls)) {
-          break;
-          return;
-        }
-      }
-    } else {
-      while(!item.tagName === targetSelector) {
-        item = item.parentElement;
-        if (item.classList.contains(endCls)) {
-          break;
-          return;
-        }
-      }
-    }
-    return item;
-  }
-  removeCls(item,cls) {
-    if (item) item.classList.remove(cls)
-  }
-
-
-
-
-
-  showHidden(clickData){
-    const _ = this;
-    let btn = clickData.item,
-      cont = btn.nextElementSibling;
-    if (cont.classList.contains('active')) {
-      cont.classList.remove('active');
-      btn.classList.remove('active');
-    } else {
-      cont.classList.add('active');
-      btn.classList.add('active');
-    }
-  }
-
-  // get list of sessions
-
-
-
   getStarsInfo(){
     return {
       orange:1500,
@@ -124,16 +64,15 @@ import GSelect from "../../components/select/select.component.js";
 
   async init(){
     const _ = this;
-    _.navigationInit(document.querySelector('.navigate-list'));
 
     let data = _.getStarsInfo();
+	  console.log(data);
     _.showCircleGraphic(data);
 
-    let subNav = _.f('.subnavigate-button.active');
-    if (subNav) _.subnavigate({event:{target:subNav}});
-
 	}
-}*/
+}
+
+
 ( async ()=>{
 	let worker = navigator.serviceWorker.register('/worker.js',{scope:'/'});
 	if(!navigator.serviceWorker.controller) location.reload();
@@ -141,8 +80,6 @@ import GSelect from "../../components/select/select.component.js";
 
 
 let pops = [];
-//pops = ['#reminder','#article','#finish'];
-//pops = ['.report','#schedule-result'];
 pops.forEach(function (ident){
 	let item = document.querySelector(ident);
 	if (item) {
@@ -166,6 +103,8 @@ new router().init({
 			routes:{
 				'/admin': 'admin',
 				'/admin/dashboard': 'admin',
+				'/admin/profile': 'admin',
+				'/admin/users': 'admin',
 			}
 		},
 		'student':{
@@ -208,7 +147,7 @@ window.MathJax = {
 //
 //  Load MathJax
 //
-var script = document.createElement('script');
+let script = document.createElement('script');
 script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
 script.setAttribute('id', 'MathJax-script');
 document.head.appendChild(script);

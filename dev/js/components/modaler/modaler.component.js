@@ -36,6 +36,7 @@ export default class GModaler extends GComponent {
 		let
 			showShadow = modalData['showShadow'] ?? true,
 			targetContent = document.querySelector(modalData['target']);
+		targetContent.setAttribute('slot','modal-item')
 		if(!targetContent) return void 0;
 		targetContent.classList.add('modaler-content');
 		_.targetContentParent = targetContent.parentNode;
@@ -44,8 +45,7 @@ export default class GModaler extends GComponent {
 		if(!showShadow) {
 			_.hideShadow();
 		}else{
-			let shadowClass = modalData['shadowClass'] ?? '';
-			_.modalCont.classList.add('shadowClass');
+			modalData['shadowClass'] ? _.modalCont.classList.add(modalData['shadowClass']) : _.modalCont.classList.add('modaler-shadow');
 		}
 		_.append(targetContent);
 	}

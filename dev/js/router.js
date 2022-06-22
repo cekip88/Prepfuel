@@ -48,8 +48,7 @@ export class router {
 		
 		_.clearComponents();
 	
-		let currentPage = await _.includePage(_.currentPageRoute);
-		
+		await _.includePage(_.currentPageRoute);
 		
 	}
 	async definePageRoute(route){
@@ -72,8 +71,6 @@ export class router {
 		}
 		_.routes  = {};
 		_.routesValues = [];
-		
-		
 		for(let role of currentMiddleware){
 			let
 				rs = _.middleware[role]['routes'],
@@ -134,8 +131,7 @@ export class router {
 				}
 				const
 					module = await import(path),
-					moduleName = new module[moduleStr](params);
-				const
+					moduleName = new module[moduleStr](params),
 					view = await import(pathView),
 					viewObj = view[`${name}View`];
 				Object.assign(module[moduleStr].prototype,mixins);
