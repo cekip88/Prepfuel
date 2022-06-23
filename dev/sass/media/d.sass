@@ -5,24 +5,47 @@
 	&.row
 		display: flex
 		justify-content: space-between
+	&-header
+		flex-wrap: nowrap
+		.title
+			margin-bottom: 0
 	&-buttons
-		margin-bottom: 0
+		width: initial
+		margin: 0
+		align-items: center
+		flex-wrap: nowrap
 	&-button
+		margin-right: 24px
 		white-space: nowrap
 		&:last-child
 			margin-right: 0
+		&.active
+			padding: 8px 16px
+			border-radius: 12px
+			background-color: rgb($neutral-800)
+			color: rgb($white)
+			&:after
+				width: 0
 		&:hover
 			color: rgb($neutral-800)
 		&.active:hover
 			color: rgb($white)
-	.col
-		width: 588px
-		&.wide
-			width: 894px
-		&.narrow
-			width: 282px
-			.block
-				padding: 24px 16px
+.col
+	width: 588px
+	&.wide
+		width: 894px
+	&.narrow
+		width: 282px
+		.block
+			padding: 24px 16px
+	&.d384
+		width: 384px
+	&.d486
+		width: 486px
+	&.d690
+		width: 690px
+	&.d792
+		width: 792px
 .modal
 	+w(calc($desk - 64px))
 
@@ -64,7 +87,14 @@
 			margin-top: 0
 		&-input,&-select
 			margin-left: 16px
-
+	&-main
+		&-title
+			font-size: $fz34
+			letter-spacing: -.02em
+			line-height: 40px
+		&-subtitle
+			line-height: $fz30
+			letter-spacing: -.02em
 
 
 .title
@@ -366,3 +396,20 @@
 				padding: 20px 0 0 32px
 			&-footer
 				padding:  20px 32px
+
+
+.admin
+	.section
+		&-button
+			margin-right: 17px
+			&:last-child
+				margin-right: 0
+	.circle
+		&-count
+			&-title
+				font-size: $fz28
+
+
+.stat
+	&-list
+		overflow-x: visible

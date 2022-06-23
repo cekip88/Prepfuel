@@ -25,7 +25,7 @@ const
             'templates/parts/*.pug',
             'templates/*.pug'
         ],
-        dest: projectPath
+        dest: projectPath + '/'
     },
     css = {
         err_title: "Ошибка при компиляции в CSS",

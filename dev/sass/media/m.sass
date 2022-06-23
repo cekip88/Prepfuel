@@ -38,15 +38,14 @@ body
 .section
 	+w($mobile)
 	padding: 0 10px
-	&-header
-		padding: 24px 0 0
+	&>.section
+		&-header
+			padding: 24px 0 0
 	&-buttons
-		@extend %df
-		margin-bottom: 12px
-		@extend %fdc
-		align-items: flex-start
+		@extend %dfa
+		flex-wrap: wrap
 	&-button
-		margin-bottom: 8px
+		margin: 4px 10px 4px 0
 		font-family: $p_semi
 .section,.block-filter
 	&-button
@@ -60,9 +59,14 @@ body
 	margin-top: 12px
 	background-color: rgb($white)
 	border-radius: 12px
-	&-title
+	&-main
+		&-subtitle
+			color: rgb($neutral-400)
+			font-family: $f_semi
+	&-title,&-main-title
 		font-family: $f_bold
 		color: #3F4254
+	&-title
 		&.small
 			font-size: $fz16
 		&:not(:last-child)
@@ -102,11 +106,13 @@ body
 		margin-bottom: 20px
 		&-input,&-select
 			margin-bottom: 20px
+	&-gap
+		margin-bottom: 24px
 
 
-.title,.block-title
+.title,.block-title,.block-main-title
 	width: 100%
-	font-size: calc(20em / 14)
+	font-size: $fz20
 	line-height: initial
 .title
 	margin-bottom: 10px
@@ -1562,45 +1568,9 @@ body
 .stars
 	&-row
 		padding-top: 16px
-	&-circle
-		@extend %dfc
-		+wh(268px)
-		overflow: hidden
-		&>svg
-			+wh(268px)
-			transform: rotate(90deg)
-		circle
-			r: 106
-			stroke-width: 28px
-			fill: none
-			&.orange
-				stroke: rgb($orange)
-			&.red
-				stroke: rgb($red)
-			&.green
-				stroke: rgb($green)
-			&.blue
-				stroke: rgb($blue)
-			&.violet
-				stroke: rgb($viol)
-			&.turquoise
-				stroke: rgb($turquoise)
-			&.gold
-				stroke: rgb($gold)
-		&-count
-			@extend %dfa
-			@extend %fdc
-			position: absolute
-			svg
-				+wh(48px)
-				margin-bottom: 4px
-				fill: rgb($gold)
-			span
-				font-family: $p_bold
-				font-size: $fz22
-
+		.circle
+				margin-bottom: 20px
 	&-info
-		margin-top: 20px
 		&-item
 			@extend %dfa
 			margin-top: 8px
@@ -1643,6 +1613,7 @@ body
 						fill: rgb($gold)
 		&-img
 			+wh(36px)
+			flex: 0 0 36px
 			margin-right: 8px
 			padding: 10px
 			border-radius: 12px
@@ -1656,6 +1627,76 @@ body
 			span
 				font-family: $p_medium
 				color: rgb($neutral-400)
+.circle
+	@extend %dfc
+	+wh(268px)
+	overflow: hidden
+	position: relative
+	&>svg
+		+wh(268px)
+		transform: rotate(90deg)
+	circle
+		r: 106
+		stroke-width: 28px
+		fill: none
+		&.orange
+			stroke: rgb($orange)
+		&.red
+			stroke: rgb($red)
+		&.green
+			stroke: rgb($green)
+		&.blue
+			stroke: rgb($blue)
+		&.violet
+			stroke: rgb($viol)
+		&.turquoise
+			stroke: rgb($turquoise)
+		&.gold
+			stroke: rgb($gold)
+	&-count
+		@extend %dfc
+		@extend %fdc
+		+wh(100%)
+		position: absolute
+		padding: 33px
+		&-icon
+			+wh(48px)
+			margin-bottom: 4px
+			fill: rgb($gold)
+		&-title
+			font-family: $p_bold
+			font-size: $fz22
+		&-text
+			font-family: $p_medium
+			line-height: $fz21
+			color: rgb($neutral-500)
+			font-size: 1em
+			text-align: center
+.stats
+	.stats
+		&-subtitle
+			margin-top: 7px
+	.stars
+		&-info
+			&-img
+				+wh(44px)
+				flex: 0 0 44px
+			&-text
+				font-size: 1em
+				strong
+					color: rgb($neutral-900)
+				span
+					color: rgb($neutral-600)
+	.circle
+			+wh(200px)
+			margin: 20px auto
+			&>svg
+				+wh(200px)
+				transform: rotate(90deg)
+			circle
+				r: 93
+				stroke-width: 14px
+				fill: none
 
 
 .answer
@@ -2283,7 +2324,6 @@ body
 			svg
 				+wh(24px)
 				fill: rgb($blue)
-		&-text
 
 
 .hidden
@@ -2439,3 +2479,140 @@ body
 	&-block
 		.button-blue
 			padding: 13px 26px
+				background-color: rgb($green)
+
+
+.admin
+	&-title
+		font-size: $fz18
+		font-family: $p_medium
+		color: rgb($black)
+	&-subtitle
+		font-family: $p_medium
+		color: rgb($neutral-400)
+		line-height: $fz21
+		font-size: $fz12
+	.section
+		&-button
+			font-size: $fz12
+	&-calendar
+		width: 130px
+		flex: 0 0 130px
+		color: rgb($neutral-600)
+		span
+			font-size: $fz12
+		&-icon
+			+wh(20px)
+			flex: 0 0 20px
+			fill: rgb($neutral-600)
+			svg
+				+wh(100%)
+
+
+.stat
+	&-block
+		&-title
+			font-size: 1em
+			font-family: $p_reg
+			color: rgb($neutral-600)
+	&-list
+		@extend %df
+		align-items: flex-start
+		overflow-x: scroll
+	&-col
+		width: 170px
+		flex: 0 0 170px
+		margin-right: 16px
+		&:last-child
+			margin-right: 0
+		&-list
+			@extend %df
+			@extend %fdc
+		&-item
+			margin-top: 12px
+			padding: 16px
+			border-radius: 6px
+			text-align: center
+			&.turquoise
+				background-color: rgb($turquoise-light)
+				.stat-col-item-text
+					color: rgb($turquoise)
+			&.blue
+				background-color: rgb($blue-light)
+				.stat-col-item-text
+					color: rgb($blue)
+			&.viol-blue
+				background-color: rgb($viol-blue-light)
+				.stat-col-item-text
+					color: rgb($viol-blue)
+			&.red
+				background-color: rgb($red-light)
+				.stat-col-item-text
+					color: rgb($red)
+			&.viol
+				background-color: rgb($viol-light)
+				.stat-col-item-text
+					color: rgb($viol)
+			&.brown
+				background-color: rgb($brown-light)
+				.stat-col-item-text
+					color: rgb($brown)
+			&.maroon
+				background-color: rgb($maroon-light)
+				.stat-col-item-text
+					color: rgb($maroon)
+			&-title
+				font-family: $p_bold
+				font-size: $fz28
+				color: rgb($neutral-900)
+				line-height: 40px
+			&-text
+				font-family: $p_semi
+				line-height: $fz24
+				font-size: 1em
+
+.topStudents
+	&-list
+		margin: 30px 0
+	&-item
+		@extend %dfa
+	&-icon
+		+wh(40px)
+		flex: 0 0 40px
+		padding-top: 4px
+		margin-right: 12px
+		border-radius: 12px
+		background-color: rgb($neutral-200)
+		overflow: hidden
+		img
+			+wh(100%)
+			object-fit: contain
+	&-info
+		width: 100%
+		margin-right: 12px
+	&-name
+		margin-bottom: 2px
+		color: rgb($black)
+		font-family: $p_medium
+		font-size: $fz13
+	&-test
+		color: rgb($neutral-400)
+		font-family: $p_medium
+		font-size: $fz12
+	&-points
+		@extend %df
+		@extend %fdc
+		align-items: flex-end
+		flex-shrink: 0
+		strong,span
+			white-space: nowrap
+		strong
+			font-family: $p_bold
+			font-size: $fz20
+			color: $neutral-900
+		span
+			font-family: $p_medium
+			color: rgb($neutral-400)
+			font-size: $fz12
+	&-button
+		width: 100%

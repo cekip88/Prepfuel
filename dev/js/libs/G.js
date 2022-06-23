@@ -45,6 +45,7 @@ export class G extends G_G{
 				}
 			}
 		}
+		G_Bus.trigger(_.componentName,'domReady');
 	}
 	getModule(blockData){
 		/*
