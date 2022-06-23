@@ -2339,6 +2339,10 @@ body
 			&:last-child
 				.adding-list-digit:after
 					display: none
+			&.active
+				.adding-list-digit
+					background-color: #00A3FF
+					color: #fff
 		&-digit
 			+wh(40px)
 			@extend %dfc
@@ -2421,5 +2425,17 @@ body
 			&:after
 				+af
 				+wh(18px)
+				+bdrs(18px)
 				margin-left: 29px
-				background-color: rgb($green)
+				background-color: rgba(80,205,137,.3)
+				background-repeat: no-repeat
+				background-image: url(data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+DQoJPHBhdGggZD0iTTQuNTMwMzMgMTIuOTY5N0M0LjIzNzQ0IDEyLjY3NjggMy43NjI1NiAxMi42NzY4IDMuNDY5NjcgMTIuOTY5N0MzLjE3Njc4IDEzLjI2MjYgMy4xNzY3OCAxMy43Mzc0IDMuNDY5NjcgMTQuMDMwM0w3Ljk2OTY3IDE4LjUzMDNDOC4yNjI1NiAxOC44MjMyIDguNzM3NDQgMTguODIzMiA5LjAzMDMzIDE4LjUzMDNMMjAuMDMwMyA3LjUzMDMzQzIwLjMyMzIgNy4yMzc0NCAyMC4zMjMyIDYuNzYyNTYgMjAuMDMwMyA2LjQ2OTY3QzE5LjczNzQgNi4xNzY3OCAxOS4yNjI2IDYuMTc2NzggMTguOTY5NyA2LjQ2OTY3TDguNSAxNi45MzkzTDQuNTMwMzMgMTIuOTY5N1oiIGZpbGw9IiM1MENEODkiLz4NCjwvc3ZnPg==)
+				background-position: center
+				background-size: 13px
+			&.feat:after
+				background-color: rgba(161,165,183,.3)
+				background-size: 7px
+				background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMiAxMiI+DQoJPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMC45MzM2IDAuMjkyODk0QzEwLjU0MzEgLTAuMDk3NjMwNyA5LjkwOTkxIC0wLjA5NzYzMTQgOS41MTkzOCAwLjI5Mjg5M0w1Ljc5Mjc1IDQuMDE5NTNMMi4wNjYyOSAwLjI5MzA2OEMxLjY3NTc2IC0wLjA5NzQ1NTkgMS4wNDI2IC0wLjA5NzQ1NTkgMC42NTIwNzMgMC4yOTMwNjhMMC4yOTI4OTMgMC42NTIyNDlDLTAuMDk3NjMxMyAxLjA0Mjc3IC0wLjA5NzYzMDggMS42NzU5NCAwLjI5Mjg5MyAyLjA2NjQ2TDQuMDE5MzUgNS43OTI5MkwwLjI5MzIzMSA5LjUxOTA0Qy0wLjA5NzI5MjkgOS45MDk1NyAtMC4wOTcyOTI5IDEwLjU0MjcgMC4yOTMyMzEgMTAuOTMzM0wwLjY1MjQxMiAxMS4yOTI0QzEuMDQyOTQgMTEuNjgzIDEuNjc2MSAxMS42ODMgMi4wNjY2MiAxMS4yOTI0TDUuNzkyNzUgNy41NjYzMkw5LjUxOTA0IDExLjI5MjZDOS45MDk1NyAxMS42ODMxIDEwLjU0MjcgMTEuNjgzMSAxMC45MzMzIDExLjI5MjZMMTEuMjkyNCAxMC45MzM0QzExLjY4MyAxMC41NDI5IDExLjY4MyA5LjkwOTc0IDExLjI5MjQgOS41MTkyMkw3LjU2NjE0IDUuNzkyOTJMMTEuMjkyOCAyLjA2NjI5QzExLjY4MzMgMS42NzU3NiAxMS42ODMzIDEuMDQyNiAxMS4yOTI4IDAuNjUyMDc0TDEwLjkzMzYgMC4yOTI4OTRaIiBmaWxsPSIjQTFBNUI3Ii8+DQo8L3N2Zz4=)
+	&-block
+		.button-blue
+			padding: 13px 26px
