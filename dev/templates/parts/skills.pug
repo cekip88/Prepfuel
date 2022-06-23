@@ -5,11 +5,11 @@
 		button.button
 			span What are stars?
 	.stars-row
-		.stars-circle
-			.stars-circle-count
-				svg
+		.stars-circle.circle(data-radius="106,134" data-borders='28')
+			.circle-count
+				svg.circle-count-icon
 					use(xlink:href='img/sprite.svg#stars')
-				span 8,345
+				span.circle-count-title 8,345
 		ul.stars-info
 			li.stars-info-item.orange
 				.stars-info-img

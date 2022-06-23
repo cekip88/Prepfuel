@@ -75,7 +75,12 @@ export default {
 		<label class="inpt ${data['className'] ?? ''}">
 			${data['title'] ? '<h6 class="inpt-title">' + data['title']+'</h6>' : ''}
 			<div class="date-cont" data-mouseDown="datePick">
-				<input type="text" class="date-value inpt-value" data-focusout='dateInputFocusOut' ${placeholder ? 'placeholder="' + placeholder+'"' : ''}>
+				<input 
+					type="text" 
+					class="date-value inpt-value" 
+					data-focusout='dateInputFocusOut' 
+					${placeholder ? 'placeholder="' + placeholder + '"' : ''}
+				>
 				<input class="inpt-date" hidden type="date">
 				${(icon != false && icon != null && icon != 'false') ? icon : ''}
 			</div>

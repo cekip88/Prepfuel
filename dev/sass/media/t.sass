@@ -7,16 +7,46 @@
 		justify-content: space-between
 		align-items: center
 		flex-wrap: wrap
-.section,.block-filter
+	&>.section-header .section-buttons
+		width: initial
+		margin-top: 0
 	&-buttons
-		margin-bottom: 24px
+		width: 100%
+		margin-top: 12px
+	&-button
+		margin: 0 10px 0 0
+.block-filter
+	&-buttons
+		width: 100%
+		margin: 12px 0 24px
 		flex-direction: row
 		justify-content: space-between
 	&-button
 		margin-bottom: 0
+.row
+	padding-top: 24px
+	display: flex
+	justify-content: space-between
+	align-items: flex-start
+	&.full
+		align-items: stretch
+	.block
+		margin-top: 0
+		height: 100%
+
+.col
+	&.t260
+		width: 260px
+	&.t456
+		width: 456px
 .block
 	margin-top: 24px
 	padding: 30px
+	&-main
+		&-title
+			font-size: $fz28
+		&-subtitle
+			font-size: $fz16
 	&-title
 		&:not(:last-child)
 			margin-bottom: 0
@@ -226,17 +256,30 @@
 	&-row
 		display: flex
 		align-items: flex-start
-	&-circle
+		.stars
+			&-info
+				margin-left: 48px
+			&-circle
+				margin: 0
+.circle
+	+wh(310px)
+	&>svg
 		+wh(310px)
-		&>svg
-			+wh(310px)
-		circle
-			r: 134
-	&-info
-		margin-left: 48px
-		margin-top: 0
-
-
+	circle
+		r: 134
+.stats
+	.stars
+		&-info
+			&-item
+				margin-bottom: 24px
+				&:last-child
+					margin-bottom: 0
+			&-text
+				strong
+					font-size: $fz18
+					line-height: $fz24
+	.circle
+		margin: 40px auto
 .questions
 	&-item
 		width: 17%
@@ -390,3 +433,4 @@
 		&-row
 			display: flex
 			column-gap: 20px
+
