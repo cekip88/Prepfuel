@@ -1,22 +1,50 @@
 export const view = {
 	dashboardTabs(){
+		const _ = this;
 		return `
 			<div class="subnavigate">
 				<div class="section">
-					<button class="subnavigate-button active"><span>Students</span></button>
-					<button class="subnavigate-button"><span>Parents</span></button>
-					<button class="subnavigate-button"><span>Payments</span></button>
+					<button class="subnavigate-button active" data-click="${_.componentName}:changeSection" section="students"><span>Students</span></button>
+					<button class="subnavigate-button" data-click="${_.componentName}:changeSection" section="parents"><span>Parents</span></button>
+					<button class="subnavigate-button" data-click="${_.componentName}:changeSection" section="payments"><span>Payments</span></button>
 				</div>
 			</div>
 		`;
 	},
-	dashboardUsersStats({title,subtite,countText}){
+
+	sectionHeaderTpl({title,subtitle,buttons,gap = true}){
+		let tpl = buttons ? `<div class="section-header ${gap ? 'block-gap' : ''}">` : '';
+
+		if (!title && subtitle) {
+			tpl += `<h6 class="admin-subtitle ${!buttons && gap ? "block-gap" : ''}"><span>${subtitle}</span></h6>`
+		} else if (!subtitle && title) {
+			tpl += `<h5 class="admin-title ${!buttons && gap ? "block-gap" : ''}"><span>${title}</span></h5>`
+		} else if (title && subtitle) {
+			tpl += `
+				<div ${!buttons && gap ? 'class="block-gap"' : ''}>
+					<h5 class="admin-title"><span>${title}</span></h5>
+					<h6 class="admin-subtitle"><span>${subtitle}</span></h6>
+				</div>
+			`
+		}
+
+		if (buttons) {
+			tpl += `<div class="section-buttons">`;
+			for (let key in buttons) {
+				tpl += `<button class="section-button ${buttons[key]}"><span>${key}</span></button>`
+			}
+			tpl += '</div>';
+		}
+
+		tpl += buttons ? '</div>' : '';
+		return tpl
+	},
+
+	usersStatsTpl({title,subtitle,countText}){
+		const _ = this;
 		return `
 			<div class="block">
-				<div class="">
-					<h5 class="admin-title"><span>${title}</span></h5>
-					<h6 class="admin-subtitle"><span>${subtite}</span></h6>
-				</div>
+				${_.sectionHeaderTpl({title,subtitle,gap:false})}
 				<div class="stars-circle circle">
 					<div class="circle-count">
 						<span class="circle-count-title"></span>
@@ -27,6 +55,19 @@ export const view = {
 			</div>
 		`
 	},
+	statsInfoTpl({cls,value,title}){
+		return `
+			<li class="stars-info-item ${cls}">
+				<div class="stars-info-img">
+					<svg>
+						<use xlink:href="#user"></use>
+					</svg>
+				</div>
+				<div class="stars-info-text"><strong>${value}</strong><span>${title}</span></div>
+			</li>
+		`
+	},
+
 	adminCalendarTpl(){
 		return `
 			<div class="calendar-row admin-calendar block-gap">
@@ -57,260 +98,238 @@ export const view = {
 			</div>
 		`
 	},
-	averageTime(){
+
+	averageBlockTpl({info,header}){
 		const _ = this;
 		return `
 			<div class="block">
-				<div class="section-header block-gap">
-					<div>
-						<h5 class="admin-title"><span>Average time spent per session</span></h5>
-						<h6 class="admin-subtitle"><span>Students spent in app over 20 minutes on average</span></h6>
-					</div>
-					<div class="section-buttons">
-						<button class="section-button active"><span>Today</span></button>
-						<button class="section-button"><span>Week</span></button>
-						<button class="section-button"><span>Month</span></button>
-						<button class="section-button"><span>6 Month</span></button>
-						<button class="section-button"><span>1 Year</span></button>
-						<button class="section-button"><span>All</span></button>
-					</div>
-				</div>
+				${_.sectionHeaderTpl(header)}
 				${_.adminCalendarTpl()}
 				<div class="block-gap">
-					<h2 class="block-main-title">20 minutes</h2>
-					<h5 class="block-main-subtitle">Average time spent per session</h5>
+					<h2 class="block-main-title">${info['title']}</h2>
+					<h5 class="block-main-subtitle">${info['subtitle']}</h5>
 				</div>
-				<img src="../../../../../img/averageWidget.png" alt="">
+				<img src="../../../../../img/${info['graphic']}" alt="">
 			</div>
 		`
 	},
-	practiceTestStats(){
+
+	practiceTestStatsTpl({header,blocks}){
 		const _ = this;
-		return `
+		let tpl = `
 			<div class="block">
-				${_.sectionHeaderTpl({
-					title:'Practice Test Stats',
-					subtitle:'More than 6k+ tests taken',
-					buttons:{'Week':'','Month':'','6 Month':'','1 Year':'active','All':''}
-				})}
+				${_.sectionHeaderTpl(header)}
 				${_.adminCalendarTpl()}
 				<div class="stat-cards">
-					<div class="stat-block block-gap">
-						<h6 class="stat-block-title">The number of practice tests taken</h6>
-						<ul class="stat-list">
-							<li class="stat-col">
-								<ul class="stat-col-list">
-									<li class="stat-col-item turquoise">
-										<h6 class="stat-col-item-title">2.3</h6>
-										<p class="stat-col-item-text">Average<br>taken</p>
-									</li>
-								</ul>
-							</li>
-							<li class="stat-col">
-								<ul class="stat-col-list">
-									<li class="stat-col-item turquoise">
-										<h6 class="stat-col-item-title">6,800</h6>
-										<p class="stat-col-item-text">Total<br>taken</p>
-									</li>
-								</ul>
-							</li>
-							<li class="stat-col">
-								<ul class="stat-col-list">
-									<li class="stat-col-item viol-blue">
-										<h6 class="stat-col-item-title">1.8</h6>
-										<p class="stat-col-item-text">Average<br>completed</p>
-									</li>
-								</ul>
-							</li>
-							<li class="stat-col">
-								<ul class="stat-col-list">
-									<li class="stat-col-item viol-blue">
-										<h6 class="stat-col-item-title">5,300</h6>
-										<p class="stat-col-item-text">Total<br>completed</p>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-					<div class="stat-block">
-						<h6 class="stat-block-title">The practice test stat</h6>
-						<ul class="stat-list">
-							<li class="stat-col">
-								<ul class="stat-col-list">
-									<li class="stat-col-item red">
-										<p class="stat-col-item-text">Practice Test 1</p>
-									</li>
-									<li class="stat-col-item red">
-										<h6 class="stat-col-item-title">2800</h6>
-										<p class="stat-col-item-text">Taken</p>
-									</li>
-									<li class="stat-col-item red">
-										<h6 class="stat-col-item-title">1800</h6>
-										<p class="stat-col-item-text">Completed</p>
-									</li>
-									<li class="stat-col-item red">
-										<h6 class="stat-col-item-title">1000</h6>
-										<p class="stat-col-item-text">Avg. Score</p>
-									</li>
-								</ul>
-							</li>
-							<li class="stat-col">
-								<ul class="stat-col-list">
-									<li class="stat-col-item maroon">
-										<p class="stat-col-item-text">Practice Test 2</p>
-									</li>
-									<li class="stat-col-item maroon">
-										<h6 class="stat-col-item-title">2000</h6>
-										<p class="stat-col-item-text">Taken</p>
-									</li>
-									<li class="stat-col-item maroon">
-										<h6 class="stat-col-item-title">1800</h6>
-										<p class="stat-col-item-text">Completed</p>
-									</li>
-									<li class="stat-col-item maroon">
-										<h6 class="stat-col-item-title">1200</h6>
-										<p class="stat-col-item-text">Avg. Score</p>
-									</li>
-								</ul>
-							</li>
-							<li class="stat-col">
-								<ul class="stat-col-list">
-									<li class="stat-col-item blue">
-										<p class="stat-col-item-text">Practice Test 3</p>
-									</li>
-									<li class="stat-col-item blue">
-										<h6 class="stat-col-item-title">1100</h6>
-										<p class="stat-col-item-text">Taken</p>
-									</li>
-									<li class="stat-col-item blue">
-										<h6 class="stat-col-item-title">900</h6>
-										<p class="stat-col-item-text">Completed</p>
-									</li>
-									<li class="stat-col-item blue">
-										<h6 class="stat-col-item-title">1300</h6>
-										<p class="stat-col-item-text">Avg. Score</p>
-									</li>
-								</ul>
-							</li>
-							<li class="stat-col">
-								<ul class="stat-col-list">
-									<li class="stat-col-item viol">
-										<p class="stat-col-item-text">Practice Test 4</p>
-									</li>
-									<li class="stat-col-item viol">
-										<h6 class="stat-col-item-title">900</h6>
-										<p class="stat-col-item-text">Taken</p>
-									</li>
-									<li class="stat-col-item viol">
-										<h6 class="stat-col-item-title">800</h6>
-										<p class="stat-col-item-text">Completed</p>
-									</li>
-									<li class="stat-col-item viol">
-										<h6 class="stat-col-item-title">1400</h6>
-										<p class="stat-col-item-text">Avg. Score</p>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
+	`;
+		for (let i = 0; i < blocks.length; i++) {
+			tpl += _.practiceTestStatsBlockTpl(blocks[i]);
+		}
+
+		tpl += `</div></div>`;
+		return tpl;
+	},
+	practiceTestStatsBlockTpl({title,gap = true,list}){
+		const _ = this;
+		let tpl = `
+			<div class="stat-block ${gap ? 'block-gap' : ''}">
+				<h6 class="stat-block-title">${title}</h6>
+				<ul class="stat-list">`;
+		for (let i = 0; i < list.length; i++) {
+			tpl += `<li class="stat-col"><ul class="stat-col-list">`;
+
+			for (let j = 0; j < list[i].length; j++) {
+				tpl += _.practiceTestStatsBlockItemTpl(list[i][j]);
+			}
+
+			tpl += `</ul></li>`;
+		}
+		tpl += '</ul></div>';
+		return tpl;
+	},
+	practiceTestStatsBlockItemTpl({value,desc,color = ''}){
+		return `
+			<li class="stat-col-item ${color}">
+				${value ? '<h6 class="stat-col-item-title">' + value + '</h6>' : ''}
+				${desc ? '<p class="stat-col-item-text">' + desc + '</p>' : ''}
+			</li>
 		`
 	},
-	sectionHeaderTpl({title,subtitle,buttons,gap = true}){
+
+	topStudentsListTpl({header,info}){
 		const _ = this;
-		let tpl = `<div class="section-header ${gap ? 'block-gap' : ''}">`;
-		if (!title && subtitle) {
-			tpl += `<h6 class="admin-subtitle"><span>${subtitle}</span></h6>`
-		} else if (!subtitle && title) {
-			tpl += `<h5 class="admin-title"><span>${title}</span></h5>`
-		} else if (title && subtitle) {
-			tpl += `
-				<div>
-					<h5 class="admin-title"><span>${title}</span></h5>
-					<h6 class="admin-subtitle"><span>${subtitle}</span></h6>
-				</div>
-			`
-		}
-		tpl += `<div class="section-buttons">`;
-		for (let key in buttons) {
-			tpl += `<button class="section-button ${buttons[key]}"><span>${key}</span></button>`
-		}
-		tpl += `</div>
-			</div>
+		let tpl = `
+			<div class="block">
+				${_.sectionHeaderTpl(header)}
+				<ul class="topStudents-list">
 		`;
-		return tpl
-	},
-	topStudentsListTpl(data){
-		const _ = this;
-		let tpl = `<ul class="topStudents-list">`;
-		for (let i = 0; i < data.length; i++) {
+
+		for (let i = 0; i < info.length; i++) {
 			tpl += `
 				<li class="topStudents-item block-gap">
 					<div class="topStudents-icon">
-						<img src="../../../../../img/${data[i]['icon']}.svg" alt="">
+						<img src="../../../../../img/${info[i]['icon']}.svg" alt="">
 					</div>
 					<div class="topStudents-info">
-						<h6 class="topStudents-name">${data[i]['name']}</h6>
-						<div class="topStudents-test">${data[i]['testInfo']}</div>
+						<h6 class="topStudents-name">${info[i]['name']}</h6>
+						<div class="topStudents-test">${info[i]['testInfo']}</div>
 					</div>
-					<div class="topStudents-points"><strong>${data[i]['points']}</strong><span>Points</span></div>
+					<div class="topStudents-points">
+						<strong>${info[i]['points']}</strong>
+						<span>Points</span>
+					</div>
 				</li>
-		`
+			`
 		}
+
 		tpl += `
-			</ul>
-			<button class="button topStudents-button">Show More Results</button>
+				</ul>
+				<button class="button results">Show More Results</button>
+			</div>
 		`;
 		return tpl;
 	},
-	dashboardBody(){
+
+	dashTableTpl({header,info}){
+		const _ = this;
+		let tpl = '<div class="block">';
+		tpl += _.sectionHeaderTpl(header);
+		tpl += '<div class="admin-dashboard-table-cont">';
+		tpl += _.dashTableHeadTpl(info['tableHead']);
+		tpl += _.dashTableBodyTpl(info['tableBody']);
+		tpl += '</div>';
+		tpl += `
+				<button class="button results">Show More Results</button>
+			</div>
+		`;
+		return tpl;
+	},
+	dashTableHeadTpl(data){
+		let tpl = '<table class="admin-dashboard-table"><thead><tr>';
+		for (let i = 0; i < data.length; i++) {
+			tpl += `<th><div class="admin-dashboard-table-th">${data[i]}</div></th>`;
+		}
+		tpl += '</tr></thead>';
+		return tpl;
+	},
+	dashTableBodyTpl(data){
+		const _ = this;
+		let tpl = '<tbody>';
+		for (let i = 0; i < data.length; i++) {
+			tpl += _.dashTableRowTpl(data[i]);
+		}
+		tpl += '</tbody></table>';
+		return tpl;
+	},
+	dashTableRowTpl(data){
+		const _ = this;
+		let tpl = '<tr>';
+		for (let i = 0; i < data.length; i++) {
+			let
+				item = data[i],
+				title = item['title'] ?? null,
+				button = item['button'] ? `<button class="button">${item['button'].text}</button>` : null,
+				color = '',text = '';
+
+			if (title) {
+				if (title['type'] == 'number') text = title['text'].toString().replace(_.division, '$&,');
+				else if (title['type'] == 'percent') {
+					color = 'green';
+					if (title['text'] < 70) color = 'yellow';
+					if (title['text'] < 50) color = 'orange';
+					if (title['text'] < 20) color = 'red';
+					text = title['text'] + '%';
+				} else text = title['text'];
+			}
+
+			tpl += `
+				<td><div class="admin-dashboard-table-td${item['text'] ? ' desc' : ''}">
+					${title ? '<strong' + (color ? ` class="${color}"` : '') + '>' + text + '</strong>' : ''}
+					${item['text'] ? '<span>' + item['text'] + '</span>' : ''}
+					${button ?? ''}
+				</div></td>
+			`
+		}
+		tpl += '</tr>';
+		return tpl;
+	},
+
+
+	skillsLevelStatsBlockTpl({title,blocks}){
+		const _ = this;
+		let tpl = `<div><h5 class="skills-level-title">${title}</h5><ul class="skills-level-list">`;
+
+		for (let i = 0; i < blocks.length; i++) {
+			tpl += _.skillsLevelStatsItemTpl(blocks[i]);
+		}
+
+		tpl += '</ul></div>';
+		return tpl;
+	},
+	skillsLevelStatsItemTpl({title,role,list,max = 4000}){
+		const _ = this;
+		let
+			step = parseInt(max) / 8,
+			value = max;
+		let tpl = `
+			<li class="skills-level-item">
+			<h6 class="skills-level-subtitle">${title}</h6>
+			<h6 class="skills-level-role"># ${role}</h6>
+			<div class="skills-level-graphic-cont">
+				<div class="skills-level-graphic-gradations">`;
+		for (let i = 0; i < 9; i++) {
+			tpl += `<span>${value}</span>`;
+			value -= step;
+		}
+		tpl += `</div><div class="skills-level-values"></div></div></li>`;
+		return tpl;
+	},
+	skillsLevelStatsValueTpl({title,value}){
 		const _ = this;
 		let tpl = `
-			<div class="section admin">
-				<div class="row full">
-					<div class="col stats t260 d384 user-stats">
-						${_.dashboardUsersStats({title:'Users Stats',subtite:'More than 7k+ students',countText:'Total Students Registered'})}
-					</div>
-					<div class="col t456 tl716 d792">
-						${_.averageTime()}
-					</div>
-				</div>
-				${_.sectionHeaderTpl({title:'Course',buttons:{'ISEE':'active','SSAT':'','SHSAT':''},gap:false})}
-				<div class="row full">
-					<div class="col stats t260 d384 system-stats">
-						${_.dashboardUsersStats({title:'Stars Earned In The System',subtite:'More than 800k+ stars earned by students',countText:'Stars Earned by Students'})}
-					</div>
-					<div class="col t456 tl716 d792">
-						${_.practiceTestStats()}
-					</div>
-				</div>
-				<div class="row full">
-					<div class="col d690">
-						<div class="block">
-							${_.sectionHeaderTpl(_.averageTestScoreData)}
-							${_.adminCalendarTpl()}
-							<div class="block-gap">
-								<h2 class="block-main-title">20 minutes</h2>
-								<h5 class="block-main-subtitle">Average time spent per session</h5>
-							</div>
-							<img src="../../../../../img/averageTestWidget.png" alt="">
+			<div class="skills-level-unit">
+				<div class="skills-level-value" style="height: ${value}px;"></div>
+				<div class="skills-level-value-title">${title}</div>
+			</div>
+		`;
+		return tpl;
+	},
+
+	studentDashboardBody(){
+		const _ = this;
+		let tpl = `
+			<div class="admin">
+				<div class="section ">
+					<div class="row full">
+						<div class="col stats t260 d384 user-stats">
+							${_.usersStatsTpl(_.userStats['info'])}
+						</div>
+						<div class="col t456 tl716 d792">
+							${_.averageBlockTpl(_.averageTimeSpentData)}
 						</div>
 					</div>
-					<div class="col d486">
-						<div class="block">
-							<div>
-								<h5 class="admin-title"><span>The largest test score improvement</span></h5>
-								<h6 class="admin-subtitle"><span>Top 5 students</span></h6>
-							</div>
-							${_.topStudentsListTpl([
-								{'name':'Ricky Hunt','icon':'yellow-boy','testInfo':'Practice Test 2 - March 26, 2022','points':'+ 550'},
-								{'name':'Jane Cooper','icon':'red-afro-girl','testInfo':'Practice Test 4 - March 26, 2022','points':'+ 530'},
-								{'name':'Cameron Williamson','icon':'green-with-blue-hair-boy','testInfo':'Practice Test 3 - March 26, 2022','points':'+ 500'},
-								{'name':'Guy Hawkins','icon':'gray-boy','testInfo':'Practice Test 3 - March 26, 2022','points':'+ 500'},
-								{'name':'blue-girl','icon':'blue-girl','testInfo':'Practice Test 3 - March 26, 2022','points':'+ 500'},
-							])}
+					${_.sectionHeaderTpl(_.coursesVariants)}
+					<div class="row full">
+						<div class="col stats t260 d384 system-stats">
+							${_.usersStatsTpl(_.systemStats['info'])}
 						</div>
+						<div class="col t456 tl716 d792">
+							${_.practiceTestStatsTpl(_.practiceTestStatsData)}
+						</div>
+					</div>
+					<div class="row full">
+						<div class="col d690">
+							${_.averageBlockTpl(_.averageTestScoreData)}
+						</div>
+						<div class="col d486">
+							${_.topStudentsListTpl(_.studentsTop)}
+						</div>
+					</div>
+					${_.dashTableTpl(_.mostWatchedVideosData)}
+					${_.dashTableTpl(_.mostCompQuestionsData)}
+					${_.dashTableTpl(_.mostSimpleQuestionsData)}
+					<div class="block skills-level">
+						${_.sectionHeaderTpl(_.skillsLevelStatsTplData)}
 					</div>
 				</div>
 			</div>
