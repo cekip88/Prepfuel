@@ -226,6 +226,8 @@ body
 		white-space: nowrap
 		font-family: $f_bold
 		color: rgb($neutral-500)
+	&.results
+		width: 100%
 
 
 .pagination
@@ -1494,6 +1496,89 @@ body
 						left: 0
 						bottom: 4px
 
+.skills
+	&-level
+		&-title
+			margin-top: 20px
+			font-size: $fz16
+			font-family: $p_semi
+			color: rgb($neutral-700)
+		&-subtitle
+			font-size: 1em
+			color: rgb($neutral-600)
+			font-family: $p_medium
+			line-height: $fz20
+		&-list
+			@extend %df
+			padding-top: 20px
+		&-item
+			@extend %df
+			@extend %fdc
+			margin-right: 56px
+			justify-content: space-between
+			position: relative
+		&-role
+			transform: rotate(-90deg) translateX(50%)
+			color: rgb($neutral-400)
+			font-size: $fz12
+			font-family: $p_medium
+			position: absolute
+			left: -27px
+			bottom: 37px
+		&-graphic
+			&-cont
+				@extend %df
+				width: 242px
+				height: 280px
+				margin-top: 20px
+				padding-left: 20px
+				align-items: flex-end
+			&-gradations
+				@extend %df
+				@extend %fdc
+				margin-right: 13px
+				margin-bottom: auto
+				font-family: $p_medium
+				font-size: $fz12
+				color: rgb($neutral-400)
+				span
+					@extend %dfa
+					width: 34px
+					margin-bottom: 18px
+					line-height: $fz12
+					position: relative
+					&:after
+						+af
+						+wh(175px,0)
+						border-top: 1px dashed rgb($neutral-400)
+						position: absolute
+						left: 47px
+					&:last-child
+						margin-bottom: 0
+		&-values
+			@extend %df
+			width: 100%
+			align-items: flex-end
+			justify-content: space-between
+		&-unit
+			@extend %dfa
+			@extend %fdc
+			max-width: 25%
+		&-value
+			width: 6px
+			background-color: rgb($viol)
+			border-radius: 3px 3px 0 0
+			position: relative
+			z-index: 1
+			&-title
+				@extend %df
+				height: 48px
+				align-items: flex-end
+				font-family: $p_medium
+				color: rgb($neutral-400)
+				font-size: $fz12
+				text-transform: uppercase
+
 
 .achievements
 	&-list
@@ -1697,6 +1782,70 @@ body
 				r: 93
 				stroke-width: 14px
 				fill: none
+
+.stat
+	&-block
+		&-title
+			font-size: 1em
+			font-family: $p_reg
+			color: rgb($neutral-600)
+	&-list
+		@extend %df
+		align-items: flex-start
+		overflow-x: scroll
+	&-col
+		width: 170px
+		flex: 0 0 170px
+		margin-right: 16px
+		&:last-child
+			margin-right: 0
+		&-list
+			@extend %df
+			@extend %fdc
+		&-item
+			margin-top: 12px
+			padding: 16px
+			border-radius: 6px
+			text-align: center
+			&.turquoise
+				background-color: rgb($turquoise-light)
+				.stat-col-item-text
+					color: rgb($turquoise)
+			&.blue
+				background-color: rgb($blue-light)
+				.stat-col-item-text
+					color: rgb($blue)
+			&.viol-blue
+				background-color: rgb($viol-blue-light)
+				.stat-col-item-text
+					color: rgb($viol-blue)
+			&.red
+				background-color: rgb($red-light)
+				.stat-col-item-text
+					color: rgb($red)
+			&.viol
+				background-color: rgb($viol-light)
+				.stat-col-item-text
+					color: rgb($viol)
+			&.brown
+				background-color: rgb($brown-light)
+				.stat-col-item-text
+					color: rgb($brown)
+			&.maroon
+				background-color: rgb($maroon-light)
+				.stat-col-item-text
+					color: rgb($maroon)
+			&-title
+				font-family: $p_bold
+				font-size: $fz28
+				color: rgb($neutral-900)
+				line-height: 40px
+			&-text
+				max-width: 80px
+				margin: 0 auto
+				font-family: $p_semi
+				line-height: $fz24
+				font-size: 1em
 
 
 .answer
@@ -2564,6 +2713,7 @@ body
 		.form-label
 			line-height: 20px
 .admin
+	padding-bottom: 48px
 	&-title
 		font-size: $fz18
 		font-family: $p_medium
@@ -2588,69 +2738,86 @@ body
 			fill: rgb($neutral-600)
 			svg
 				+wh(100%)
+	&-dashboard
+		&-table
+			td
+				border-top: 1px solid rgb($neutral-300)
+			td:first-child .admin-dashboard-table-td,th:first-child .admin-dashboard-table-th
+				padding-left: 0
+			td:last-child .admin-dashboard-table-td
+				padding-right: 0
+			&-th
+				padding: 0 25px 20px
+				font-family: $f_bold
+				font-size: $fz12
+				color: rgb($neutral-400)
+				text-transform: uppercase
+				text-align: left
+				white-space: nowrap
+			&-td
+				padding: 16px 25px
+				text-align: center
+				&.desc
+					@extend %df
+					@extend %fdc
+					text-align: left
+				strong
+					font-size: 1em
+					font-family: $p_semi
+					color: #464E5F
+					white-space: nowrap
+					&.green
+						color: rgb($green)
+					&.yellow
+						color: rgb($gold)
+					&.orange
+						color: rgb($orange)
+					&.red
+						color: rgb($red)
+				span
+					color: rgb($neutral-400)
+					font-family: $p_medium
+					font-size: $fz13
+			&-cont
+				width: 100%
+				margin: 20px 0
+				overflow-x: scroll
 
-
-.stat
-	&-block
-		&-title
-			font-size: 1em
-			font-family: $p_reg
-			color: rgb($neutral-600)
+.newUsers
 	&-list
-		@extend %df
-		align-items: flex-start
-		overflow-x: scroll
-	&-col
-		width: 170px
-		flex: 0 0 170px
-		margin-right: 16px
-		&:last-child
-			margin-right: 0
-		&-list
-			@extend %df
-			@extend %fdc
-		&-item
-			margin-top: 12px
-			padding: 16px
-			border-radius: 6px
-			text-align: center
-			&.turquoise
-				background-color: rgb($turquoise-light)
-				.stat-col-item-text
-					color: rgb($turquoise)
-			&.blue
-				background-color: rgb($blue-light)
-				.stat-col-item-text
-					color: rgb($blue)
-			&.viol-blue
-				background-color: rgb($viol-blue-light)
-				.stat-col-item-text
-					color: rgb($viol-blue)
-			&.red
-				background-color: rgb($red-light)
-				.stat-col-item-text
-					color: rgb($red)
-			&.viol
+	&-item
+		@extend %dfa
+		&.parents
+			.newUsers-icon
 				background-color: rgb($viol-light)
-				.stat-col-item-text
-					color: rgb($viol)
-			&.brown
-				background-color: rgb($brown-light)
-				.stat-col-item-text
-					color: rgb($brown)
-			&.maroon
-				background-color: rgb($maroon-light)
-				.stat-col-item-text
-					color: rgb($maroon)
-			&-title
-				font-family: $p_bold
-				font-size: $fz28
-				color: rgb($neutral-900)
-				line-height: 40px
-			&-text
-				font-family: $p_semi
-				line-height: $fz24
-				font-size: 1em
+				svg
+					fill: rgb($viol)
+		&.students
+			.newUsers-icon
+				background-color: rgb($green-light)
+				svg
+					fill: rgb($green)
+	&-icon
+		@extend %dfc
+		+wh(60px)
+		margin-right: 24px
+		border-radius: 8px
+		svg
+			+wh(32px)
+	&-info
+		@extend %df
+		@extend %fdc
+		strong
+			font-family: $p_bold
+			color: rgb($neutral-900)
+			line-height: calc(40em / 28)
+			font-size: $fz28
+		span
+			font-family: $p_semi
+			color: rgb($neutral-500)
+			line-height: $fz20
+			font-size: 1em
+
 
 .topStudents
 	&-list
@@ -2695,5 +2862,3 @@ body
 			font-family: $p_medium
 			color: rgb($neutral-400)
 			font-size: $fz12
-	&-button
-		width: 100%
