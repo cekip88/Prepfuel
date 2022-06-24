@@ -74,7 +74,6 @@ export class TestsModule extends StudentPage{
 		};
 		
 		if(section == 'score') {
-		
 			if(!Model.isFinished()){
 				console.log('Last answer saved',await _.saveAnswerToDB());
 				console.log('Test finished',await Model.finishTest({}));
@@ -99,7 +98,6 @@ export class TestsModule extends StudentPage{
 	//	_._$.currentSection = section;
 		await _.render();
 		if(section == 'questions'){
-
 			_.fillCheckedAnswers();
 			if(Model.isFinished()){
 				await Model.getTestResults();

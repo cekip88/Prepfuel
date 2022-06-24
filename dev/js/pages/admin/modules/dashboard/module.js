@@ -29,6 +29,22 @@ export class DashboardModule extends AdminPage{
 			'Earned for Reviewed Questions': {color: 'turquoise',count: 136695}
 		}
 	}
+	async changeSection({item,event}) {
+		const _ = this;
+		let section = item.getAttribute('section');
+		_.moduleStructure = {
+			'header': 'simpleHeader',
+			'body': _.flexible(section),
+		};
+		await _.render();
+	}
+	flexible(section){
+		const _ = this;
+		// desired tpl
+		return `desired tpl`;
+	}
+	
+	
 	define() {
 		const _ = this;
 		_.componentName = 'Dashboard';
