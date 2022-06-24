@@ -2702,6 +2702,41 @@ body
 				margin: 20px 0
 				overflow-x: scroll
 
+.newUsers
+	&-list
+	&-item
+		@extend %dfa
+		&.parents
+			.newUsers-icon
+				background-color: rgb($viol-light)
+				svg
+					fill: rgb($viol)
+		&.students
+			.newUsers-icon
+				background-color: rgb($green-light)
+				svg
+					fill: rgb($green)
+	&-icon
+		@extend %dfc
+		+wh(60px)
+		margin-right: 24px
+		border-radius: 8px
+		svg
+			+wh(32px)
+	&-info
+		@extend %df
+		@extend %fdc
+		strong
+			font-family: $p_bold
+			color: rgb($neutral-900)
+			line-height: calc(40em / 28)
+			font-size: $fz28
+		span
+			font-family: $p_semi
+			color: rgb($neutral-500)
+			line-height: $fz20
+			font-size: 1em
+
 
 .topStudents
 	&-list

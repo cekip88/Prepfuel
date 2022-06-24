@@ -13,8 +13,17 @@ export class DashboardModule extends AdminPage{
 			'body':'studentDashboardBody',
 		};
 	}
-	
-	
+
+	define() {
+		const _ = this;
+		_.componentName = 'Dashboard';
+		_.division = /\d{1,3}(?=(\d{3})+(?!\d))/g;
+		_.subSection = 'students';
+
+
+		G_Bus
+			.on(_,['domReady','changeSection'])
+	}
 	async asyncDefine(){
 		const _ = this;
 		_.userStats = {
@@ -348,40 +357,73 @@ export class DashboardModule extends AdminPage{
 				}]
 			}
 		];
+		_.parentStats = {
+			info: {
+				title:'Users Stats',
+				subtitle:'More than 8000+ parents',
+				countText:'Total Parents Registered'
+			},
+			stats: [
+				{title: 'Parents with students', color:'blue', count: 7345},
+				{title: 'Parents without students', color:'red', count: 2000},
+			]
+		};
+		_.newUsersStatisticData = {
+			header: {
+				title: 'New Users',
+				subtitle: 'More than 40+ new parents',
+				buttons: {'Today':'','Week':'','Month':'active','6 Month':'','1 Year':'','All':''}
+			},
+			info: {students:40,parents:46}
+		};
 	}
 	async changeSection({item,event}) {
 		const _ = this;
-		let section = item.getAttribute('section');
+		_.subSection = item.getAttribute('section');
 		_.moduleStructure = {
-			'body': _.flexible(section),
+			'header':'fullHeader',
+			'header-tabs':'adminTabs',
+			'body-tabs':'dashboardTabs',
+			'body': _.flexible(),
 		};
 		await _.render();
 	}
-	flexible(section){
+	flexible(){
 		const _ = this;
-		// desired tpl
-		if(section == 'students') {
-			return _.studentDashboardBody();
+		if(_.subSection == 'students') {
+			return 'studentDashboardBody';
+		} else if (_.subSection == 'parents') {
+			return 'parentsDashboardBody';
 		}
 	}
-	
-	
-	define() {
-		const _ = this;
-		_.componentName = 'Dashboard';
-		_.division = /\d{1,3}(?=(\d{3})+(?!\d))/g;
 
-
-		G_Bus
-			.on(_,['domReady'])
-	}
 	domReady() {
 		const _ = this;
-		_.showCircleGraphic({data: _.userStats['stats'], selector: '.user-stats'});
-		_.showCircleGraphic({data: _.systemStats['stats'], selector: '.system-stats'});
+		if (_.subSection == 'students') {
+			_.showCircleGraphic({data: _.userStats['stats'], selector: '.user-stats'});
+			_.showCircleGraphic({data: _.systemStats['stats'], selector: '.system-stats'});
 
-		_.skillsLevelFill(_.skillsLevelStatsData);
+			_.skillsLevelFill(_.skillsLevelStatsData);
+		} else if (_.subSection == 'parents') {
+			_.showCircleGraphic({data: _.parentStats['stats'], selector: '.user-stats'})
+			_.newUsersFill(_.newUsersStatisticData['info']);
+		}
+		_.switchSubNavigate();
 	}
+	switchSubNavigate(){
+		const _ = this;
+		let cont = _.f('.subnavigate');
+		cont.querySelector('.active').classList.remove('active');
+		cont.querySelector(`[section="${_.subSection}"]`).classList.add('active')
+	}
+
+	newUsersFill(data){
+		const _ = this;
+		let cont = _.f('.newUsers-list');
+		_.clear(cont);
+		cont.append(_.markup(_.newUsersStatisticFillTpl(data)));
+	}
+
 	skillsLevelFill(data){
 		const _ = this;
 		let cont = _.f('.skills-level');

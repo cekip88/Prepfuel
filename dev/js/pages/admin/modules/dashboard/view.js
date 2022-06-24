@@ -299,7 +299,7 @@ export const view = {
 		const _ = this;
 		let tpl = `
 			<div class="admin">
-				<div class="section ">
+				<div class="section">
 					<div class="row full">
 						<div class="col stats t260 d384 user-stats">
 							${_.usersStatsTpl(_.userStats['info'])}
@@ -335,5 +335,55 @@ export const view = {
 			</div>
 		`
 		return tpl;
-	}
+	},
+
+	newUsersStatisticTpl({header}){
+		const _ = this;
+		let tpl = `
+			<div class="block block-gap newUsers">
+				${_.sectionHeaderTpl(header)}
+				${_.adminCalendarTpl()}
+				<ul class="newUsers-list"></ul>
+			</div>
+		`;
+		return tpl;
+	},
+	newUsersStatisticFillTpl({parents,students}){
+		let tpl = `
+			<li class="newUsers-item parents block-gap">
+				<div class="newUsers-icon"><svg><use xlink:href="#addUser"></use></svg></div>
+				<div class="newUsers-info">
+					<strong>+${parents}</strong>
+					<span>Parents registered this month</span>
+				</div>
+			</li>
+			<li class="newUsers-item students">
+				<div class="newUsers-icon"><svg><use xlink:href="#users"></use></svg></div>
+				<div class="newUsers-info">
+					<strong>+${students}</strong>
+					<span>Students added this month</span>
+				</div>
+			</li>`
+		return tpl;
+	},
+
+	parentsDashboardBody(){
+		const _ = this;
+		let tpl = `
+			<div class="admin">
+				<div class="section">
+					<div class="row">
+						<div class="col stats t260 d384 user-stats">
+							${_.usersStatsTpl(_.parentStats['info'])}
+						</div>
+						<div class="col t456 tl716 d792">
+							${_.newUsersStatisticTpl(_.newUsersStatisticData)}
+							${_.averageBlockTpl(_.averageTimeSpentData)}
+						</div>
+					</div>
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
 }
