@@ -96,7 +96,7 @@
 			.g-select-body
 				padding: 4px
 				border: none
-.filter-select
+.filter-select,.adding-select
 	+wh(100%,initial)
 	border: none
 	.g-select-head
@@ -106,6 +106,22 @@
 		background-color: rgb($neutral-100)
 		color: rgb($neutral-500)
 		font-family: $f_bold
+.adding-select
+	.g-select-head
+		height: 44px
+	.g-select-arrow
+		fill: #B5B5C3
+	.g-select-title
+		font: 14px 'roboto-regular'
+	&.active .g-select-body
+		box-shadow: 0px 0px 1px rgba(15, 23, 42, 0.06), 0px 10px 15px -3px rgba(15, 23, 42, 0.1), 0px 4px 6px -2px rgba(15, 23, 42, 0.05)
+		border-radius: 8px
+		border: 0
+		top: calc(100% + 4px)
+	.g-select-option
+		font: 14px 'roboto-medium'
+		padding: 9px 12px
+		color: #5E6278
 .with-arrow:after
 	+wh(5px)
 	content: ''

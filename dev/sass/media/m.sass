@@ -2403,8 +2403,48 @@ body
 		letter-spacing: -2%
 	&-section
 		margin-top: 32px
+	&-inpt
+		width: 100%
+		margin-bottom: 16px
+		&-row
+			@extend %dfi
+			column-gap: 16px
+	&-radio
+		&:checked+.adding-label-have
+			color: #5E6278
+		&:checked+.adding-label-have:before
+			background-color: #fff
+			border: 2px solid rgb($blue-text)
+		&:checked+.adding-label-have:after
+			background-color: rgb($blue-text)
+		&-row
+			@extend %dfa
+			margin-bottom: 32px
+			.adding-select
+				+w(299px)
 	&-label
 		font: 14px $f_bold
+		&-have
+			@extend %dfa
+			+w(185px)
+			margin-right: 16px
+			color: #B5B5C3
+			position: relative
+			&:before,&:after
+				+af
+				+bdrs(24px)
+				box-sizing: border-box
+				transition: .35s ease
+			&:before
+				+wh(24px)
+				margin-right: 12px
+				background-color: #F3F6F9
+				border: 1px solid #EBEDF3
+			&:after
+				+wh(16px)
+				position: absolute
+				left: 4px
+				top: 3.5px
 	&-buttons
 		@extend %dfa
 		margin-top: 12px
@@ -2480,8 +2520,49 @@ body
 		.button-blue
 			padding: 13px 26px
 				background-color: rgb($green)
-
-
+	&-subtitle
+		font: 14px $p_semi
+		line-height: 20px
+		color: #B5B5C3
+		&.withmar
+			margin: 0 0 16px 0
+	&-avatar
+		margin-top: 16px
+		label
+			@extend %dfa
+		&-letter,&-link
+			font: 17px $f_medium
+			color: rgb($blue-text)
+		&-letter
+			@extend %dfc
+			+wh(80px)
+			+bdrs(80px)
+			background-color: #F1FAFF
+			margin-right: 20px
+		input[type='file']
+			display: none
+	
+	&-text
+		margin: 16px 0
+		font: 12px $f_reg
+		color: rgb($neutral-600)
+	&-generate
+		@extend %dfa
+		margin: 37px 0 44px
+		font: 17px $f_medium
+		color: rgb($blue-text)
+		&:before
+			+af
+			+wh(20px)
+			+bg(20px,url('../img/generate.svg'))
+			margin: 0 12px 0 14px
+	&-select
+		height: 44px
+	&-inpt
+		.form-label-row
+			padding-bottom: 2px
+		.form-label
+			line-height: 20px
 .admin
 	&-title
 		font-size: $fz18

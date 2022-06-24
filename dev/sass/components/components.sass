@@ -7,7 +7,16 @@ input, button
 	font-size: inherit 
 	background-color: transparent 
 	border: none
- 
+::-webkit-scrollbar
+	+wh(10px)
+::-webkit-scrollbar-track
+	border-radius: 8px
+	background: rgb($neutral-100)
+::-webkit-scrollbar-thumb
+	border-radius: 6px
+	background: rgb($neutral-400)
+::-webkit-scrollbar-thumb:hover
+	background: rgb($neutral-500)
 
 @import "./input.sass"
 @import "./select.sass"

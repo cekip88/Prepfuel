@@ -70,8 +70,11 @@ export class AdminPage extends G {
 			'name': params[0],
 			'structure':_.pageStructure
 		});
-		module.headerBlock = _.header;
-		module._$ = _._$;
+		//module.headerBlock = _.header;
+		if(!module._$){
+			module._$ = {};
+		}
+		Object.assign(module._$,_._$);
 		return Promise.resolve(module.render({
 			structure: _.pageStructure,
 		}));
@@ -82,15 +85,11 @@ export class AdminPage extends G {
 		let
 			params = blockData['params'];
 		_.header = await _.getBlock({name:'header'},'blocks');
-	
 		if(params.length > 0){
 			await _.moduleRender(params);
 		}
 		_.navigationInit(_.f('.navigate-list'));
 		// this._( callback );
-		_._( ()=>{
-			console.log('S');
-		});
 		
 	}
 	
