@@ -750,7 +750,7 @@ export const view = {
 							<tr>
 								<td colspan="3"></td>
 								<td>
-									<ul class="adding-table-list">
+									<ul class="adding-summary-table-list">
 										<li>
 											<span>Subtotal:</span>
 											<strong>$ 0.00</strong>

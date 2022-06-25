@@ -2712,6 +2712,46 @@ body
 			padding-bottom: 2px
 		.form-label
 			line-height: 20px
+	&-summary
+		&-title
+			font: 14px $f_bold
+			text-transform: uppercase
+			color: #7E8299
+			margin-right: 20px
+		&-btn
+			font: 16px $f_bold
+			color: rgb($blue-text)
+		&-list,&-item,&-table
+			margin-top: 24px
+		&-item
+			font: 12px $p_medium
+			color: #7E8299
+			strong
+				display: block
+				font: 14px $p_semi
+				color: #3F4254
+		&-table
+			+w(100%)
+			border-collapse: collapse
+			th,td
+				&:last-child
+					text-align: right
+			th
+				font: 12px $p_medium
+				color: #7E8299
+				text-align: left
+				padding: 8px 0
+			td
+				font: 14px $p_medium
+				padding: 24px 0
+				color: #3F4254
+				border-top: 1px solid #EFF2F5
+			&-list
+				li
+					@extend %dfi
+					margin-bottom: 16px
+				span
+					color: #7E8299
 .admin
 	padding-bottom: 48px
 	&-title
