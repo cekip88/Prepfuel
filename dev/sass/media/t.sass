@@ -35,10 +35,14 @@
 		height: 100%
 
 .col
+	&.t50
+		width: calc(50% - 12px)
 	&.t260
 		width: 260px
 	&.t456
 		width: 456px
+	&.t358
+		width: 358px
 .block
 	margin-top: 24px
 	padding: 30px
@@ -231,6 +235,9 @@
 	&-level
 		&-title
 			margin-top: 40px
+		&-list
+			.skills-level-item
+				width: 50%
 .essay
 	&-result
 		&-loader
@@ -442,3 +449,18 @@
 	&-table
 		&-cont
 			margin: 40px 0
+
+
+.comGraph
+	&-row
+		margin-bottom: 40px
+	&-circle
+		&-row
+			display: flex
+			align-items: center
+		&-info
+			margin-left: 29px
+			&-row
+				margin-bottom: 12px
+				&:last-child
+					margin-bottom: 0

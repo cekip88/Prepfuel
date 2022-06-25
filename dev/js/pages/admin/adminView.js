@@ -74,7 +74,7 @@ export const adminView = {
 	},
 	fullHeader(){
 		const _ = this;
-		console.log(_._$,_);
+		//console.log(_._$,_);
 		return `<header class="head">
 			<div class="section">
 				<div class="head-row">

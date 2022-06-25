@@ -20,6 +20,18 @@ export class DashboardModule extends AdminPage{
 		_.division = /\d{1,3}(?=(\d{3})+(?!\d))/g;
 		_.subSection = 'students';
 
+		_.skillsLevelStatsHeaderData = {
+			title: 'Students Skills Level Stats By Section',
+			subtitle: 'Most of the students achieved level 3',
+			gap: false,
+			buttons: {'Verbal Reasoning':'','Quantitative Reasoning':'','Reading Comprehension':'','Mathematics Achievement':'active'}
+		};
+		_.purchasedCoursesAndPlansHeaderData = {
+			title: 'Purchased Courses & Plans',
+			subtitle: 'More than 8000+ courses purchased',
+			buttons: {'Today':'','Week':'','Month':'','6 Month':'','1 Year':'','All':'active',}
+		}
+
 
 		G_Bus
 			.on(_,['domReady','changeSection'])
@@ -33,9 +45,9 @@ export class DashboardModule extends AdminPage{
 				countText:'Total Students Registered'
 			},
 			stats: [
-				{title: 'Students registered to ISEE course', color:'turquoise', count: 2945},
-				{title: 'Students registered to SSAT course', color:'gold', count: 2200},
-				{title: 'Students registered to SHSAT course', color:'blue', count: 2200},
+				{title: 'Students registered to ISEE course',icon:'user', color:'turquoise', value: 2945},
+				{title: 'Students registered to SSAT course',icon:'user', color:'gold', value: 2200},
+				{title: 'Students registered to SHSAT course',icon:'user', color:'blue', value: 2200},
 			]
 		};
 		_.averageTimeSpentData = {
@@ -62,10 +74,10 @@ export class DashboardModule extends AdminPage{
 				countText:'Stars Earned by Students'
 			},
 			stats: [
-				{title: 'Earned for Skills Practice', color:'orange', count:390450},
-				{title: 'Earned for Practice Tests', color:'blue', count:136600},
-				{title: 'Earned for Videos Watched', color: 'violet', count: 136600},
-				{title: 'Earned for Reviewed Questions', color: 'turquoise', count: 136695}
+				{title: 'Earned for Skills Practice',icon:'stars', color:'orange', value:390450},
+				{title: 'Earned for Practice Tests',icon:'stars', color:'blue', value:136600},
+				{title: 'Earned for Videos Watched',icon:'stars', color: 'violet', value: 136600},
+				{title: 'Earned for Reviewed Questions',icon:'stars', color: 'turquoise', value: 136695}
 			]
 		};
 		_.practiceTestStatsData = {
@@ -270,93 +282,90 @@ export class DashboardModule extends AdminPage{
 				]
 			}
 		};
-		_.skillsLevelStatsTplData = {
-			title: 'Students Skills Level Stats By Section',
-			subtitle: 'Most of the students achieved level 3',
-			gap: false,
-			buttons: {'Verbal Reasoning':'','Quantitative Reasoning':'','Reading Comprehension':'','Mathematics Achievement':'active'}
-		};
+
 		_.skillsLevelStatsData = [
 			{
 				title: 'Algebra, Equations, and Inequalities',
 				blocks: [{
 					title: 'Algebraic Remainders',
+					max: 4000,
 					list: [
-						{value:1600,title:'lvl 1'},
-						{value:2000,title:'lvl 2'},
-						{value:3250,title:'lvl 3'},
-						{value:750,title:'lvl 4'},
+						{value:{text:1600},title:'lvl 1'},
+						{value:{text:2000},title:'lvl 2'},
+						{value:{text:3250},title:'lvl 3'},
+						{value:{text:750},title:'lvl 4'},
 					],
-					role: 'Students'
+					role: '# Students'
 				},{
 					title: 'Backsolving Strategy',
 					list: [
-						{value:700,title:'lvl 1'},
-						{value:2850,title:'lvl 2'},
-						{value:3250,title:'lvl 3'},
-						{value:2750,title:'lvl 4'},
+						{value:{text:700},title:'lvl 1'},
+						{value:{text:2850},title:'lvl 2'},
+						{value:{text:3250},title:'lvl 3'},
+						{value:{text:2750},title:'lvl 4'},
 					],
-					role: 'Students'
+					role: '# Students'
 				},{
 					title: 'Evaluate algebraic expressions',
 					list: [
-						{value:1300,title:'lvl 1'},
-						{value:800,title:'lvl 2'},
-						{value:2250,title:'lvl 3'},
-						{value:1950,title:'lvl 4'},
+						{value:{text:1300},title:'lvl 1'},
+						{value:{text:800},title:'lvl 2'},
+						{value:{text:2250},title:'lvl 3'},
+						{value:{text:1950},title:'lvl 4'},
 					],
-					role: 'Students'
+					role: '# Students'
 				},{
 					title: 'Inequalities',
 					list: [
-						{value:1600,title:'lvl 1'},
-						{value:2000,title:'lvl 2'},
-						{value:3250,title:'lvl 3'},
-						{value:750,title:'lvl 4'},
+						{value:{text:1600},title:'lvl 1'},
+						{value:{text:2000},title:'lvl 2'},
+						{value:{text:3250},title:'lvl 3'},
+						{value:{text:750},title:'lvl 4'},
 					],
-					role: 'Students'
+					role: '# Students'
 				}]
 			},{
 				title: 'Arithmetic and Fractions',
 				blocks: [{
 					title: 'Consecutive numbers',
 					list: [
-						{value:3600,title:'lvl 1'},
-						{value:2200,title:'lvl 2'},
-						{value:3150,title:'lvl 3'},
-						{value:750,title:'lvl 4'},
+						{value:{text:3600},title:'lvl 1'},
+						{value:{text:2200},title:'lvl 2'},
+						{value:{text:3150},title:'lvl 3'},
+						{value:{text:750},title:'lvl 4'},
 					],
-					role: 'Students'
+					role: '# Students'
 				},{
 					title: 'Math basics: Absolute value',
 					list: [
-						{value:1600,title:'lvl 1'},
-						{value:2000,title:'lvl 2'},
-						{value:3250,title:'lvl 3'},
-						{value:750,title:'lvl 4'},
+						{value:{text:1600},title:'lvl 1'},
+						{value:{text:2000},title:'lvl 2'},
+						{value:{text:3250},title:'lvl 3'},
+						{value:{text:750},title:'lvl 4'},
 					],
-					role: 'Students'
+					role: '# Students'
 				},{
 					title: 'Math basics: Converting between decimals, fractions, and percents',
 					list: [
-						{value:1600,title:'lvl 1'},
-						{value:1500,title:'lvl 2'},
-						{value:2250,title:'lvl 3'},
-						{value:2750,title:'lvl 4'},
+						{value:{text:1600},title:'lvl 1'},
+						{value:{text:1500},title:'lvl 2'},
+						{value:{text:2250},title:'lvl 3'},
+						{value:{text:2750},title:'lvl 4'},
 					],
-					role: 'Students'
+					role: '# Students'
 				},{
 					title: 'Inequalities',
 					list: [
-						{value:1600,title:'lvl 1'},
-						{value:1200,title:'lvl 2'},
-						{value:3550,title:'lvl 3'},
-						{value:1750,title:'lvl 4'},
+						{value:{text:1600},title:'lvl 1'},
+						{value:{text:1200},title:'lvl 2'},
+						{value:{text:3550},title:'lvl 3'},
+						{value:{text:1750},title:'lvl 4'},
 					],
-					role: 'Students'
+					role: '# Students'
 				}]
 			}
 		];
+
 		_.parentStats = {
 			info: {
 				title:'Users Stats',
@@ -364,8 +373,8 @@ export class DashboardModule extends AdminPage{
 				countText:'Total Parents Registered'
 			},
 			stats: [
-				{title: 'Parents with students', color:'blue', count: 7345},
-				{title: 'Parents without students', color:'red', count: 2000},
+				{title: 'Parents with students',icon:'users', color:'blue', value: 7345},
+				{title: 'Parents without students',icon:'user', color:'red', value: 2000},
 			]
 		};
 		_.newUsersStatisticData = {
@@ -376,6 +385,158 @@ export class DashboardModule extends AdminPage{
 			},
 			info: {students:40,parents:46}
 		};
+
+		_.purchasedCoursesAndPlansStatsData = [
+			{
+				title: 'Total Courses Purchased',
+				max: 2000,
+				role: 'Purchased Courses',
+				sum: 7345,
+				circleValues: [
+					{title:'ISEE',value:2945,color:'turquoise'},
+					{title:'SSAT',value:2200,color:'gold'},
+					{title:'SHSAT',value:2200,color:'blue'},
+				],
+				list: [
+					{
+						title: '2021',
+						values: [{
+							title: 'ISEE',
+							color: 'turquoise',
+							value: 900
+						},{
+							title: 'SSAT',
+							color:'gold',
+							value: 800
+						},{
+							title: 'SHSAT',
+							color:'blue',
+							value: 700
+						}]
+					},{
+						title: '2022',
+						values: [{
+							title: 'ISEE',
+							color: 'turquoise',
+							value: 2045
+						},{
+							title: 'SSAT',
+							color:'gold',
+							value: 1400
+						},{
+							title: 'SHSAT',
+							color:'blue',
+							value: 1500
+						}]
+					}
+				]
+			},
+			{
+				title: 'Total ISEE Courses Purchased',
+				max: 2000,
+				sum: 2945,
+				role: 'Purchased Plans',
+				circleValues: [
+					{title:'Monthly Plan',value:2945,color:'turquoise'},
+					{title:'Yearly Plan',value:2200,color:'turquoise-light'},
+				],
+				list: [
+					{
+						title: '2021',
+						values: [{
+							title: 'Monthly Plan',
+							color: 'turquoise',
+							value: 900
+						},{
+							title: 'Yearly Plan',
+							color: 'turquoise-light',
+							value: 700
+						}]
+					},{
+						title: '2022',
+						values: [{
+							title: 'Monthly Plan',
+							color: 'turquoise',
+							value: 2045
+						},{
+							title: 'Yearly Plan',
+							color: 'turquoise-light',
+							value: 1500
+						}]
+					}
+				]
+			},
+			{
+				title: 'Total SSAT Courses Purchased',
+				max: 2000,
+				sum: 2200,
+				role: 'Purchased Plans',
+				circleValues: [
+					{title:'Monthly Plan',value:1200,color:'gold'},
+					{title:'Yearly Plan',value:1000,color:'gold-light'},
+				],
+				list: [
+					{
+						title: '2021',
+						values: [{
+							title: 'Monthly Plan',
+							color: 'gold',
+							value: 900
+						},{
+							title: 'Yearly Plan',
+							color: 'gold-light',
+							value: 800
+						}]
+					},{
+						title: '2022',
+						values: [{
+							title: 'Monthly Plan',
+							color: 'gold',
+							value: 300
+						},{
+							title: 'Yearly Plan',
+							color: 'gold-light',
+							value: 200
+						}]
+					}
+				]
+			},
+			{
+				title: 'Total SHSAT Courses Purchased',
+				max: 2000,
+				sum: 2200,
+				role: 'Purchased Plans',
+				circleValues: [
+					{title:'Monthly Plan',value:1200,color:'blue'},
+					{title:'Yearly Plan',value:1000,color:'blue-light'},
+				],
+				list: [
+					{
+						title: '2021',
+						values: [{
+							title: 'Monthly Plan',
+							color: 'blue',
+							value: 900
+						},{
+							title: 'Yearly Plan',
+							color: 'blue-light',
+							value: 800
+						}]
+					},{
+						title: '2022',
+						values: [{
+							title: 'Monthly Plan',
+							color: 'blue',
+							value: 300
+						},{
+							title: 'Yearly Plan',
+							color: 'blue-light',
+							value: 200
+						}]
+					}
+				]
+			}
+		];
 	}
 	async changeSection({item,event}) {
 		const _ = this;
@@ -394,19 +555,23 @@ export class DashboardModule extends AdminPage{
 			return 'studentDashboardBody';
 		} else if (_.subSection == 'parents') {
 			return 'parentsDashboardBody';
+		} else if (_.subSection == 'payments') {
+			return 'paymentsDashboardBody';
 		}
 	}
 
 	domReady() {
 		const _ = this;
 		if (_.subSection == 'students') {
-			_.showCircleGraphic({data: _.userStats['stats'], selector: '.user-stats'});
-			_.showCircleGraphic({data: _.systemStats['stats'], selector: '.system-stats'});
+			_.statsBlockFill({data: _.userStats['stats'], selector: '.user-stats'});
+			_.statsBlockFill({data: _.systemStats['stats'], selector: '.system-stats'});
 
-			_.skillsLevelFill(_.skillsLevelStatsData);
+			_.skillsLevelsFill(_.skillsLevelStatsData);
 		} else if (_.subSection == 'parents') {
-			_.showCircleGraphic({data: _.parentStats['stats'], selector: '.user-stats'})
+			_.statsBlockFill({data: _.parentStats['stats'], selector: '.user-stats'})
 			_.newUsersFill(_.newUsersStatisticData['info']);
+		} else if (_.subSection == 'payments') {
+			_.comGraphCircleFill(_.purchasedCoursesAndPlansStatsData)
 		}
 		_.switchSubNavigate();
 	}
@@ -424,36 +589,89 @@ export class DashboardModule extends AdminPage{
 		cont.append(_.markup(_.newUsersStatisticFillTpl(data)));
 	}
 
-	skillsLevelFill(data){
+	skillsLevelsFill(data){
 		const _ = this;
 		let cont = _.f('.skills-level');
 		for (let i = 0; i < data.length; i++) {
+
 			let skillsRow = _.markupElement(_.skillsLevelStatsBlockTpl(data[i]));
 			cont.append(skillsRow);
+
 			let values = skillsRow.querySelectorAll('.skills-level-values');
 			values.forEach(function (value,index){
-				for (let j = 0; j < data[i]['blocks'][index]['list'].length; j++) {
-					let item = data[i]['blocks'][index]['list'][j];
-					let
-						max = 4000,
-						height = (item.value / max) * 227;
-					value.append(_.markupElement(_.skillsLevelStatsValueTpl({
-						title: item['title'],
-						value: height
-					})))
-				}
+				_.skillsLevelsItemFill({
+					list:data[i]['blocks'][index]['list'],
+					cont:value,
+					max:data[i]['blocks'][index]['max']});
 			})
 		}
 	}
+	skillsLevelsItemFill({list,cont,max}){
+		const _ = this;
+		for (let j = 0; j < list.length; j++) {
+			let item = list[j];
+			if (!max) max = 4000;
 
-	showCircleGraphic(data){
+			if (item.value) {
+				let height = (item.value.text / max) * 227;
+				cont.append(_.markupElement(_.skillsLevelStatsValueTpl({
+					title: item['title'],
+					value: {height:height,color:item.value.color}
+				})))
+			} else if (item.values.length) {
+
+				let vals = [];
+
+				for (let i = 0; i < item.values.length; i++) {
+					vals.push({
+						height: (item.values[i].value / max) * 227,
+						color: item.values[i].color,
+						width: (40 - (8 * item.values.length)) / item.values.length
+					})
+				}
+
+				cont.append(_.markupElement(_.skillsLevelStatsValueTpl({
+					title: item['title'],
+					values: vals
+				})))
+			}
+		}
+	}
+
+
+	comGraphCircleFill(data){
+		const _ = this;
+		for (let i = 0; i < data.length; i++) {
+
+			let circleData = {
+				title: data[i].sum.toString().replace(_.division, '$&,'),
+				subtitle: data[i].title,
+				list: data[i].circleValues
+			};
+			let linesData = {
+				role: data[i].role,
+				max: data[i].max
+			};
+			let row = _.markupElement(_.comGraphRowTpl({circleData,linesData}));
+			_.f('.comGraph').append(row);
+
+			_.drawCircleGraphic({data:data[i]['circleValues']},row.querySelector('.stars-circle '))
+			_.skillsLevelsItemFill({
+				list:data[i].list,
+				cont:row.querySelector('.skills-level-values'),
+				max:data[i].max
+			});
+		}
+	}
+
+	statsBlockFill(data){
 		const _ = this;
 		_.drawCircleGraphic(data);
 		_.starsInformationFill(data);
 	}
-	drawCircleGraphic({data,selector}){
+	drawCircleGraphic({data,selector},starsCont){
 		const _ = this;
-		let starsCont = _.f(`${selector ?? ''} .stars-circle`);
+		if (!starsCont) starsCont = _.f(`${selector ?? ''} .stars-circle`);
 		if (!starsCont) return;
 
 		let prevSvg = starsCont.querySelector('SVG');
@@ -473,7 +691,7 @@ export class DashboardModule extends AdminPage{
 			count = 0;
 
 		for (let i = 0; i < data.length; i++) {
-			let number = parseInt(data[i]['count']);
+			let number = parseInt(data[i]['value']);
 			if (isNaN(number) || !number) continue;
 			last = data[i]['title'];
 			sum += number;
@@ -484,8 +702,8 @@ export class DashboardModule extends AdminPage{
 		let strokeDashoffset = 0;
 
 		for (let i = 0; i < data.length; i++) {
-			if (!data[i]['count'] || isNaN(parseInt(data[i]['count']))) continue;
-			let width = data[i]['count'] / sum * circleWidth;
+			if (!data[i]['value'] || isNaN(parseInt(data[i]['value']))) continue;
+			let width = data[i]['value'] / sum * circleWidth;
 			if (data[i]['title'] !== last) {
 				width -= borderWidth;
 			} else {
@@ -501,7 +719,7 @@ export class DashboardModule extends AdminPage{
 
 		starsCont.prepend(svg);
 	}
-	starsInformationFill({data,selector,count}){
+	starsInformationFill({data,selector}){
 		const _ = this;
 		let
 			cont = _.f(`${selector ?? ''} .stars-info`),
@@ -512,10 +730,11 @@ export class DashboardModule extends AdminPage{
 		for (let i = 0; i < data.length; i++) {
 			let params = {
 				cls:data[i]['color'],
-				value:data[i]['count'].toString().replace(_.division, '$&,'),
+				icon:data[i]['icon'],
+				value:data[i]['value'].toString().replace(_.division, '$&,'),
 				title:data[i]['title']
 			};
-			sum += parseInt(data[i]['count']);
+			sum += parseInt(data[i]['value']);
 			cont.append(_.markup(_.statsInfoTpl(params)));
 		}
 

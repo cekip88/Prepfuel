@@ -55,12 +55,12 @@ export const view = {
 			</div>
 		`
 	},
-	statsInfoTpl({cls,value,title}){
+	statsInfoTpl({cls,value,title,icon}){
 		return `
 			<li class="stars-info-item ${cls}">
 				<div class="stars-info-img">
 					<svg>
-						<use xlink:href="#user"></use>
+						<use xlink:href="#${icon}"></use>
 					</svg>
 				</div>
 				<div class="stars-info-text"><strong>${value}</strong><span>${title}</span></div>
@@ -266,15 +266,15 @@ export const view = {
 		tpl += '</ul></div>';
 		return tpl;
 	},
-	skillsLevelStatsItemTpl({title,role,list,max = 4000}){
+	skillsLevelStatsItemTpl({title,role,max = 4000}){
 		const _ = this;
 		let
 			step = parseInt(max) / 8,
 			value = max;
 		let tpl = `
 			<li class="skills-level-item">
-			<h6 class="skills-level-subtitle">${title}</h6>
-			<h6 class="skills-level-role"># ${role}</h6>
+			${title ? '<h6 class="skills-level-subtitle">' + title + '</h6>' : ''}
+			<h6 class="skills-level-role"><span>${role}</span></h6>
 			<div class="skills-level-graphic-cont">
 				<div class="skills-level-graphic-gradations">`;
 		for (let i = 0; i < 9; i++) {
@@ -284,11 +284,22 @@ export const view = {
 		tpl += `</div><div class="skills-level-values"></div></div></li>`;
 		return tpl;
 	},
-	skillsLevelStatsValueTpl({title,value}){
+	skillsLevelStatsValueTpl({title,value,values = []}){
 		const _ = this;
 		let tpl = `
-			<div class="skills-level-unit">
-				<div class="skills-level-value" style="height: ${value}px;"></div>
+			<div class="skills-level-unit">`;
+
+		if (value) {
+			tpl += `<div class="skills-level-value ${value.color}" style="height:${value.height}px;"></div>`
+		} else if (values.length) {
+			tpl += `<div class="skills-level-value-row">`
+			for (let i = 0; i < values.length; i++) {
+				tpl += `<div class="skills-level-value ${values[i].color} count-${values.length}" style="height:${values[i].height}px;"></div>`
+			}
+			tpl += `</div>`
+		}
+
+		tpl += `
 				<div class="skills-level-value-title">${title}</div>
 			</div>
 		`;
@@ -329,7 +340,7 @@ export const view = {
 					${_.dashTableTpl(_.mostCompQuestionsData)}
 					${_.dashTableTpl(_.mostSimpleQuestionsData)}
 					<div class="block skills-level">
-						${_.sectionHeaderTpl(_.skillsLevelStatsTplData)}
+						${_.sectionHeaderTpl(_.skillsLevelStatsHeaderData)}
 					</div>
 				</div>
 			</div>
@@ -380,6 +391,80 @@ export const view = {
 							${_.newUsersStatisticTpl(_.newUsersStatisticData)}
 							${_.averageBlockTpl(_.averageTimeSpentData)}
 						</div>
+					</div>
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
+
+	purchasedCoursesAndPlansTpl(){
+		const _ = this;
+		let tpl = `
+			<div class="block comGraph">
+				${_.sectionHeaderTpl(_.purchasedCoursesAndPlansHeaderData)}
+				${_.adminCalendarTpl()}
+			</div>
+		`;
+		return tpl;
+	},
+	comGraphRowTpl({circleData,linesData}){
+		const _ = this;
+		return `
+			<div class="comGraph-row">
+				${_.comGraphCircleTpl(circleData)}
+				${_.comGraphLinesTpl(linesData)}
+			</div>
+		`;
+	},
+	comGraphCircleTpl({title,subtitle,list}){
+		const _ = this;
+		let tpl = `
+			<div class="comGraph-circle">
+				<h4 class="comGraph-circle-title">${title}</h4>
+				<h6 class="comGraph-circle-subtitle block-gap">${subtitle}</h6>
+				<div class="comGraph-circle-row">
+					<div class="stars-circle" data-radius="50" data-borders="16"></div>
+					<div class="comGraph-circle-info">`;
+		for (let i = 0; i < list.length; i++) {
+			tpl += _.comGraphCircleInfoTpl(list[i]);
+		}
+		tpl += `</div>
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
+	comGraphCircleInfoTpl({title,value,color}){
+		const _ = this;
+		return `
+			<div class="comGraph-circle-info-row ${color}">
+				<div class="comGraph-circle-info-marker"></div>
+				<h6 class="comGraph-circle-info-title">${title}</h6>
+				<div class="comGraph-circle-info-value">${value.toString().replace(_.division, '$&,')}</div>
+			</div>
+		`
+	},
+	comGraphLinesTpl(data){
+		const _ = this;
+		let tpl = `
+			<ul class="comGraph-lines-cont">
+				${_.skillsLevelStatsItemTpl(data)}
+			</ul>
+		`;
+		return tpl;
+	},
+
+	paymentsDashboardBody(){
+		const _ = this;
+		let tpl = `
+			<div class="admin">
+				<div class="section">
+					<div class="row">
+						<div class="col t50 d690">
+							${_.purchasedCoursesAndPlansTpl()}
+						</div>
+						<div class="col t50 d486"></div>
 					</div>
 				</div>
 			</div>
