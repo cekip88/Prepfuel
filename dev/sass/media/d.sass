@@ -446,3 +446,25 @@
 	&-center
 		+w(496px)
 		margin: 0 auto
+		
+		
+.student
+	&-profile
+		&-row
+			+w(100%)
+			display: flex
+		&-left,&-right
+			+w(50%)
+		&-left
+			padding-right: 48px
+			position: relative
+			&:after
+				+af
+				+wh(1px,860px)
+				position: absolute
+				top: 15px
+				right: 0
+				background-color: #EBEDF3
+		&-right
+			padding-left: 48px
+		
