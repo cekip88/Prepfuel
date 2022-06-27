@@ -32,9 +32,25 @@ export class DashboardModule extends AdminPage{
 			buttons: {'Today':'','Week':'','Month':'','6 Month':'','1 Year':'','All':'active',}
 		}
 
+		_.refundsHeader = {
+			title: 'Refunds',
+			subtitle: '14 refunds this month',
+			buttons: {'Month':'active','1 Year':'','All':''}
+		}
+		_.plansCanceledHeader = {
+			title: 'Canceled Plans',
+			subtitle: 'Analyze plans canceled this month',
+			buttons: {'Month':'active','1 Year':'','All':''}
+		}
+
+		_.revenueHeader = {
+			title: 'Revenue',
+			subtitle: '$70k+ your total revenue',
+			buttons: {'Month':'active','1 Year':'','All':''}
+		};
 
 		G_Bus
-			.on(_,['domReady','changeSection'])
+			.on(_,['domReady','changeSection','changeTimeFilter','blockHeadNavigate'])
 	}
 	async asyncDefine(){
 		const _ = this;
@@ -537,6 +553,106 @@ export class DashboardModule extends AdminPage{
 				]
 			}
 		];
+
+		_.refundsData = {
+			title: '14',
+			subtitle: 'Total refunds this month',
+			plansInfo: [
+				{title:'ISEE',infos:[
+					{title:'ISEE Monthly Plan',value:2,color:'turquoise'},
+					{title:'ISEE Yearly Plan',value:2,color:'turquoise-light'}
+				]},
+				{title:'SSAT',infos:[
+					{title:'SSAT Monthly Plan',value:3,color:'gold'},
+					{title:'SSAT Yearly Plan',value:2,color:'gold-light'}
+				]},
+				{title: 'SHSAT',infos:[
+					{title:'SHSAT Monthly Plan',value:3,color:'blue'},
+					{title:'SHSAT Yearly Plan',value:2,color:'blue-light'},
+				]}
+			],
+			reasons: [
+				{title: 'Reason 1',colors: ['turquoise','turquoise-light','gold','gold-light','blue','blue-light']},
+				{title: 'Reason 2',colors: ['turquoise','gold','blue']},
+				{title: 'Reason 3',colors: []},
+				{title: 'Reason 4',colors: ['turquoise-light','gold-light','blue-light']},
+				{title: 'Reason 5',colors: ['turquoise']},
+				{title: 'Other',colors: ['gold']},
+			],
+			perCourse: {
+				title: 'Refund Per Course',
+				circleText: 'Total Refund This Month',
+				list: [
+					{title: 'ISEE course',value: 80, color: 'turquoise'},
+					{title: 'SSAT course',value: 100, color: 'gold'},
+					{title: 'SHSAT course',value: 100, color: 'blue'},
+				]
+			},
+			perPlan: {
+				title: 'Refund Per Plan',
+				circleText: 'Total Refund This Month',
+				list: [
+					{title: 'ISEE Monthly Plan',value: 40, color: 'turquoise'},
+					{title: 'ISEE Yearly Plan',value: 40, color: 'turquoise-light'},
+					{title: 'SSAT Monthly Plan',value: 60, color: 'gold'},
+					{title: 'SSAT Yearly Plan',value: 40, color: 'gold-light'},
+					{title: 'SSAT Yearly Plan',value: 60, color: 'blue'},
+					{title: 'SHSAT Yearly Plan',value: 40, color: 'blue-light'},
+				]
+			}
+		};
+		_.canceledPlansData = {
+			title: '14',
+			subtitle: 'Total canceled this month',
+			plansInfo: [
+				{title:'ISEE',infos:[
+					{title:'ISEE Monthly Plan',value:2,color:'turquoise'},
+					{title:'ISEE Yearly Plan',value:2,color:'turquoise-light'}
+				]},
+				{title:'SSAT',infos:[
+					{title:'SSAT Monthly Plan',value:3,color:'gold'},
+					{title:'SSAT Yearly Plan',value:2,color:'gold-light'}
+				]},
+				{title: 'SHSAT',infos:[
+					{title:'SHSAT Monthly Plan',value:3,color:'blue'},
+					{title:'SHSAT Yearly Plan',value:2,color:'blue-light'},
+				]}
+			],
+			reasons: [
+				{title: 'Reason 1',colors: ['turquoise','turquoise-light','gold','gold-light','blue','blue-light']},
+				{title: 'Reason 2',colors: ['turquoise','gold','blue']},
+				{title: 'Reason 3',colors: []},
+				{title: 'Reason 4',colors: ['turquoise-light','gold-light','blue-light']},
+				{title: 'Reason 5',colors: ['turquoise']},
+				{title: 'Other',colors: ['gold']},
+			]
+		};
+
+		_.revenueData = {
+			title: '$70,400.00',
+			subtitle: 'Total Revenue This Month',
+			perCourse: {
+				title: 'Per Course',
+				circleText: 'Total Refund This Month',
+				list: [
+					{title: 'ISEE course',value: 30000.00, color: 'turquoise'},
+					{title: 'SSAT course',value: 20200.00, color: 'gold'},
+					{title: 'SHSAT course',value: 20200.00, color: 'blue'},
+				]
+			},
+			perPlan: {
+				title: 'Per Plan',
+				circleText: 'Total Revenue This Month',
+				list: [
+					{title: 'ISEE Monthly Plan',value: 20000, color: 'turquoise'},
+					{title: 'ISEE Yearly Plan',value: 10000, color: 'turquoise-light'},
+					{title: 'SSAT Monthly Plan',value: 12200, color: 'gold'},
+					{title: 'SSAT Yearly Plan',value: 8000, color: 'gold-light'},
+					{title: 'SSAT Yearly Plan',value: 12200, color: 'blue'},
+					{title: 'SHSAT Yearly Plan',value: 8000, color: 'blue-light'},
+				]
+			}
+		};
 	}
 	async changeSection({item,event}) {
 		const _ = this;
@@ -560,6 +676,28 @@ export class DashboardModule extends AdminPage{
 		}
 	}
 
+
+	setInteger(number){
+		const _ = this;
+		let string = '';
+		if (number < 1000) {
+			string = number.toString();
+			let arr = string.split('.');
+			if (!arr[1]) {
+				string = string + '.';
+				arr[1] = '';
+			}
+			for (let i = 0; i < 2 - arr[1].length; i++) {
+				string = string + '0';
+			}
+		} else {
+			string = number.toString().replace(_.division, '$&,');
+			string = string.substr(0,string.length - 2) + 'k';
+		}
+
+		return string;
+	}
+
 	domReady() {
 		const _ = this;
 		if (_.subSection == 'students') {
@@ -567,11 +705,18 @@ export class DashboardModule extends AdminPage{
 			_.statsBlockFill({data: _.systemStats['stats'], selector: '.system-stats'});
 
 			_.skillsLevelsFill(_.skillsLevelStatsData);
-		} else if (_.subSection == 'parents') {
+		}
+		else if (_.subSection == 'parents') {
 			_.statsBlockFill({data: _.parentStats['stats'], selector: '.user-stats'})
 			_.newUsersFill(_.newUsersStatisticData['info']);
-		} else if (_.subSection == 'payments') {
-			_.comGraphCircleFill(_.purchasedCoursesAndPlansStatsData)
+		}
+		else if (_.subSection == 'payments') {
+			_.comGraphCircleFill(_.purchasedCoursesAndPlansStatsData);
+			//_.refundPerCourseFill();
+			_.perCourseFill({selector:'.refunds .perCourse', data: _.refundsData.perCourse})
+			_.perPlanFill({selector:'.refunds .perPlan', data: _.refundsData.perPlan})
+			_.perCourseFill({selector:'.revenue .perCourse', data: _.revenueData.perCourse})
+			_.perPlanFill({selector:'.revenue .perPlan', data: _.revenueData.perPlan})
 		}
 		_.switchSubNavigate();
 	}
@@ -638,7 +783,6 @@ export class DashboardModule extends AdminPage{
 		}
 	}
 
-
 	comGraphCircleFill(data){
 		const _ = this;
 		for (let i = 0; i < data.length; i++) {
@@ -669,20 +813,20 @@ export class DashboardModule extends AdminPage{
 		_.drawCircleGraphic(data);
 		_.starsInformationFill(data);
 	}
-	drawCircleGraphic({data,selector},starsCont){
+	drawCircleGraphic({data,selector},cont){
 		const _ = this;
-		if (!starsCont) starsCont = _.f(`${selector ?? ''} .stars-circle`);
-		if (!starsCont) return;
+		if (!cont) cont = _.f(`${selector ?? ''} .stars-circle`);
+		if (!cont) return;
 
-		let prevSvg = starsCont.querySelector('SVG');
+		let prevSvg = cont.querySelector('SVG');
 		if (prevSvg) prevSvg.remove();
 
 		let svg = `</svg>`,
 
-			radiuses = starsCont.getAttribute('data-radius'),
+			radiuses = cont.getAttribute('data-radius'),
 			radiusesArr = radiuses ? radiuses.split(',') : [93],
 			radius = window.innerWidth < 768 ? radiusesArr[0] : radiusesArr[radiusesArr.length - 1],
-			borders = starsCont.getAttribute('data-borders'),
+			borders = cont.getAttribute('data-borders'),
 			bordersArr = borders ? borders.split(',') : [7],
 			borderWidth = window.innerWidth < 768 ? bordersArr[0] : bordersArr[bordersArr.length - 1],
 
@@ -717,7 +861,7 @@ export class DashboardModule extends AdminPage{
 		svg = '<svg xmlns="http://www.w3.org/2000/svg">' + svg;
 		svg = _.markupElement(svg);
 
-		starsCont.prepend(svg);
+		cont.prepend(svg);
 	}
 	starsInformationFill({data,selector}){
 		const _ = this;
@@ -741,6 +885,164 @@ export class DashboardModule extends AdminPage{
 		title.textContent = sum.toString().replace(_.division, '$&,');
 	}
 
+	changeTimeFilter({item}){
+		const _ = this;
+		let
+			cont = item.closest('.block'),
+			dateTo = cont.querySelector('.to');
+
+		let
+			dateToParent = cont.querySelector('.admin-calendar'),
+			txt = item.textContent;
+
+		if (dateTo) {
+			dateTo.previousElementSibling.remove();
+			dateTo.remove();
+		}
+
+		let date = _.getDateForTo(txt);
+		if (!date) return;
+
+		let toLayout = `
+			<span>to</span>
+			<div class="admin-calendar-dates to">${_.dateFormatting({date:date,format:'Month DD, YYYY'})}</div>
+			<input type="hidden" name="date_to" value="${_.dateFormatting({date:date})}">
+		`;
+		dateToParent.append(_.markup(toLayout));
+	}
+	dateFrom(format){
+		const _ = this;
+		_.curDate = new Date();
+		return `
+			<div class="admin-calendar-dates from">${_.dateFormatting({date:_.curDate,format})}</div>
+			<input type="hidden" name="date_from" value="${_.dateFormatting({date:_.curDate})}">
+		`;
+	}
+	dateTo(format,btns){
+		const _ = this;
+		if (!btns) return ''
+
+		let activeBtnTxt;
+		for (let key in btns) {
+			if (btns[key]) {
+				activeBtnTxt = key;
+				break;
+			}
+		}
+
+		let date = _.getDateForTo(activeBtnTxt);
+		if (!date) return '';
+
+		return `
+			<span>to</span>
+			<div class="admin-calendar-dates to">${_.dateFormatting({date:date,format})}</div>
+			<input type="hidden" name="date_to" value="${_.dateFormatting({date:date})}">
+		`;
+	}
+	getDateForTo(txt){
+		const _ = this;
+		let
+			day = _.curDate.getDate(),
+			month = _.curDate.getMonth(),
+			year = _.curDate.getFullYear(),
+			monthLengths = year % 4 ? [31,28,31,30,31,30,31,31,30,31,30,31] : [31,29,31,30,31,30,31,31,30,31,30,31],
+			monthLength = monthLengths[month];
+
+		if (txt === 'Today' || txt === 'All') return '';
+		else if (txt === 'Week') day += 7;
+		else if (txt === 'Month') month++;
+		else if (txt === '6 Month') month += 6;
+		else if (txt === '1 Year') year++;
+
+		if (day > monthLength) {
+			month++;
+			day -= monthLength;
+		}
+		if (month > 11) {
+			year++;
+			month -= 12;
+		}
+
+		let newDateValue = year + '-' + (month + 1) + '-' + day;
+		return new Date(newDateValue);
+	}
+	dateFormatting({format,date}){
+		if (!format) format = 'YYYY-MM-DD';
+		let
+			day = date.getDate(),
+			month = date.getMonth(),
+			year = date.getFullYear(),
+			months = ['January','February','March','April',"May",'June','July','August','September','October','November','December'],
+			weekdays = ['Su','Mo','Tu','We','Th','Fr','Sa'],
+			monthTitle = months[month],
+			dayTitle = weekdays[date.getDay()];
+
+		if (month < 10) month = '0' + month;
+		if (day < 10) day = '0' + day;
+
+		let result = format.replace('DD',day.toString());
+		result = result.replace("Weekday",dayTitle);
+		result = result.replace("MM",month.toString());
+		result = result.replace("YYYY",year.toString());
+		result = result.replace("Month",monthTitle);
+
+		return result;
+	}
+
+	blockHeadNavigate({item}){
+		const _ = this;
+		let cont = item.parentElement,
+			activeBtn = cont.querySelector('.active');
+
+		if (activeBtn == item) return;
+
+		activeBtn.classList.remove('active');
+		item.classList.add('active')
+
+		_.changeTimeFilter({item});
+	}
+
+
+	perCourseFill({selector,data}){
+		const _ = this;
+
+		let list = data.list;
+		_.drawCircleGraphic({selector:selector,data:list});
+
+		let
+			perCourseList = _.f(`${selector} .perItemBlock-list`),
+			listTpl = '',
+			sum = 0;
+		for (let i = 0; i < list.length; i++) {
+			listTpl += _.perCourseRowTpl(list[i]);
+			sum += list[i].value;
+		}
+
+		sum = _.setInteger(sum);
+
+		perCourseList.append(_.markup(listTpl));
+		_.f(`${selector} .circle-count-title`).textContent = '$' + sum;
+	}
+	perPlanFill({selector,data}){
+		const _ = this;
+
+		let list = data.list;
+		_.drawCircleGraphic({selector:selector,data:list});
+
+		let
+			perCourseList = _.f(`${selector} .perItemBlock-list`),
+			listTpl = '',
+			sum = 0;
+		for (let i = 0; i < list.length; i++) {
+			listTpl += _.markerInfoTpl({color: list[i].color,title:list[i].title,value: '$'+_.setInteger(list[i].value)});
+			sum += list[i].value;
+		}
+
+		sum = _.setInteger(sum);
+
+		perCourseList.append(_.markup(listTpl));
+		_.f(`${selector} .circle-count-title`).textContent = '$' + sum;
+	}
 
 
 	async init() {

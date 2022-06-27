@@ -33,7 +33,7 @@ export class AdminPage extends G {
 			role: localStorage.getItem('role'),
 		});
 		G_Bus
-			.on(_,['showUserList','changeSection'])
+			.on(_,['showUserList','changeSection','navigate'])
 	}
 	asyncDefine(){
 		const _ = this;

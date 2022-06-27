@@ -60,8 +60,15 @@ body
 	border-radius: 12px
 	&-main
 		&-subtitle
-			color: rgb($neutral-400)
 			font-family: $f_semi
+			color: rgb($neutral-400)
+	&-medium
+		&-subtitle
+			font-family: $f_medium
+			line-height: 30px
+			font-size: $fz16
+			letter-spacing: -.02em
+			color: rgb($neutral-400)
 	&-title,&-main-title
 		font-family: $f_bold
 		color: #3F4254
@@ -1766,6 +1773,12 @@ body
 			stroke: rgb($turquoise)
 		&.gold
 			stroke: rgb($gold)
+		&.turquoise-light
+			stroke: rgb($turquoise-light)
+		&.gold-light
+			stroke: rgb($gold-light)
+		&.blue-light
+			stroke: rgb($blue-light)
 	&-count
 		@extend %dfc
 		@extend %fdc
@@ -1801,8 +1814,11 @@ body
 				span
 					color: rgb($neutral-600)
 	.circle
+		margin: 20px auto
+.stats,.perItemBlock
+	.circle
 			+wh(200px)
-			margin: 20px auto
+			flex: 0 0 200px
 			&>svg
 				+wh(200px)
 				transform: rotate(90deg)
@@ -2796,14 +2812,16 @@ body
 		&-button
 			font-size: $fz12
 	&-calendar
-		width: 130px
-		flex: 0 0 130px
-		color: rgb($neutral-600)
+		color: rgb($neutral-400)
+		font-family: $p_medium
+		font-size: $fz12
 		span
-			font-size: $fz12
+			margin: 0 8px
+			color: rgb($neutral-600)
 		&-icon
 			+wh(20px)
 			flex: 0 0 20px
+			margin-right: 8px
 			fill: rgb($neutral-600)
 			svg
 				+wh(100%)
@@ -2851,6 +2869,14 @@ body
 				width: 100%
 				margin: 20px 0
 				overflow-x: scroll
+	&-payment
+		&-subtitle
+			font-family: $p_medium
+			line-height: 30px
+			font-size: $fz16
+			color: rgb($neutral-700)
+
+
 	&-block
 		&-graytitle
 			font: 18px $p_semi
@@ -2948,11 +2974,6 @@ body
 			letter-spacing: -0.02em
 			color: rgb($neutral-900)
 			font-size: $fz34
-		&-subtitle
-			font-family: $f_medium
-			color: rgb($neutral-400)
-			font-size: $fz16
-			line-height: $fz30
 		&-row
 			.stars-circle
 				svg
@@ -2960,36 +2981,56 @@ body
 		&-info
 			@extend %df
 			@extend %fdc
-			width: 170px
-			&-row
-				@extend %dfa
-				&.turquoise
-					.comGraph-circle-info-marker
-						background-color: rgb($turquoise)
-				&.gold
-					.comGraph-circle-info-marker
-						background-color: rgb($gold)
-				&.blue
-					.comGraph-circle-info-marker
-						background-color: rgb($blue)
-				&.turquoise-light
-					.comGraph-circle-info-marker
-						background-color: rgb($turquoise-light)
-				&.gold-light
-					.comGraph-circle-info-marker
-						background-color: rgb($gold-light)
-				&.blue-light
-					.comGraph-circle-info-marker
-						background-color: rgb($blue-light)
-			&-marker
-				+wh(12px,8px)
-				border-radius: 4px
-			&-title
-				margin: 0 20px 0 6px
-				font-size: 1em
-				color: rgb($neutral-400)
-				font-family: $f_medium
-			&-value
+
+	circle
+		r: 42
+		stroke-width: 16px
+		fill: none
+		&.blue
+			stroke: rgb($blue)
+		&.blue-light
+			stroke: rgb($blue-light)
+		&.gold
+			stroke: rgb($gold)
+		&.gold-light
+			stroke: rgb($gold-light)
+		&.turquoise
+			stroke: rgb($turquoise)
+		&.turquoise-light
+			stroke: rgb($turquoise-light)
+
+.marker
+	&-info
+		&-row
+			@extend %dfa
+			width: 176px
+			&.turquoise
+				.marker-info-indicator
+					background-color: rgb($turquoise)
+			&.gold
+				.marker-info-indicator
+					background-color: rgb($gold)
+			&.blue
+				.marker-info-indicator
+					background-color: rgb($blue)
+			&.turquoise-light
+				.marker-info-indicator
+					background-color: rgb($turquoise-light)
+			&.gold-light
+				.marker-info-indicator
+					background-color: rgb($gold-light)
+			&.blue-light
+				.marker-info-indicator
+					background-color: rgb($blue-light)
+		&-indicator
+			+wh(12px,8px)
+			border-radius: 4px
+		&-title
+			margin: 0 20px 0 6px
+			font-size: 1em
+			color: rgb($neutral-400)
+			font-family: $f_medium
+		&-value
 				margin-left: auto
 				color: rgb($neutral-700)
 				font-family: $f_bold
@@ -3010,7 +3051,7 @@ body
 			stroke: rgb($turquoise)
 		&.turquoise-light
 			stroke: rgb($turquoise-light)
-			
+
 .breadcrumbs
 	font: 14px $p_medium
 	margin: 24px 0
@@ -3019,7 +3060,7 @@ body
 		line-height: 20px
 	&-current
 		color: rgb($neutral-800)
- 
+
 .student
 	&-profile
 		&-send,&-change
@@ -3112,3 +3153,88 @@ body
 				font: 16px $f_bold
 				color: rgb($blue-text)
 				background-color: #E1F0FF
+
+.plansBlock
+	&-reasons
+		margin-bottom: 20px
+		&-block
+			margin-bottom: 20px
+			&:last-child
+				margin-bottom: 0
+		&-row
+			@extend %df
+			&-colors
+				@extend %df
+				div
+					+wh(39px,12px)
+					margin-right: 1px
+					&:last-child
+						margin-right: 12px
+						border-radius: 0 6px 6px 0
+				.turquoise
+					background-color: rgb($turquoise)
+				.turquoise-light
+					background-color: rgb($turquoise-light)
+				.gold
+					background-color: rgb($gold)
+				.gold-light
+					background-color: rgb($gold-light)
+				.blue
+					background-color: rgb($blue)
+				.blue-light
+					background-color: rgb($blue-light)
+			span
+				font-family: $f_bold
+				color: rgb($neutral-600)
+		&-title
+			font-family: $p_medium
+			color: rgb($neutral-400)
+
+
+.perItemBlock
+	margin-bottom: 20px
+	&:last-child
+		margin-bottom: 0
+	.circle
+		&-count-text
+			width: 100px
+
+	&-course
+		&-item
+			@extend %df
+			align-items: flex-start
+			margin-bottom: 24px
+			&:last-child
+				margin-bottom: 0
+			&-color
+				+wh(24px)
+				margin-right: 12px
+				border-radius: 6px
+				&.turquoise
+					background-color: rgb($turquoise)
+				&.turquoise-light
+					background-color: rgb($turquoise-light)
+				&.gold
+					background-color: rgb($gold)
+				&.gold-light
+					background-color: rgb($gold-light)
+				&.blue
+					background-color: rgb($blue)
+				&.blue-light
+					background-color: rgb($blue-light)
+			&-value
+				font-size: $fz18
+				font-family: $p_semi
+				color: rgb($neutral-900)
+			&-title
+				color: rgb($neutral-600)
+				font-family: $p_medium
+	&-inner
+		@extend %dfa
+		@extend %fdc
+	&-list
+		margin-top: 20px
+
+.revenue
+	&-graphic
+		margin-bottom: 20px
