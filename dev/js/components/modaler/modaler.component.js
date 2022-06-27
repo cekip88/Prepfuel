@@ -47,6 +47,9 @@ export default class GModaler extends GComponent {
 		}else{
 			modalData['shadowClass'] ? _.modalCont.classList.add(modalData['shadowClass']) : _.modalCont.classList.add('modaler-shadow');
 		}
+		if(modalData['closeBtn'] == 'hide'){
+			_.modalClose.style.display = 'none';
+		}
 		_.append(targetContent);
 	}
 	
