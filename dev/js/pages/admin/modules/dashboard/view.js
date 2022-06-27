@@ -31,7 +31,7 @@ export const view = {
 		if (buttons) {
 			tpl += `<div class="section-buttons">`;
 			for (let key in buttons) {
-				tpl += `<button class="section-button ${buttons[key]}"><span>${key}</span></button>`
+				tpl += `<button class="section-button ${buttons[key]}" data-click="Dashboard:blockHeadNavigate"><span>${key}</span></button>`
 			}
 			tpl += '</div>';
 		}
@@ -45,13 +45,18 @@ export const view = {
 		return `
 			<div class="block">
 				${_.sectionHeaderTpl({title,subtitle,gap:false})}
-				<div class="stars-circle circle">
-					<div class="circle-count">
-						<span class="circle-count-title"></span>
-						<span class="circle-count-text">${countText}</span>
-					</div>
-				</div>
+				${_.circleGraphicTpl(countText)}
 				<ul class="stars-info"></ul>
+			</div>
+		`
+	},
+	circleGraphicTpl(countText){
+		return `
+			<div class="stars-circle circle">
+				<div class="circle-count">
+					<span class="circle-count-title"></span>
+					<span class="circle-count-text">${countText}</span>
+				</div>
 			</div>
 		`
 	},
@@ -68,33 +73,15 @@ export const view = {
 		`
 	},
 
-	adminCalendarTpl(){
+	adminCalendarTpl(data){
+		const _ = this;
 		return `
 			<div class="calendar-row admin-calendar block-gap">
 				<div class="admin-calendar-icon">
 					<svg><use xlink:href="#calendar"></use></svg>
 				</div>
-				<g-input
-					class="admin-calendar"
-					type="date" 
-					classname="input-date admin-calendar"
-					required="" 
-					placeholder="Choose date from" 
-					style="position:relative;"
-					format="month DD, YYYY"
-					icon="false"
-				></g-input>
-				<span>to</span>
-				<g-input 
-					class="admin-calendar"
-					type="date" 
-					classname="input-date admin-calendar" 
-					required="" 
-					placeholder="Choose date to" 
-					style="position:relative;"
-					format="month DD, YYYY"
-					icon="false"
-				></g-input>
+				${_.dateFrom('Month DD, YYYY')}
+				${_.dateTo('Month DD, YYYY',data['buttons'])}
 			</div>
 		`
 	},
@@ -104,7 +91,7 @@ export const view = {
 		return `
 			<div class="block">
 				${_.sectionHeaderTpl(header)}
-				${_.adminCalendarTpl()}
+				${_.adminCalendarTpl(header)}
 				<div class="block-gap">
 					<h2 class="block-main-title">${info['title']}</h2>
 					<h5 class="block-main-subtitle">${info['subtitle']}</h5>
@@ -119,7 +106,7 @@ export const view = {
 		let tpl = `
 			<div class="block">
 				${_.sectionHeaderTpl(header)}
-				${_.adminCalendarTpl()}
+				${_.adminCalendarTpl(header)}
 				<div class="stat-cards">
 	`;
 		for (let i = 0; i < blocks.length; i++) {
@@ -254,7 +241,6 @@ export const view = {
 		return tpl;
 	},
 
-
 	skillsLevelStatsBlockTpl({title,blocks}){
 		const _ = this;
 		let tpl = `<div><h5 class="skills-level-title">${title}</h5><ul class="skills-level-list">`;
@@ -353,7 +339,7 @@ export const view = {
 		let tpl = `
 			<div class="block block-gap newUsers">
 				${_.sectionHeaderTpl(header)}
-				${_.adminCalendarTpl()}
+				${_.adminCalendarTpl(header)}
 				<ul class="newUsers-list"></ul>
 			</div>
 		`;
@@ -401,9 +387,9 @@ export const view = {
 	purchasedCoursesAndPlansTpl(){
 		const _ = this;
 		let tpl = `
-			<div class="block comGraph">
+			<div class="block comGraph block-gap">
 				${_.sectionHeaderTpl(_.purchasedCoursesAndPlansHeaderData)}
-				${_.adminCalendarTpl()}
+				${_.adminCalendarTpl(_.purchasedCoursesAndPlansHeaderData)}
 			</div>
 		`;
 		return tpl;
@@ -422,12 +408,12 @@ export const view = {
 		let tpl = `
 			<div class="comGraph-circle">
 				<h4 class="comGraph-circle-title">${title}</h4>
-				<h6 class="comGraph-circle-subtitle block-gap">${subtitle}</h6>
+				<h6 class="block-medium-subtitle block-gap">${subtitle}</h6>
 				<div class="comGraph-circle-row">
 					<div class="stars-circle" data-radius="50" data-borders="16"></div>
 					<div class="comGraph-circle-info">`;
 		for (let i = 0; i < list.length; i++) {
-			tpl += _.comGraphCircleInfoTpl(list[i]);
+			tpl += _.markerInfoTpl(list[i]);
 		}
 		tpl += `</div>
 				</div>
@@ -435,13 +421,13 @@ export const view = {
 		`;
 		return tpl;
 	},
-	comGraphCircleInfoTpl({title,value,color}){
+	markerInfoTpl({title,value,color}){
 		const _ = this;
 		return `
-			<div class="comGraph-circle-info-row ${color}">
-				<div class="comGraph-circle-info-marker"></div>
-				<h6 class="comGraph-circle-info-title">${title}</h6>
-				<div class="comGraph-circle-info-value">${value.toString().replace(_.division, '$&,')}</div>
+			<div class="marker-info-row ${color}">
+				<div class="marker-info-indicator"></div>
+				<h6 class="marker-info-title">${title}</h6>
+				<div class="marker-info-value">${typeof value == "number" ? value.toString().replace(_.division, '$&,') : value}</div>
 			</div>
 		`
 	},
@@ -455,6 +441,171 @@ export const view = {
 		return tpl;
 	},
 
+
+	canceledPlansTpl(){
+		const _ = this;
+		let tpl = `
+			<div class="block">
+				${_.sectionHeaderTpl(_.plansCanceledHeader)}
+				${_.adminCalendarTpl(_.plansCanceledHeader)}
+				<div class="block-gap">
+					<h4 class="block-main-title">${_.canceledPlansData.title}</h4>
+					<h5 class="block-medium-subtitle">${_.canceledPlansData.subtitle}</h5>
+				</div>
+				${_.plansBlockInnerTpl(_.canceledPlansData)}
+				<div class="plansBlock-reasons">
+					<h4 class="block-medium-subtitle block-gap">Reasons</h4>
+					${_.plansBlockReasonsTpl(_.canceledPlansData.reasons)}
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
+	refundsBlockTpl(){
+		const _ = this;
+		let tpl = `
+			<div class="block refunds">
+				${_.sectionHeaderTpl(_.refundsHeader)}
+				${_.adminCalendarTpl(_.refundsHeader)}
+				<div class="block-gap">
+					<h4 class="block-main-title">${_.refundsData.title}</h4>
+					<h5 class="block-medium-subtitle">${_.refundsData.subtitle}</h5>
+				</div>
+				${_.plansBlockInnerTpl(_.refundsData)}
+				<div class="plansBlock-reasons">
+					<h4 class="admin-payment-subtitle block-gap">Reasons</h4>
+					${_.plansBlockReasonsTpl(_.refundsData.reasons)}
+				</div>
+				${_.perCourseTpl(_.refundsData.perCourse)}
+				${_.perPlanTpl(_.refundsData.perPlan)}
+			</div>
+		`;
+		return tpl;
+	},
+	plansBlockInnerTpl(fillingData){
+		const _ = this;
+		return `
+			<div>
+				<div class="block-gap">
+					<img src="../../../../../img/refundByPlan.png" alt="">
+				</div>
+				<div class="plansBlock-info">${_.plansBlockInfoinnerTpl(fillingData.plansInfo)}</div>
+			</div>
+		`
+	},
+	plansBlockInfoinnerTpl(refundsInfo){
+		const _ = this;
+		let tpl = '';
+			for (let i = 0; i < refundsInfo.length; i++) {
+				tpl += `<div class="plansBlock-info-col block-gap">`
+				for (let j = 0; j < refundsInfo[i].infos.length; j++) {
+					tpl += _.markerInfoTpl(refundsInfo[i].infos[j]);
+				}
+				tpl += '</div>'
+			}
+		return tpl;
+	},
+	plansBlockReasonsTpl(refundsReasonsData){
+		const _ = this;
+		let tpl = ``;
+		for (let i = 0; i < refundsReasonsData.length; i++) {
+			tpl += _.plansBlockReasonsRowTpl(refundsReasonsData[i])
+		}
+		return tpl;
+	},
+	plansBlockReasonsRowTpl({colors,title}){
+		const _ = this;
+		let tpl = `
+			<div class="plansBlock-reasons-block">
+				<div class="plansBlock-reasons-row">
+					<div class="plansBlock-reasons-row-colors">
+		`;
+		for (let i = 0; i < colors.length; i++) {
+			tpl += `<div class="${colors[i]}"></div>`
+		}
+		tpl += `</div><span>${colors.length}</span></div><h5 class="plansBlock-reasons-title">${title}</h5></div>`
+		return tpl;
+	},
+
+	perCourseTpl(blockData){
+		const _ = this;
+		let tpl = `
+			<div class="perItemBlock perCourse">
+				<h4 class="admin-payment-subtitle block-gap">${blockData.title}</h4>
+				<div class="perItemBlock-inner">
+					${_.circleGraphicTpl(blockData.circleText)}
+					<ul class="perItemBlock-list"></ul>
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
+	perCourseRowTpl(rowData){
+		const _ = this;
+		let tpl = `
+			<li class="perItemBlock-course-item">
+				<div class="perItemBlock-course-item-color ${rowData.color}"></div>
+				<div class="perItemBlock-course-item-text">
+					<strong class="perItemBlock-course-item-value">$${_.setInteger(rowData.value)}</strong>
+					<h5 class="perItemBlock-course-item-title">${rowData.title}</h5>
+				</div>
+			</li>
+		`;
+		return tpl;
+	},
+	perPlanTpl(blockData){
+		const _ = this;
+		let tpl = `
+			<div class="perItemBlock perPlan">
+				<h4 class="admin-payment-subtitle block-gap">${blockData.title}</h4>
+				<div class="perItemBlock-inner">
+					${_.circleGraphicTpl(blockData.circleText)}
+					<ul class="perItemBlock-list"></ul>
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
+	perPlanRowTpl(rowData){
+		const _ = this;
+		let tpl = `
+			<li class="perItemBlock-course-item">
+				<div class="perItemBlock-course-item-color ${rowData.color}"></div>
+				<div class="perItemBlock-course-item-text">
+					<strong class="perItemBlock-course-item-value">$${_.setInteger(rowData.value)}</strong>
+					<h5 class="perItemBlock-course-item-title">${rowData.title}</h5>
+				</div>
+			</li>
+		`;
+		return tpl;
+	},
+	revenueBlockTpl(){
+		const _ = this;
+		let tpl = `
+			<div class="block block-gap revenue">
+				${_.sectionHeaderTpl(_.revenueHeader)}
+				${_.adminCalendarTpl(_.revenueHeader)}
+				<div class="block-gap">
+					<h4 class="block-main-title">${_.revenueData.title}</h4>
+					<h6 class="block-main-subtitle">${_.revenueData.subtitle}</h6>
+				</div>
+				<div class="revenue-graphic">
+					<img src="../../../../../img/revenue-chart.png" alt="">
+				</div>
+				${_.perCourseTpl(_.revenueData.perCourse)}
+				${_.perPlanTpl(_.revenueData.perPlan)}
+			</div>
+		`;
+		return tpl;
+	},
+	sampleTpl(){
+		const _ = this;
+		let tpl = `
+			
+		`;
+		return tpl;
+	},
+
 	paymentsDashboardBody(){
 		const _ = this;
 		let tpl = `
@@ -463,8 +614,12 @@ export const view = {
 					<div class="row">
 						<div class="col t50 d690">
 							${_.purchasedCoursesAndPlansTpl()}
+							${_.refundsBlockTpl()}
 						</div>
-						<div class="col t50 d486"></div>
+						<div class="col t50 d486">
+							${_.revenueBlockTpl()}
+							${_.canceledPlansTpl()}
+						</div>
 					</div>
 				</div>
 			</div>
