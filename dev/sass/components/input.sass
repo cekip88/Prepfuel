@@ -8,6 +8,20 @@
 	+w(100%)
 	position: relative
 	display: inline-block
+	&.adding-select
+		fill: #B5B5C3
+		cursor: pointer
+		.inpt-value
+			padding-left: 12px
+			height: 44px
+			color: rgb($neutral-500)
+			&::placeholder
+				font: 14px 'roboto-regular'
+				color: rgb($neutral-500)
+		.inpt-date-img
+			+w(11px)
+			top: 13px
+			right: 16px
 	&.form-input
 		+wh(100%,54px)
 		border: 1px solid transparent

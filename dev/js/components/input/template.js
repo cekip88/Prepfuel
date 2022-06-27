@@ -83,6 +83,7 @@ export default {
 				>
 				<input class="inpt-date" hidden type="date">
 				${(icon != false && icon != null && icon != 'false') ? icon : ''}
+				${ data['xlink'] ? "<svg class='inpt-date-img'><use xlink:href='/img/sprite.svg#"+data['xlink']+"'></use></svg>" : ''}
 			</div>
 		</label>`;
 		return dateTpl;

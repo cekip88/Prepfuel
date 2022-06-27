@@ -273,7 +273,7 @@ export const view = {
 					</div>
 				</div>
 				${_.addingStudent()}
-				${_.removeCourse()}
+				
 			</div>
 		`;
 	},
@@ -281,6 +281,16 @@ export const view = {
 		const _ = this;
 		return `
 			<div hidden>
+				<div class="modal-block student-profile-remove-popup" id="removeForm">
+					<h6 class="modal-title">
+						<span>Removing course</span>
+					</h6>
+					<p class="modal-text">Are you sure want to remove this course?</p>
+					<div class="modal-row">
+						<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
+						<button class="button-red" data-click="${_.componentName}:removeCourse"><span>Remove</span></button>
+					</div>
+				</div>
 			</div>
 		`;
 	},
@@ -288,7 +298,7 @@ export const view = {
 		const _ = this;
 		return `
 			<div hidden>
-				<div class="admin-modal"	id="addingForm">
+				<div class="admin-modal"	id="assignForm">
 					<div class="block test-block adding-block">
 					<div class="test-header">
 						<h5 class="block-title test-title adding-header-title">
@@ -333,12 +343,13 @@ export const view = {
 						</div>
 					</div>
 					<div class="test-footer">
-						<button class="test-footer-back" data-click="${_.componentName}:changePrevStep" step="1">
+						<button class="test-footer-back" data-click="${_.componentName}:changeAssignPrevStep" step="1">
 							<span>Cancel</span>
 						</button>
-						<button class="button-blue" data-click="${_.componentName}:changeNextStep" step="2">
+						<button class="button-blue" data-click="${_.componentName}:changeAssignNextStep" step="2">
 							<span>Next</span>
 						</button>
+						
 					</div>
 				</div>
 				</div>
@@ -381,30 +392,104 @@ export const view = {
 		const _ = this;
 		return `
 			<div class="adding-center">
-				<h3 class="adding-title">Application School List</h3>
+				<h3 class="adding-title">Summary</h3>
 				<div class="adding-section">
-					<h4 class="adding-subtitle withmar">School you are interested in applying to</h4>
-					<div class="adding-inpt">
-						<div class="form-label-row">
-							<label class="form-label">First choice</label>
-						</div>
-						<g-select class="select adding-select" name="first_choise" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;Have not decided yet&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ">
-						<input type="hidden" name="first_choise" slot="value"></g-select>
+					<div class="adding-summary">
+						<strong class="adding-summary-title">Course & plan</strong>
+						<button class="adding-summary-btn" data-click="${_.componentName}:jumpToAssignStep" step="1">Edit</button>
 					</div>
-					<div class="adding-inpt">
-						<div class="form-label-row">
-							<label class="form-label">Second choice</label>
-						</div>
-						<g-select class="select adding-select" name="second_choise" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ">
-						<input type="hidden" name="second_choise" slot="value"></g-select>
+					<ul class="adding-summary-list">
+						<li class="adding-summary-item">
+							<span>Chosen Course:</span>
+							<strong>SHSAT</strong>
+						</li>
+						<li class="adding-summary-item">
+							<span>Chosen Level:</span>
+							<strong>Middle (5-7th Grade)</strong>
+						</li>
+						<li class="adding-summary-item">
+							<span>Plan:</span>
+							<strong>FREE</strong>
+						</li>
+					</ul>
+				</div>
+				<div class="adding-section">
+					<div class="adding-summary">
+						<strong class="adding-summary-title">Application School List</strong>
+						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToAssignStep" step="2">Edit</button>
 					</div>
-					<div class="adding-inpt">
-						<div class="form-label-row">
-							<label class="form-label">Third choice</label>
-						</div>
-						<g-select class="select adding-select" name="third_choise" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ">
-						<input type="hidden" name="third_choise" slot="value"></g-select>
+					<ul class="adding-summary-list">
+						<li class="adding-summary-item">
+							<span>First Choice:</span>
+							<strong>Am. Studies/ Lehman</strong>
+						</li>
+						<li class="adding-summary-item">
+							<span>Second Choice:</span>
+							<strong>Have not decided yet</strong>
+						</li>
+						<li class="adding-summary-item">
+							<span>Third Choice:</span>
+							<strong>Have not decided yet</strong>
+						</li>
+					</ul>
+				</div>
+				<div class="adding-section">
+					<div class="adding-summary">
+						<strong class="adding-summary-title">Test Information</strong>
+						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToAssignStep" step="3">Edit</button>
 					</div>
+					<ul class="adding-summary-list">
+						<li class="adding-summary-item">
+							<span>Registered Official Test Date:</span>
+							<strong>May 17, 2023</strong>
+						</li>
+					</ul>
+				</div>
+				<div class="adding-section">
+					<div class="adding-summary">
+						<strong class="adding-summary-title">Discount</strong>
+					</div>
+					<table class="adding-summary-table">
+						<thead>
+							<tr>
+								<th>Course</th>
+								<th>Membership</th>
+								<th>Plan</th>
+								<th>Amount</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>SHSAT</td>
+								<td>-</td>
+								<td>Free</td>
+								<td>$ 0.00</td>
+							</tr>
+							<tr>
+								<td colspan="3"></td>
+								<td>
+									<ul class="adding-summary-table-list">
+										<li>
+											<span>Subtotal:</span>
+											<strong>$ 0.00</strong>
+										</li>
+										<li>
+											<span>VAT 0%</span>
+											<strong> 0.00</strong>
+										</li>
+										<li>
+											<span>Subtotal + VAT:</span>
+											<strong>$ 0.00</strong>
+										</li>
+										<li>
+											<span>Total:</span>
+											<strong>$ 0.00</strong>
+										</li>
+									</ul>
+								</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 			</div>
 		`;
@@ -493,8 +578,8 @@ export const view = {
 				<div class="adding-label">What test is the student purchasing?</div>
 				<div class="adding-buttons">
 					<button class="adding-button">ISEE</button>
-					<button class="adding-button active">SSAT</button>
-					<button class="adding-button">SHSAT</button>
+					<button class="adding-button">SSAT</button>
+					<button class="adding-button active">SHSAT</button>
 				</div>
 			</div>
 			<div class="adding-section">
@@ -748,9 +833,7 @@ export const view = {
 							<input type="radio" id="have_registered" class="adding-radio" name="registered" checked>
 							<label class="form-label adding-label-have" for="have_registered">Have registered</label>
 						</div>
-						<g-select class="select adding-select" name="have_registered" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Press to choose your official test date" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ">
-							<input type="hidden" name="have_registered" slot="value">
-						</g-select>
+						<g-input type='date' class="select adding-select" name="have_registered" classname="adding-select" icon="false" xlink="select-arrow-bottom" placeholder="Press to choose your official test date"></g-input>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
@@ -909,6 +992,66 @@ export const view = {
 	},
 	
 	///
+	emptyCourseInfo(){
+		const _ = this;
+		return `
+			<h5 class="student-profile-course-empty">Currently, there is no ISEE course assign to this student</h5>
+			<button  class="student-profile-course-empty-btn" data-click="${_.componentName}:showAssignPopup">Assign SHSAT Course</button>
+		`;
+	},
+	courseInfo(){
+		const _ = this;
+		return `
+			<div class="adding-section">
+				<h4 class="adding-subtitle withmar">Course & Test Information</h4>
+				<div class="adding-inpt">
+					<div class="form-label-row">
+						<label class="form-label">Course</label>
+					</div>
+					<g-input type="text" name="email" class="g-form-item" classname="form-input adding-inpt"></g-input>
+					</div>
+				<div class="adding-inpt">
+					<div class="form-label-row">
+						<label class="form-label">Official test date</label>
+					</div>
+					<g-input type="text" name="email" class="g-form-item" classname="form-input adding-inpt"></g-input>
+					</div>
+			</div>
+			<div class="adding-section">
+				<h4 class="adding-subtitle withmar">Application School List</h4>
+				<div class="adding-inpt">
+					<div class="form-label-row">
+						<label class="form-label">First choice</label>
+					</div>
+					<g-select class="select adding-select" name="first_choise" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;Have not decided yet&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ">
+					<input type="hidden" name="first_choise" slot="value"></g-select>
+				</div>
+				<div class="adding-inpt">
+					<div class="form-label-row">
+						<label class="form-label">Second choice</label>
+					</div>
+					<g-select class="select adding-select" name="second_choise" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ">
+					<input type="hidden" name="second_choise" slot="value"></g-select>
+				</div>
+				<div class="adding-inpt">
+					<div class="form-label-row">
+						<label class="form-label">Third choice</label>
+					</div>
+					<g-select class="select adding-select" name="third_choise" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ">
+					<input type="hidden" name="third_choise" slot="value"></g-select>
+				</div>
+			</div>
+			<div class="adding-section">
+				<h4 class="adding-subtitle withmar">Membership Plan</h4>
+				<div class="student-profile-plan">
+					<h5 class="student-profile-plan-title">Free</h5>
+					<div class="student-profile-plan-price">$0.00 per month</div>
+					<button class="student-profile-plan-edit">Edit</button>
+				</div>
+			</div>
+			<button class="student-profile-remove" data-click="${_.componentName}:showRemovePopup">Remove This Course</button>
+		`;
+	},
 	profile(){
 		const _ = this;
 		return `
@@ -992,54 +1135,9 @@ export const view = {
 								<button class="student-profile-courses-btn">SSAT</button>
 								<button class="student-profile-courses-btn active">SHSAT</button>
 							</div>
-								<div class="adding-section">
-									<h4 class="adding-subtitle withmar">Course & Test Information</h4>
-									<div class="adding-inpt">
-										<div class="form-label-row">
-											<label class="form-label">Course</label>
-										</div>
-										<g-input type="text" name="email" class="g-form-item" classname="form-input adding-inpt"></g-input>
-										</div>
-									<div class="adding-inpt">
-										<div class="form-label-row">
-											<label class="form-label">Official test date</label>
-										</div>
-										<g-input type="text" name="email" class="g-form-item" classname="form-input adding-inpt"></g-input>
-										</div>
-								</div>
-								<div class="adding-section">
-									<h4 class="adding-subtitle withmar">Application School List</h4>
-									<div class="adding-inpt">
-										<div class="form-label-row">
-											<label class="form-label">First choice</label>
-										</div>
-										<g-select class="select adding-select" name="first_choise" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;Have not decided yet&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ">
-										<input type="hidden" name="first_choise" slot="value"></g-select>
-									</div>
-									<div class="adding-inpt">
-										<div class="form-label-row">
-											<label class="form-label">Second choice</label>
-										</div>
-										<g-select class="select adding-select" name="second_choise" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ">
-										<input type="hidden" name="second_choise" slot="value"></g-select>
-									</div>
-									<div class="adding-inpt">
-										<div class="form-label-row">
-											<label class="form-label">Third choice</label>
-										</div>
-										<g-select class="select adding-select" name="third_choise" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ">
-										<input type="hidden" name="third_choise" slot="value"></g-select>
-									</div>
-								</div>
-								<div class="adding-section">
-									<h4 class="adding-subtitle withmar">Membership Plan</h4>
-									<div class="student-profile-plan">
-										<h5 class="student-profile-plan-title">Free</h5>
-										<div class="student-profile-plan-price">$0.00 per month</div>
-										<button class="student-profile-plan-edit">Edit</button>
-									</div>
-								</div>
-								<button class="student-profile-remove" data-click="${_.componentName}:removeCourse">Remove This Course</button>
+							<div class="student-profile-course-info">
+								${_.courseInfo()}
+							</div>
 						</div>
 					</div>
 					<div class="student-profile-footer">
@@ -1054,6 +1152,8 @@ export const view = {
 						</div>
 					</div>
 				</div>
+				${_.assignStudent()}
+				${_.removeCourse()}
 			</div>
 		`;
 	},
