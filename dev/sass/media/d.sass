@@ -84,10 +84,21 @@
 			margin-left: auto
 			white-space: nowrap
 			width: initial
-		&-input,&-select,.button-blue
+		&-input,&-select,&-item,.button-blue
 			margin-top: 0
-		&-input,&-select
+		&-input,&-select,&-item
 			margin-left: 16px
+		&-item
+			.block-header
+				&-input,&-select
+					width: 100%
+					margin: 0
+		&-search
+			width: 240px
+			flex: 0 0 240px
+		&-select
+			width: 340px
+			flex: 0 0 340px
 	&-main
 		&-title
 			font-size: $fz34
