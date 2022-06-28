@@ -13,7 +13,7 @@ export const view = {
 	pagination(){
 		const _ = this;
 		return `
-			<div class="pagination pagination-top">
+			<div class="pagination pagination-top fill">
 				<div class="pagination-info"><span>1 - 100 of 7300</span></div>
 				<div class="pagination-links">
 					<a class="pagination-arrow pagination-prev" href="#">
@@ -87,7 +87,7 @@ export const view = {
 							<use xlink:href="#trash"></use>
 						</svg>
 					</button>
-					<button class="users-btn" data-click="${_.componentName}:showProfile">Profile</button>
+					<button class="users-btn profile" data-click="${_.componentName}:showProfile">Profile</button>
 				</div>
 			</td>
 		`
@@ -100,9 +100,9 @@ export const view = {
 				<div class="block">
 					<div class="block-header">
 						<h2 class="block-title">Students (7,300)</h2>
-						<g-input class="block-header-input" type="text" value="Search" classname="form-input form-search"></g-input>
-						<g-input class="block-header-input block-header-date" type="date" classname="form-input form-search"></g-input>
-						<g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select" arrowsvg="/img/sprite.svg#select-arrow" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" style="--class:select block-header-select; --action:testChange; --name:testField; --classname:filter-select; --arrowsvg:img/sprite.svg#select-arrow;"><input type="hidden" name="testField" slot="value"></g-select>
+						<div class="block-header-item block-header-search"><svg><use xlink:href="#search"></use></svg><g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input></div>
+						<div class="block-header-item block-header-date"><svg><use xlink:href="#calendar"></use></svg><g-input class="block-header-input block-header-date" type="date" icon="false" classname="form-input form-search"></g-input></div>
+						<div class="block-header-item block-header-select"><g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select" arrowsvg="/img/sprite.svg#select-arrow" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" style="--class:select block-header-select; --action:testChange; --name:testField; --classname:filter-select; --arrowsvg:img/sprite.svg#select-arrow;"><input type="hidden" name="testField" slot="value"></g-select></div>
 						<button class="button-blue" data-click="${_.componentName}:addStudent"><span>Add Student</span>
 							<svg class="button-icon">
 								<use xlink:href="#plus"></use>

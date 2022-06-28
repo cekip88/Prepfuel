@@ -84,15 +84,18 @@ export class UsersModule extends AdminPage {
 	}
 	connectTableHead(){
 		const _ = this;
-		let
-			cont = _.f('.tbl'),
-			head = cont.querySelector('.tbl-head'),
-			ths = head.querySelectorAll('.tbl-item'),
-			table = cont.querySelector('TABLE'),
-			row = table.querySelector('TR'),
-			tds = row.querySelectorAll('.tbl-item');
-
-		ths.forEach( (item,index) =>		item.style = `width:${tds[index].getBoundingClientRect().width}px;`)
+		setTimeout(()=>{
+			let
+				cont = _.f('.tbl'),
+				head = cont.querySelector('.tbl-head'),
+				ths = head.querySelectorAll('.tbl-item'),
+				table = cont.querySelector('TABLE'),
+				row = table.querySelector('TR'),
+				tds = row.querySelectorAll('.tbl-item');
+			ths.forEach(function (item,index){
+				item.style = `width:${tds[index].getBoundingClientRect().width}px;`
+			})
+		},100)
 	}
 
 	
