@@ -42,6 +42,8 @@ export const view = {
 	usersBodyRowsTpl(usersData){
 		const _ = this;
 		let trs = [];
+		console.log(usersData);
+		usersData = usersData['response'];
 		for(let item of usersData){
 			let tr = document.createElement('TR');
 			tr.className= 'tbl-row';
@@ -99,7 +101,7 @@ export const view = {
 			<div class="section users-page">
 				<div class="block">
 					<div class="block-header">
-						<h2 class="block-title">Students (7,300)</h2>
+						<h2 class="block-title">Students <span class="users-count"></span></h2>
 						<div class="block-header-item block-header-search"><svg><use xlink:href="#search"></use></svg><g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input></div>
 						<div class="block-header-item block-header-date"><svg><use xlink:href="#calendar"></use></svg><g-input class="block-header-input block-header-date" type="date" icon="false" classname="form-input form-search"></g-input></div>
 						<div class="block-header-item block-header-select"><g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select" arrowsvg="/img/sprite.svg#select-arrow" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" style="--class:select block-header-select; --action:testChange; --name:testField; --classname:filter-select; --arrowsvg:img/sprite.svg#select-arrow;"><input type="hidden" name="testField" slot="value"></g-select></div>
@@ -139,7 +141,7 @@ export const view = {
 			</div>
 		`;
 	},
-	removeCourse(){
+	removeCourseTpl(){
 		const _ = this;
 		return `
 			<div hidden>
@@ -1014,7 +1016,7 @@ export const view = {
 					</div>
 				</div>
 				${_.assignStudent()}
-				${_.removeCourse()}
+				${_.removeCourseTpl()}
 			</div>
 		`;
 	},

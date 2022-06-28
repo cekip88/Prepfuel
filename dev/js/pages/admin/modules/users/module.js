@@ -1,5 +1,5 @@
 import {G_Bus} from "../../../../libs/G_Control.js";
-import {Model} from "./model.js";
+import Model  from "./model.js";
 import {AdminPage} from "../../admin.page.js";
 
 export class UsersModule extends AdminPage {
@@ -12,10 +12,12 @@ export class UsersModule extends AdminPage {
 			'body':'usersBody'
 		}
 	}
+	
+
 	async asyncDefine(){
 		const _ = this;
-		_.studentsInfo = await Model.getUsers('student');
-		console.log(_.studentsInfo);
+		Model.currentUsersType = 'student';
+		//_.studentsInfo =
 	}
 	define() {
 		const _ = this;
@@ -36,8 +38,12 @@ export class UsersModule extends AdminPage {
 				'addStudent','showAssignPopup',
 				'changeNextStep','changePrevStep','jumpToStep',
 				'showProfile','showRemovePopup','removeCourse',
-				'domReady'
+				'domReady','fillData'
 			]);
+	}
+	fillData({handlers,data}){
+		const _ = this;
+		_[handlers](data);
 	}
 	handleErrors({method,data}){
 		const _ = this;
@@ -46,8 +52,10 @@ export class UsersModule extends AdminPage {
 		}
 	}
 	
-	domReady(){
+	async domReady(){
 		const _ = this;
+		
+		_.fillBlock('.users-page');
 		if (_.subSection === 'Students') {
 			_.usersTableFill();
 			//
@@ -76,10 +84,15 @@ export class UsersModule extends AdminPage {
 			return '';
 		}
 	}
+	async fillBlock(block){
+		const _ = this;
+		let usersData = await Model.usersData;
+		_.f(`${block} .users-count`).textContent = `(${usersData['total']})`
+	}
 	async usersTableFill(){
 		const _ = this;
 		let tbody = _.f('.tbl-body');
-		tbody.append(..._.usersBodyRowsTpl(_.studentsInfo));
+		tbody.append(..._.usersBodyRowsTpl(await Model.usersData));
 		_.connectTableHead();
 	}
 	connectTableHead(){

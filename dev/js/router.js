@@ -139,7 +139,7 @@ export class router {
 				if (!_.pages.has(name)) {
 					_.pages.set(name, moduleName);
 				}
-				if('asyncDefine' in moduleName)	await moduleName.asyncDefine();
+				if('asyncDefine' in moduleName)	moduleName.asyncDefine();
 				moduleName.createPageStructure(moduleName.pageStructure);
 				moduleName.init(blockData);
 				resolve(moduleName);

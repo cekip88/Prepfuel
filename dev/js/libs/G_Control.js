@@ -3,6 +3,7 @@ import { G_Bus } from "./G_Bus.js";
 let prepareHandler = (e,dataEvent)=>{
 		let
 			item = e.target;
+	
 		if(!item || !item.closest) return void 0;
 		let citem = item.closest(`[data-${dataEvent}]`);
 		if(!citem) return void 0;

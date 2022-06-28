@@ -67,7 +67,8 @@ class _G_Bus {
 				console.log(`Component ${componentName}: Event start ${eventName} with data:`,data);
 			}
 			try{
-				let currentEvents = _.components[componentName]['events'][eventName]
+				let currentEvents = _.components[componentName]['events'][eventName];
+			
 				if(currentEvents){
 					if (currentEvents.size) {
 						for(let item of currentEvents){
