@@ -18,18 +18,112 @@ export class UsersModule extends AdminPage {
 		_.maxStep = 6;
 		_.maxAssignStep = 4;
 		_.minStep = 1;
+
+		_.subSection = 'Students';
+
 		_.set({
 			addingStep : 1,
 			assignStep : 1
 		});
 		G_Bus
 			.on(_,[
+				'domReady',
 				'addStudent','changeNextStep','showAssignPopup',
 				'changePrevStep','jumpToStep',
 				'showProfile','showRemovePopup','removeCourse',
 				'changeAssignPrevStep','changeAssignNextStep','jumpToAssignStep'
 			]);
 	}
+	async asyncDefine(){
+		const _ = this;
+		_.studentsInfo = [
+			{
+				name: 'Brooklyn',
+				surname: 'Simmons',
+				image: 'green-boy.svg',
+				email: 'Exmplm@example.com',
+				courses: [{title: 'ISEE U',color:'violet'},{title:'SHSAT 9TH',color:'brown'}],
+				regDate: '2022-02-17'
+			},{
+				name: 'Wade',
+				surname: 'Warren',
+				image: 'red-boy.svg',
+				email: 'Exmplm@example.com',
+				courses: [{title: 'ISEE M',color:'blue'},{title:'SSAT M',color:'turquoise'},{title:'SHSAT 8th',color:'red'}],
+				regDate: '2022-02-17'
+			},{
+				name: 'Cameron',
+				surname: 'Williamson',
+				image: 'gray-boy.svg',
+				email: 'Exmplm@example.com',
+				courses: [{title: 'ISEE M',color:'blue'},{title:'SSAT M',color:'turquoise'}],
+				regDate: '2022-02-17'
+			},{
+				name: 'Leslie',
+				surname: 'Alexander',
+				image: 'red-girl.svg',
+				email: 'Exmplm@example.com',
+				courses: [{title: 'ISEE L',color:'gold'}],
+				regDate: '2022-02-17'
+			},{
+				name: 'Kristin',
+				surname: 'Watson',
+				image: 'blue-girl.svg',
+				email: 'Exmplm@example.com',
+				courses: [{title:'SSAT M',color:'turquoise'},{title:'SHSAT 8th',color:'red'}],
+				regDate: '2022-02-17'
+			}
+		];
+	}
+	async changeSection({item,event}) {
+		const _ = this;
+		_.subSection = item.getAttribute('section');
+		_.moduleStructure = {
+			'header':'fullHeader',
+			'header-tabs':'adminTabs',
+			'body-tabs':'usersBodyTabs',
+			'body': _.flexible(),
+		};
+		await _.render();
+	}
+	flexible(){
+		const _ = this;
+		if(_.subSection === 'students') {
+			return 'usersBody';
+		} else if (_.subSection === 'parents') {
+			return '';
+		} else if (_.subSection === 'payments') {
+			return '';
+		}
+	}
+	domReady() {
+		const _ = this;
+		if (_.subSection === 'Students') {
+			_.usersTableFill();
+			_.connectTableHead();
+		}
+	}
+
+	usersTableFill(){
+		const _ = this;
+		let tbody = _.f('.tbl-body');
+		tbody.innerHTML += _.usersBodyRowsTpl(_.studentsInfo);
+	}
+	connectTableHead(){
+		const _ = this;
+		let
+			cont = _.f('.tbl'),
+			head = cont.querySelector('.tbl-head'),
+			ths = head.querySelectorAll('.tbl-item'),
+			table = cont.querySelector('TABLE'),
+			row = table.querySelector('TR'),
+			tds = row.querySelectorAll('.tbl-item');
+
+		ths.forEach(function (item,index){
+			item.style = `width:${tds[index].getBoundingClientRect().width}px;`
+		})
+	}
+
 	changeAssignNextStep({item}){
 		const _ = this;
 		if(_.maxAssignStep > _._$.assignStep)	_._$.assignStep++;

@@ -13,6 +13,7 @@ export const view = {
 	},
 
 	sectionHeaderTpl({title,subtitle,buttons,gap = true}){
+		const _ = this;
 		let tpl = buttons ? `<div class="section-header ${gap ? 'block-gap' : ''}">` : '';
 
 		if (!title && subtitle) {
@@ -31,7 +32,7 @@ export const view = {
 		if (buttons) {
 			tpl += `<div class="section-buttons">`;
 			for (let key in buttons) {
-				tpl += `<button class="section-button ${buttons[key]}" data-click="Dashboard:blockHeadNavigate"><span>${key}</span></button>`
+				tpl += `<button class="section-button ${buttons[key]}" data-click="${_.componentName}:blockHeadNavigate"><span>${key}</span></button>`
 			}
 			tpl += '</div>';
 		}

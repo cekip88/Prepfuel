@@ -39,6 +39,61 @@ export const view = {
 			</div>
 		`;
 	},
+	usersBodyRowsTpl(usersData){
+		const _ = this;
+		let tpl = '';
+		for (let i = 0,j = 0; i < 100; i++,j++) {
+			if (j >= usersData.length) j = 0;
+			tpl += _.usersBodyRowsTpl(usersData[j]);
+		}
+		return tpl;
+	},
+	usersBodyRowTpl(rowData){
+		const _ = this;
+		let tpl = `
+			<tr class="tbl-row">
+				<td>
+					<div class="tbl-item">
+						<div class="users-photo-icon"><img src="/img/${rowData.image}" alt="">
+						</div>
+						<div class="users-info">
+							<h6 class="users-info-name">${rowData.name} ${rowData.surname}</h6>
+							<span class="users-info-email">${rowData.email}</span>
+						</div>
+					</div>
+				</td>
+				<td>
+					<div class="tbl-item">`;
+		for (let i = 0; i < rowData.courses.length; i++) {
+			tpl += `<div class="users-course ${rowData.courses[i].color}">${rowData.courses[i].title}</div>`
+		}
+		tpl += `
+					</div>
+				</td>
+				<td>
+					<div class="tbl-item right">
+						<div class="users-date">March 17, 2022</div>
+					</div>
+				</td>
+				<td>
+					<div class="tbl-item right">
+						<button class="users-btn">
+							<svg>
+								<use xlink:href="#write"></use>
+							</svg>
+						</button>
+						<button class="users-btn">
+							<svg>
+								<use xlink:href="#trash"></use>
+							</svg>
+						</button>
+						<button class="users-btn" data-click="${_.componentName}:showProfile">Profile</button>
+					</div>
+				</td>
+			</tr>
+		`
+		return tpl;
+	},
 	usersBody() {
 		const _ = this;
 		return `
@@ -60,216 +115,24 @@ export const view = {
 						<div class="tbl-head">
 							<div class="tbl-item"><span>USER Name</span>
 								<div class="tbl-sort-btns">
-									<button class="tbl-sort-btn top"></button>
-									<button class="tbl-sort-btn bottom"></button>
+									<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+									<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 								</div>
 							</div>
 							<div class="tbl-item">Courses</div>
-							<div class="tbl-item"><span>date Registered</span>
+							<div class="tbl-item right"><span>date Registered</span>
 								<div class="tbl-sort-btns">
-									<button class="tbl-sort-btn top"></button>
-									<button class="tbl-sort-btn bottom"></button>
+									<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+									<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 								</div>
 							</div>
-							<div class="tbl-item">Action</div>
+							<div class="tbl-item right">Action</div>
 						</div>
-						<table class="table">
-							<thead>
-								<tr>
-									<th class="tbl-h"></th>
-									<th class="tbl-h"></th>
-									<th class="tbl-h"></th>
-									<th class="tbl-h"></th>
-								</tr>
-							</thead>
-							<tbody class="tbl-body">
-								<tr class="tbl-row">
-									<td>
-										<div class="tbl-item">
-											<div class="users-photo-icon"><img src="/img/green-boy.svg" alt="">
-											</div>
-											<div class="users-info">
-												<h6 class="users-info-name">Brooklyn Simmons</h6><span class="users-info-email">exmplm@example.com</span>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div class="tbl-item">
-											<div class="users-course violet">ISEE U</div>
-											<div class="users-course brown">SHSAT 9th</div>
-										</div>
-									</td>
-									<td>
-										<div class="tbl-item">
-											<div class="users-date">March 17, 2022</div>
-										</div>
-									</td>
-									<td>
-										<div class="tbl-item">
-											<button class="users-btn">
-												<svg>
-													<use xlink:href="#write"></use>
-												</svg>
-											</button>
-											<button class="users-btn">
-												<svg>
-													<use xlink:href="#trash"></use>
-												</svg>
-											</button>
-											<button class="users-btn" data-click="${_.componentName}:showProfile">Profile</button>
-										</div>
-									</td>
-								</tr>
-								<tr class="tbl-row">
-									<td>
-										<div class="tbl-item">
-											<div class="users-photo-icon"><img src="/img/red-boy.svg" alt="">
-											</div>
-											<div class="users-info">
-												<h6 class="users-info-name">Wade Warren</h6><span class="users-info-email">exmplm@example.com</span>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div class="tbl-item">
-											<div class="users-course blue">ISEE M</div>
-											<div class="users-course turquoise">SSAT M</div>
-											<div class="users-course red">SHSAT 8th</div>
-										</div>
-									</td>
-									<td>
-										<div class="tbl-item">
-											<div class="users-date">March 17, 2022</div>
-										</div>
-									</td>
-									<td>
-										<div class="tbl-item">
-											<button class="users-btn">
-												<svg>
-													<use xlink:href="#write"></use>
-												</svg>
-											</button>
-											<button class="users-btn">
-												<svg>
-													<use xlink:href="#trash"></use>
-												</svg>
-											</button>
-											<button class="users-btn">Profile</button>
-										</div>
-									</td>
-								</tr>
-								<tr class="tbl-row">
-									<td>
-										<div class="tbl-item">
-											<div class="users-photo-icon"><img src="/img/gray-boy.svg" alt="">
-											</div>
-											<div class="users-info">
-												<h6 class="users-info-name">Cameron Williamson</h6><span class="users-info-email">exmplm@example.com</span>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div class="tbl-item">
-											<div class="users-course blue">ISEE M</div>
-											<div class="users-course turquoise">SSAT M</div>
-										</div>
-									</td>
-									<td>
-										<div class="tbl-item">
-											<div class="users-date">March 17, 2022</div>
-										</div>
-									</td>
-									<td>
-										<div class="tbl-item">
-											<button class="users-btn">
-												<svg>
-													<use xlink:href="#write"></use>
-												</svg>
-											</button>
-											<button class="users-btn">
-												<svg>
-													<use xlink:href="#trash"></use>
-												</svg>
-											</button>
-											<button class="users-btn">Profile</button>
-										</div>
-									</td>
-								</tr>
-								<tr class="tbl-row">
-									<td>
-										<div class="tbl-item">
-											<div class="users-photo-icon"><img src="/img/red-girl.svg" alt="">
-											</div>
-											<div class="users-info">
-												<h6 class="users-info-name">Leslie Alexander</h6><span class="users-info-email">exmplm@example.com</span>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div class="tbl-item">
-											<div class="users-course gold">ISEE L</div>
-										</div>
-									</td>
-									<td>
-										<div class="tbl-item">
-											<div class="users-date">March 17, 2022</div>
-										</div>
-									</td>
-									<td>
-										<div class="tbl-item">
-											<button class="users-btn">
-												<svg>
-													<use xlink:href="#write"></use>
-												</svg>
-											</button>
-											<button class="users-btn">
-												<svg>
-													<use xlink:href="#trash"></use>
-												</svg>
-											</button>
-											<button class="users-btn">Profile</button>
-										</div>
-									</td>
-								</tr>
-								<tr class="tbl-row">
-									<td>
-										<div class="tbl-item">
-											<div class="users-photo-icon"><img src="/img/blue-girl.svg" alt="">
-											</div>
-											<div class="users-info">
-												<h6 class="users-info-name">Kristin Watson</h6><span class="users-info-email">exmplm@example.com</span>
-											</div>
-										</div>
-									</td>
-									<td>
-										<div class="tbl-item">
-											<div class="users-course turquoise">SSAT M</div>
-											<div class="users-course red">SHSAT 8th</div>
-										</div>
-									</td>
-									<td>
-										<div class="tbl-item">
-											<div class="users-date">March 17, 2022</div>
-										</div>
-									</td>
-									<td>
-										<div class="tbl-item">
-											<button class="users-btn">
-												<svg>
-													<use xlink:href="#write"></use>
-												</svg>
-											</button>
-											<button class="users-btn">
-												<svg>
-													<use xlink:href="#trash"></use>
-												</svg>
-											</button>
-											<button class="users-btn">Profile</button>
-										</div>
-									</td>
-								</tr>
-							</tbody>
-						</table>
+						<div class="table-cont">
+							<table class="table">
+								<tbody class="tbl-body"></tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 				${_.addingStudent()}

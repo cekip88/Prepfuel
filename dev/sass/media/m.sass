@@ -2478,24 +2478,109 @@ body
 		display: none
 
 .tbl
+	margin-top: 24px
 	overflow: auto
 	&-head
 		@extend %dfa
 	&-item
 		@extend %dfa
+		&.right
+			justify-content: flex-end
+		&,span
+			font-family: $f_bold
+			font-size: 12px
+			letter-spacing: 0.03em
+			color: rgb($neutral-400)
+			text-transform: uppercase
+	&-head
+		padding: 12px 0
+		background-color: rgb($neutral-200)
+		border-radius: 12px
+		@extend %dfi
+		.tbl-item
+			&:first-child
+				padding-left: 24px
+			&:last-child
+				padding-right: 24px
+	&-sort
+		&-btns
+			@extend %dfa
+			@extend %fdc
+			padding-left: 4px
+			padding-bottom: 3px
+		&-btn
+			@extend %df
+			+wh(9px,6px)
+			padding: 1px
+			align-items: flex-start
+			svg
+				+wh(100%)
+				stroke: rgb($neutral-400)
+			&.top
+				align-items: flex-end
+				svg
+					transform: rotate(180deg)
 
 
 .users
 	&-photo-icon
 		@extend %dfc
+		+wh(36px)
 		flex: 0 0 36px
 		margin-right: 12px
+		border-radius: 12px
+		background-color: rgb($neutral-200)
 	&-info
+		&-name
+			font-size: $fz16
+			color: rgb($neutral-800)
+		&-email
+			font-size: $fz12
+			color: rgb($neutral-400)
+			font-family: $f_medium
 		&-name,&-email
 			white-space: nowrap
+	&-info-name,&-date
+		font-family: $f_bold
+	&-date
+		line-height: $fz20
 	&-course,&-date
 		white-space: nowrap
+	&-course
+		padding: 4px 9px
+		border-radius: 6px
+		margin-right: 8px
+		&.turquoise
+			color: #00AFAF
+			background-color: #DCFDFD
+		&.blue
+			color: #366CF9
+			background-color: #F1F5FF
+		&.violet
+			color: #8950FC
+			background-color: #EEE5FF
+		&.brown
+			color: #58244B
+			background-color: #FBF1F8
+		&.red
+			color: #F64E60
+			background-color: #FFE2E5
+		&.gold
+			color: #F1BC00
+			background-color: #FFF8DD
 	&-btn
+		@extend %dfc
+		height: 32px
+		min-width: 32px
+		margin-right: 12px
+		padding: 7px
+		background-color: rgb($neutral-200)
+		border-radius: 6px
+		color: rgb($neutral-600)
+		font-size: 12px
+		font-family: $f_medium
+		&:last-child
+			margin-right: 0
 		svg
 			+wh(18px)
 
@@ -2556,6 +2641,10 @@ body
 
 .table
 	+w(100%)
+	td
+		padding: 12px 0
+		border-bottom: 1px dashed #E4E6EF
+
 
 .adding
 	&-list

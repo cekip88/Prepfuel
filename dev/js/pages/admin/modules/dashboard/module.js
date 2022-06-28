@@ -675,6 +675,28 @@ export class DashboardModule extends AdminPage{
 			return 'paymentsDashboardBody';
 		}
 	}
+	domReady() {
+		const _ = this;
+		if (_.subSection == 'students') {
+			_.statsBlockFill({data: _.userStats['stats'], selector: '.user-stats'});
+			_.statsBlockFill({data: _.systemStats['stats'], selector: '.system-stats'});
+
+			_.skillsLevelsFill(_.skillsLevelStatsData);
+		}
+		else if (_.subSection == 'parents') {
+			_.statsBlockFill({data: _.parentStats['stats'], selector: '.user-stats'})
+			_.newUsersFill(_.newUsersStatisticData['info']);
+		}
+		else if (_.subSection == 'payments') {
+			_.comGraphCircleFill(_.purchasedCoursesAndPlansStatsData);
+			//_.refundPerCourseFill();
+			_.perCourseFill({selector:'.refunds .perCourse', data: _.refundsData.perCourse})
+			_.perPlanFill({selector:'.refunds .perPlan', data: _.refundsData.perPlan})
+			_.perCourseFill({selector:'.revenue .perCourse', data: _.revenueData.perCourse})
+			_.perPlanFill({selector:'.revenue .perPlan', data: _.revenueData.perPlan})
+		}
+		_.switchSubNavigate();
+	}
 
 
 	setInteger(number){
@@ -698,28 +720,6 @@ export class DashboardModule extends AdminPage{
 		return string;
 	}
 
-	domReady() {
-		const _ = this;
-		if (_.subSection == 'students') {
-			_.statsBlockFill({data: _.userStats['stats'], selector: '.user-stats'});
-			_.statsBlockFill({data: _.systemStats['stats'], selector: '.system-stats'});
-
-			_.skillsLevelsFill(_.skillsLevelStatsData);
-		}
-		else if (_.subSection == 'parents') {
-			_.statsBlockFill({data: _.parentStats['stats'], selector: '.user-stats'})
-			_.newUsersFill(_.newUsersStatisticData['info']);
-		}
-		else if (_.subSection == 'payments') {
-			_.comGraphCircleFill(_.purchasedCoursesAndPlansStatsData);
-			//_.refundPerCourseFill();
-			_.perCourseFill({selector:'.refunds .perCourse', data: _.refundsData.perCourse})
-			_.perPlanFill({selector:'.refunds .perPlan', data: _.refundsData.perPlan})
-			_.perCourseFill({selector:'.revenue .perCourse', data: _.revenueData.perCourse})
-			_.perPlanFill({selector:'.revenue .perPlan', data: _.revenueData.perPlan})
-		}
-		_.switchSubNavigate();
-	}
 	switchSubNavigate(){
 		const _ = this;
 		let cont = _.f('.subnavigate');
