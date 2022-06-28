@@ -3352,7 +3352,14 @@ body
 
 .loader
 	+wh(25px)
-	@extend %dfc
-	display: inline-flex
+	position: absolute
+	left: 0
+	bottom: 0
+	top: 0
+	right: 0
+	margin: auto
+	transform: translateY(-25%)
 	&-parent
+		min-width: 40px
+		display: inline-block
 		position: relative

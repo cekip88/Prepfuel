@@ -87,7 +87,7 @@ export class UsersModule extends AdminPage {
 	async fillBlock(block){
 		const _ = this;
 		let content = _.f(`${block} .users-count`);
-		content.parentNode.classList.add('loader-parent')
+		content.classList.add('loader-parent')
 		content.innerHTML = "<img src='/img/loader.gif' class='loader'>";
 		let usersData = await Model.usersData;
 		content.textContent = `(${usersData['total']})`
