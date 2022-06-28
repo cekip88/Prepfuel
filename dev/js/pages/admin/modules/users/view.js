@@ -45,35 +45,34 @@ export const view = {
 		for(let item of usersData){
 			let tr = document.createElement('TR');
 			tr.className= 'tbl-row';
-			tr.innerHTML =  _.usersBodyRowTpl(item);
+			tr.setAttribute('user-id',item['user']['_id']);
+			tr.innerHTML =  _.usersBodyRowTpl(item['course'],item['user']);
 			trs.push(tr);
 		}
 		return trs;
 	},
-	usersBodyRowTpl(rowData){
+	usersBodyRowTpl(course,rowData){
 		const _ = this;
 		let tpl = `
 				<td>
 					<div class="tbl-item">
-						<div class="users-photo-icon"><img src="/img/${rowData.image}" alt="">
+						<div class="users-photo-icon">
+							<img src="/img/${rowData.avatar}" alt="">
 						</div>
 						<div class="users-info">
-							<h6 class="users-info-name">${rowData.name} ${rowData.surname}</h6>
+							<h6 class="users-info-name">${rowData.firstName} ${rowData.lastName}</h6>
 							<span class="users-info-email">${rowData.email}</span>
 						</div>
 					</div>
 				</td>
 				<td>
-					<div class="tbl-item">`;
-		for (let i = 0; i < rowData.courses.length; i++) {
-			tpl += `<div class="users-course ${rowData.courses[i].color}">${rowData.courses[i].title}</div>`
-		}
-		tpl += `
+					<div class="tbl-item">
+						<div class="users-course brown">${course}</div>
 				</div>
 			</td>
 			<td>
 				<div class="tbl-item right">
-					<div class="users-date">March 17, 2022</div>
+					<div class="users-date">${rowData.createdAt}</div>
 				</div>
 			</td>
 			<td>
@@ -206,13 +205,12 @@ export const view = {
 						</div>
 					</div>
 					<div class="test-footer">
-						<button class="test-footer-back" data-click="${_.componentName}:changePrevStep" type="assign" step="1">
+						<button class="test-footer-back step-prev-btn" data-click="${_.componentName}:changePrevStep" type="assign" step="1">
 							<span>Cancel</span>
 						</button>
-						<button class="button-blue" data-click="${_.componentName}:changeNextStep" type='assign' step="2">
+						<button class="button-blue step-next-btn" data-click="${_.componentName}:changeNextStep" type='assign' step="2">
 							<span>Next</span>
 						</button>
-						
 					</div>
 				</div>
 				</div>

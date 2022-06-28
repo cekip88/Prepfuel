@@ -36,7 +36,6 @@ export class G extends G_G{
 		const _ = this;
 		for (let key in _.pageStructure) {
 			let part = _.pageStructure[key];
-			
 			if (part['id'] !== _.moduleStructure[key]) {
 				_.pageStructure[key]['id'] = _.moduleStructure[key];
 				_.clear(part['container']);
@@ -74,7 +73,7 @@ export class G extends G_G{
 					moduleName = new module[moduleStr](params);
 					Object.assign(module[moduleStr].prototype,mixins);
 					Object.assign(module[moduleStr].prototype,view['view']);
-				if('asyncDefine' in moduleName)	await moduleName.asyncDefine();
+				if('asyncDefine' in moduleName)	moduleName.asyncDefine();
 			//	G.modules.set(name, moduleName);
 				moduleName['pageStructure'] = blockData['structure'];
 				moduleName.init();

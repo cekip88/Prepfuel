@@ -14,44 +14,8 @@ export class UsersModule extends AdminPage {
 	}
 	async asyncDefine(){
 		const _ = this;
-		_.studentsInfo = [
-			{
-				name: 'Brooklyn',
-				surname: 'Simmons',
-				image: 'green-boy.svg',
-				email: 'Exmplm@example.com',
-				courses: [{title: 'ISEE U',color:'violet'},{title:'SHSAT 9TH',color:'brown'}],
-				regDate: '2022-02-17'
-			},{
-				name: 'Wade',
-				surname: 'Warren',
-				image: 'red-boy.svg',
-				email: 'Exmplm@example.com',
-				courses: [{title: 'ISEE M',color:'blue'},{title:'SSAT M',color:'turquoise'},{title:'SHSAT 8th',color:'red'}],
-				regDate: '2022-02-17'
-			},{
-				name: 'Cameron',
-				surname: 'Williamson',
-				image: 'gray-boy.svg',
-				email: 'Exmplm@example.com',
-				courses: [{title: 'ISEE M',color:'blue'},{title:'SSAT M',color:'turquoise'}],
-				regDate: '2022-02-17'
-			},{
-				name: 'Leslie',
-				surname: 'Alexander',
-				image: 'red-girl.svg',
-				email: 'Exmplm@example.com',
-				courses: [{title: 'ISEE L',color:'gold'}],
-				regDate: '2022-02-17'
-			},{
-				name: 'Kristin',
-				surname: 'Watson',
-				image: 'blue-girl.svg',
-				email: 'Exmplm@example.com',
-				courses: [{title:'SSAT M',color:'turquoise'},{title:'SHSAT 8th',color:'red'}],
-				regDate: '2022-02-17'
-			}
-		];
+		_.studentsInfo = await Model.getUsers('student');
+		console.log(_.studentsInfo);
 	}
 	define() {
 		const _ = this;
@@ -68,12 +32,20 @@ export class UsersModule extends AdminPage {
 		});
 		G_Bus
 			.on(_,[
+				'handleErrors',
 				'addStudent','showAssignPopup',
 				'changeNextStep','changePrevStep','jumpToStep',
 				'showProfile','showRemovePopup','removeCourse',
 				'domReady'
 			]);
 	}
+	handleErrors({method,data}){
+		const _ = this;
+		if( method == 'getUsers'){
+			console.log('Users not found ',data);
+		}
+	}
+	
 	domReady(){
 		const _ = this;
 		if (_.subSection === 'Students') {
@@ -120,9 +92,7 @@ export class UsersModule extends AdminPage {
 			row = table.querySelector('TR'),
 			tds = row.querySelectorAll('.tbl-item');
 
-		ths.forEach(function (item,index){
-			item.style = `width:${tds[index].getBoundingClientRect().width}px;`
-		})
+		ths.forEach( (item,index) =>		item.style = `width:${tds[index].getBoundingClientRect().width}px;`)
 	}
 
 	
@@ -142,12 +112,16 @@ export class UsersModule extends AdminPage {
 			};
 		_.clear(addingBody);
 		
-		if(_._$.addingStep == 1){
+		if(_._$.addingStep == _.minStep){
 			_.setCancelBtn();
 		}else{
 			_.setPrevBtn();
 		}
-		
+		if(_._$.addingStep == _.maxStep){
+			_.setSubmitBtn();
+		}else{
+			_.setNextBtn();
+		}
 		addingBody.append( _.markup(stepsObj[ _._$.addingStep ]) );
 		
 		_.f('.adding-list-item.active').classList.remove('active');
@@ -165,6 +139,19 @@ export class UsersModule extends AdminPage {
 			4: _.assignStepFour(),
 		};
 		_.clear(addingBody);
+		
+		
+		if(_._$.assignStep == _.minStep){
+			_.setCancelBtn();
+		}else{
+			_.setPrevBtn();
+		}
+		if(_._$.assignStep == _.maxAssignStep){
+			_.setSubmitBtn();
+		}else{
+			_.setNextBtn();
+		}
+		
 		addingBody.append( _.markup( stepsObj[ _._$.assignStep ] ) );
 		
 		_.f('.adding-list-item.active').classList.remove('active');
