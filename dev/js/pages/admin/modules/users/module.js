@@ -147,7 +147,9 @@ export class UsersModule extends AdminPage {
 	}
 	jumpToAssignStep({item}) {
 		const _ = this;
-		let step = parseInt(item.getAttribute('step'));
+		let
+			type = item.getAttribute('step-type'),
+			step = parseInt(item.getAttribute('step'));
 		_._$.assignStep = step;
 	}
 	addStudent({item}){
