@@ -86,13 +86,20 @@ export class UsersModule extends AdminPage {
 	}
 	async fillBlock(block){
 		const _ = this;
+		let content = _.f(`${block} .users-count`);
+		content.parentNode.classList.add('loader-parent')
+		content.innerHTML = "<img src='/img/loader.gif' class='loader'>";
 		let usersData = await Model.usersData;
-		_.f(`${block} .users-count`).textContent = `(${usersData['total']})`
+		content.textContent = `(${usersData['total']})`
 	}
 	async usersTableFill(){
 		const _ = this;
 		let tbody = _.f('.tbl-body');
-		tbody.append(..._.usersBodyRowsTpl(await Model.usersData));
+		tbody.classList.add('loader-parent')
+		tbody.innerHTML = "<tr><td><img src='/img/loader.gif' class='loader'></td></tr>"
+		let tableData = _.usersBodyRowsTpl(await Model.usersData);
+		_.clear(tbody)
+		tbody.append(...tableData);
 		_.connectTableHead();
 	}
 	connectTableHead(){

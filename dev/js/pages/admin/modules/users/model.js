@@ -18,29 +18,31 @@ export class _Model {
 	getUsers() {
 		const _ = this;
 		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.endpoints['usersList']}/?role=${_.usersRole}`, {
-				method: 'GET',
-				headers: _.baseHeaders,
-			});
-			if(rawResponse.status < 210) {
-				let response = await rawResponse.json();
-				if(response['status'] == 'success') {
-					_.usersData = response;
-					resolve(response);
+			setTimeout( async ()=>{
+				let rawResponse = await fetch(`${_.endpoints['usersList']}/?role=${_.usersRole}`, {
+					method: 'GET',
+					headers: _.baseHeaders,
+				});
+				if(rawResponse.status < 210) {
+					let response = await rawResponse.json();
+					if(response['status'] == 'success') {
+						_.usersData = response;
+						resolve(response);
+					} else {
+						G_Bus.trigger('UsersModule', 'handleErrors', {
+							'method': 'getUsers',
+							'type': 'wrongResponse',
+							'data': response
+						})
+					}
 				} else {
 					G_Bus.trigger('UsersModule', 'handleErrors', {
 						'method': 'getUsers',
-						'type': 'wrongResponse',
-						'data': response
+						'type': 'wrongRequest',
+						'data': rawResponse
 					})
 				}
-			} else {
-				G_Bus.trigger('UsersModule', 'handleErrors', {
-					'method': 'getUsers',
-					'type': 'wrongRequest',
-					'data': rawResponse
-				})
-			}
+			}, 3000 )
 		});
 	}
 }
