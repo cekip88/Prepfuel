@@ -41,17 +41,18 @@ export const view = {
 	},
 	usersBodyRowsTpl(usersData){
 		const _ = this;
-		let tpl = '';
-		for (let i = 0,j = 0; i < 100; i++,j++) {
-			if (j >= usersData.length) j = 0;
-			tpl += _.usersBodyRowsTpl(usersData[j]);
+		let trs = [];
+		for(let item of usersData){
+			let tr = document.createElement('TR');
+			tr.className= 'tbl-row';
+			tr.innerHTML =  _.usersBodyRowTpl(item);
+			trs.push(tr);
 		}
-		return tpl;
+		return trs;
 	},
 	usersBodyRowTpl(rowData){
 		const _ = this;
 		let tpl = `
-			<tr class="tbl-row">
 				<td>
 					<div class="tbl-item">
 						<div class="users-photo-icon"><img src="/img/${rowData.image}" alt="">
@@ -68,29 +69,28 @@ export const view = {
 			tpl += `<div class="users-course ${rowData.courses[i].color}">${rowData.courses[i].title}</div>`
 		}
 		tpl += `
-					</div>
-				</td>
-				<td>
-					<div class="tbl-item right">
-						<div class="users-date">March 17, 2022</div>
-					</div>
-				</td>
-				<td>
-					<div class="tbl-item right">
-						<button class="users-btn">
-							<svg>
-								<use xlink:href="#write"></use>
-							</svg>
-						</button>
-						<button class="users-btn">
-							<svg>
-								<use xlink:href="#trash"></use>
-							</svg>
-						</button>
-						<button class="users-btn" data-click="${_.componentName}:showProfile">Profile</button>
-					</div>
-				</td>
-			</tr>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item right">
+					<div class="users-date">March 17, 2022</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item right">
+					<button class="users-btn">
+						<svg>
+							<use xlink:href="#write"></use>
+						</svg>
+					</button>
+					<button class="users-btn">
+						<svg>
+							<use xlink:href="#trash"></use>
+						</svg>
+					</button>
+					<button class="users-btn" data-click="${_.componentName}:showProfile">Profile</button>
+				</div>
+			</td>
 		`
 		return tpl;
 	},
@@ -206,10 +206,10 @@ export const view = {
 						</div>
 					</div>
 					<div class="test-footer">
-						<button class="test-footer-back" data-click="${_.componentName}:changeAssignPrevStep" step="1">
+						<button class="test-footer-back" data-click="${_.componentName}:changePrevStep" type="assign" step="1">
 							<span>Cancel</span>
 						</button>
-						<button class="button-blue" data-click="${_.componentName}:changeAssignNextStep" step="2">
+						<button class="button-blue" data-click="${_.componentName}:changeNextStep" type='assign' step="2">
 							<span>Next</span>
 						</button>
 						
@@ -259,7 +259,7 @@ export const view = {
 				<div class="adding-section">
 					<div class="adding-summary">
 						<strong class="adding-summary-title">Course & plan</strong>
-						<button class="adding-summary-btn" data-click="${_.componentName}:jumpToAssignStep" step="1">Edit</button>
+						<button class="adding-summary-btn" data-click="${_.componentName}:jumpToStep" type='assign' step="1">Edit</button>
 					</div>
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
@@ -279,7 +279,7 @@ export const view = {
 				<div class="adding-section">
 					<div class="adding-summary">
 						<strong class="adding-summary-title">Application School List</strong>
-						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToAssignStep" step="2">Edit</button>
+						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" type='assign' step="2">Edit</button>
 					</div>
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
@@ -299,7 +299,7 @@ export const view = {
 				<div class="adding-section">
 					<div class="adding-summary">
 						<strong class="adding-summary-title">Test Information</strong>
-						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToAssignStep" step="3">Edit</button>
+						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" type='assign' step="3">Edit</button>
 					</div>
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
@@ -421,10 +421,10 @@ export const view = {
 						</div>
 					</div>
 					<div class="test-footer">
-						<button class="test-footer-back" data-click="${_.componentName}:changePrevStep" step="1">
+						<button class="test-footer-back step-prev-btn" data-click="modaler:closeModal">
 							<span>Cancel</span>
 						</button>
-						<button class="button-blue" data-click="${_.componentName}:changeNextStep" step="2">
+						<button class="button-blue step-next-btn" data-click="${_.componentName}:changeNextStep" type="adding" step="2">
 							<span>Next</span>
 						</button>
 					</div>
@@ -716,7 +716,7 @@ export const view = {
 				<div class="adding-section">
 					<div class="adding-summary">
 						<strong class="adding-summary-title">Course & plan</strong>
-						<button class="adding-summary-btn" data-click="${_.componentName}:jumpToStep" step="1">Edit</button>
+						<button class="adding-summary-btn" data-click="${_.componentName}:jumpToStep" type='adding' step="1">Edit</button>
 					</div>
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
@@ -736,7 +736,7 @@ export const view = {
 				<div class="adding-section">
 					<div class="adding-summary">
 						<strong class="adding-summary-title">Account Settings</strong>
-						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" step="2">Edit</button>
+						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" type='adding' step="2">Edit</button>
 					</div>
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
@@ -756,7 +756,7 @@ export const view = {
 				<div class="adding-section">
 					<div class="adding-summary">
 						<strong class="adding-summary-title">Parent Information</strong>
-						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" step="3">Edit</button>
+						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" type='adding' step="3">Edit</button>
 					</div>
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
@@ -767,7 +767,7 @@ export const view = {
 				<div class="adding-section">
 					<div class="adding-summary">
 						<strong class="adding-summary-title">School Information</strong>
-						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" step="4">Edit</button>
+						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" type='adding' step="4">Edit</button>
 					</div>
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
@@ -795,7 +795,7 @@ export const view = {
 				<div class="adding-section">
 					<div class="adding-summary">
 						<strong class="adding-summary-title">Test Information</strong>
-						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" step="5">Edit</button>
+						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" type='adding' step="5">Edit</button>
 					</div>
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
@@ -999,14 +999,14 @@ export const view = {
 								<button class="student-profile-courses-btn active">SHSAT</button>
 							</div>
 							<div class="student-profile-course-info">
-								${_.courseInfo()}
+								${ _.courseInfo() }
 							</div>
 						</div>
 					</div>
 					<div class="student-profile-footer">
 						<button class="student-profile-delete">Delete User Profile</button>
 						<div class="student-profile-actions">
-							<button class="test-footer-back" data-click="AdminPage:changeSection" section="/admin/dashboard">
+							<button class="test-footer-back" data-click="AdminPage:changeSection" section="/admin/users">
 								<span>Discard</span>
 							</button>
 							<button class="button-blue">
@@ -1034,4 +1034,3 @@ export const view = {
 	}
 	
 }
-;
