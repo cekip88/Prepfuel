@@ -110,7 +110,7 @@ export class UsersModule extends AdminPage {
 	connectTableHead(selector){
 		const _ = this;
 		let
-			cont = _.f(`${selector} .tbl`);
+			cont = _.f(`${selector ?? ''} .tbl`);
 		if (!cont) return
 		let
 			head = cont.querySelector('.tbl-head'),
