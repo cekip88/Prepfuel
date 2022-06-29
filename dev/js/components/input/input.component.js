@@ -637,6 +637,371 @@ export default class GInput extends GComponent {
 		_.trigger('appended');
 	}
 	
+	styleSheets(){
+		const _ = this;
+		return `
+			${super.styleSheets()}
+		.inpt {
+		  width: 100%;
+		  position: relative;
+		  display: inline-block;
+		}
+		.inpt.adding-select {
+		  fill: #B5B5C3;
+		  cursor: pointer;
+		}
+		.inpt.adding-select .inpt-value {
+		  padding-left: 12px;
+		  height: 44px;
+		  color: rgb(var(--neutral-500));
+		}
+		.inpt.adding-select .inpt-value::placeholder {
+		  font: 14px "roboto-regular";
+		  color: rgb(var(--neutral-500));
+		}
+		.inpt.adding-select .inpt-date-img {
+		  width: 11px;
+		  top: 13px;
+		  right: 16px;
+		}
+		.inpt.form-input {
+		  width: 100%;
+		  height: 54px;
+		  border: 1px solid transparent;
+		  padding: 0 15px;
+		  border-radius: 6px;
+		  background-color: rgb(var(--neutral-100));
+		}
+		.inpt.profile-form-input {
+		  height: 42px;
+		}
+		.inpt.profile-form-input .inpt-value {
+		  font: 14px "Roboto-Medium";
+		  color: #5E6278;
+		  height: 100%;
+		}
+		.inpt.adding-inpt, .inpt.adding-inpt .inpt-value {
+		  height: 44px;
+		}
+		.inpt-title {
+		  font: 13px/23px "Roboto-Medium";
+		}
+		.inpt-value, .inpt-mask {
+		  width: 100%;
+		  height: 50px;
+		  display: inline-flex;
+		  align-items: center;
+		  padding: var(--gap) 0 var(--gap) var(--gap);
+		  overflow: hidden;
+		}
+		.inpt-value:before {
+		  display: block;
+		  content: "";
+		}
+		.inpt-value.focused, .inpt-value:focus {
+		  border-color: #f79141;
+		}
+		.inpt-value img {
+		  width: 8px;
+		  margin-right: var(--gap);
+		  transition: 0.35s ease;
+		}
+		.inpt-value img:hover {
+		  transform: rotate(90deg);
+		}
+		.inpt-value-placeholder {
+		  font-size: 13px;
+		  pointer-events: none;
+		}
+		.inpt-mask, .inpt-tip {
+		  top: 0;
+		  left: 0;
+		  opacity: 0;
+		}
+		.inpt-tip {
+		  top: 75%;
+		  font-size: 12px;
+		  transform: scale(0.95);
+		}
+		.inpt-mask, .inpt-tip, .inpt-mask-placeholder, .inpt-date-img {
+		  transition: var(--animation-time) ease;
+		  position: absolute;
+		}
+		.inpt-mask-date {
+		  opacity: 0;
+		  position: absolute;
+		}
+		.inpt-mask-date, .inpt-date-img {
+		  bottom: 15px;
+		  right: var(--gap);
+		  width: 48px;
+		}
+		.inpt-mask-placeholder {
+		  opacity: 0;
+		  left: var(--gap);
+		  width: 100%;
+		  font-size: 10px;
+		  bottom: 3px;
+		  color: #ddd;
+		}
+		.inpt-value:focus + .inpt-mask-placeholder {
+		  opacity: 1;
+		}
+		.inpt-date-img {
+		  width: 20px;
+		  height: 20px;
+		  pointer-events: none;
+		}
+		.inpt.error {
+		  border-color: rgb(var(--input-red));
+		}
+		.inpt.error .inpt-tip, .inpt.error .inpt-value-placeholder, .inpt.error .inpt-value::placeholder {
+		  color: rgb(var(--input-red));
+		}
+		.inpt.error .inpt-value {
+		  color: rgb(var(--input-red));
+		  border-bottom-color: rgb(var(--input-red));
+		}
+		.inpt.error .inpt-tip, .inpt.success .inpt-tip {
+		  top: 125%;
+		  transform: scale(1);
+		  opacity: 1;
+		}
+		.inpt.success {
+		  border-color: rgb(var(--green));
+		}
+		.inpt.success .inpt-tip, .inpt.success .inpt-value-placeholder, .inpt.success .inpt-value::placeholder {
+		  color: rgb(var(--green));
+		}
+		.inpt.success .inpt-value {
+		  border-bottom-color: rgb(var(--green));
+		}
+		.inpt-checkbox {
+		  display: none;
+		}
+		.inpt-checkbox:checked + .inpt-checkbox-label:after {
+		  width: 20px;
+		  height: 20px;
+		  transform: scale(1);
+		}
+		.inpt-checkbox:checked + .inpt-checkbox-label:before {
+		  background-color: #3699ff;
+		}
+		.inpt-checkbox-label {
+		  position: relative;
+		  display: flex;
+		  cursor: pointer;
+		  align-items: center;
+		  margin-bottom: var(--gap);
+		}
+		.inpt-checkbox-label-text {
+		  color: #5e6278;
+		  font-family: "Roboto-Medium";
+		}
+		.inpt-checkbox-label:after, .inpt-checkbox-label:before {
+		  content: "";
+		  border-radius: 40px;
+		  transition: 0.35s ease;
+		}
+		.inpt-checkbox-label:before {
+		  width: 24px;
+		  height: 24px;
+		  margin-right: 12px;
+		  border-radius: 6px;
+		  background-color: #f5f8fa;
+		}
+		.inpt-checkbox-label:after {
+		  content: url("../../img/checkmark.svg");
+		  transform: scale(0.5);
+		  position: absolute;
+		  left: 2px;
+		  top: 2px;
+		}
+		.inpt-radio {
+		  display: none;
+		}
+		.inpt-radio:checked + .inpt-radio-label:after {
+		  width: 12px;
+		  height: 12px;
+		  transform: scale(1);
+		  background-color: #3699ff;
+		}
+		.inpt-radio-label {
+		  position: relative;
+		  display: flex;
+		  cursor: pointer;
+		  align-items: center;
+		  margin-bottom: var(--gap);
+		}
+		.inpt-radio-label-text {
+		  color: #5e6278;
+		  font-family: "Roboto-Medium";
+		}
+		.inpt-radio-label:after, .inpt-radio-label:before {
+		  content: "";
+		  transition: 0.35s ease;
+		  border-radius: 40px;
+		  transition: 0.35s ease;
+		}
+		.inpt-radio-label:before {
+		  width: 24px;
+		  height: 24px;
+		  border-radius: 24px;
+		  margin-right: 12px;
+		  background-color: #f5f8fa;
+		}
+		.inpt-radio-label:after {
+		  transform: scale(0.5);
+		  position: absolute;
+		  left: 6px;
+		  top: 6px;
+		}
+		.inpt-days .inpt-checkbox-cont {
+		  width: 100%;
+		  display: flex;
+		  justify-content: space-between;
+		  align-items: center;
+		}
+		.inpt-days .inpt-checkbox-label {
+		  flex-direction: column;
+		  align-items: center;
+		}
+		.inpt-days .inpt-checkbox-label[disabled] {
+		  cursor: initial;
+		}
+		.inpt-days .inpt-checkbox-label[disabled] span {
+		  opacity: 0.5;
+		}
+		.inpt-days .inpt-checkbox-label:before {
+		  order: 2;
+		  margin-right: 0;
+		  margin-top: 12px;
+		}
+		.inpt-days .inpt-checkbox-label:after {
+		  top: initial;
+		  bottom: 4px;
+		  left: 4px;
+		  content: url("/img/checkmark.svg");
+		}
+		.inpt-days .inpt-checkbox:checked + .inpt-checkbox-label:before {
+		  background-color: #3699ff;
+		}
+		.inpt-days .inpt-checkbox:checked + .inpt-checkbox-label:after {
+		  width: 16px;
+		  height: 16px;
+		  background-color: initial;
+		}
+		
+		.date-picker {
+		  padding: 16px;
+		  display: flex;
+		  flex-direction: column;
+		  background-color: #fff;
+		  border-radius: 8px;
+		  box-shadow: 0 10px 60px rgba(192, 195, 200, 0.2);
+		  font-size: 12px;
+		  position: absolute;
+		  z-index: 1;
+		  top: 40px;
+		  left: 0;
+		}
+		.date-picker-header, .date-picker-days, .date-picker-body {
+		  width: calc(32px * 7);
+		  display: flex;
+		  align-items: center;
+		}
+		.date-picker-days span, .date-picker-days button, .date-picker-body span, .date-picker-body button {
+		  width: 32px;
+		  height: 32px;
+		}
+		.date-picker-header {
+		  display: flex;
+		  align-items: center;
+		  justify-content: space-between;
+		  color: #7E8299;
+		  font-family: "Poppins-SemiBold", serif;
+		  text-transform: uppercase;
+		}
+		.date-picker-header button {
+		  width: 32px;
+		  height: 32px;
+		  display: flex;
+		  align-items: center;
+		  justify-content: center;
+		}
+		.date-picker-header button svg {
+		  width: 11px;
+		  height: 8px;
+		  display: block;
+		}
+		.date-picker-header button.disabled {
+		  opacity: 0.2;
+		}
+		.date-picker-days {
+		  margin-bottom: 16px;
+		  border-bottom: 1px solid #ECF0F3;
+		}
+		.date-picker-days span {
+		  display: flex;
+		  align-items: center;
+		  justify-content: center;
+		  color: #B5B5C3;
+		}
+		.date-picker-body {
+		  flex-wrap: wrap;
+		}
+		.date-picker-body span, .date-picker-body button {
+		  padding: 2px;
+		  display: flex;
+		  align-items: flex-end;
+		  justify-content: flex-start;
+		  border: 1px solid #ECF0F3;
+		}
+		.date-picker-body span:not(:nth-child(7n)), .date-picker-body button:not(:nth-child(7n)) {
+		  border-right: none;
+		}
+		.date-picker-body span:nth-child(n+7), .date-picker-body button:nth-child(n+7) {
+		  border-top: none;
+		}
+		.date-picker-body .active {
+		  background-color: #00A3FF;
+		  color: #fff;
+		  font-family: "roboto-bold", serif;
+		}
+		.date-value {
+		  height: 42px;
+		  background-color: #F5F8FA;
+		  border-radius: 8px;
+		}
+		
+		.admin-calendar .date-value {
+		  height: initial;
+		  background: none;
+		  padding: 0 12px 2px;
+		}
+		.admin-calendar .date-value, .admin-calendar .date-value::placeholder {
+		  font-family: var(--p_medium);
+		  color: rgb(var(--neutral-400));
+		  font-size: calc(12em/14);
+		}
+		
+		.inpt.form-search {
+		  padding: 0 23px;
+		}
+		.inpt.form-search, .inpt.form-search .inpt-value {
+		  height: 34px !important;
+		}
+		.inpt.form-search .inpt-value, .inpt.form-search .inpt-value::placeholder {
+		  font-family: var(--f_bold);
+		  color: rgb(var(--neutral-500));
+		  font-size: 12px;
+		}
+		.inpt.form-search svg {
+		  bottom: 7px;
+		}
+		`;
+	}
+	
 	disconnectedCallback() {
 	}
 	static get observedAttributes() {
@@ -654,5 +1019,6 @@ export default class GInput extends GComponent {
 				'name':_.attr('name')});
 		}
 	}
+	
 }
 customElements.define("g-input", GInput);

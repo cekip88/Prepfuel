@@ -72,6 +72,80 @@ export default class GModaler extends GComponent {
 
 		_.trigger('appended');
 	}
+	
+	styleSheets() {
+		return `
+			${super.styleSheets()}
+			.modaler-cont {
+			  width: 100vw;
+			  height: 100%;
+			  position: fixed;
+			  padding-right: 5px;
+			  top: 0;
+			  left: 0;
+			  display: none;
+			  z-index: 900;
+			  overflow-y: scroll;
+			}
+			.modaler-cont.active {
+			  display: flex;
+			  justify-content: center;
+			  flex-direction: column;
+			  align-items: center;
+			}
+			.modaler-shadow {
+			  background-color: #B5B5C3;
+			}
+			.modaler-inner {
+			  overflow-y: auto;
+			  position: relative;
+			  background-color: #fff;
+			  border-radius: 12px;
+			  box-shadow: 0 0 40px rgba(56, 71, 109, 0.29);
+			}
+			.modaler-close {
+			  width: 22px;
+			  height: 22px;
+			  display: flex;
+			  align-items: center;
+			  justify-content: center;
+			  margin-left: auto;
+			  cursor: pointer;
+			  position: absolute;
+			  right: 10px;
+			  top: 15px;
+			}
+			.modaler-close:before, .modaler-close:after {
+			  width: 3px;
+			  height: 15px;
+			  display: block;
+			  content: "";
+			  background-color: #DADADA;
+			  position: absolute;
+			}
+			.modaler-close:before {
+			  transform: rotate(45deg);
+			}
+			.modaler-close:after {
+			  transform: rotate(-45deg);
+			}
+			
+			@media screen and (min-width: 768px) {
+			  .modaler-close {
+			    top: 26px;
+			    right: 38px;
+			  }
+			}
+			@media screen and (min-width: 1170px) {
+			  .modaler-cont {
+			    align-items: center;
+			    justify-content: center;
+			  }
+			}
+		`;
+	}
+	
+	
 	disconnectedCallback(){
 	}
 	static get observedAttributes() {

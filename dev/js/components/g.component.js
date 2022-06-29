@@ -7,19 +7,155 @@ export default class GComponent extends HTMLElement {
 		_.flag = flag;
 		_.container = _;
 		_.handle();
-		_.filteredAttributes = [];
+		_.filteredAttributes = ['stylesheet'];
 		_
 			.on('appended',_.appended.bind(_))
 	}
 	appended(elem){
-		//document.styleSheets
 		const _ = this;
-		let cssLink  = document.createElement('link');
+	/*	let cssLink  = document.createElement('link');
 		cssLink.rel = 'stylesheet';
 		cssLink.href = _.attr('stylesheet') ?? '/components.css';
-		_.shadow.append(cssLink);
+		_.shadow.append(cssLink);*/
+		
+		let style = document.createElement('style');
+		style.textContent = _.styleSheets().trim();
+		_.shadow.append(style);
+		//if(!_.shadow.querySelector('.not-loaded')) return;
+		//_.shadow.querySelector('.not-loaded').classList.remove('not-loaded')
 	}
-	
+	styleSheets(){
+		return `
+			* {
+			  margin: 0;
+			  padding: 0;
+			  line-height: 1.15;
+			  box-sizing: border-box;
+			  outline: 0;
+			  text-decoration: none;
+			  -webkit-text-size-adjust: 100%;
+			}
+			a {
+			  color: #000;
+			}
+			h1, h2, h3, h4, h5, h6 {
+			  font-weight: 500;
+			  font-size: 1em;
+			}
+			em, strong, i, b, address, cite {
+			  font-style: normal;
+			  font-weight: 500;
+			}
+			
+			ul, ol {
+			  list-style: none;
+			}
+			
+			input[type=submit], button {
+			  cursor: pointer;
+			  background: transparent;
+			  border: 0;
+			}
+			
+			img {
+			  max-width: 100%;
+			}
+			
+			:root {
+			  --p_reg: "Poppins-Regular";
+			  --p_semi: "Poppins-SemiBold";
+			  --p_medium: "Poppins-Medium";
+			  --p_bold: "Poppins-Bold";
+			  --f_reg: "roboto-regular";
+			  --f_semi: "roboto-semibold";
+			  --f_bold: "roboto-bold";
+			  --f_medium: "Roboto-Medium";
+			  --f_black: "Roboto-Black";
+			  --main-text: 63, 66, 84;
+			  --bgc: 242, 243, 247;
+			  --black: 0, 0, 0;
+			  --white: 255, 255, 255;
+			  --red-light: 255, 245, 248;
+			  --red: 241, 65, 108;
+			  --red-dark: 217, 33, 78;
+			  --orange: 255, 166, 33;
+			  --orange-light: 255, 245, 231;
+			  --gold: 241, 188, 0;
+			  --gold-light: 255, 248, 221;
+			  --brown-light: 251, 241, 248;
+			  --brown: 152, 101, 79;
+			  --brown-dark: 88, 36, 75;
+			  --blue-white: 156, 205, 255;
+			  --blue-light: 225, 240, 255;
+			  --blue: 54, 153, 255;
+			  --blue-text: 0, 163, 255;
+			  --blue-dark: 27, 44, 207;
+			  --viol-light: 248, 245, 255;
+			  --viol: 80, 20, 208;
+			  --viol-dark: 102, 50, 89;
+			  --viol-blue: 74, 125, 255;
+			  --viol-blue-light: 241, 245, 255;
+			  --green-light: 232, 255, 243;
+			  --green: 80, 205, 137;
+			  --green-dark: 71, 190, 125;
+			  --turquoise-light: 183, 251, 251;
+			  --turquoise: 4, 200, 200;
+			  --turquoise-dark: 0, 175, 175;
+			  --maroon: 102, 50, 89;
+			  --maroon-light: 251, 241, 248;
+			  --neutral-100: 245, 248, 250;
+			  --neutral-200: 239, 242, 245;
+			  --neutral-300: 229, 234, 238;
+			  --neutral-400: 181, 181, 195;
+			  --neutral-500: 161, 165, 183;
+			  --neutral-600: 126, 130, 153;
+			  --neutral-700: 94, 98, 120;
+			  --neutral-800: 63, 66, 84;
+			  --neutral-900: 24, 28, 50;
+			  --subnav: 128, 128, 143;
+			  --answer-disabled: 196, 196, 196;
+			  --mobile: 100%;
+			  --tablet: 740px;
+			  --tabLarge: 1000px;
+			  --desk: 1200px;
+			  --desk-large: 1440px;
+			}
+			
+			input, button {
+			  font-family: inherit;
+			  font-size: inherit;
+			  background-color: transparent;
+			  border: none;
+			}
+			
+			::-webkit-scrollbar {
+			  width: 10px;
+			  height: 10px;
+			}
+			
+			::-webkit-scrollbar-track {
+			  border-radius: 8px;
+			  background: rgb(var(--neutral-100));
+			}
+			
+			::-webkit-scrollbar-thumb {
+			  border-radius: 6px;
+			  background: rgb(var(--neutral-400));
+			}
+			
+			::-webkit-scrollbar-thumb:hover {
+			  background: rgb(var(--neutral-500));
+			}
+			
+			:host {
+			  --animation-time: .35s;
+			  --input-blue: 80, 104, 226;
+			  --input-red: 241, 65, 108;
+			  --green: 131, 191, 110;
+			  --gap: 10px;
+			}
+		`;
+	}
 	async initShadow(){
 		const _ = this;
 		if(_.shadow) return;
