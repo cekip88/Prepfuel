@@ -65,10 +65,10 @@ class Front extends G{
   async init(){
     const _ = this;
 
-    let data = _.getStarsInfo();
+  /*  let data = _.getStarsInfo();
 	  console.log(data);
     _.showCircleGraphic(data);
-
+*/
 	}
 }
 
