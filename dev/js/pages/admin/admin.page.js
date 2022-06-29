@@ -47,9 +47,9 @@ export class AdminPage extends G {
 	navigate(clickData){
 		const _ = this;
 		let
-		list = clickData.item,
-		target = clickData.event.target,
-		btn = _.ascent(target,'.navigate-item','navigate-list');
+			list = clickData.item,
+			target = clickData.event.target,
+			btn = _.ascent(target,'.navigate-item','navigate-list');
 		_.showActiveNavItem(btn,list);
 		_.changeActiveNavItem(btn);
 	}
@@ -86,7 +86,9 @@ export class AdminPage extends G {
 		if(params.length > 0){
 			await _.moduleRender(params);
 		}
-		_.navigationInit(_.f('.navigate-list'));
+		setTimeout( ()=>{
+			_.navigationInit(_.f('.navigate-list'));
+		} )
 		// this._( callback );
 		
 	}

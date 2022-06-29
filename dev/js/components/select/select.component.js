@@ -5,7 +5,7 @@ export default class GSelect extends GComponent {
 		super();
 		const _ = this;
 		_.define();
-
+		_.filteredAttributes = ['action','class','name','classname','arrowsvg','items','title','multiple'];
 	}
 	define(){
 		const _ = this;

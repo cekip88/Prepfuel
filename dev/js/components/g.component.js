@@ -12,7 +12,7 @@ export default class GComponent extends HTMLElement {
 			.on('appended',_.appended.bind(_))
 	}
 	appended(elem){
-		document.styleSheets
+		//document.styleSheets
 		const _ = this;
 		let cssLink  = document.createElement('link');
 		cssLink.rel = 'stylesheet';

@@ -104,7 +104,7 @@ export const view = {
 						<h2 class="block-title">Students <span class="users-count"></span></h2>
 						<div class="block-header-item block-header-search"><svg><use xlink:href="#search"></use></svg><g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input></div>
 						<div class="block-header-item block-header-date"><svg><use xlink:href="#calendar"></use></svg><g-input class="block-header-input block-header-date" type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input></div>
-						<div class="block-header-item block-header-select"><g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" style="--class:select block-header-select; --action:testChange; --name:testField; --classname:filter-select; --arrowsvg:img/sprite.svg#select-arrow;"><input type="hidden" name="testField" slot="value"></g-select></div>
+						<div class="block-header-item block-header-select"><g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ><input type="hidden" name="testField" slot="value"></g-select></div>
 						<button class="button-blue" data-click="${_.componentName}:addStudent"><span>Add Student</span>
 							<svg class="button-icon">
 								<use xlink:href="#plus"></use>
@@ -421,7 +421,7 @@ export const view = {
 						</div>
 					</div>
 					<div class="test-footer">
-						<button class="test-footer-back step-prev-btn" data-click="modaler:closeModal">
+						<button class="test-footer-back step-prev-btn" data-click="modaler:closeModal" type="adding">
 							<span>Cancel</span>
 						</button>
 						<button class="button-blue step-next-btn" data-click="${_.componentName}:changeNextStep" type="adding" step="2">
@@ -554,7 +554,7 @@ export const view = {
 	},
 	addingStepThree() {
 		const _ = this;
-		return`
+		return `
 			<h3 class="adding-title">Parent Information</h3>
 			<div class="adding-section">
 				<div class="adding-label">Select the way of adding a parent</div>

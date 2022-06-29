@@ -129,6 +129,7 @@ export class UsersModule extends AdminPage {
 		item.classList.add('active')
 		let cont = _.f('.adding-assign-body');
 		_.clear(cont);
+		cont.classList.remove('full');
 		cont.append(_.markup(_.assignNewParent()))
 	}
 	assignParent({item}){
@@ -137,7 +138,7 @@ export class UsersModule extends AdminPage {
 		item.classList.add('active')
 		let cont = _.f('.adding-assign-body');
 		_.clear(cont);
-		cont.classList.add('adding-assign-body-full')
+		cont.classList.add('full')
 		cont.append(_.markup(_.assignParentTpl()))
 
 		_.fillParentBlock();
@@ -322,7 +323,6 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		let stepBtn = _.f('.step-prev-btn');
 		stepBtn.setAttribute('data-click',`${_.componentName}:changePrevStep`);
-		stepBtn.setAttribute('type',`adding`);
 		stepBtn.setAttribute('step',`2`);
 		stepBtn.textContent = 'Back';
 	}

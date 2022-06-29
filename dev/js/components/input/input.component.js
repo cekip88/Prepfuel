@@ -87,8 +87,6 @@ export default class GInput extends GComponent {
 	
 	/* Outside methods*/
 	
-	
-	
 	doValidate(){
 		const _ = this;
 		let isValidate = true;

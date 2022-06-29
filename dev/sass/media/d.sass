@@ -445,9 +445,9 @@
 		
 .adding
 	&-block
-		height: 984px
+		height: calc(100vh - 100px)
 	&-body
-		height: 833px
+		height: calc(100vh - 250px)
 		overflow-y: scroll
 	&-inner
 		+w(1200px)
@@ -455,8 +455,8 @@
 		&-body
 			+w(589px)
 			margin: 0 auto
-			&-full
-				width: 100%!important
+			&.full
+				width: 100%
 				.block-header
 					&-select
 						width: 120px
