@@ -118,7 +118,7 @@ export const view = {
 								<div class="tbl-sort-btns">
 									<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 									<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-								</div>
+								</div> 
 							</div>
 							<div class="tbl-item">Courses</div>
 							<div class="tbl-item right"><span>date Registered</span>
@@ -131,6 +131,30 @@ export const view = {
 						</div>
 						<div class="table-cont loader-parent">
 							<table class="table">
+								<thead class="tbl-head">
+									<tr>
+										<th>
+											<div class="tbl-item">
+												<span>USER Name</span>
+												<div class="tbl-sort-btns">
+													<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+													<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												</div> 
+											</div>
+										</th>
+										<th><div class="tbl-item">Courses</div></th>
+										<th>
+											<div class="tbl-item right">
+												<span>date Registered</span>
+												<div class="tbl-sort-btns">
+													<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+													<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												</div> 
+											</div>
+										</th>
+										<th><div class="tbl-item right">Action</div></th>
+									</tr>
+								</thead>
 								<tbody class="tbl-body"></tbody>
 							</table>
 						</div>
@@ -614,6 +638,38 @@ export const view = {
 					</div>
 					<div class="table-cont loader-parent">
 						<table class="table">
+							<thead class="tbl-head">
+								<tr>
+									<th>
+										<div class="tbl-item">
+											<span>USER Name</span>
+											<div class="tbl-sort-btns">
+												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											</div> 
+										</div>
+									</th>
+									<th>
+										<div class="tbl-item">
+											<span>Students</span>
+											<div class="tbl-sort-btns">
+												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											</div> 
+										</div>
+									</th>
+									<th>
+										<div class="tbl-item right">
+											<span>date Registered</span>
+											<div class="tbl-sort-btns">
+												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											</div> 
+										</div>
+									</th>
+									<th><div class="tbl-item right">Action</div></th>
+								</tr>
+							</thead>
 							<tbody class="tbl-body"></tbody>
 						</table>
 					</div>

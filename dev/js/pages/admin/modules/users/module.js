@@ -116,10 +116,11 @@ export class UsersModule extends AdminPage {
 			head = cont.querySelector('.tbl-head'),
 			ths = head.querySelectorAll('.tbl-item'),
 			table = cont.querySelector('TABLE'),
-			row = table.querySelector('TR'),
+			row = table.querySelector('TBODY TR'),
 			tds = row.querySelectorAll('.tbl-item');
 		ths.forEach(function (item,index){
-			item.style = `width:${tds[index].getBoundingClientRect().width}px;`
+			let w = tds[index].getBoundingClientRect().width;
+			item.style = `width:${w}px;flex: 0 0 ${w}px;`
 		})
 	}
 

@@ -945,6 +945,7 @@ body
 	&-footer
 		@extend %dfa
 		padding-top: 20px
+		padding-bottom: 20px
 		margin-top: auto
 		flex-direction: column
 		align-items: flex-start
@@ -2503,31 +2504,32 @@ body
 .tbl
 	margin-top: 24px
 	overflow: auto
-	&-head
-		@extend %dfa
+	.table
+		border-collapse: collapse
 	&-item
 		@extend %dfa
+		padding: 12px
 		&.right
 			justify-content: flex-end
 		&.actions
 			.button-blue
 				padding: 7px 12px
 	&-head
-		@extend %dfi
-		padding: 12px 0
-		background-color: rgb($neutral-200)
-		border-radius: 12px
-		text-transform: uppercase
 		.tbl-item
+			background-color: rgb($neutral-200)
+			text-transform: uppercase
 			&,span
 				font-family: $f_bold
 				font-size: 12px
 				letter-spacing: 0.03em
 				color: rgb($neutral-400)
-			&:first-child
-				padding-left: 24px
-			&:last-child
-				padding-right: 24px
+				white-space: nowrap
+		th:first-child .tbl-item,&>.tbl-item:first-child
+			padding-left: 24px
+			border-radius: 12px 0 0 12px
+		th:last-child .tbl-item,&>.tbl-item:last-child
+			padding-right: 24px
+			border-radius: 0 12px 12px 0
 	&-sort
 		&-btns
 			@extend %dfa
@@ -2546,7 +2548,8 @@ body
 				align-items: flex-end
 				svg
 					transform: rotate(180deg)
-
+div.tbl-head
+	display: none
 
 .users
 	&-photo-icon
@@ -2834,6 +2837,7 @@ body
 				background-size: 7px
 				background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMiAxMiI+DQoJPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMC45MzM2IDAuMjkyODk0QzEwLjU0MzEgLTAuMDk3NjMwNyA5LjkwOTkxIC0wLjA5NzYzMTQgOS41MTkzOCAwLjI5Mjg5M0w1Ljc5Mjc1IDQuMDE5NTNMMi4wNjYyOSAwLjI5MzA2OEMxLjY3NTc2IC0wLjA5NzQ1NTkgMS4wNDI2IC0wLjA5NzQ1NTkgMC42NTIwNzMgMC4yOTMwNjhMMC4yOTI4OTMgMC42NTIyNDlDLTAuMDk3NjMxMyAxLjA0Mjc3IC0wLjA5NzYzMDggMS42NzU5NCAwLjI5Mjg5MyAyLjA2NjQ2TDQuMDE5MzUgNS43OTI5MkwwLjI5MzIzMSA5LjUxOTA0Qy0wLjA5NzI5MjkgOS45MDk1NyAtMC4wOTcyOTI5IDEwLjU0MjcgMC4yOTMyMzEgMTAuOTMzM0wwLjY1MjQxMiAxMS4yOTI0QzEuMDQyOTQgMTEuNjgzIDEuNjc2MSAxMS42ODMgMi4wNjY2MiAxMS4yOTI0TDUuNzkyNzUgNy41NjYzMkw5LjUxOTA0IDExLjI5MjZDOS45MDk1NyAxMS42ODMxIDEwLjU0MjcgMTEuNjgzMSAxMC45MzMzIDExLjI5MjZMMTEuMjkyNCAxMC45MzM0QzExLjY4MyAxMC41NDI5IDExLjY4MyA5LjkwOTc0IDExLjI5MjQgOS41MTkyMkw3LjU2NjE0IDUuNzkyOTJMMTEuMjkyOCAyLjA2NjI5QzExLjY4MzMgMS42NzU3NiAxMS42ODMzIDEuMDQyNiAxMS4yOTI4IDAuNjUyMDc0TDEwLjkzMzYgMC4yOTI4OTRaIiBmaWxsPSIjQTFBNUI3Ii8+DQo8L3N2Zz4=)
 	&-block
+		height: calc(100vh - 100px)
 		.button-blue
 			padding: 13px 26px
 			background-color: rgb($blue)

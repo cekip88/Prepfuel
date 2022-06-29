@@ -504,8 +504,19 @@
 				margin-top: 32px
 
 
-.tbl-head
+
+.tbl
+	&-head
+		background-color: rgb($neutral-200)
+		border-radius: 12px
+	&-item
+		background-color: transparent
+div.tbl-head
+	display: flex
+	justify-content: space-between
 	margin-bottom: 20px
+thead.tbl-head
+	display: none
 .table-cont
 	max-height: 540px
 	overflow-y: scroll
