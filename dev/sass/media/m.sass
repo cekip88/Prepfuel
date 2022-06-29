@@ -184,6 +184,8 @@ body
 		&:first-child
 			margin-left: 0
 			margin-right: 11px
+		&:last-child
+			margin-right: 0
 	&.reverse
 		border-color: rgb($neutral-600)
 		background-color: transparent
@@ -2507,11 +2509,9 @@ body
 		@extend %dfa
 		&.right
 			justify-content: flex-end
-		&,span
-			font-family: $f_bold
-			font-size: 12px
-			letter-spacing: 0.03em
-			color: rgb($neutral-400)
+		&.actions
+			.button-blue
+				padding: 7px 12px
 	&-head
 		@extend %dfi
 		padding: 12px 0
@@ -2519,6 +2519,11 @@ body
 		border-radius: 12px
 		text-transform: uppercase
 		.tbl-item
+			&,span
+				font-family: $f_bold
+				font-size: 12px
+				letter-spacing: 0.03em
+				color: rgb($neutral-400)
 			&:first-child
 				padding-left: 24px
 			&:last-child
@@ -2572,6 +2577,8 @@ body
 		padding: 4px 9px
 		border-radius: 6px
 		margin-right: 8px
+		font-family: $p_medium
+		font-size: $fz12
 		&.turquoise
 			color: #00AFAF
 			background-color: #DCFDFD
@@ -2829,7 +2836,10 @@ body
 	&-block
 		.button-blue
 			padding: 13px 26px
-				background-color: rgb($green)
+			background-color: rgb($blue)
+			color: rgb($white)
+		.button-green
+			background-color: rgb($green)
 	&-subtitle
 		font: 14px $p_semi
 		line-height: 20px
@@ -2915,11 +2925,10 @@ body
 					color: #7E8299
 	&-assign
 		&-body
-			&-full
-				width: 100%!important
-				.block-header
-					&-select
-						width: 120px
+			.block
+				box-shadow: 0 0 30px rgba(56,71,109,.09)
+			.table-cont
+				max-height: 370px
 .admin
 	padding-bottom: 48px
 	&-title
@@ -3006,6 +3015,44 @@ body
 			line-height: 24px
 			color: rgb($neutral-400)
 			margin: 20px 0 32px
+.parent
+	&-table
+		&-avatar
+			@extend %dfc
+			+wh(36px)
+			margin-right: 12px
+			border-radius: 18px
+			background-color: rgb($blue-light)
+			span
+				color: rgb($blue-text)
+				font: $fz16 $f_medium
+		&-students
+			@extend %df
+			&-block
+				@extend %df
+				@extend %fdc
+				align-items: flex-start
+			&-count
+				font-family: $f_reg
+			&-empty
+				padding: 6px 9px
+				font-family: $f_reg
+				color: rgb($orange)
+				background-color: rgb($orange-light)
+				border-radius: 6px
+		&-student
+			@extend %dfc
+			+wh(24px)
+			border: 2px solid #fff
+			border-radius: 12px
+			background-color: rgb($neutral-200)
+			overflow: hidden
+			img
+				+wh(90%)
+				object-fit: contain
+				object-position: bottom
+			&:not(:first-child)
+				margin-left: -8px
 .newUsers
 	&-item
 		@extend %dfa

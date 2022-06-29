@@ -74,22 +74,22 @@ export const view = {
 			</td>
 			<td>
 				<div class="tbl-item right">
-					<div class="users-date">${rowData.createdAt}</div>
+					<div class="users-date">${_.createdAtFormat(rowData.createdAt)}</div>
 				</div>
 			</td>
 			<td>
 				<div class="tbl-item right">
-					<button class="users-btn">
-						<svg>
-							<use xlink:href="#write"></use>
+					<button class="users-btn button">
+						<svg class="button-icon">
+							<use xlink:href="#write"></use> 
 						</svg>
 					</button>
-					<button class="users-btn">
-						<svg>
+					<button class="users-btn button">
+						<svg class="button-icon">
 							<use xlink:href="#trash"></use>
 						</svg>
 					</button>
-					<button class="users-btn profile" data-click="${_.componentName}:showProfile">Profile</button>
+					<button class="users-btn button profile" data-click="${_.componentName}:showProfile">Profile</button>
 				</div>
 			</td>
 		`
@@ -560,7 +560,7 @@ export const view = {
 				<div class="adding-label">Select the way of adding a parent</div>
 				<div class="adding-buttons">
 					<button class="adding-button" data-click="${_.componentName}:assignParent">Assign from base</button>
-					<button class="adding-button active">Add new parent</button>
+					<button class="adding-button active" data-click="${_.componentName}:addNewParent">Add new parent</button>
 					<button class="adding-button">Skip for now</button>
 				</div>
 			</div>
@@ -620,6 +620,67 @@ export const view = {
 				</div>
 			</div>
 		`
+	},
+	parentsBodyRowsTpl(usersData){
+		const _ = this;
+		let trs = [];
+		usersData = usersData['response'];
+		for(let item of usersData){
+			let tr = document.createElement('TR');
+			tr.className= 'tbl-row';
+			tr.setAttribute('user-id',item['_id']);
+			tr.innerHTML = _.parentsBodyRowTpl(item);
+			trs.push(tr);
+		}
+		return trs;
+	},
+	parentsBodyRowTpl(rowData){
+		const _ = this;
+		let tpl = `
+			<td>
+				<div class="tbl-item">
+					<div class="parent-table-avatar">
+						<span>${rowData.firstName.substr(0,1)}</span>
+					</div>
+					<div class="users-info">
+						<h6 class="users-info-name">${rowData.firstName} ${rowData.lastName}</h6>
+						<span class="users-info-email">${rowData.email}</span>
+					</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item parent-table-students-block">`;
+
+		if (rowData.students.length) {
+			tpl += `<div class="parent-table-students">`;
+			for (let item of rowData.students) {
+				if(rowData.students.length) {
+					tpl += `<div class="parent-table-student"><img src="../../../../../img/${item.avatar}"></div>`
+				}
+			}
+			tpl += `
+				</div>
+				<div class="parent-table-students-count">${rowData.students.length} student${rowData.students.length > 1 ? 's' : ''}</div>`
+		} else {
+			tpl += `<div class="parent-table-students-empty">No Students</div>`
+		}
+
+		tpl += `
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item right">
+					<div class="users-date">${_.createdAtFormat(rowData.createdAt)}</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item right actions">
+					<button class="users-btn button profile">Profile</button>
+					<button class="users-btn button-blue profile">Assign</button>
+				</div>
+			</td>
+		`
+		return tpl;
 	},
 	assignFromBase(){
 		const _ = this;

@@ -39,7 +39,7 @@ export class UsersModule extends AdminPage {
 				'changeNextStep','changePrevStep','jumpToStep',
 				'showProfile','showRemovePopup','removeCourse',
 				'domReady','fillData',
-				'assignParent'
+				'assignParent','addNewParent'
 			]);
 	}
 	fillData({handlers,data}){
@@ -95,7 +95,8 @@ export class UsersModule extends AdminPage {
 	}
 	async usersTableFill(){
 		const _ = this;
-		let tcont = _.f('.table-cont');
+		let tcont = _.f(`.users-page .table-cont`);
+		if (!tcont) return
 		tcont.innerHTML += "<img src='/img/loader.gif' class='loader'>";
 
 		let tbody = tcont.querySelector('.tbl-body');
@@ -104,12 +105,12 @@ export class UsersModule extends AdminPage {
 		tcont.querySelector('.loader').remove();
 		tcont.classList.remove('loader-parent');
 		tbody.append(...tableData);
-		_.connectTableHead();
+		_.connectTableHead('.users-page');
 	}
-	connectTableHead(){
+	connectTableHead(selector){
 		const _ = this;
 		let
-			cont = _.f('.tbl');
+			cont = _.f(`${selector} .tbl`);
 		if (!cont) return
 		let
 			head = cont.querySelector('.tbl-head'),
@@ -122,12 +123,47 @@ export class UsersModule extends AdminPage {
 		})
 	}
 
-	assignParent(){
+	addNewParent({item}){
 		const _ = this;
+		item.parentElement.querySelector('.active').classList.remove('active');
+		item.classList.add('active')
+		let cont = _.f('.adding-assign-body');
+		_.clear(cont);
+		cont.append(_.markup(_.assignNewParent()))
+	}
+	assignParent({item}){
+		const _ = this;
+		item.parentElement.querySelector('.active').classList.remove('active');
+		item.classList.add('active')
 		let cont = _.f('.adding-assign-body');
 		_.clear(cont);
 		cont.classList.add('adding-assign-body-full')
 		cont.append(_.markup(_.assignParentTpl()))
+
+		_.fillParentBlock();
+		_.parentsTableFill();
+	}
+	async fillParentBlock(){
+		const _ = this;
+		let content = _.f(`#assignParent .users-count`);
+		content.classList.add('loader-parent')
+		content.innerHTML = "<img src='/img/loader.gif' class='loader'>";
+		let usersData = await Model.getParents();
+		console.log(usersData['total'])
+		content.textContent = `(${usersData['total']})`
+	}
+	async parentsTableFill(){
+		const _ = this;
+		let tcont = _.f(`#assignParent .table-cont`);
+		tcont.innerHTML += "<img src='/img/loader.gif' class='loader'>";
+
+		let tbody = tcont.querySelector('.tbl-body');
+		let tableData = _.parentsBodyRowsTpl(await Model.getParents());
+		_.clear(tbody)
+		tcont.querySelector('.loader').remove();
+		tcont.classList.remove('loader-parent');
+		tbody.append(...tableData);
+		_.connectTableHead('#assignParent');
 	}
 	
 	handleAddingSteps(){
@@ -191,7 +227,21 @@ export class UsersModule extends AdminPage {
 		_.f(`.adding-list-item:nth-child(${ _._$.assignStep })`).classList.add('active');
 	}
 	
+	createdAtFormat(value,format = 'month DD, YYYY'){
+		value = value.split('T')[0].split('-');
+		let
+			year = value[0],
+			month = value[1],
+			day = value[2],
+			months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
+		let res = format;
+		res = res.replace('DD',day)
+		res = res.replace('MM',month)
+		res = res.replace('YYYY',year)
+		res = res.replace('month',months[parseInt(month) - 1]);
+		return res;
+	}
 	
 	changeNextStep({item}) {
 		const _ = this;
