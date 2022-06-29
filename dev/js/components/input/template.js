@@ -81,7 +81,8 @@ export default {
 					data-focusout='dateInputFocusOut' 
 					${placeholder ? 'placeholder="' + placeholder + '"' : ''}
 				>
-				<input class="inpt-date" hidden type="date">
+				<input class="inpt-date" hidden type="date" ${data.range != null ? 'data-type="from"' : ''}>
+				${data.range != null ? '<input class="inpt-date" hidden type="date" data-type="to">' : ''}
 				${(icon != false && icon != null && icon != 'false') ? icon : ''}
 				${ data['xlink'] ? "<svg class='inpt-date-img'><use xlink:href='/img/sprite.svg#"+data['xlink']+"'></use></svg>" : ''}
 			</div>

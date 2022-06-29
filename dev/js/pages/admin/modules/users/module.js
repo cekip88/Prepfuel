@@ -38,7 +38,8 @@ export class UsersModule extends AdminPage {
 				'addStudent','showAssignPopup',
 				'changeNextStep','changePrevStep','jumpToStep',
 				'showProfile','showRemovePopup','removeCourse',
-				'domReady','fillData'
+				'domReady','fillData',
+				'assignParent'
 			]);
 	}
 	fillData({handlers,data}){
@@ -94,31 +95,40 @@ export class UsersModule extends AdminPage {
 	}
 	async usersTableFill(){
 		const _ = this;
-		let tbody = _.f('.tbl-body');
-		tbody.classList.add('loader-parent')
-		tbody.innerHTML = "<tr><td><img src='/img/loader.gif' class='loader'></td></tr>"
+		let tcont = _.f('.table-cont');
+		tcont.innerHTML += "<img src='/img/loader.gif' class='loader'>";
+
+		let tbody = tcont.querySelector('.tbl-body');
 		let tableData = _.usersBodyRowsTpl(await Model.usersData);
 		_.clear(tbody)
+		tcont.querySelector('.loader').remove();
+		tcont.classList.remove('loader-parent');
 		tbody.append(...tableData);
 		_.connectTableHead();
 	}
 	connectTableHead(){
 		const _ = this;
-		setTimeout(()=>{
-			let
-				cont = _.f('.tbl'),
-				head = cont.querySelector('.tbl-head'),
-				ths = head.querySelectorAll('.tbl-item'),
-				table = cont.querySelector('TABLE'),
-				row = table.querySelector('TR'),
-				tds = row.querySelectorAll('.tbl-item');
-			ths.forEach(function (item,index){
-				item.style = `width:${tds[index].getBoundingClientRect().width}px;`
-			})
-		},100)
+		let
+			cont = _.f('.tbl');
+		if (!cont) return
+		let
+			head = cont.querySelector('.tbl-head'),
+			ths = head.querySelectorAll('.tbl-item'),
+			table = cont.querySelector('TABLE'),
+			row = table.querySelector('TR'),
+			tds = row.querySelectorAll('.tbl-item');
+		ths.forEach(function (item,index){
+			item.style = `width:${tds[index].getBoundingClientRect().width}px;`
+		})
 	}
 
-	
+	assignParent(){
+		const _ = this;
+		let cont = _.f('.adding-assign-body');
+		_.clear(cont);
+		cont.classList.add('adding-assign-body-full')
+		cont.append(_.markup(_.assignParentTpl()))
+	}
 	
 	handleAddingSteps(){
 		const _ = this;

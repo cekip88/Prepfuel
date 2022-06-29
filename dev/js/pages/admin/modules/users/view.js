@@ -48,7 +48,7 @@ export const view = {
 			let tr = document.createElement('TR');
 			tr.className= 'tbl-row';
 			tr.setAttribute('user-id',item['user']['_id']);
-			tr.innerHTML =  _.usersBodyRowTpl(item['course'],item['user']);
+			tr.innerHTML = _.usersBodyRowTpl(item['course'],item['user']);
 			trs.push(tr);
 		}
 		return trs;
@@ -103,13 +103,13 @@ export const view = {
 					<div class="block-header">
 						<h2 class="block-title">Students <span class="users-count"></span></h2>
 						<div class="block-header-item block-header-search"><svg><use xlink:href="#search"></use></svg><g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input></div>
-						<div class="block-header-item block-header-date"><svg><use xlink:href="#calendar"></use></svg><g-input class="block-header-input block-header-date" type="date" icon="false" classname="form-input form-search"></g-input></div>
-						<div class="block-header-item block-header-select"><g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select" arrowsvg="/img/sprite.svg#select-arrow" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" style="--class:select block-header-select; --action:testChange; --name:testField; --classname:filter-select; --arrowsvg:img/sprite.svg#select-arrow;"><input type="hidden" name="testField" slot="value"></g-select></div>
+						<div class="block-header-item block-header-date"><svg><use xlink:href="#calendar"></use></svg><g-input class="block-header-input block-header-date" type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input></div>
+						<div class="block-header-item block-header-select"><g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" style="--class:select block-header-select; --action:testChange; --name:testField; --classname:filter-select; --arrowsvg:img/sprite.svg#select-arrow;"><input type="hidden" name="testField" slot="value"></g-select></div>
 						<button class="button-blue" data-click="${_.componentName}:addStudent"><span>Add Student</span>
 							<svg class="button-icon">
 								<use xlink:href="#plus"></use>
 							</svg>
-						</button>
+						</button> 
 					</div>
 					${_.pagination()}
 					<div class="tbl">
@@ -129,7 +129,7 @@ export const view = {
 							</div>
 							<div class="tbl-item right">Action</div>
 						</div>
-						<div class="table-cont">
+						<div class="table-cont loader-parent">
 							<table class="table">
 								<tbody class="tbl-body"></tbody>
 							</table>
@@ -559,15 +559,67 @@ export const view = {
 			<div class="adding-section">
 				<div class="adding-label">Select the way of adding a parent</div>
 				<div class="adding-buttons">
-					<button class="adding-button">Assign from base</button>
+					<button class="adding-button" data-click="${_.componentName}:assignParent">Assign from base</button>
 					<button class="adding-button active">Add new parent</button>
 					<button class="adding-button">Skip for now</button>
 				</div>
 			</div>
 			<div class="adding-assign-body">
-					${_.assignNewParent()}
+				${_.assignNewParent()}
 			</div>
 		`;
+	},
+	assignParentTpl(){
+		const _ = this;
+		return `
+			<div class="block" id="assignParent">
+				<div class="block-header">
+					<h2 class="block-title">Parents <span class="users-count"></span></h2>
+					<div class="block-header-item block-header-search">
+						<svg><use xlink:href="#search"></use></svg>
+						<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input>
+					</div>
+					<div class="block-header-item block-header-date">
+						<svg><use xlink:href="#calendar"></use></svg>
+						<g-input class="block-header-input block-header-date" type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input>
+					</div>
+					<div class="block-header-item block-header-select">
+						<g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" style="--class:select block-header-select; --action:testChange; --name:testField; --classname:filter-select; --arrowsvg:img/sprite.svg#select-arrow;"><input type="hidden" name="testField" slot="value"></g-select>
+					</div>
+				</div>
+				${_.pagination()}
+				<div class="tbl">
+					<div class="tbl-head">
+						<div class="tbl-item"> 
+							<span>USER Name</span>
+							<div class="tbl-sort-btns">
+								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							</div>
+						</div>
+						<div class="tbl-item">
+							<span>Students</span>
+							<div class="tbl-sort-btns">
+								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							</div>
+						</div>
+						<div class="tbl-item right"><span>date Registered</span>
+							<div class="tbl-sort-btns">
+								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							</div>
+						</div>
+						<div class="tbl-item right">Action</div>
+					</div>
+					<div class="table-cont loader-parent">
+						<table class="table">
+							<tbody class="tbl-body"></tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		`
 	},
 	assignFromBase(){
 		const _ = this;

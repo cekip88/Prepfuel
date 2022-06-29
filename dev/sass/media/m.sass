@@ -73,6 +73,7 @@ body
 		font-family: $f_bold
 		color: #3F4254
 	&-title
+		@extend %dfa
 		&.small
 			font-size: $fz16
 		&:not(:last-child)
@@ -2512,10 +2513,11 @@ body
 			letter-spacing: 0.03em
 			color: rgb($neutral-400)
 	&-head
+		@extend %dfi
 		padding: 12px 0
 		background-color: rgb($neutral-200)
 		border-radius: 12px
-		@extend %dfi
+		text-transform: uppercase
 		.tbl-item
 			&:first-child
 				padding-left: 24px
@@ -2666,6 +2668,9 @@ body
 	td
 		padding: 12px 0
 		border-bottom: 1px dashed #E4E6EF
+	&-cont
+		min-height: 40px
+		width: 100%
 
 
 .adding
@@ -2908,6 +2913,13 @@ body
 					margin-bottom: 16px
 				span
 					color: #7E8299
+	&-assign
+		&-body
+			&-full
+				width: 100%!important
+				.block-header
+					&-select
+						width: 120px
 .admin
 	padding-bottom: 48px
 	&-title
@@ -3352,13 +3364,14 @@ body
 
 .loader
 	+wh(25px)
-	position: absolute
+	//position: absolute
+	display: block
 	left: 0
 	bottom: 0
 	top: 0
 	right: 0
 	margin: auto
-	transform: translateY(-25%)
+	//transform: translateY(-25%)
 	&-parent
 		min-width: 40px
 		display: inline-block

@@ -118,6 +118,7 @@ export default class GInput extends GComponent {
 
 	datePick({value:value}) {
 		const _ = this;
+		if (_.hasAttribute('active') && _.isDateRange()) _.closeDatePicker();
 
 		if (_.getAttribute('active')) return;
 		_.setAttribute('active',true);
@@ -149,6 +150,11 @@ export default class GInput extends GComponent {
 		}
 
 		_.shadow.append(tpl);
+	}
+	closeDatePicker(){
+		const _ = this;
+		console.log(_)
+
 	}
 	getDate(value){
 		const _ = this;
@@ -233,11 +239,33 @@ export default class GInput extends GComponent {
 			cont = btn.closest('.date-picker-body'),
 			DD = btn.getAttribute('data-day'),
 			MM = cont.getAttribute('data-month'),
-			YYYY = cont.getAttribute('data-year');
-		_.fillDate(`${YYYY}-${MM}-${DD}`);
+			YYYY = cont.getAttribute('data-year'),
+			dateValues = _.fillDate(`${YYYY}-${MM}-${DD}`);
+
+		if (!_.isDateRange()) {
+			_.notRangeChangeDate(clickData,dateValues);
+			return;
+		}
+
+		_.rangeChangeDate(clickData,dateValues);
+	}
+	notRangeChangeDate(clickData,dateValues){
+		const _ = this;
+
+		_.shadow.querySelector('.inpt-value').value = dateValues.outValue;
+		_.shadow.querySelector('.inpt-date').value = dateValues.outDate;
+		_.setAttribute('value',dateValues.outDate);
+
 		_.removeAttribute('data-current-date');
 		_.triggerChangeEvent();
 		_.datePickerClose(clickData);
+	}
+	rangeChangeDate(){
+		const _ = this;
+		let fromDate = _.getAttribute('fromDate') ?? '';
+		let toDate = _.getAttribute('toDate') ?? '';
+
+
 	}
 	fillDate(dateValue){
 		const _ = this;
@@ -261,10 +289,7 @@ export default class GInput extends GComponent {
 		outValue = outValue.replace('weekDay',days[date.getDay()]);
 
 		let outDate = YYYY + '-' + MM + '-' + DD;
-
-		_.shadow.querySelector('.inpt-value').value = outValue;
-		_.shadow.querySelector('.inpt-date').value = outDate;
-		_.setAttribute('value',outDate);
+		return {outDate,outValue};
 	}
 	dateInputFocusOut({event}){
 		if (event.type === 'click') return;
@@ -514,6 +539,9 @@ export default class GInput extends GComponent {
 	isDate(){
 		return this.attr('type') === 'date';
 	}
+	isDateRange(){
+		return this.hasAttribute('range');
+	}
 	isCheckbox(){
 		return (this.attr('type') === 'checkbox') || (this.attr('type') === 'radio');
 	}
@@ -597,7 +625,8 @@ export default class GInput extends GComponent {
 			icon: _.attr('icon'),
 			svg: _.attr('svg'),
 			xlink: _.attr('xlink'),
-			value: _.attr('value')
+			value: _.attr('value'),
+			range: _.attr('range')
 		});
 		if (_.isDate()) {
 			_.setAttribute('style','position:relative;')
