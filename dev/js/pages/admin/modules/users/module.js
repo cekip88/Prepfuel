@@ -26,7 +26,7 @@ export class UsersModule extends AdminPage {
 		_.maxAssignStep = 4;
 		_.minStep = 1;
 
-		_.subSection = 'Students';
+		_.subSection = 'student';
 
 		_.set({
 			addingStep : 1,
@@ -57,7 +57,7 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		
 		_.fillBlock('.users-page');
-		if (_.subSection === 'Students') {
+		if (_.subSection === 'student') {
 			_.usersTableFill();
 			//
 		}
@@ -90,21 +90,22 @@ export class UsersModule extends AdminPage {
 		let content = _.f(`${block} .users-count`);
 		content.classList.add('loader-parent')
 		content.innerHTML = "<img src='/img/loader.gif' class='loader'>";
-		let usersData = await Model.usersData;
+		let usersData = await Model.getUsers(_.subSection);
 		content.textContent = `(${usersData['total']})`
 	}
 	async usersTableFill(){
 		const _ = this;
-		let tcont = _.f('.table-cont');
-		tcont.innerHTML += "<img src='/img/loader.gif' class='loader'>";
-
-		let tbody = tcont.querySelector('.tbl-body');
-		let tableData = _.usersBodyRowsTpl(await Model.usersData);
-		_.clear(tbody)
-		tcont.querySelector('.loader').remove();
-		tcont.classList.remove('loader-parent');
+		let
+			tbody = _.f('.tbl-body');
+		tbody.innerHTML = "<img src='/img/loader.gif' class='loader'>";
+		let
+			usersData = await Model.getUsers(_.subSection),
+			tableData = _.usersBodyRowsTpl(usersData);
+		_.clear(tbody);
 		tbody.append(...tableData);
 		_.connectTableHead();
+		
+		
 	}
 	connectTableHead(){
 		const _ = this;
@@ -122,6 +123,8 @@ export class UsersModule extends AdminPage {
 		})
 	}
 
+
+	
 	assignParent(){
 		const _ = this;
 		let cont = _.f('.adding-assign-body');
@@ -191,7 +194,9 @@ export class UsersModule extends AdminPage {
 		_.f(`.adding-list-item:nth-child(${ _._$.assignStep })`).classList.add('active');
 	}
 	
-
+	randomNumbers(){
+		
+	}
 	
 	changeNextStep({item}) {
 		const _ = this;

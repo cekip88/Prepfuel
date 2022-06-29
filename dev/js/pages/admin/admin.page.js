@@ -58,8 +58,6 @@ export class AdminPage extends G {
 		let
 			section = item.getAttribute('section'),
 			tpl = section.split('/')[2];
-
-		console.log(tpl);
 		if(section) history.pushState(null, null, section);
 		_.moduleRender([tpl]);
 	}
