@@ -49,7 +49,15 @@ export class UsersModule extends AdminPage {
 	handleErrors({method,data}){
 		const _ = this;
 		if( method == 'getUsers'){
-			console.log('Users not found ',data);
+			//console.log('Users not found ',data);
+			let
+				tbody = _.f('.tbl-body'),
+				content = _.f(`.users-page .users-count`);
+
+			_.clear(tbody);
+			_.clear(content);
+
+			content.textContent = '(0)';
 		}
 	}
 	
@@ -83,6 +91,7 @@ export class UsersModule extends AdminPage {
 			return '';
 		}
 	}
+
 	async fillBlock(block){
 		const _ = this;
 		let content = _.f(`${block} .users-count`);
@@ -93,9 +102,9 @@ export class UsersModule extends AdminPage {
 	}
 	async usersTableFill(){
 		const _ = this;
-		let
-			tbody = _.f('.tbl-body');
+		let tbody = _.f('.tbl-body');
 		tbody.innerHTML = "<img src='/img/loader.gif' class='loader'>";
+
 		let
 			usersData = await Model.getUsers(_.subSection),
 			tableData = _.usersBodyRowsTpl(usersData);

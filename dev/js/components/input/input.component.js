@@ -240,12 +240,8 @@ export default class GInput extends GComponent {
 			YYYY = cont.getAttribute('data-year'),
 			dateValues = _.fillDate(`${YYYY}-${MM}-${DD}`);
 
-		if (!_.isDateRange()) {
-			_.notRangeChangeDate(clickData,dateValues);
-			return;
-		}
-
-		_.rangeChangeDate(clickData,dateValues);
+		if (!_.isDateRange()) _.notRangeChangeDate(clickData,dateValues);
+		else _.rangeChangeDate(clickData,dateValues);
 	}
 	notRangeChangeDate(clickData,dateValues){
 		const _ = this;
@@ -258,12 +254,18 @@ export default class GInput extends GComponent {
 		_.triggerChangeEvent();
 		_.datePickerClose(clickData);
 	}
-	rangeChangeDate(){
+	rangeChangeDate(clickData,dateValues){
 		const _ = this;
 		let fromDate = _.getAttribute('fromDate') ?? '';
 		let toDate = _.getAttribute('toDate') ?? '';
 
+		if (!fromDate) {
+			_.setAttribute('fromDate',dateValues.outDate);
+		} else if (!toDate) {
+			_.setAttribute('toDate',dateValues.outDate)
+		} else {
 
+		}
 	}
 	fillDate(dateValue){
 		const _ = this;

@@ -1,10 +1,9 @@
 export const adminView = {
-	navigationInit(list) {
+	navigationInit() {
 		const _ = this;
+		let list = _.f('.navigate-list');
 		if (!list) return;
-		setTimeout( ()=>{
-			_.setActiveNavItem(list);
-		},100)
+		_.setActiveNavItem(list);
 		window.addEventListener('resize',()=>{
 			let activeBtn = list.querySelector('.active');
 			if (activeBtn) _.showActiveNavItem(activeBtn,list);
@@ -23,17 +22,19 @@ export const adminView = {
 		const _ = this;
 		let
 			route = location.pathname.split('/')[2],
-			container = list.closest('.navigate'),
-			activeItemSelector = container.getAttribute('data-active'),
 			newActiveBtn = list.querySelector(`.${route}`),
-			activeBtn = list.querySelector('.active');
+			activeBtn = list.querySelector('.active'),
+			label = this.f('.navigate-label');
+
+
 		if(!newActiveBtn) {
 			_.f('.navigate-label').style = `display:block;width: 0px;left: 999999px;`;
 		}
 		if (newActiveBtn) {
-			container.removeAttribute('data-active');
+			label.style = `width: ${newActiveBtn.clientWidth}px;left:${newActiveBtn.offsetLeft}px;`
 			_.navigate({item:list, event:{target:newActiveBtn}})
 		} else if (activeBtn){
+			label.style = `width: ${activeBtn.clientWidth}px;left:${activeBtn.offsetLeft}px;`
 			_.navigate({item:list, event:{target:activeBtn}})
 		}
 	},
@@ -50,8 +51,9 @@ export const adminView = {
 			width = btn.clientWidth,
 			x = btn.offsetLeft,
 			label = this.f('.navigate-label');
+
 		if(!label) return void 'Navigate label not found';
-		label.style = `opacity:1;width: ${width}px;left: ${x}px;`;
+		label.style = `opacity:1;width: ${width}px;left: ${x}px;transition: .35s ease`;
 	},
 	changeTab(btn,parentCls){
 		const _ = this;
@@ -101,7 +103,7 @@ export const adminView = {
 	adminTabs(){
 		const _ = this;
 		return `
-			<section class="navigate" data-active=".navigate-item:nth-child(1)" data-tabs=".dashboard-tabs">
+			<section class="navigate" data-tabs=".dashboard-tabs">
 				<div class="section">
 					<nav class="navigate-list" data-click="AdminPage:navigate">
 						<button class="navigate-item dashboard" data-click="AdminPage:changeSection;AdminPage:navigate" section="/admin/dashboard"><span>Analytics Dashboard</span></button>

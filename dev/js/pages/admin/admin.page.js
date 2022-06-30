@@ -37,7 +37,7 @@ export class AdminPage extends G {
 	}
 	asyncDefine(){
 		const _ = this;
-	
+
 	}
 	
 	showUserList({item}) {
@@ -86,9 +86,10 @@ export class AdminPage extends G {
 		if(params.length > 0){
 			await _.moduleRender(params);
 		}
-		setTimeout( ()=>{
-			_.navigationInit(_.f('.navigate-list'));
-		} )
+
+		setTimeout(()=>{
+			_.navigationInit();
+		},350)
 		// this._( callback );
 		
 	}
