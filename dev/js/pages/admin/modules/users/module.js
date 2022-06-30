@@ -61,8 +61,6 @@ export class UsersModule extends AdminPage {
 			_.usersTableFill();
 			//
 		}
-		_._( _.handleAddingSteps.bind(_),[ 'addingStep' ]);
-		_._( _.handleAssignSteps.bind(_),[ 'assignStep' ]);
 	}
 	async changeSection({item,event}) {
 		const _ = this;
@@ -91,7 +89,7 @@ export class UsersModule extends AdminPage {
 		content.classList.add('loader-parent')
 		content.innerHTML = "<img src='/img/loader.gif' class='loader'>";
 		let usersData = await Model.getUsers(_.subSection);
-		content.textContent = `(${usersData['total']})`
+		content.textContent = `(${usersData['total'] ?? 0})`
 	}
 	async usersTableFill(){
 		const _ = this;
@@ -102,10 +100,9 @@ export class UsersModule extends AdminPage {
 			usersData = await Model.getUsers(_.subSection),
 			tableData = _.usersBodyRowsTpl(usersData);
 		_.clear(tbody);
+		if(!tableData) return void 'no table data';
 		tbody.append(...tableData);
 		_.connectTableHead();
-
-
 	}
 	connectTableHead(selector){
 		const _ = this;
@@ -339,6 +336,10 @@ export class UsersModule extends AdminPage {
 	}
 	
 	
-	init(){}
+	init(){
+		const _ = this;
+		_._( _.handleAddingSteps.bind(_),[ 'addingStep' ]);
+		_._( _.handleAssignSteps.bind(_),[ 'assignStep' ]);
+	}
 	
 }

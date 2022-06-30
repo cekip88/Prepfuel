@@ -42,8 +42,8 @@ export const view = {
 	usersBodyRowsTpl(usersData){
 		const _ = this;
 		let trs = [];
-		console.log(usersData);
 		usersData = usersData['response'];
+		if(!usersData) return void 0;
 		for(let item of usersData){
 			let tr = document.createElement('TR');
 			tr.className= 'tbl-row';

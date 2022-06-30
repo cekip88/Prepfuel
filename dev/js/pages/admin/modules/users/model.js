@@ -8,7 +8,11 @@ export class _Model {
 		}
 		_.usersRole = 'student'
 		_.endpoints = {
-			usersList: `${env.backendUrl}/admin`
+			usersList: `${env.backendUrl}/admin`,
+			addingStepOne: `${env.backendUrl}/user/add-student-step1`,
+			addingStepTwo: `${env.backendUrl}/user/add-student-step2`,
+			addingStepThree: `${env.backendUrl}/user/add-student-step3`,
+			addingStepFour: `${env.backendUrl}/user/add-student-step4`,
 		};
 	}
 	
@@ -29,14 +33,16 @@ export class _Model {
 						'method': 'getUsers',
 						'type': 'wrongResponse',
 						'data': response
-					})
+					});
+					resolve(true);
 				}
 			} else {
 				G_Bus.trigger('UsersModule', 'handleErrors', {
 					'method': 'getUsers',
 					'type': 'wrongRequest',
 					'data': rawResponse
-				})
+				});
+				resolve([]);
 			}
 		});
 	}
