@@ -2,12 +2,12 @@ export const view = {
 	usersBodyTabs(){
 		return `
 			<div class="subnavigate">
-				<div class="section">
+				<div class="section"> 
 					<button class="subnavigate-button active"><span>Students</span></button>
 					<button class="subnavigate-button"><span>Parents</span></button>
-					<button class="subnavigate-button"><span>Payments</span></button>
+					<button class="subnavigate-button"><span>Admins</span></button>
 				</div>
-			</div>
+			</div> 
 		`;
 	},
 	pagination(){
@@ -42,8 +42,8 @@ export const view = {
 	usersBodyRowsTpl(usersData){
 		const _ = this;
 		let trs = [];
-		console.log(usersData);
 		usersData = usersData['response'];
+		if (!usersData) return
 		for(let item of usersData){
 			let tr = document.createElement('TR');
 			tr.className= 'tbl-row';
@@ -102,9 +102,17 @@ export const view = {
 				<div class="block">
 					<div class="block-header">
 						<h2 class="block-title">Students <span class="users-count"></span></h2>
-						<div class="block-header-item block-header-search"><svg><use xlink:href="#search"></use></svg><g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input></div>
-						<div class="block-header-item block-header-date"><svg><use xlink:href="#calendar"></use></svg><g-input class="block-header-input block-header-date" type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input></div>
-						<div class="block-header-item block-header-select"><g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ><input type="hidden" name="testField" slot="value"></g-select></div>
+						<div class="block-header-item block-header-search">
+							<svg><use xlink:href="#search"></use></svg>
+							<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input>
+						</div>
+						<div class="block-header-item block-header-date">
+							<svg><use xlink:href="#calendar"></use></svg>
+							<g-input class="block-header-input block-header-date"  type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input>
+						</div>
+						<div class="block-header-item block-header-select">
+							<g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ><input type="hidden" name="testField" slot="value"></g-select>
+						</div>
 						<button class="button-blue" data-click="${_.componentName}:addStudent"><span>Add Student</span>
 							<svg class="button-icon">
 								<use xlink:href="#plus"></use>
