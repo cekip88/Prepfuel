@@ -100,10 +100,11 @@ export default class GSelect extends GComponent {
 		else _.setAttribute('title',this.titles.toString());
 	}
 
-	choose(clickData){
+	choose({event,fakeItem}){
 		const _ = this;
-		let
-			item = _.ascent(clickData.event,'g-select-option');
+		let item;
+		if(!fakeItem) item = _.ascent(event,'g-select-option');
+		else item = fakeItem;
 		if(!item) return void 0;
 		_.multiple = _.hasAttribute('multiple');
 
@@ -115,7 +116,7 @@ export default class GSelect extends GComponent {
 			G_Bus.trigger(rawAction[0],rawAction[1], {
 				name:_.querySelector('[slot="value"]')['name'],
 				value: _.selectedValues,
-				event: clickData.event
+				event: event
 			});
 		}
 		if (!_.multiple) {
@@ -376,7 +377,7 @@ export default class GSelect extends GComponent {
 	disconnectedCallback() {
 	}
 	static get observedAttributes() {
-		return ['items','title'];
+		return ['items','title','active-items'];
 	}
 	attributeChangedCallback(name, oldValue, newValue) {
 		const _ = this;

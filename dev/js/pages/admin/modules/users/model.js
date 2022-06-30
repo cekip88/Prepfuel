@@ -9,6 +9,7 @@ export class _Model {
 		_.usersRole = 'student'
 		_.endpoints = {
 			usersList: `${env.backendUrl}/admin`,
+			createStudent: `${env.backendUrl}/user/create-student`,
 			addingStepOne: `${env.backendUrl}/user/add-student-step1`,
 			addingStepTwo: `${env.backendUrl}/user/add-student-step2`,
 			addingStepThree: `${env.backendUrl}/user/add-student-step3`,
@@ -27,6 +28,7 @@ export class _Model {
 				let response = await rawResponse.json();
 				if(response['status'] == 'success') {
 					_.usersData = response;
+					console.log(_.usersData);
 					resolve(response);
 				} else {
 					G_Bus.trigger('UsersModule', 'handleErrors', {
@@ -34,7 +36,7 @@ export class _Model {
 						'type': 'wrongResponse',
 						'data': response
 					});
-					resolve(true);
+					resolve(null);
 				}
 			} else {
 				G_Bus.trigger('UsersModule', 'handleErrors', {
@@ -42,66 +44,170 @@ export class _Model {
 					'type': 'wrongRequest',
 					'data': rawResponse
 				});
-				resolve([]);
+				resolve(null);
 			}
 		});
 	}
 	getParents() {
 		const _ = this;
-		_.parentsData = {
-			total: 3,
-			response: [
-				{
-					_id:'1',
-					firstName: 'Marvin',
-					lastName: 'Simmons',
-					email: 'exmplm@example.com',
-					students: [{avatar:'green-boy.svg'},{avatar:'blue-girl.svg'}],
-					createdAt: "2022-03-17T07:58:02.553Z",
-				},
-				{
-					_id:'1',
-					firstName: 'Wade',
-					lastName: 'Warren',
-					email: 'exmplm@example.com',
-					students: [],
-					createdAt: "2022-03-16T07:58:02.553Z",
-				},
-				{
-					_id:'1',
-					firstName: 'Cameron',
-					lastName: 'Williamson',
-					email: 'exmplm@example.com',
-					students: [{avatar:'yellow-boy.svg'},{avatar:'red-afro-girl.svg'}],
-					createdAt: "2022-03-15T07:58:02.553Z",
-				},
-				{
-					_id:'1',
-					firstName: 'Leslie',
-					lastName: 'Alexander',
-					email: 'exmplm@example.com',
-					students: [{avatar:'blue-orange-boy.svg'},{avatar:'blue-girl.svg'},{avatar: 'red-girl.svg'}],
-					createdAt: "2022-03-14T07:58:02.553Z",
-				},
-				{
-					_id:'1',
-					firstName: 'Kristin',
-					lastName: 'Watson',
-					email: 'exmplm@example.com',
-					students: [{avatar: 'green-boy.svg'}],
-					createdAt: "2022-03-13T07:58:02.553Z",
-				},
-				{
-					_id:'1',
-					firstName: 'Bessie',
-					lastName: 'Cooper',
-					email: 'exmplm@example.com',
-					students: [],
-					createdAt: "2022-03-12T07:58:02.553Z",
-				},
-			]
-		};
-		return _.parentsData
+		return _.getUsers('parent');
+	}
+	
+	createStudent(studentData) {
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['createStudent']}`, {
+				method: 'POST',
+				headers: _.baseHeaders,
+				body: JSON.stringify(studentData)
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					_.newStudent = response['response'];
+					resolve(response['response']);
+				} else {
+					G_Bus.trigger('UsersModule', 'handleErrors', {
+						'method': 'createStudent',
+						'type': 'wrongResponse',
+						'data': response
+					});
+					resolve(null);
+				}
+			} else {
+				G_Bus.trigger('UsersModule', 'handleErrors', {
+					'method': 'createStudent',
+					'type': 'wrongRequest',
+					'data': rawResponse
+				});
+				resolve(null);
+			}
+		});
+	}
+	
+	addingStepOneData() {
+		const _ = this;
+		if(_.step1) Promise.resolve(_.step1);
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['addingStepOne']}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					_.step1 = response['response'];
+					resolve(response['response']);
+				} else {
+					G_Bus.trigger('UsersModule', 'handleErrors', {
+						'method': 'addingStepOne',
+						'type': 'wrongResponse',
+						'data': response
+					});
+					resolve(null);
+				}
+			} else {
+				G_Bus.trigger('UsersModule', 'handleErrors', {
+					'method': 'addingStepOne',
+					'type': 'wrongRequest',
+					'data': rawResponse
+				});
+				resolve(null);
+			}
+		});
+	}
+	addingStepTwoData() {
+		const _ = this;
+		if(_.step2) Promise.resolve(_.step2);
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['addingStepTwo']}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					_.step2 = response['response'];
+					resolve(response['response']);
+				} else {
+					G_Bus.trigger('UsersModule', 'handleErrors', {
+						'method': 'addingStepTwo',
+						'type': 'wrongResponse',
+						'data': response
+					});
+					resolve(null);
+				}
+			} else {
+				G_Bus.trigger('UsersModule', 'handleErrors', {
+					'method': 'addingStepTwo',
+					'type': 'wrongRequest',
+					'data': rawResponse
+				});
+				resolve(null);
+			}
+		});
+	}
+	addingStepThreeData() {
+		const _ = this;
+		if(_.step3) Promise.resolve(_.step3);
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['addingStepThree']}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					_.step3 = response['response'];
+					resolve(response['response']);
+				} else {
+					G_Bus.trigger('UsersModule', 'handleErrors', {
+						'method': 'addingStepThree',
+						'type': 'wrongResponse',
+						'data': response
+					});
+					resolve(null);
+				}
+			} else {
+				G_Bus.trigger('UsersModule', 'handleErrors', {
+					'method': 'addingStepThree',
+					'type': 'wrongRequest',
+					'data': rawResponse
+				});
+				resolve(null);
+			}
+		});
+	}
+	addingStepFourData() {
+		const _ = this;
+		if(_.step4) Promise.resolve(_.step4);
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['addingStepFour']}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					_.step4 = response['response'];
+					resolve(response['response']);
+				} else {
+					G_Bus.trigger('UsersModule', 'handleErrors', {
+						'method': 'addingStepFour',
+						'type': 'wrongResponse',
+						'data': response
+					});
+					resolve(null);
+				}
+			} else {
+				G_Bus.trigger('UsersModule', 'handleErrors', {
+					'method': 'addingStepFour',
+					'type': 'wrongRequest',
+					'data': rawResponse
+				});
+				resolve(null);
+			}
+		});
 	}
 
 }

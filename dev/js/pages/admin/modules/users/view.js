@@ -14,7 +14,7 @@ export const view = {
 		const _ = this;
 		return `
 			<div class="pagination pagination-top fill">
-				<div class="pagination-info"><span>1 - 100 of 7300</span></div>
+				<div class="pagination-info"><span>1 - 100 of <i class="gusers-count "><img src='/img/loader.gif' class='loader'></i></span></div>
 				<div class="pagination-links">
 					<a class="pagination-arrow pagination-prev" href="#">
 						<svg class="arrow">
@@ -27,9 +27,9 @@ export const view = {
 					<a class="pagination-link" href="#"><span>4</span></a>
 					<a class="pagination-link" href="#"><span>5</span></a>
 					<a class="pagination-arrow pagination-next" href="#">
-					<svg class="arrow">
-						<use xlink:href="#arrow-right-transparent"></use>
-					</svg>
+						<svg class="arrow">
+							<use xlink:href="#arrow-right-transparent"></use>
+						</svg>
 					</a>
 				</div>
 				<div class="pagination-end">
@@ -48,12 +48,12 @@ export const view = {
 			let tr = document.createElement('TR');
 			tr.className= 'tbl-row';
 			tr.setAttribute('user-id',item['user']['_id']);
-			tr.innerHTML = _.usersBodyRowTpl(item['course'],item['user']);
+			tr.innerHTML = _.usersBodyRowTpl(item['currentPlan'],item['user']);
 			trs.push(tr);
 		}
 		return trs;
 	},
-	usersBodyRowTpl(course,rowData){
+	usersBodyRowTpl(plan,rowData){
 		const _ = this;
 		let tpl = `
 				<td>
@@ -69,7 +69,7 @@ export const view = {
 				</td>
 				<td>
 					<div class="tbl-item">
-						<div class="users-course brown">${course}</div>
+						<div class="users-course brown">${plan['course']['title']}${plan['level']['title']}</div>
 				</div>
 			</td>
 			<td>
@@ -89,19 +89,19 @@ export const view = {
 							<use xlink:href="#trash"></use>
 						</svg>
 					</button>
-					<button class="users-btn button profile" data-click="${_.componentName}:showProfile">Profile</button>
+					<button class="users-btn button profile" data-click="${_.componentName}:showProfile" data-id="${rowData._id}">Profile</button>
 				</div>
 			</td>
 		`
 		return tpl;
 	},
-	usersBody() {
+	usersBody(){
 		const _ = this;
 		return `
 			<div class="section users-page">
 				<div class="block">
 					<div class="block-header">
-						<h2 class="block-title">Students <span class="users-count"></span></h2>
+						<h2 class="block-title">Students (<span class="users-count gusers-count"><img src='/img/loader.gif' class='loader'></span>)</h2>
 						<div class="block-header-item block-header-search">
 							<svg><use xlink:href="#search"></use></svg>
 							<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input>
@@ -163,8 +163,9 @@ export const view = {
 										<th><div class="tbl-item right">Action</div></th>
 									</tr>
 								</thead>
-								<tbody class="tbl-body"></tbody>
+								<tbody class="tbl-body"><tr><td><img src='/img/loader.gif' class='loader'></td></tr></tbody>
 							</table>
+							
 						</div>
 					</div>
 				</div>
@@ -234,7 +235,7 @@ export const view = {
 								</li>
 							</ol>
 							<div class="adding-body">
-								${_.addingStepOne()}
+							
 							</div>
 						</div>
 					</div>
@@ -447,9 +448,7 @@ export const view = {
 									</div>
 								</li>
 							</ol>
-							<div class="adding-body">
-								${_.addingStepOne()}
-							</div>
+							<div class="adding-body"><img src="/img/loader.gif"></div>
 						</div>
 					</div>
 					<div class="test-footer">
@@ -465,23 +464,50 @@ export const view = {
 			</div>
 		`;
 	},
-	addingStepOne(){
+	levelButtons(stepData){
 		const _ = this;
-		return `
+	
+	
+		let tpl = ``;
+		stepData.levels.forEach( (item,cnt) => {
+			let activeClass = '';
+			if(_.studentInfo['level']){
+				if(_.studentInfo['level'] == item._id){
+					activeClass = 'active';
+				}
+			}
+			tpl+=`<button class="adding-button ${ activeClass }" data-id="${item._id}" data-click="${_.componentName}:changeStudentLevel">${item.title}</button>`;
+		});
+		return tpl;
+	},
+	addingStepOne(stepData){
+		const _ = this;
+		let tpl = `
 			<h3 class="adding-title">Course & Plan</h3>
 			<div class="adding-section">
 				<div class="adding-label">What test is the student purchasing?</div>
 				<div class="adding-buttons">
-					<button class="adding-button">ISEE</button>
-					<button class="adding-button">SSAT</button>
-					<button class="adding-button active">SHSAT</button>
+		`;
+		stepData.forEach( (item,cnt) => {
+			let activeClass = '';
+			if(_.studentInfo['course']){
+				if(_.studentInfo['course'] == item._id){
+					activeClass = 'active';
+				}
+			}
+			tpl += `
+				<button class="adding-button ${ activeClass }" pos="${cnt}" data-click="${_.componentName}:changeTestType" data-id="${item._id}">
+					<span>${item.title}</span>
+				</button>
+			`;
+		});
+		tpl+=	`
 				</div>
 			</div>
 			<div class="adding-section">
 				<div class="adding-label">What level of the test student plan to take?</div>
-				<div class="adding-buttons">
-					<button class="adding-button active">Middle (5-7th Grade)</button>
-					<button class="adding-button">Upper (8-11th Grade)</button>
+				<div class="adding-buttons level-buttons loader-parent">
+					${_.levelButtons(stepData[_.coursePos])}
 				</div>
 			</div>
 			<div class="adding-section">
@@ -525,8 +551,9 @@ export const view = {
 				</div>
 			</div>
 		`;
+		return tpl;
 	},
-	addingStepTwo() {
+	addingStepTwo(stepData) {
 		const _ = this;
 		return `
 			<div class="adding-center">
@@ -547,20 +574,20 @@ export const view = {
 							<div class="form-label-row">
 								<label class="form-label">First name</label>
 							</div>
-							<g-input type="text" name="first_name" class="g-form-item" classname="form-input adding-inpt"></g-input>
+							<g-input type="text" value="${_.studentInfo['firstName'] ?? ''}" name="firstName" class="g-form-item" classname="form-input adding-inpt" data-input="${_.componentName}:fillStudentInfo"></g-input>
 						</div>
 						<div class="adding-inpt small">
 							<div class="form-label-row">
 								<label class="form-label">Last name</label>
 							</div>
-							<g-input type="text" name="last_name" class="g-form-item" classname="form-input adding-inpt"></g-input>
+							<g-input type="text" value="${_.studentInfo['lastName'] ?? ''}" name="lastName" class="g-form-item" data-input="${_.componentName}:fillStudentInfo" classname="form-input adding-inpt"></g-input>
 						</div>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
 							<label class="form-label">Email</label>
 						</div>
-						<g-input type="text" name="email" class="g-form-item" classname="form-input adding-inpt"></g-input>
+						<g-input type="text" name="email"  value="${_.studentInfo['email'] ?? ''}" class="g-form-item" data-input="${_.componentName}:fillStudentInfo" classname="form-input adding-inpt"></g-input>
 						</div>
 				</div>
 				<div class="adding-section">
@@ -570,21 +597,21 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">Password</label>
 						</div>
-						<g-input type="password" name="pass" class="g-form-item" classname="form-input"></g-input>
+						<g-input type="password" name="password"  value="${_.studentInfo['password'] ?? ''}" data-input="${_.componentName}:fillStudentInfo" class="g-form-item" classname="form-input"></g-input>
 					</div>
 					<p class="adding-text">8+ characters, with min. one number, one uppercase letter and one special character</p>
 					<div class="adding-inpt small">
 						<div class="form-label-row">
 							<label class="form-label">Repeat password</label>
 						</div>
-						<g-input type="password" name="cpass" class="g-form-item" classname="form-input"></g-input>
+						<g-input type="password" name="cpass"  value="${_.studentInfo['cpass'] ?? ''}" data-input="${_.componentName}:fillStudentInfo" class="g-form-item" classname="form-input"></g-input>
 					</div>
 				</div>
-				<button class="adding-generate">Generate Password</button>
+				<button class="adding-generate" data-click="${_.componentName}:generatePassword">Generate Password</button>
 			</div>
 		`;
 	},
-	addingStepThree() {
+	addingStepThree(stepData) {
 		const _ = this;
 		return `
 			<h3 class="adding-title">Parent Information</h3>
@@ -814,7 +841,45 @@ export const view = {
 			<button class="adding-generate">Generate Password</button>
 		`;
 	},
-	addingStepFour(){
+	
+	createSelectItems(items,template,active){
+		const _ = this;
+		let outItems = [];
+		let templateSplit = template.split(';');
+		for (let item of items) {
+			let arrItem = {};
+			templateSplit.forEach(( spl) => {
+				let
+					splitItem = spl.split(':'),
+					selectProp = splitItem[0],
+					dataProp = splitItem[1];
+				arrItem[selectProp] = item[dataProp];
+				if(active){
+					let activeSplit = active.split(':'),
+							activeProp = activeSplit[0],
+							activeValue = activeSplit[1];
+					if(item[activeProp] == activeValue){
+						arrItem['active'] = true;
+					}
+				}
+			});
+			outItems.push(arrItem);
+		}
+		return outItems;
+	},
+	addingStepFour(stepData){
+		const _ = this;
+		let activeGrade,activeFirst,activeSecond,activeThird;
+		if(_.studentInfo.grade) activeGrade = `_id:${_.studentInfo.grade}`;
+		if(_.studentInfo.firstChoise) activeFirst = `_id:${_.studentInfo.firstChoise}`;
+		if(_.studentInfo.secondChoise) activeSecond = `_id:${_.studentInfo.secondChoise}`;
+		if(_.studentInfo.thirdChoise) activeThird = `_id:${_.studentInfo.thirdChoise}`;
+		let
+			gradeItems = _.createSelectItems(stepData.grades,"value:_id;text:grade",activeGrade),
+			firstItems = _.createSelectItems(stepData.schools,"value:_id;text:school",activeFirst),
+			secondItems = _.createSelectItems(stepData.schools,"value:_id;text:school",activeSecond),
+			thirdItems = _.createSelectItems(stepData.schools,"value:_id;text:school",activeThird);
+
 		return `
 			<div class="adding-center">
 				<h3 class="adding-title">School Information</h3>
@@ -824,14 +889,14 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">Current school</label>
 						</div>
-						<g-input type="text" name="current_school" class="g-form-item" classname="form-input adding-inpt"></g-input>
+						<g-input type="text" value="${_.studentInfo.currentSchool ?? ''}" name="currentSchool" data-input="${_.componentName}:fillStudentInfo" class="g-form-item" classname="form-input adding-inpt"></g-input>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
 							<label class="form-label">Grade</label>
 						</div>
-						<g-select class="select adding-select" name="grade" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;Have not decided yet&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ">
-						<input type="hidden" name="testField" slot="value"></g-select>
+						<g-select class="select adding-select" name="grade" classname="adding-select" data-change="${_.componentName}:fillStudentInfo" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
+						 items='${JSON.stringify(gradeItems)}'></g-select>
 					</div>
 				</div>
 				<div class="adding-section">
@@ -840,22 +905,22 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">First choice</label>
 						</div>
-						<g-select class="select adding-select" name="first_choise" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;Have not decided yet&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ">
-						<input type="hidden" name="first_choise" slot="value"></g-select>
+						<g-select class="select adding-select" name="firstChoise" data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
+						items='${JSON.stringify(firstItems)}'></g-select>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
 							<label class="form-label">Second choice</label>
 						</div>
-						<g-select class="select adding-select" name="second_choise" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ">
-						<input type="hidden" name="second_choise" slot="value"></g-select>
+						<g-select class="select adding-select" name="secondChoise" data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
+						items='${JSON.stringify(secondItems)}'></g-select>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
 							<label class="form-label">Third choice</label>
 						</div>
-						<g-select class="select adding-select" name="third_choise" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ">
-						<input type="hidden" name="third_choise" slot="value"></g-select>
+						<g-select class="select adding-select" name="thirdChoise" data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
+						items='${JSON.stringify(thirdItems)}'></g-select>
 					</div>
 				</div>
 			</div>
@@ -873,7 +938,7 @@ export const view = {
 							<input type="radio" id="have_registered" class="adding-radio" name="registered" checked>
 							<label class="form-label adding-label-have" for="have_registered">Have registered</label>
 						</div>
-						<g-input type='date' class="select adding-select" name="have_registered" classname="adding-select" icon="false" xlink="select-arrow-bottom" placeholder="Press to choose your official test date"></g-input>
+						<g-input type='date' data-change="${_.componentName}:fillStudentInfo" class="select adding-select" name="testDate" classname="adding-select" icon="false" xlink="select-arrow-bottom" placeholder="Press to choose your official test date"></g-input>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
@@ -898,11 +963,11 @@ export const view = {
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
 							<span>Chosen Course:</span>
-							<strong>SHSAT</strong>
+							<strong>${_.studentInfo.course}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Chosen Level:</span>
-							<strong>Middle (5-7th Grade)</strong>
+							<strong>${_.studentInfo.level}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Plan:</span>
@@ -918,22 +983,22 @@ export const view = {
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
 							<span>First Name:</span>
-							<strong>Darlene</strong>
+							<strong>${_.studentInfo.firstName}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Last Name:</span>
-							<strong>Robertson</strong>
+							<strong>${_.studentInfo.lastName}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Email:</span>
-							<strong>exmplm@example.com</strong>
+							<strong>${_.studentInfo.email}</strong>
 						</li>
 					</ul>
 				</div>
 				<div class="adding-section">
 					<div class="adding-summary">
 						<strong class="adding-summary-title">Parent Information</strong>
-						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" type='adding' step="3">Edit</button>
+						<button class="adding-summary-btn" data-click="${_.componentName}:jumpToStep" type='adding' step="3">Edit</button>
 					</div>
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
@@ -949,23 +1014,23 @@ export const view = {
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
 							<span>Current School:</span>
-							<strong>Scholars' Academy</strong>
+							<strong>${_.studentInfo.currentSchool}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Grade:</span>
-							<strong>7th</strong>
+							<strong>${_.studentInfo.grade}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>First Choice:</span>
-							<strong>Am. Studies/ Lehman</strong>
+							<strong>${_.studentInfo.firstChoise}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Second Choice:</span>
-							<strong>Have not decided yet</strong>
+							<strong>${_.studentInfo.secondChoise}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Third Choice:</span>
-							<strong>Have not decided yet</strong>
+							<strong>${_.studentInfo.thirdChoise}</strong>
 						</li>
 					</ul>
 				</div>
@@ -977,7 +1042,7 @@ export const view = {
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
 							<span>Registered Official Test Date:</span>
-							<strong>May 17, 2023</strong>
+							<strong>${_.studentInfo.testDate}</strong>
 						</li>
 					</ul>
 				</div>
