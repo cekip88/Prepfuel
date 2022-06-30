@@ -17,10 +17,10 @@ export class _Model {
 		};
 	}
 	
-	getUsers(role) {
+	getUsers(role,page=1) {
 		const _ = this;
 		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.endpoints['usersList']}/?role=${role}`, {
+			let rawResponse = await fetch(`${_.endpoints['usersList']}/?role=${role}&page=${page}`, {
 				method: 'GET',
 				headers: _.baseHeaders,
 			});
@@ -28,7 +28,6 @@ export class _Model {
 				let response = await rawResponse.json();
 				if(response['status'] == 'success') {
 					_.usersData = response;
-					console.log(_.usersData);
 					resolve(response);
 				} else {
 					G_Bus.trigger('UsersModule', 'handleErrors', {
