@@ -28,7 +28,7 @@ export default class GSelect extends GComponent {
 	open(){
 		const _ = this;
 		if(!_.opened){
-			_.setProperty('--body-max-height','182px');
+			_.setProperty('--body-max-height','280px');
 			_.opened = true;
 			_.shadow.querySelector('.g-select').classList.add('active');
 		}	else{
@@ -437,12 +437,12 @@ export default class GSelect extends GComponent {
 			.g-select-body {
 			  width: 100%;
 			  max-height: var(--body-max-height);
-			  padding: 12px 0 0;
 			  display: flex;
 			  flex-direction: column;
 			  align-items: flex-start;
 			  background-color: #fff;
 			  overflow: hidden;
+			  border-radius: 8px;
 			  position: absolute;
 			  left: 0;
 			  top: 100%;
@@ -451,13 +451,12 @@ export default class GSelect extends GComponent {
 			}
 			.g-select.active .g-select-body {
 			  overflow: auto;
-			  border: 1px solid #dbdbdb;
+			  box-shadow: 0 0 1px rgba(15,23,42,.06), 0 10px 15px -3px rgba(15,23,42,.1), 0 4px 6px -2px rgba(15,23,42,.05);
 			}
 			.g-select.active .g-select-head:after {
 			  transform: rotate(-45deg);
 			}
 			.g-select-option {
-			  flex: 0 0 30px;
 			  width: 100%;
 			  margin-bottom: 12px;
 			  padding: 0 10px;
@@ -471,8 +470,11 @@ export default class GSelect extends GComponent {
 			  font-family: "roboto-medium";
 			  font-weight: 500;
 			}
+			.g-select-option:last-child {
+				margin-bottom: 8px;
+			}
 			.g-select.active .g-select-body.multiple {
-				padding: 8px 0;
+				padding: 8px 0 0;
 			}
 			.g-select-body.multiple .g-select-option:before {
 				width: 24px;
@@ -494,7 +496,7 @@ export default class GSelect extends GComponent {
 				height: 20px;
 				position: absolute;
 				left: 12px;
-				top: 5px;
+				top: 2px;
 			}
 			.g-select-body.multiple .g-select-option:hover,.g-select-body.multiple .g-select-option.active {
 			  background-color: transparent;
@@ -505,6 +507,8 @@ export default class GSelect extends GComponent {
 			.g-select-arrow {
 			  width: 20px;
 			  margin-left: auto;
+			  display: flex;
+			  align-items: center;
 			  position: absolute;
 			  right: 0;
 			}

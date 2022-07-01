@@ -119,13 +119,13 @@ export const view = {
 								arrowsvg="/img/sprite.svg#select-arrow" 
 								title="Course"
 								items="[
-									{&quot;value&quot;:0,&quot;text&quot;:&quot;ISEE Lower&quot;,&quot;active&quot;:true},
-									{&quot;value&quot;:1,&quot;text&quot;:&quot;ISEE Middle&quot;},
-									{&quot;value&quot;:2,&quot;text&quot;:&quot;ISEE Upper&quot;},
+									{&quot;value&quot;:0,&quot;text&quot;:&quot;ISEE Middle&quot;},
+									{&quot;value&quot;:1,&quot;text&quot;:&quot;ISEE Lower&quot;},
+									{&quot;value&quot;:2,&quot;text&quot;:&quot;ISEE Upper&quot;,&quot;active&quot;:true},
 									{&quot;value&quot;:3,&quot;text&quot;:&quot;SSAT Middle&quot;,&quot;active&quot;:true},
 									{&quot;value&quot;:4,&quot;text&quot;:&quot;SSAT Upper&quot;},
-									{&quot;value&quot;:5,&quot;text&quot;:&quot;SHSAT 8th&quot;},
-									{&quot;value&quot;:6,&quot;text&quot;:&quot;SHSAT 9th&quot;}
+									{&quot;value&quot;:5,&quot;text&quot;:&quot;SHSAT 8th&quot;,&quot;active&quot;:true},
+									{&quot;value&quot;:6,&quot;text&quot;:&quot;SHSAT 9th&quot;,&quot;active&quot;:true}
 								]"></g-select>
 						</div>
 						<button class="button-blue" data-click="${_.componentName}:addStudent"><span>Add Student</span>
