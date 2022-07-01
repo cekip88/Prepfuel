@@ -803,7 +803,7 @@ export const view = {
 			tpl += `<div class="parent-table-students">`;
 			for (let item of rowData.students) {
 				if(rowData.students.length) {
-					let avatar = item.avatar.split('.')[0];
+					let avatar = item.avatar ? item.avatar.split('.')[0] : '';
 					tpl += `<div class="parent-table-student"><img src="/img/${avatar}.svg"></div>`
 				}
 			}
