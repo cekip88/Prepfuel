@@ -54,20 +54,20 @@ export class _Model {
 	}
 	getAvatars() {
 		return [
-			{title: 'avatar-1.svg'},
-			{title: 'avatar-2.svg'},
-			{title: 'avatar-3.svg'},
-			{title: 'avatar-4.svg'},
-			{title: 'avatar-5.svg'},
-			{title: 'avatar-6.svg'},
-			{title: 'avatar-7.svg'},
-			{title: 'avatar-8.svg'},
-			{title: 'avatar-9.svg'},
-			{title: 'avatar-10.svg'},
-			{title: 'avatar-11.svg'},
-			{title: 'avatar-12.svg'},
-			{title: 'avatar-13.svg'},
-			{title: 'avatar-14.svg'}
+			{title: 'avatar-1'},
+			{title: 'avatar-2'},
+			{title: 'avatar-3'},
+			{title: 'avatar-4'},
+			{title: 'avatar-5'},
+			{title: 'avatar-6'},
+			{title: 'avatar-7'},
+			{title: 'avatar-8'},
+			{title: 'avatar-9'},
+			{title: 'avatar-10'},
+			{title: 'avatar-11'},
+			{title: 'avatar-12'},
+			{title: 'avatar-13'},
+			{title: 'avatar-14'}
 		]
 	}
 	

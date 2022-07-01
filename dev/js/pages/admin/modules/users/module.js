@@ -176,7 +176,7 @@ export class UsersModule extends AdminPage {
 		if (activeBtn) activeBtn.classList.remove('active');
 		item.classList.add('active')
 
-		let img = _.markup(`<img src="/img/${item.value}">`)
+		let img = _.markup(`<img src="/img/${item.value}.svg">`)
 		let avatarCont = _.f('.adding-avatar-letter');
 		_.clear(avatarCont);
 		avatarCont.append(img);
@@ -272,7 +272,6 @@ export class UsersModule extends AdminPage {
 			console.log('Users not found ',data);
 		}
 	}
-	
 	
 	async domReady(){
 		const _ = this;

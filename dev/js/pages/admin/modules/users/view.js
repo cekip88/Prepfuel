@@ -317,7 +317,7 @@ export const view = {
 			tpl += `
 				<li class="avatars-item">
 					<button data-click="${_.componentName}:pickAvatar" value="${item.title}">
-						<img src="/img/${item.title}" alt="${item.title}">
+						<img src="/img/${item.title}.svg" alt="${item.title}">
 					</button>
 				</li>`
 		}
