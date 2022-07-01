@@ -119,13 +119,13 @@ export const view = {
 								arrowsvg="/img/sprite.svg#select-arrow" 
 								title="Course"
 								items="[
-									{&quot;value&quot;:0,&quot;text&quot;:&quot;ISEE Lower&quot;,&quot;active&quot;:true},
-									{&quot;value&quot;:1,&quot;text&quot;:&quot;ISEE Middle&quot;},
-									{&quot;value&quot;:2,&quot;text&quot;:&quot;ISEE Upper&quot;},
+									{&quot;value&quot;:0,&quot;text&quot;:&quot;ISEE Middle&quot;},
+									{&quot;value&quot;:1,&quot;text&quot;:&quot;ISEE Lower&quot;},
+									{&quot;value&quot;:2,&quot;text&quot;:&quot;ISEE Upper&quot;,&quot;active&quot;:true},
 									{&quot;value&quot;:3,&quot;text&quot;:&quot;SSAT Middle&quot;,&quot;active&quot;:true},
 									{&quot;value&quot;:4,&quot;text&quot;:&quot;SSAT Upper&quot;},
-									{&quot;value&quot;:5,&quot;text&quot;:&quot;SHSAT 8th&quot;},
-									{&quot;value&quot;:6,&quot;text&quot;:&quot;SHSAT 9th&quot;}
+									{&quot;value&quot;:5,&quot;text&quot;:&quot;SHSAT 8th&quot;,&quot;active&quot;:true},
+									{&quot;value&quot;:6,&quot;text&quot;:&quot;SHSAT 9th&quot;,&quot;active&quot;:true}
 								]"></g-select>
 						</div>
 						<button class="button-blue" data-click="${_.componentName}:addStudent"><span>Add Student</span>
@@ -306,7 +306,31 @@ export const view = {
 				</div>
 		`;
 	},
-	
+
+	selectAvatarTpl(avatarsData){
+		const _ = this;
+		let tpl = `
+			<div class="avatars">
+				<h3 class="avatars-title title">Select Avatar</h3>
+				<ul class="avatars-list">`;
+		for (let item of avatarsData) {
+			tpl += `
+				<li class="avatars-item">
+					<button data-click="${_.componentName}:pickAvatar" value="${item.title}">
+						<img src="/img/${item.title}" alt="${item.title}">
+					</button>
+				</li>`
+		}
+		tpl += `
+				</ul>
+				<div class="avatars-buttons">
+					<button class="button">Discard</button>
+					<button class="button-blue">Save</button>
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
 	
 	assignStepTwo(stepData){
 		const _ = this;
@@ -593,11 +617,10 @@ export const view = {
 				<div class="adding-section">
 					<h4 class="adding-subtitle">Student Personal Info</h4>
 					<div class="adding-avatar">
-						<label for="avatar">
+						<button data-click="${_.componentName}:selectAvatar">
 							<strong class="adding-avatar-letter">K</strong>
 							<span class="adding-avatar-link">Select Avatar</span>
-							<input type="file">
-						</label>
+						</button>
 					</div>
 				</div>
 				<div class="adding-section">

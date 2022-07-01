@@ -19,7 +19,7 @@ export const view = {
 							<div class="profile-img-row">
 								<div class="profile-img">
 									<div class="profile-img-letter">
-										${this._$.firstName[0].toUpperCase()}
+										${this.super_$.firstName[0].toUpperCase()}
 									</div>
 								</div>
 								<div class="profile-img-desc">
