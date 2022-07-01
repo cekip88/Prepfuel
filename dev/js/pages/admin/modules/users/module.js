@@ -141,12 +141,13 @@ export class UsersModule extends AdminPage {
 	// Adding methods
 	async addStudent({item}){
 		const _ = this;
+		G_Bus.trigger('modaler','showModal', {type:'html',target:'#addingForm'});
 		let stepOneData = await Model.addingStepOneData();
 		_['studentInfo'].course = stepOneData[0]['_id'];
 		_['studentInfo'].level = stepOneData[0]['levels'][0]['_id'];
 		_.f('#addingForm').querySelector('.adding-body').innerHTML = _.addingStepOne(stepOneData);
 		
-		G_Bus.trigger('modaler','showModal', {type:'html',target:'#addingForm'});
+		
 	}
 	addNewParent({item}){
 		const _ = this;
