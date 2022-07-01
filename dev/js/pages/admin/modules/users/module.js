@@ -45,7 +45,8 @@ export class UsersModule extends AdminPage {
 				'assignParent','addNewParent',
 				'changeTestType','changeStudentLevel',
 				'fillStudentInfo','createStudent',
-				'fillParentInfo','assignStudentToParent'
+				'fillParentInfo','assignStudentToParent',
+				'selectAvatar','pickAvatar',
 			]);
 	}
 	async createParent(){
@@ -151,6 +152,35 @@ export class UsersModule extends AdminPage {
 		_.clear(cont);
 		cont.classList.remove('full');
 		cont.append(_.markup(_.assignNewParent()))
+	}
+	async selectAvatar(){
+		const _ = this;
+		let avatarsModal = _.f('.avatars');
+
+		if (!avatarsModal) {
+			let avatars = await Model.getAvatars();
+			avatarsModal = _.markupElement(_.selectAvatarTpl(avatars));
+			_.f('[hidden]').append(avatarsModal);
+		}
+
+		G_Bus.trigger('modaler','closeModal');
+		G_Bus.trigger('modaler','showModal', {type:'html',target:'.avatars'});
+	}
+	pickAvatar({item}){
+		const _ = this;
+		let activeBtn = item.closest('.avatars-list').querySelector('.active');
+		if (activeBtn) activeBtn.classList.remove('active');
+		item.classList.add('active')
+
+		let img = _.markup(`<img src="/img/${item.value}">`)
+		let avatarCont = _.f('.adding-avatar-letter');
+		_.clear(avatarCont);
+		avatarCont.append(img);
+
+		_['studentInfo'].avatar = item.value;
+
+		G_Bus.trigger('modaler','closeModal');
+		G_Bus.trigger('modaler','showModal', {type:'html',target:'#addingForm'});
 	}
 	// Adding methods end
 	

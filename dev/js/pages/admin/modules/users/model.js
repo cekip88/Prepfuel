@@ -52,6 +52,24 @@ export class _Model {
 		const _ = this;
 		return _.getUsers('parent');
 	}
+	getAvatars() {
+		return [
+			{title: 'avatar-1.svg'},
+			{title: 'avatar-2.svg'},
+			{title: 'avatar-3.svg'},
+			{title: 'avatar-4.svg'},
+			{title: 'avatar-5.svg'},
+			{title: 'avatar-6.svg'},
+			{title: 'avatar-7.svg'},
+			{title: 'avatar-8.svg'},
+			{title: 'avatar-9.svg'},
+			{title: 'avatar-10.svg'},
+			{title: 'avatar-11.svg'},
+			{title: 'avatar-12.svg'},
+			{title: 'avatar-13.svg'},
+			{title: 'avatar-14.svg'}
+		]
+	}
 	
 	createParent(studentData) {
 		const _ = this;

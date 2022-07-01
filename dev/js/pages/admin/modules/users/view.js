@@ -306,7 +306,31 @@ export const view = {
 				</div>
 		`;
 	},
-	
+
+	selectAvatarTpl(avatarsData){
+		const _ = this;
+		let tpl = `
+			<div class="avatars">
+				<h3 class="avatars-title title">Select Avatar</h3>
+				<ul class="avatars-list">`;
+		for (let item of avatarsData) {
+			tpl += `
+				<li class="avatars-item">
+					<button data-click="${_.componentName}:pickAvatar" value="${item.title}">
+						<img src="/img/${item.title}" alt="${item.title}">
+					</button>
+				</li>`
+		}
+		tpl += `
+				</ul>
+				<div class="avatars-buttons">
+					<button class="button">Discard</button>
+					<button class="button-blue">Save</button>
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
 	
 	assignStepTwo(stepData){
 		const _ = this;
@@ -594,11 +618,10 @@ export const view = {
 				<div class="adding-section">
 					<h4 class="adding-subtitle">Student Personal Info</h4>
 					<div class="adding-avatar">
-						<label for="avatar">
+						<button data-click="${_.componentName}:selectAvatar">
 							<strong class="adding-avatar-letter">K</strong>
 							<span class="adding-avatar-link">Select Avatar</span>
-							<input type="file">
-						</label>
+						</button>
 					</div>
 				</div>
 				<div class="adding-section">

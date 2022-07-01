@@ -2856,7 +2856,7 @@ div.tbl-head
 			margin: 0 0 16px 0
 	&-avatar
 		margin-top: 16px
-		label
+		button
 			@extend %dfa
 		&-letter,&-link
 			font: 17px $f_medium
@@ -2867,6 +2867,10 @@ div.tbl-head
 			+bdrs(80px)
 			background-color: #F1FAFF
 			margin-right: 20px
+			overflow: hidden
+			img
+				+wh(100%,70px)
+				margin-top: auto
 		input[type='file']
 			display: none
 	
@@ -3427,3 +3431,36 @@ div.tbl-head
 	&-parent
 		justify-content: center
 		text-align: center
+
+.avatars
+	padding: 10px
+	max-width: 90vw
+	&-title
+		margin-bottom: 24px
+	&-list
+		@extend %df
+		column-gap: 10px
+		flex-wrap: wrap
+	&-item
+		width: calc((100% - 30px) / 4)
+		flex: 0 0 calc((100% - 30px) / 4)
+		margin-bottom: 10px
+		button
+			@extend %dfc
+			+wh(100%,80px)
+			border-radius: 12px
+			align-items: flex-end
+			overflow: hidden
+			background-color: rgb($neutral-200)
+			&:hover,&.active
+				border-color: rgb($blue)
+		img
+			+wh(100%,70px)
+			margin-top: auto
+	&-buttons
+		@extend %dfa
+		padding-top: 10px
+		justify-content: flex-end
+		border-top: 1px solid rgb($neutral-200)
+		button
+			margin-left: 16px
