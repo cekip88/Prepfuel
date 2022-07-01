@@ -211,6 +211,9 @@ export default class GSelect extends GComponent {
 				}
 			}
 			cls ? options[options.length - 2].after(option) : options[options.length - 1].after(option);
+			if (!_.shadow.querySelector('.g-select-option[choosen="true"]')) {
+				line.remove();
+			}
 		} else {
 			if (cls) {
 				parent.insertBefore(option,parent.firstElementChild)
@@ -341,6 +344,9 @@ export default class GSelect extends GComponent {
 				flex: 0 0 1px;
 				background-color: #EBEDF3;
 				margin: 0 auto 12px;
+			}
+			.g-select-line:last-child {
+				display:none;
 			}
 			.g-select {
 			  width: 100%;

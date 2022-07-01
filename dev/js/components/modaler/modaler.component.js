@@ -117,7 +117,7 @@ export default class GModaler extends GComponent {
 			}
 			.modaler-close:before, .modaler-close:after {
 			  width: 3px;
-			  height: 15px;
+			  height: 20px;
 			  display: block;
 			  content: "";
 			  background-color: #DADADA;

@@ -186,7 +186,6 @@ export const view = {
 					</div>
 				</div>
 				${_.addingStudent()}
-				
 			</div>
 		`;
 	},
@@ -268,7 +267,6 @@ export const view = {
 			</div>
 		`;
 	},
-	
 	
 	choiseSelectStudent(choiseData,title='School you are interested in applying to'){
 		const _ = this;
@@ -803,7 +801,7 @@ export const view = {
 			tpl += `<div class="parent-table-students">`;
 			for (let item of rowData.students) {
 				if(rowData.students.length) {
-					let avatar = item.avatar ? item.avatar.split('.')[0] : '';
+					let avatar = item.user.avatar.avatar ?? '';
 					tpl += `<div class="parent-table-student">${avatar ? '<img src="/img/' + avatar + '.svg">' : ''}</div>`
 				}
 			}
@@ -1121,7 +1119,18 @@ export const view = {
 			</div>
 		`;
 	},
-	
+
+	successPopupTpl(text,color){
+		const _ = this;
+		return `
+			<div class="success-label label ${color}">
+				<svg><use xlink:href="#checkmark-reverse"></use></svg>
+				<span>${text}</span>
+				<button data-click="${_.componentName}:closePopup">
+					<svg><use xlink:href="#close-transparent"></use></svg>
+				</button>
+			</div>`
+	},
 	///
 	emptyCourseInfo(){
 		const _ = this;

@@ -12,12 +12,13 @@ export class UsersModule extends AdminPage {
 			'body':'usersBody'
 		}
 	}
-	
 
 	async asyncDefine(){
 		const _ = this;
 		Model.currentUsersType = 'student';
+
 		//_.studentsInfo =
+		G_Bus.trigger(_.componentName,'showErrorPopup','Course has been successfully removed')
 	}
 	define() {
 		const _ = this;
@@ -47,6 +48,7 @@ export class UsersModule extends AdminPage {
 				'fillStudentInfo','createStudent',
 				'fillParentInfo','assignStudentToParent',
 				'selectAvatar','pickAvatar',
+				'showSuccessPopup','showErrorPopup','closePopup',
 			]);
 	}
 	async createParent(){
@@ -142,10 +144,19 @@ export class UsersModule extends AdminPage {
 	async addStudent({item}){
 		const _ = this;
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#addingForm'});
-		let stepOneData = await Model.addingStepOneData();
-		_['studentInfo'].course = stepOneData[0]['_id'];
-		_['studentInfo'].level = stepOneData[0]['levels'][0]['_id'];
-		_.f('#addingForm').querySelector('.adding-body').innerHTML = _.addingStepOne(stepOneData);
+		let stepTpl;
+		if(_._$.addingStep == 1 ){
+			let stepOneData = await Model.addingStepOneData();
+			_['studentInfo'].course = stepOneData[0]['_id'];
+			_['studentInfo'].level = stepOneData[0]['levels'][0]['_id'];
+			stepTpl = _.addingStepOne(stepOneData);
+		}
+		if(_._$.addingStep == 2 ){
+			let stepData = await Model.addingStepTwoData();
+			stepTpl = _.addingStepTwo(stepData);
+		}
+
+		_.f('#addingForm').querySelector('.adding-body').innerHTML = stepTpl;
 		
 		
 	}
@@ -261,9 +272,19 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#removeForm','closeBtn':'hide'});
 	}
-	showSuccessPopup(){
+	showSuccessPopup(text){
 		const _ =  this;
+		_.f('BODY').append(_.markup(_.successPopupTpl(text,'green')));
 	}
+	showErrorPopup(text){
+		const _ =  this;
+		_.f('BODY').append(_.markup(_.successPopupTpl(text,'red')));
+	}
+	closePopup({item}){
+		item.closest('.label').remove();
+	}
+
+
 	// Show methods end
 	
 	handleErrors({method,data}){

@@ -3049,6 +3049,8 @@ div.tbl-head
 				align-items: flex-start
 			&-count
 				font-family: $f_reg
+				font-size: $fz12
+				color: rgb($neutral-500)
 				white-space: nowrap
 			&-empty
 				padding: 6px 9px
@@ -3468,3 +3470,45 @@ div.tbl-head
 		border-top: 1px solid rgb($neutral-200)
 		button
 			margin-left: 16px
+
+.success-label
+	@extend %dfa
+	width: 90vw
+	max-width: 588px
+	column-gap: 6px
+	margin: 0 auto
+	padding: 11px 18px
+	border-radius: 4px
+	position: fixed
+	top: 100px
+	left: 0
+	right: 0
+	z-index: 100000
+	&.green
+		background-color: rgb($green-light)
+		border: 1px solid rgb($green-dark)
+		svg
+			fill: rgb($green-dark)
+		span
+			color: rgb($green-dark)
+	&.red
+		background-color: rgb($red-light)
+		border: 1px solid rgb($red-dark)
+		svg
+			fill: rgb($red-dark)
+		span
+			color: rgb($red-dark)
+	&>svg
+		@extend %dfc
+		+wh(16px)
+		flex: 0 0 16px
+	span
+		font: 1em $p_medium
+		line-height: $fz20
+	button
+		@extend %dfc
+		+wh(32px)
+		position: absolute
+		right: 0
+		svg
+			+wh(20px)
