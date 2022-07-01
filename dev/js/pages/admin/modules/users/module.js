@@ -1,5 +1,5 @@
 import {G_Bus} from "../../../../libs/G_Control.js";
-import Model  from "./model.js";
+import {Model}  from "./model.js";
 import {AdminPage} from "../../admin.page.js";
 
 export class UsersModule extends AdminPage {
@@ -212,8 +212,8 @@ export class UsersModule extends AdminPage {
 		item.parentNode.querySelector('.active').classList.remove('active');
 		item.classList.add('active');
 		let
-		pos = parseInt(item.getAttribute('pos')),
-		levelButtons = _.f('.level-buttons');
+			pos = parseInt(item.getAttribute('pos')),
+			levelButtons = _.f('.level-buttons');
 		_.clear(levelButtons);
 		levelButtons.innerHTML = '<img src="/img/loader.gif">';
 		let stepData = await Model.addingStepOneData();
@@ -377,11 +377,13 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		let stepBtn = _.f('.step-next-btn');
 		stepBtn.textContent = 'Next';
+		stepBtn.className = 'button-blue step-next-btn';
 		stepBtn.setAttribute('data-click',`${_.componentName}:changeNextStep`);
 	}
 	setSubmitBtn() {
 		const _ = this;
 		let stepBtn = _.f('.step-next-btn');
+		stepBtn.className = 'button-blue button-green step-next-btn';
 		stepBtn.textContent = 'Submit';
 		stepBtn.setAttribute('data-click',`${_.componentName}:createStudent`);
 	}

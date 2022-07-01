@@ -1,6 +1,6 @@
 import {env} from "/env.js";
 import {G_Bus} from "../../../../libs/G_Control.js";
-export class _Model {
+class _Model {
 	constructor() {
 		const _ = this;
 		_.baseHeaders = {
@@ -17,7 +17,22 @@ export class _Model {
 			addingStepFour: `${env.backendUrl}/user/add-student-step4`,
 		};
 	}
-	
+	wrongResponse(method, response){
+		const _ = this;
+		G_Bus.trigger('UsersModule', 'handleErrors', {
+			'method': method,
+			'type': 'wrongResponse',
+			'data': response
+		});
+	}
+	wrongRequest(method, request){
+		const _ = this;
+		G_Bus.trigger('UsersModule', 'handleErrors', {
+			'method': method,
+			'type': 'wrongRequest',
+			'data': request
+		});
+	}
 	getUsers(role,page=1) {
 		const _ = this;
 		return new Promise(async resolve => {
@@ -31,46 +46,18 @@ export class _Model {
 					_.usersData = response;
 					resolve(response);
 				} else {
-					G_Bus.trigger('UsersModule', 'handleErrors', {
-						'method': 'getUsers',
-						'type': 'wrongResponse',
-						'data': response
-					});
-					resolve(null);
+					_.wrongResponse('getUsers', response);
 				}
 			} else {
-				G_Bus.trigger('UsersModule', 'handleErrors', {
-					'method': 'getUsers',
-					'type': 'wrongRequest',
-					'data': rawResponse
-				});
-				resolve(null);
+				_.wrongRequest('getUsers', rawResponse)
 			}
+			resolve(null);
 		});
 	}
 	getParents() {
 		const _ = this;
 		return _.getUsers('parent');
 	}
-	getAvatars() {
-		return [
-			{title: 'avatar-1'},
-			{title: 'avatar-2'},
-			{title: 'avatar-3'},
-			{title: 'avatar-4'},
-			{title: 'avatar-5'},
-			{title: 'avatar-6'},
-			{title: 'avatar-7'},
-			{title: 'avatar-8'},
-			{title: 'avatar-9'},
-			{title: 'avatar-10'},
-			{title: 'avatar-11'},
-			{title: 'avatar-12'},
-			{title: 'avatar-13'},
-			{title: 'avatar-14'}
-		]
-	}
-	
 	createParent(studentData) {
 		const _ = this;
 		return new Promise(async resolve => {
@@ -85,21 +72,12 @@ export class _Model {
 					_.newParent = response['response'];
 					resolve(response['response']);
 				} else {
-					G_Bus.trigger('UsersModule', 'handleErrors', {
-						'method': 'createStudent',
-						'type': 'wrongResponse',
-						'data': response
-					});
-					resolve(null);
+					_.wrongResponse('createParent', response);
 				}
 			} else {
-				G_Bus.trigger('UsersModule', 'handleErrors', {
-					'method': 'createStudent',
-					'type': 'wrongRequest',
-					'data': rawResponse
-				});
-				resolve(null);
+				_.wrongRequest('createParent', rawResponse)
 			}
+			resolve(null);
 		});
 	}
 	createStudent(studentData) {
@@ -116,27 +94,18 @@ export class _Model {
 					_.newStudent = response['response'];
 					resolve(response['response']);
 				} else {
-					G_Bus.trigger('UsersModule', 'handleErrors', {
-						'method': 'createStudent',
-						'type': 'wrongResponse',
-						'data': response
-					});
-					resolve(null);
+					_.wrongResponse('createStudent', response);
 				}
 			} else {
-				G_Bus.trigger('UsersModule', 'handleErrors', {
-					'method': 'createStudent',
-					'type': 'wrongRequest',
-					'data': rawResponse
-				});
-				resolve(null);
+				_.wrongRequest('createStudent', rawResponse)
 			}
+			resolve(null);
 		});
 	}
 	
-	addingStepOneData() {
+	addingStepOneData(){
 		const _ = this;
-		if(_.step1) Promise.resolve(_.step1);
+		if(_.step1) return Promise.resolve(_.step1);
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.endpoints['addingStepOne']}`, {
 				method: 'GET',
@@ -148,26 +117,17 @@ export class _Model {
 					_.step1 = response['response'];
 					resolve(response['response']);
 				} else {
-					G_Bus.trigger('UsersModule', 'handleErrors', {
-						'method': 'addingStepOne',
-						'type': 'wrongResponse',
-						'data': response
-					});
-					resolve(null);
+					_.wrongResponse('addingStepOneData', response);
 				}
 			} else {
-				G_Bus.trigger('UsersModule', 'handleErrors', {
-					'method': 'addingStepOne',
-					'type': 'wrongRequest',
-					'data': rawResponse
-				});
-				resolve(null);
+				_.wrongRequest('addingStepOneData', rawResponse)
 			}
+			resolve(null);
 		});
 	}
-	addingStepTwoData() {
+	addingStepTwoData(){
 		const _ = this;
-		if(_.step2) Promise.resolve(_.step2);
+		if(_.step2) return Promise.resolve(_.step2);
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.endpoints['addingStepTwo']}`, {
 				method: 'GET',
@@ -179,26 +139,17 @@ export class _Model {
 					_.step2 = response['response'];
 					resolve(response['response']);
 				} else {
-					G_Bus.trigger('UsersModule', 'handleErrors', {
-						'method': 'addingStepTwo',
-						'type': 'wrongResponse',
-						'data': response
-					});
-					resolve(null);
+					_.wrongResponse('addingStepTwoData', response);
 				}
 			} else {
-				G_Bus.trigger('UsersModule', 'handleErrors', {
-					'method': 'addingStepTwo',
-					'type': 'wrongRequest',
-					'data': rawResponse
-				});
-				resolve(null);
+				_.wrongRequest('addingStepTwoData', rawResponse)
 			}
+			resolve(null);
 		});
 	}
-	addingStepThreeData() {
+	addingStepThreeData(){
 		const _ = this;
-		if(_.step3) Promise.resolve(_.step3);
+		if(_.step3) return Promise.resolve(_.step3);
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.endpoints['addingStepThree']}`, {
 				method: 'GET',
@@ -210,26 +161,17 @@ export class _Model {
 					_.step3 = response['response'];
 					resolve(response['response']);
 				} else {
-					G_Bus.trigger('UsersModule', 'handleErrors', {
-						'method': 'addingStepThree',
-						'type': 'wrongResponse',
-						'data': response
-					});
-					resolve(null);
+					_.wrongResponse('addingStepThreeData', response);
 				}
 			} else {
-				G_Bus.trigger('UsersModule', 'handleErrors', {
-					'method': 'addingStepThree',
-					'type': 'wrongRequest',
-					'data': rawResponse
-				});
-				resolve(null);
+				_.wrongRequest('addingStepThreeData', rawResponse)
 			}
+			resolve(null);
 		});
 	}
-	addingStepFourData() {
+	addingStepFourData(){
 		const _ = this;
-		if(_.step4) Promise.resolve(_.step4);
+		if(_.step4) return Promise.resolve(_.step4);
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.endpoints['addingStepFour']}`, {
 				method: 'GET',
@@ -241,24 +183,14 @@ export class _Model {
 					_.step4 = response['response'];
 					resolve(response['response']);
 				} else {
-					G_Bus.trigger('UsersModule', 'handleErrors', {
-						'method': 'addingStepFour',
-						'type': 'wrongResponse',
-						'data': response
-					});
-					resolve(null);
+					_.wrongResponse('addingStepFourData', response);
 				}
 			} else {
-				G_Bus.trigger('UsersModule', 'handleErrors', {
-					'method': 'addingStepFour',
-					'type': 'wrongRequest',
-					'data': rawResponse
-				});
-				resolve(null);
+				_.wrongRequest('addingStepFourData', rawResponse)
 			}
+			resolve(null);
 		});
 	}
 
 }
-const Model = new _Model();
-export default Model;
+export const Model = new _Model();
