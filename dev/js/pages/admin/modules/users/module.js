@@ -54,9 +54,13 @@ export class UsersModule extends AdminPage {
 	}
 	async createStudent(){
 		const _ = this;
-		let parent = await Model.createParent(_.parentInfo);
-		_.studentInfo['parentId'] = parent['user']['_id'];
+		if(!_.studentInfo['parentId']){
+			let parent = await Model.createParent(_.parentInfo);
+			_.studentInfo['parentId'] = parent['_id'];
+		}
 		await Model.createStudent(_.studentInfo);
+		_.studentInfo = {};
+		_.parentInfo = {};
 	}
 	/*
 	* Fill methods
@@ -206,7 +210,7 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		let
 			studentId = item.getAttribute('data-id'),
-			currentStudent = Model.usersData['response'].filter( student => student['user']['_id'] == studentId )[0];
+			currentStudent = Model.usersData['response'].filter( student => student['_id'] == studentId )[0];
 		_.studentInfo = Object.assign(_.studentInfo,currentStudent['user']);
 		_.studentInfo['currentSchool'] = currentStudent['currentSchool'];
 		_.studentInfo['currentPlan'] = currentStudent['currentPlan'];
@@ -291,8 +295,8 @@ export class UsersModule extends AdminPage {
 	}
 	assignStudentToParent({item}){
 		const _ = this;
-		let id = item.getAttribute('data-id');
-		_.studentInfo['parentId'] = id;
+		item.textContent = 'Assigned';
+		_.studentInfo['parentId'] = item.getAttribute('data-id');
 	}
 	
 	removeCourse({item}) {

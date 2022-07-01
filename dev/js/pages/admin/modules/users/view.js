@@ -48,12 +48,12 @@ export const view = {
 			let tr = document.createElement('TR');
 			tr.className= 'tbl-row';
 			tr.setAttribute('user-id',item['user']['_id']);
-			tr.innerHTML = _.usersBodyRowTpl(item['currentPlan'],item['user']);
+			tr.innerHTML = _.usersBodyRowTpl(item['currentPlan'],item['user'],item);
 			trs.push(tr);
 		}
 		return trs;
 	},
-	usersBodyRowTpl(plan,rowData){
+	usersBodyRowTpl(plan,rowData,user){
 		const _ = this;
 		let tpl = `
 				<td>
@@ -69,7 +69,7 @@ export const view = {
 				</td>
 				<td>
 					<div class="tbl-item">
-						<div class="users-course brown">${plan['course']['title']}${plan['level']['title']}</div>
+						<div class="users-course brown">${plan['course']['title']} ${plan['level']['title']}</div>
 				</div>
 			</td>
 			<td>
@@ -89,7 +89,7 @@ export const view = {
 							<use xlink:href="#trash"></use>
 						</svg>
 					</button>
-					<button class="users-btn button profile" data-click="${_.componentName}:showProfile" data-id="${rowData._id}">Profile</button>
+					<button class="users-btn button profile" data-click="${_.componentName}:showProfile" data-id="${user._id}">Profile</button>
 				</div>
 			</td>
 		`
@@ -272,9 +272,9 @@ export const view = {
 	choiseSelectStudent(choiseData,title='School you are interested in applying to'){
 		const _ = this;
 		let activeFirst,activeSecond,activeThird;
-		if(_.studentInfo.firstChoise) activeFirst = `_id:${_.studentInfo.firstChoise}`;
-		if(_.studentInfo.secondChoise) activeSecond = `_id:${_.studentInfo.secondChoise}`;
-		if(_.studentInfo.thirdChoise) activeThird = `_id:${_.studentInfo.thirdChoise}`;
+		if(_.studentInfo.firstSchool) activeFirst = `_id:${_.studentInfo.firstSchool}`;
+		if(_.studentInfo.secondSchool) activeSecond = `_id:${_.studentInfo.secondSchool}`;
+		if(_.studentInfo.thirdSchool) activeThird = `_id:${_.studentInfo.thirdSchool}`;
 		let
 			firstItems = _.createSelectItems(choiseData.schools,"value:_id;text:school",activeFirst),
 			secondItems = _.createSelectItems(choiseData.schools,"value:_id;text:school",activeSecond),
@@ -350,15 +350,15 @@ export const view = {
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
 							<span>First Choice:</span>
-							<strong>${_.studentInfo.firstChoise}</strong>
+							<strong>${_.studentInfo.firstSchool}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Second Choice:</span>
-							<strong>${_.studentInfo.secondChoise}</strong>
+							<strong>${_.studentInfo.secondSchool}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Third Choice:</span>
-							<strong>${_.studentInfo.thirdChoise}</strong>
+							<strong>${_.studentInfo.thirdSchool}</strong>
 						</li>
 					</ul>
 				</div>
@@ -423,7 +423,6 @@ export const view = {
 			</div>
 		`;
 	},
-	
 	addingStudent(){
 		const _ = this;
 		return `
@@ -502,7 +501,7 @@ export const view = {
 	
 	
 		let tpl = ``;
-		stepData.levels.forEach( (item,cnt) => {
+		stepData.levels.forEach( (item) => {
 			let activeClass = '';
 			if(_.studentInfo['level']){
 				if(_.studentInfo['level'] == item._id){
@@ -586,7 +585,7 @@ export const view = {
 		`;
 		return tpl;
 	},
-	addingStepTwo(stepData) {
+	addingStepTwo() {
 		const _ = this;
 		return `
 			<div class="adding-center">
@@ -644,7 +643,7 @@ export const view = {
 			</div>
 		`;
 	},
-	addingStepThree(stepData) {
+	addingStepThree() {
 		const _ = this;
 		return `
 			<h3 class="adding-title">Parent Information</h3>
@@ -788,7 +787,6 @@ export const view = {
 		} else {
 			tpl += `<div class="parent-table-students-empty">No Students</div>`
 		}
-
 		tpl += `
 				</div>
 			</td>
@@ -800,7 +798,7 @@ export const view = {
 			<td>
 				<div class="tbl-item right actions">
 					<button class="users-btn button profile">Profile</button>
-					<button class="users-btn button-blue profile" data-id="${rowData['user']['_id']}"  data-click=${_.componentName}:assignStudentToParent>Assign</button>
+					<button class="users-btn button-blue profile" data-id="${rowData['_id']}"  data-click=${_.componentName}:assignStudentToParent>Assign</button>
 				</div>
 			</td>
 		`
@@ -1024,15 +1022,15 @@ export const view = {
 						</li>
 						<li class="adding-summary-item">
 							<span>First Choice:</span>
-							<strong>${_.studentInfo.firstChoise}</strong>
+							<strong>${_.studentInfo.firstSchool}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Second Choice:</span>
-							<strong>${_.studentInfo.secondChoise}</strong>
+							<strong>${_.studentInfo.secondSchool}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Third Choice:</span>
-							<strong>${_.studentInfo.thirdChoise}</strong>
+							<strong>${_.studentInfo.thirdSchool}</strong>
 						</li>
 					</ul>
 				</div>
@@ -1219,7 +1217,7 @@ export const view = {
 								<button class="student-profile-courses-btn">SSAT</button>
 								<button class="student-profile-courses-btn active">SHSAT</button>
 							</div>
-							<div class="student-profile-course-info"></div>
+							<div class="student-profile-course-info loader-parent"><img src='/img/loader.gif' class='loader'></div>
 						</div>
 					</div>
 					<div class="student-profile-footer">
