@@ -10,6 +10,7 @@ export class _Model {
 		_.endpoints = {
 			usersList: `${env.backendUrl}/admin`,
 			createStudent: `${env.backendUrl}/user/create-student`,
+			createParent: `${env.backendUrl}/admin/create-parent`,
 			addingStepOne: `${env.backendUrl}/user/add-student-step1`,
 			addingStepTwo: `${env.backendUrl}/user/add-student-step2`,
 			addingStepThree: `${env.backendUrl}/user/add-student-step3`,
@@ -52,6 +53,37 @@ export class _Model {
 		return _.getUsers('parent');
 	}
 	
+	createParent(studentData) {
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['createParent']}`, {
+				method: 'POST',
+				headers: _.baseHeaders,
+				body: JSON.stringify(studentData)
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					_.newParent = response['response'];
+					resolve(response['response']);
+				} else {
+					G_Bus.trigger('UsersModule', 'handleErrors', {
+						'method': 'createStudent',
+						'type': 'wrongResponse',
+						'data': response
+					});
+					resolve(null);
+				}
+			} else {
+				G_Bus.trigger('UsersModule', 'handleErrors', {
+					'method': 'createStudent',
+					'type': 'wrongRequest',
+					'data': rawResponse
+				});
+				resolve(null);
+			}
+		});
+	}
 	createStudent(studentData) {
 		const _ = this;
 		return new Promise(async resolve => {

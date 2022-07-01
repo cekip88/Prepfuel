@@ -271,21 +271,21 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">First choice</label>
 						</div>
-						<g-select class="select adding-select" name="firstChoise" data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
+						<g-select class="select adding-select" name="firstSchool" data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
 						items='${JSON.stringify(firstItems)}'></g-select>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
 							<label class="form-label">Second choice</label>
 						</div>
-						<g-select class="select adding-select" name="secondChoise" data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
+						<g-select class="select adding-select" name="secondSchool" data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
 						items='${JSON.stringify(secondItems)}'></g-select>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
 							<label class="form-label">Third choice</label>
 						</div>
-						<g-select class="select adding-select" name="thirdChoise" data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
+						<g-select class="select adding-select" name="thirdSchool" data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
 						items='${JSON.stringify(thirdItems)}'></g-select>
 					</div>
 				</div>
@@ -749,11 +749,11 @@ export const view = {
 			<td>
 				<div class="tbl-item">
 					<div class="parent-table-avatar">
-						<span>${rowData.firstName.substr(0,1)}</span>
+						<span>${rowData['user'].firstName.substr(0,1)}</span>
 					</div>
 					<div class="users-info">
-						<h6 class="users-info-name">${rowData.firstName} ${rowData.lastName}</h6>
-						<span class="users-info-email">${rowData.email}</span>
+						<h6 class="users-info-name">${rowData['user'].firstName} ${rowData['user'].lastName}</h6>
+						<span class="users-info-email">${rowData['user'].email}</span>
 					</div>
 				</div>
 			</td>
@@ -785,7 +785,7 @@ export const view = {
 			<td>
 				<div class="tbl-item right actions">
 					<button class="users-btn button profile">Profile</button>
-					<button class="users-btn button-blue profile">Assign</button>
+					<button class="users-btn button-blue profile" data-id="${rowData['user']['_id']}"  data-click=${_.componentName}:assignStudentToParent>Assign</button>
 				</div>
 			</td>
 		`
@@ -803,7 +803,7 @@ export const view = {
 					<div class="profile-img-row">
 						<div class="profile-img">
 							<div class="profile-img-letter">
-								${this._$.firstName[0].toUpperCase()}
+								${this.super_$.firstName[0].toUpperCase()}
 							</div>
 						</div>
 						<div class="profile-img-desc">
@@ -818,25 +818,25 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">First name</label>
 					</div>
-					<g-input type="text" name="first_name" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input type="text" name="firstName"  data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 				<div class="profile-form-row">
 					<div class="form-label-row">
 						<label class="form-label">Last name</label>
 					</div>
-					<g-input type="text" name="last_name" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input type="text" name="lastName"  data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 				<div class="profile-form-row">
 					<div class="form-label-row">
 						<label class="form-label">Email</label>
 					</div>
-					<g-input type="email" name="email" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input type="email" name="email"  data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 				<div class="profile-form-row">
 					<div class="form-label-row">
 						<label class="form-label">Phone Number</label>
 					</div>
-					<g-input type="email" name="phone" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input type="email" name="phone"  data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 			</div>
 			<div class="adding-section">
@@ -846,17 +846,17 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Password</label>
 					</div>
-					<g-input type="password" name="pass" class="g-form-item" classname="form-input"></g-input>
+					<g-input type="password" name="password"  data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input"></g-input>
 				</div>
 				<p class="adding-text">8+ characters, with min. one number, one uppercase letter and one special character</p>
 				<div class="adding-inpt small">
 					<div class="form-label-row">
 						<label class="form-label">Repeat password</label>
 					</div>
-					<g-input type="password" name="cpass" class="g-form-item" classname="form-input"></g-input>
+					<g-input type="password" name="cpass" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input"></g-input>
 				</div>
 			</div>
-			<button class="adding-generate">Generate Password</button>
+			<button class="adding-generate" data-click="${_.componentName}:generatePassword">Generate Password</button>
 		`;
 	},
 	
@@ -887,6 +887,9 @@ export const view = {
 	},
 	addingStepFour(stepData){
 		const _ = this;
+		let gradeActive;
+		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade}`;
+		let gradeItems = _.createSelectItems(stepData.grades, 'value:_id;text:grade', gradeActive);
 		return `
 			<div class="adding-center">
 				<h3 class="adding-title">School Information</h3>

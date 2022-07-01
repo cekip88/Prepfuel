@@ -147,6 +147,9 @@ export default class G_G{
 
 	update(props){
 		const _ = this;
+		if(!_[_.handlersName].length){
+			return  void 0;
+		}
 		if(!_.initedUpdate){
 			_[_.handlersName].forEach( fnObj => {
 				for(let innerProp in fnObj) {
@@ -157,6 +160,7 @@ export default class G_G{
 		if( (!props)  ){
 			return void 0;
 		}
+		
 		_[_.handlersName].forEach( fnObj => {
 			for(let innerProp in fnObj){
 				if(~props.indexOf(innerProp)){

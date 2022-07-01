@@ -68,16 +68,29 @@ export class AdminPage extends G {
 			'name': params[0],
 			'structure':_.pageStructure
 		});
-		//module.headerBlock = _.header;
 		if(!module._$){
 			module._$ = {};
 		}
-		Object.assign(module._$,_._$);
+		module.super_$=_._$;
 		return Promise.resolve(module.render({
 			structure: _.pageStructure,
 		}));
 	}
-	
+	createdAtFormat(value,format = 'month DD, YYYY'){
+		value = value.split('T')[0].split('-');
+		let
+		year = value[0],
+		month = value[1],
+		day = value[2],
+		months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+		
+		let res = format;
+		res = res.replace('DD',day)
+		res = res.replace('MM',month)
+		res = res.replace('YYYY',year)
+		res = res.replace('month',months[parseInt(month) - 1]);
+		return res;
+	}
 	async init(blockData) {
 		const _ = this;
 		let

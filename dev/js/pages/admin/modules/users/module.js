@@ -26,6 +26,7 @@ export class UsersModule extends AdminPage {
 		_.maxAssignStep = 4;
 		_.minStep = 1;
 		_.coursePos = 0;
+		_.parentInfo = {};
 		_.studentInfo = {};
 		_.metaInfo = {};
 		_.subSection = 'student';
@@ -43,16 +44,33 @@ export class UsersModule extends AdminPage {
 				'domReady',
 				'assignParent','addNewParent',
 				'changeTestType','changeStudentLevel',
-				'fillStudentInfo','createStudent'
+				'fillStudentInfo','createStudent',
+				'fillParentInfo','assignStudentToParent'
 			]);
+	}
+	async createParent(){
+		const _ = this;
+		
 	}
 	async createStudent(){
 		const _ = this;
+		let parent = await Model.createParent(_.parentInfo);
+		_.studentInfo['parentId'] = parent['user']['_id'];
 		await Model.createStudent(_.studentInfo);
 	}
 	/*
 	* Fill methods
 	* */
+	fillParentInfo({item}){
+		const _ = this;
+		let
+			prop = item.getAttribute('name'),
+			value = item.value;
+		if( typeof value == 'object'){
+			value = value+'';
+		}
+		_['parentInfo'][prop] = value;
+	}
 	fillStudentInfo({item}){
 		const _ = this;
 		let
@@ -233,7 +251,7 @@ export class UsersModule extends AdminPage {
 	
 	flexible(){
 		const _ = this;
-		if(_.subSection === 'students') {
+		if(_.subSection === 'student') {
 			return 'usersBody';
 		} else if (_.subSection === 'parents') {
 			return '';
@@ -271,26 +289,11 @@ export class UsersModule extends AdminPage {
 		_.fillParentBlock();
 		_.fillParentsTable();
 	}
-
-	
-	createdAtFormat(value,format = 'month DD, YYYY'){
-		value = value.split('T')[0].split('-');
-		let
-			year = value[0],
-			month = value[1],
-			day = value[2],
-			months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
-		let res = format;
-		res = res.replace('DD',day)
-		res = res.replace('MM',month)
-		res = res.replace('YYYY',year)
-		res = res.replace('month',months[parseInt(month) - 1]);
-		return res;
+	assignStudentToParent({item}){
+		const _ = this;
+		let id = item.getAttribute('data-id');
+		_.studentInfo['parentId'] = id;
 	}
-	
-	
-
 	
 	removeCourse({item}) {
 		const _ = this;
@@ -403,10 +406,7 @@ export class UsersModule extends AdminPage {
 		}
 		let
 			addingBody = _.f('.adding-body');
-		
 		_.clear(addingBody);
-		
-		
 		if(_._$.assignStep == _.minStep){
 			_.setCancelBtn();
 		}else{
@@ -426,9 +426,9 @@ export class UsersModule extends AdminPage {
 	
 	init(){
 		const _ = this;
-		_._( _.handleAddingSteps.bind(_),[ 'addingStep' ]);
+		_._( _.handleAddingSteps.bind(_),['addingStep']);
 		_._( _.handleAssignSteps.bind(_),[ 'assignStep' ]);
-		
+		console.log(Model);
 	}
 	
 }
