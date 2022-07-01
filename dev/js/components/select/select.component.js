@@ -230,10 +230,10 @@ export default class GSelect extends GComponent {
 
 	choose({event,fakeItem}){
 		const _ = this;
-		let item;
-		if(!fakeItem) item = _.ascent(event,'g-select-option');
-		else item = fakeItem;
+		let item = fakeItem;
+		if(!item) item = _.ascent(event,'g-select-option');
 		if(!item) return void 0;
+
 		_.multiple = _.hasAttribute('multiple');
 		_.handleOption('selectedValues',item,'value',	_.setValue.bind(_));
 		_.handleOption('titles',item,'textContent',_.setTitle.bind(_));
@@ -284,15 +284,6 @@ export default class GSelect extends GComponent {
 		const _ = this;
 		let items = JSON.parse(this.getAttribute('items'));
 		
-		for(let item of items){
-			if(item['active']){
-				_.selectedValues.push(item['value']);
-				_.titles.push(item.textContent)
-				break;
-			}
-		}
-		
-		
 		await _.importTpl('./select/template.js');
 		_.shadow = this.attachShadow({mode: 'open'});
 		_.mainTpl = _.getTpl('select');
@@ -308,13 +299,32 @@ export default class GSelect extends GComponent {
 			multiple: this.getAttribute('multiple'),
 		});
 
+		let multiple = _.getAttribute('multiple');
 		_.append(_.createHiddenInput({
 			items: items,
+			multiple: multiple,
 			name: this.getAttribute('name')
 		}))
+		if (!multiple) {
+			for(let item of items){
+				if(item['active']){
+					_.selectedValues.push(item['value']);
+					_.titles.push(item.textContent)
+					break;
+				}
+			}
+		} else {
+			_.shadow.querySelector('SLOT').value = '';
+			_.selectedValues = [];
+			_.titles = [];
+			let activeOptions = _.shadow.querySelectorAll('[data-active]');
+			for (let option of activeOptions) {
+				_.choose({fakeItem:option});
+				option.removeAttribute('data-active')
+			}
+		}
 
 		_.fillAttributes();
-		
 		_.trigger('appended');
 	}
 	

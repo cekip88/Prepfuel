@@ -1,10 +1,15 @@
 export default {
 	'select': (data={}) => {
+		const _ = this;
 		let items='',checkedOption;
 		if( !(!data['items'] || !data['items'].length )){
 			data['items'].forEach( (item,index) =>{
-				if (item['active']) checkedOption = item;
-				items +=`<button class="g-select-option${item['active'] ? ' active' : ''}" choosen="false" data-number="${index}" value="${item.value}"><span>${item.text}</span></button>`
+				if (!data.multiple) {
+					if (item['active']) checkedOption = item;
+					items +=`<button class="g-select-option${item['active'] ? ' active' : ''}" value="${item.value}"><span>${item.text}</span></button>`
+				} else {
+					items +=`<button class="g-select-option" choosen="false" ${item['active'] ? 'data-active="true"' : ''} data-number="${index}" value="${item.value}"><span>${item.text}</span></button>`
+				}
 			});
 		}
 		let tpl = `
@@ -27,8 +32,10 @@ export default {
 	},
 	hiddenInput: (data)=>{
 		let tpl = `<input type='hidden' name='${data['name']}' slot='value'`;
-		for (let i = 0; i < data.items.length; i++) {
-			if (data.items[i].active) tpl += `value=${data.items[i].value}`;
+		if (!data.multiple) {
+			for (let i = 0; i < data.items.length; i++) {
+				if (data.items[i].active) tpl += `value=${data.items[i].value}`;
+			}
 		}
 		return tpl + '>';
 	}
