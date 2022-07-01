@@ -2559,6 +2559,9 @@ div.tbl-head
 		margin-right: 12px
 		border-radius: 12px
 		background-color: rgb($neutral-200)
+		img
+			height: 30px
+			margin-top: auto
 	&-info
 		@extend %df
 		@extend %fdc
@@ -3046,6 +3049,7 @@ div.tbl-head
 				align-items: flex-start
 			&-count
 				font-family: $f_reg
+				white-space: nowrap
 			&-empty
 				padding: 6px 9px
 				font-family: $f_reg
@@ -3433,8 +3437,8 @@ div.tbl-head
 		text-align: center
 
 .avatars
+	width: 90vw
 	padding: 10px
-	max-width: 90vw
 	&-title
 		margin-bottom: 24px
 	&-list

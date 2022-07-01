@@ -55,11 +55,12 @@ export const view = {
 	},
 	usersBodyRowTpl(plan,rowData,user){
 		const _ = this;
+		let avatar = rowData.avatar ? rowData.avatar.avatar.split('.')[0] : '';
 		let tpl = `
 				<td>
 					<div class="tbl-item">
 						<div class="users-photo-icon">
-							<img src="/img/${rowData.avatar}" alt="">
+							<img src="/img/${avatar}.svg" alt="${avatar}">
 						</div>
 						<div class="users-info">
 							<h6 class="users-info-name">${rowData.firstName} ${rowData.lastName}</h6>
@@ -314,10 +315,11 @@ export const view = {
 				<h3 class="avatars-title title">Select Avatar</h3>
 				<ul class="avatars-list">`;
 		for (let item of avatarsData) {
+			let imgTitle = item.avatar.split('.')[0];
 			tpl += `
 				<li class="avatars-item">
-					<button data-click="${_.componentName}:pickAvatar" value="${item.title}">
-						<img src="/img/${item.title}.svg" alt="${item.title}">
+					<button data-click="${_.componentName}:pickAvatar" title="${imgTitle}" value="${item['_id']}">
+						<img src="/img/${imgTitle}.svg" alt="${imgTitle}">
 					</button>
 				</li>`
 		}
@@ -801,7 +803,8 @@ export const view = {
 			tpl += `<div class="parent-table-students">`;
 			for (let item of rowData.students) {
 				if(rowData.students.length) {
-					tpl += `<div class="parent-table-student"><img src="../../../../../img/${item.avatar}"></div>`
+					let avatar = item.avatar.split('.')[0];
+					tpl += `<div class="parent-table-student"><img src="/img/${avatar}.svg"></div>`
 				}
 			}
 			tpl += `

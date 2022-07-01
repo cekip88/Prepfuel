@@ -162,7 +162,7 @@ export class UsersModule extends AdminPage {
 		let avatarsModal = _.f('.avatars');
 
 		if (!avatarsModal) {
-			let avatars = await Model.getAvatars();
+			let avatars = await Model.step2;
 			avatarsModal = _.markupElement(_.selectAvatarTpl(avatars));
 			_.f('[hidden]').append(avatarsModal);
 		}
@@ -176,7 +176,7 @@ export class UsersModule extends AdminPage {
 		if (activeBtn) activeBtn.classList.remove('active');
 		item.classList.add('active')
 
-		let img = _.markup(`<img src="/img/${item.value}.svg">`)
+		let img = _.markup(`<img src="/img/${item.getAttribute('title')}.svg">`)
 		let avatarCont = _.f('.adding-avatar-letter');
 		_.clear(avatarCont);
 		avatarCont.append(img);
