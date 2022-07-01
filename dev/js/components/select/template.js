@@ -2,9 +2,9 @@ export default {
 	'select': (data={}) => {
 		let items='',checkedOption;
 		if( !(!data['items'] || !data['items'].length )){
-			data['items'].forEach( item =>{
+			data['items'].forEach( (item,index) =>{
 				if (item['active']) checkedOption = item;
-				items +=`<button class="g-select-option${item['active'] ? ' active' : ''}" value="${item.value}"><span>${item.text}</span></button>`
+				items +=`<button class="g-select-option${item['active'] ? ' active' : ''}" choosen="false" data-number="${index}" value="${item.value}"><span>${item.text}</span></button>`
 			});
 		}
 		let tpl = `
@@ -15,13 +15,13 @@ export default {
 					${data['arrow'] ? '<div class="g-select-arrow"><img src="'+data['arrow']+'"></div>' : ''}
 					${data['arrowSvg'] ? '<div class="g-select-arrow"><svg><use xlink:href="'+data['arrowSvg']+'"></svg></div>' : ''}
 				</div>
-				<div class="g-select-body" data-click="choose">` + items + '</div></div>';
+				<div class="g-select-body ${data['multiple'] ? 'multiple' : ''}" data-click="choose">` + items + '</div></div>';
 		return tpl;
 	},
 	selectBody : (items) =>{
 		let tpl = ``;
-		items.forEach( item =>{
-			tpl+=`<button  class="g-select-option" value="${item.value}">${item.text}</button>`
+		items.forEach( (item,index) =>{
+			tpl+=`<button  class="g-select-option" value="${item.value}" choosen="false" data-number="${index}">${item.text}</button>`
 		});
 		return tpl;
 	},

@@ -13,6 +13,7 @@ a
 body
 	height: 100vh
 	background-color: rgb($bgc)
+	overflow-y: scroll
 ::-webkit-scrollbar
 	+wh(10px)
 ::-webkit-scrollbar-track
@@ -2503,7 +2504,6 @@ body
 
 .tbl
 	margin-top: 24px
-	overflow: auto
 	.table
 		border-collapse: collapse
 	&-item
@@ -2560,6 +2560,9 @@ div.tbl-head
 		border-radius: 12px
 		background-color: rgb($neutral-200)
 	&-info
+		@extend %df
+		@extend %fdc
+		align-items: flex-start
 		&-name
 			font-size: $fz16
 			color: rgb($neutral-800)
@@ -2681,6 +2684,7 @@ div.tbl-head
 	&-cont
 		min-height: 40px
 		width: 100%
+		overflow: auto
 
 
 .adding

@@ -14,14 +14,18 @@ export default class GSelect extends GComponent {
 		_.selectedValues = [];
 		_.baseTitle = '';
 		_.multiple = false;
-		_.componentName= 'select';
+		_.integer = 0;
+		_.componentName = 'select';
 		_.titles = [];
-		_ .on('open',_.open.bind(_))
-		_ .on('close',_.close.bind(_))
-			.on('choose',_.choose.bind(_));
+		_
+			.on('open',_.open.bind(_))
+			.on('close',_.close.bind(_))
+			.on('choose',_.choose.bind(_))
+			.on('unChoose',_.unChoose.bind(_))
+			.on('unChooseAll',_.unChooseAll.bind(_));
 	}
 
-	open({item}){
+	open(){
 		const _ = this;
 		if(!_.opened){
 			_.setProperty('--body-max-height','182px');
@@ -57,22 +61,47 @@ export default class GSelect extends GComponent {
 		const _ = this;
 		let pos = _.getOptionPosition(prop,option[field]);
 		_[prop].splice(pos,1);
+
 		option.classList.remove('active');
+		option.setAttribute('choosen',false)
+
+		if (_.multiple && prop == 'titles') {
+			let number = option.getAttribute('data-number');
+			let headBtn = _.shadow.querySelector(`.g-select-head-label BUTTON[value="${number}"]`);
+			if (headBtn) headBtn.closest('.g-select-head-label').remove();
+
+			let
+				cont = _.shadow.querySelector('.g-select-head-cont'),
+				ellipsis = cont.querySelector('.g-select-cont-span');
+			if (cont.children.length === 3){
+				ellipsis.remove();
+			} else if (cont.children.length > 2) {
+				let labels = cont.querySelectorAll('.g-select-head-label');
+				labels[1].after(ellipsis)
+			}
+
+			let count = _.shadow.querySelector('.g-select-head-count>span');
+			count.textContent = cont.children.length < 3 ? (cont.children.length).toString() : (cont.children.length - 1).toString()
+
+			if (!_.shadow.querySelector('.g-select-head-label')) {
+				cont.remove();
+				_.shadow.querySelector('.g-select-head-count').remove();
+			}
+		}
 	}
 	handleOption(prop,option,field,callback){
 		const _ = this;
-		let
-			value = option[field];
+		let value = option[field];
 		if(_.hasOption(prop,value) && _.multiple){
 			_.removeOption(prop,option,field);
 		}else{
 			if (!_.multiple) {
 				_[prop] = [value];
-			}else{
+			} else {
 				_[prop].push(value);
 			}
 		}
-		if(callback) callback();
+		if(callback) callback(option);
 	}
 	changeActiveOption(option){
 		const _ = this;
@@ -83,6 +112,7 @@ export default class GSelect extends GComponent {
 				if (activeOption) activeOption.classList.remove('active');
 			}
 			option.classList.add('active');
+			option.setAttribute('choosen',true)
 		}
 	}
 	setValue(){
@@ -94,10 +124,108 @@ export default class GSelect extends GComponent {
 		}
 		else slot.value = JSON.stringify(_.selectedValues);
 	}
-	setTitle(){
+	setTitle(option){
 		const _ = this;
-		if (!_.titles.length) _.setAttribute('title',_.baseTitle);
-		else _.setAttribute('title',this.titles.toString());
+		if (!_.titles.length) {
+			_.setAttribute('title',_.baseTitle);
+			_.shadow.querySelector('.g-select-title').removeAttribute('style')
+		} else {
+			if (!_.multiple) _.setAttribute('title',_.titles.toString());
+			else {
+				if (_.hasOption('titles',option.textContent)) _.rebuildHead(option)
+			}
+		}
+	}
+
+	rebuildHead(option){
+		const _ = this;
+		let
+			head = _.shadow.querySelector('.g-select-head'),
+			headBtn = document.createElement('DIV'),
+			headBtnText = document.createElement('SPAN'),
+			headCloseBtn = document.createElement('BUTTON'),
+			headCont = head.querySelector('.g-select-head-cont'),
+			headCount = head.querySelector('.g-select-head-count');
+
+		if (!headCont) {
+			headCont = document.createElement('DIV');
+			headCont.className = 'g-select-head-cont';
+			head.append(headCont);
+		}
+
+		if (headCont.children.length == 2) {
+			let ellipsis = document.createElement('SPAN');
+			ellipsis.className = 'g-select-cont-span';
+			ellipsis.textContent = '...';
+			headCont.append(ellipsis)
+		}
+
+		_.shadow.querySelector('.g-select-title').style = 'display:none;';
+		headBtn.className = 'g-select-head-label';
+
+		headBtnText.textContent = option.textContent;
+		headBtn.append(headBtnText);
+
+		headCloseBtn.setAttribute('data-click','unChoose');
+		headCloseBtn.className = 'g-select-head-close';
+		headCloseBtn.value = option.getAttribute('data-number');
+		headBtn.append(headCloseBtn);
+		headCont.append(headBtn);
+
+		if (!headCount) {
+			headCount = document.createElement('DIV');
+			headCount.className = 'g-select-head-count';
+			head.append(headCount);
+
+			headCount.append(document.createElement('SPAN'));
+
+			let headCountCloseBtn = document.createElement('BUTTON');
+			headCountCloseBtn.className = 'g-select-head-close';
+			headCountCloseBtn.setAttribute('data-click','unChooseAll');
+			headCount.append(headCountCloseBtn)
+		}
+
+		let len = headCont.children.length;
+		headCount.querySelector('SPAN').textContent = len < 3 ? len.toString() : (len - 1).toString();
+	}
+
+	optionsSort(option){
+		const _ = this;
+		let
+			cls = option.classList.contains('active') ? 'active' : '',
+			num = parseInt(option.getAttribute('data-number')),
+			parent = option.parentElement,
+			line = parent.querySelector('.g-select-line'),
+			options = cls ? _.shadow.querySelectorAll('.g-select-option[choosen="true"]') : _.shadow.querySelectorAll('.g-select-option[choosen="false"]');
+
+		if (options.length > 1) {
+			for (let i = 0; i < options.length; i++) {
+				let item = options[i];
+
+				if (parseInt(item.getAttribute('data-number')) > num) {
+					parent.insertBefore(option,item);
+					if (!_.shadow.querySelector('.g-select-option[choosen="true"]')) {
+						line.remove();
+					}
+					return;
+				}
+			}
+			cls ? options[options.length - 2].after(option) : options[options.length - 1].after(option);
+		} else {
+			if (cls) {
+				parent.insertBefore(option,parent.firstElementChild)
+			} else {
+				parent.lastElementChild.after(option)
+			}
+		}
+
+		if (cls) {
+			if (!line) {
+				line = document.createElement('DIV');
+				line.className = 'g-select-line';
+			}
+			options[options.length - 1].after(line);
+		}
 	}
 
 	choose({event,fakeItem}){
@@ -107,7 +235,6 @@ export default class GSelect extends GComponent {
 		else item = fakeItem;
 		if(!item) return void 0;
 		_.multiple = _.hasAttribute('multiple');
-
 		_.handleOption('selectedValues',item,'value',	_.setValue.bind(_));
 		_.handleOption('titles',item,'textContent',_.setTitle.bind(_));
 		_.changeActiveOption(item);
@@ -122,8 +249,33 @@ export default class GSelect extends GComponent {
 		if (!_.multiple) {
 			_.close();
 		}
+
+		_.optionsSort(item);
+		if (_.multiple) _.open()
 		_.triggerChangeEvent();
 	}
+	unChoose({item}){
+		const _ = this;
+		let
+			value = item.value,
+			option = _.shadow.querySelector(`.g-select-body BUTTON[data-number="${value}"]`);
+
+		_.removeOption('selectedValues',option,'value');
+		_.removeOption('titles',option,'textContent');
+
+		if (!_.titles.length) _.shadow.querySelector('.g-select-title').removeAttribute('style');
+
+		_.optionsSort(option);
+	}
+	unChooseAll(){
+		const _ = this;
+		let labels = _.shadow.querySelectorAll('.g-select-head-label .g-select-head-close');
+		labels.forEach((label)=>{
+			_.unChoose({item: label})
+		})
+	}
+
+
 	createHiddenInput(data){
 		const _ = this;
 		return _.markup(_.getTpl('hiddenInput')(data));
@@ -135,6 +287,7 @@ export default class GSelect extends GComponent {
 		for(let item of items){
 			if(item['active']){
 				_.selectedValues.push(item['value']);
+				_.titles.push(item.textContent)
 				break;
 			}
 		}
@@ -151,7 +304,8 @@ export default class GSelect extends GComponent {
 			name: this.getAttribute('name'),
 			arrow: this.getAttribute('arrow'),
 			arrowSvg: this.getAttribute('arrowSvg'),
-			className: this.getAttribute('className')
+			className: this.getAttribute('className'),
+			multiple: this.getAttribute('multiple'),
 		});
 
 		_.append(_.createHiddenInput({
@@ -171,6 +325,13 @@ export default class GSelect extends GComponent {
 			  --body-display: none;
 			  --body-max-height: 0px;
 			}
+			.g-select-line {
+				width: calc(100% - 16px);
+				height: 1px;
+				flex: 0 0 1px;
+				background-color: #EBEDF3;
+				margin: 0 auto 12px;
+			}
 			.g-select {
 			  width: 100%;
 			  height: 100%;
@@ -184,15 +345,89 @@ export default class GSelect extends GComponent {
 			  cursor: pointer;
 			  display: flex;
 			  align-items: center;
-			  justify-content: space-between;
-			  background-color: #fff;
+			  background-color: #F5F8FA;
 			  white-space: normal;
 			  transition: 0.35s ease;
 			  padding: 5px 10px;
 			}
+			.g-select-head-cont {
+				width: calc(100% - 70px);
+				flex: 0 0 calc(100% - 70px);
+				margin-right: 14px;
+				display: flex;
+				align-items: center;
+				overflow: hidden;
+			}
+			.g-select-head-cont>span {
+				font: 14px "roboto-bold";
+			}
+			.g-select-head-label {
+				width: calc((100% - 20px) / 2);
+				flex: 0 0 calc((100% - 20px) / 2);
+				padding: 2px 8px;
+				margin-right: 4px;
+				color: #5E6278;
+			  font-size: 14px;
+			  font-family: "roboto-medium";
+			  font-weight: 500;
+			  display: flex;
+			  align-items: center;
+			  justify-content: space-between;
+			  background-color: #E5EAEE;
+			  border-radius: 6px;
+			}
+			.g-select-head-label span {
+				width: calc(100% - 26px);
+				flex: 0 0 calc(100% - 26px);
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			.g-select-head-close {
+				width: 20px;
+				height: 20px;
+				display: flex;
+				align-items: center;
+			  justify-content: center;
+				position: relative;
+				transform: translateY(-1px);
+			}
+			.g-select-head-close:before,.g-select-head-close:after {
+				width: 14px;
+				height: 1px;
+				display: block;
+				content: '';
+				position: absolute;
+				background-color: #5E6278;
+			}
+			.g-select-head-close:before {
+				transform: rotate(45deg);
+			}
+			.g-select-head-close:after {
+				transform: rotate(-45deg);
+			}
+			.g-select-head-count {
+				width: 44px;
+				flex: 0 0 44px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+			.g-select-head-count span {
+				height: 24px;
+				width: 24px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background-color: #3F4254;
+				border-radius: 4px;
+				font: 14px "Roboto-Medium";
+				color: #fff;
+			}
 			.g-select-body {
 			  width: 100%;
 			  max-height: var(--body-max-height);
+			  padding: 12px 0 0;
 			  display: flex;
 			  flex-direction: column;
 			  align-items: flex-start;
@@ -214,22 +449,62 @@ export default class GSelect extends GComponent {
 			.g-select-option {
 			  flex: 0 0 30px;
 			  width: 100%;
-			  margin-bottom: 1px;
+			  margin-bottom: 12px;
 			  padding: 0 10px;
 			  text-align: left;
 			  display: flex;
 			  justify-content: flex-start;
 			  align-items: center;
+			  position:relative;
+			  color: #5E6278;
+			  font-size: 14px;
+			  font-family: "roboto-medium";
+			  font-weight: 500;
 			}
-			.g-select-option:hover, .g-select-option.active {
+			.g-select.active .g-select-body.multiple {
+				padding: 8px 0;
+			}
+			.g-select-body.multiple .g-select-option:before {
+				width: 24px;
+				height: 24px;
+				margin-right: 12px;
+				display: block;
+				content: '';
+				border-radius: 6px;
+				background-color: #F3F6F9;
+			}
+			.g-select-body.multiple .g-select-option.active:before {
+				background-color: #00A3FF;
+			}
+			.g-select-body.multiple .g-select-option.active:after {
+				content: '';
+				background-image: url('../img/checkmark.svg');
+				display: block;
+				width: 20px;
+				height: 20px;
+				position: absolute;
+				left: 12px;
+				top: 5px;
+			}
+			.g-select-body.multiple .g-select-option:hover,.g-select-body.multiple .g-select-option.active {
+			  background-color: transparent;
+			}
+			.g-select-option:hover,.g-select-option.active {
 			  background-color: #dbdbdb;
 			}
 			.g-select-arrow {
 			  width: 20px;
+			  margin-left: auto;
+			  position: absolute;
+			  right: 0;
 			}
 			.g-select-arrow svg {
 			  width: 10px;
 			  height: 10px;
+			  transition: .35s ease;
+			}
+			.g-select.active .g-select-arrow svg {
+				transform: rotate(180deg);
 			}
 			.g-select-gray {
 			  width: 100%;
