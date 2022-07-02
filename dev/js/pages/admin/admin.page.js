@@ -22,6 +22,10 @@ export class AdminPage extends G {
 				id:'',
 				container: document.createElement('g-body')
 			},
+			'footer': {
+				id:'',
+				container: document.createElement('g-footer')
+			}
 		};
 	}
 	define() {

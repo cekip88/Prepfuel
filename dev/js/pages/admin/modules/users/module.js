@@ -9,7 +9,8 @@ export class UsersModule extends AdminPage {
 			'header':'fullHeader',
 			'header-tabs':'adminTabs',
 			'body-tabs':'usersBodyTabs',
-			'body':'usersBody'
+			'body':'usersBody',
+			'footer':'adminFooter'
 		}
 	}
 
@@ -187,9 +188,7 @@ export class UsersModule extends AdminPage {
 			stepTpl = _.addingStepSix();
 		}
 
-		_.f('#addingForm').querySelector('.adding-body').innerHTML = stepTpl;
-		
-		
+		_.f('#addingForm .adding-body').innerHTML = stepTpl;
 	}
 	addNewParent({item}) {
 		const _ = this;
@@ -200,22 +199,34 @@ export class UsersModule extends AdminPage {
 		cont.classList.remove('full');
 		cont.append(_.markup(_.assignNewParent()))
 	}
-	async selectAvatar() {
+	async selectAvatar(clickData) {
 		const _ = this;
-		let avatarsModal = _.f('.avatars');
 
-		if (!avatarsModal) {
-			let avatars = await Model.step2;
-			avatarsModal = _.markupElement(_.selectAvatarTpl(avatars));
-			_.f('[hidden]').append(avatarsModal);
+		let listCont = _.f('.avatars-list');
+		if (!listCont.children.length ) {
+			_.avatars = await Model.step2;
+			listCont.append(_.markup(_.avatarsItemsTpl()));
+		}
+
+		let activeAvatar = listCont.querySelector('.active');
+		if (activeAvatar) activeAvatar.classList.remove('active');
+		let avatarInfo = _.studentInfo ? _.studentInfo.avatar : null;
+		if (avatarInfo) {
+			listCont.querySelector(`[value="${avatarInfo['_id'] ?? avatarInfo}"]`).classList.add('active');
+		}
+
+		let callback = clickData.item.getAttribute('data-callback');
+		if (callback) {
+			_.f('#avatars').setAttribute('data-callback',callback);
 		}
 
 		G_Bus.trigger('modaler','closeModal');
-		G_Bus.trigger('modaler','showModal', {type:'html',target:'.avatars'});
+		G_Bus.trigger('modaler','showModal', {type:'html',target:'#avatars'});
 	}
 	pickAvatar({item}) {
 		const _ = this;
-		let activeBtn = item.closest('.avatars-list').querySelector('.active');
+		let listCont = item.closest('.avatars-list');
+		let activeBtn = listCont.querySelector('.active');
 		if (activeBtn) activeBtn.classList.remove('active');
 		item.classList.add('active')
 
@@ -228,8 +239,16 @@ export class UsersModule extends AdminPage {
 		_['studentInfo'].avatar = item.value;
 		_['metaInfo'].avatarName = avatarName;
 
+		let
+			modalCont = item.closest('.avatars'),
+			callback = modalCont.getAttribute('data-callback');
+
 		G_Bus.trigger('modaler','closeModal');
-		_.addStudent({item})
+
+		if (callback) {
+			modalCont.removeAttribute('data-callback');
+			_[callback]({item})
+		}
 	}
 	// Adding methods end
 	
@@ -288,7 +307,7 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		let
 			studentId = item.getAttribute('data-id'),
-			currentStudent = Model.studentsData['response'].filter( student => student['_id'] == studentId )[0];
+			currentStudent = Model.studentsData.response.filter( student => student['_id'] == studentId )[0];
 		_.studentInfo = Object.assign(_.studentInfo,currentStudent['user']);
 		_.studentInfo['currentSchool'] = currentStudent['currentSchool'];
 		_.studentInfo['currentPlan'] = currentStudent['currentPlan'];
@@ -300,6 +319,7 @@ export class UsersModule extends AdminPage {
 			'header-tabs':'adminTabs',
 			'body-tabs':'usersBodyTabs',
 			'body': 'profile',
+			'footer': 'adminFooter'
 		};
 		await _.render();
 		_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.addingStepFourData());
@@ -432,29 +452,29 @@ export class UsersModule extends AdminPage {
 		},2000)
 	}
 	
-	setCancelBtn() {
+	setCancelBtn(type = 'adding') {
 		const _ = this;
-		let stepBtn = _.f('.step-prev-btn');
+		let stepBtn = _.f(`#${type}Form .step-prev-btn`);
 		stepBtn.setAttribute('data-click', 'modaler:closeModal');
 		stepBtn.textContent = 'Cancel';
 	}
-	setPrevBtn() {
+	setPrevBtn(type = 'adding') {
 		const _ = this;
-		let stepBtn = _.f('.step-prev-btn');
+		let stepBtn = _.f(`#${type}Form .step-prev-btn`);
 		stepBtn.setAttribute('data-click',`${_.componentName}:changePrevStep`);
 		stepBtn.setAttribute('step',`2`);
 		stepBtn.textContent = 'Back';
 	}
-	setNextBtn() {
+	setNextBtn(type = 'adding') {
 		const _ = this;
-		let stepBtn = _.f('.step-next-btn');
+		let stepBtn = _.f(`#${type}Form .step-next-btn`);
 		stepBtn.textContent = 'Next';
 		stepBtn.className = 'button-blue step-next-btn';
 		stepBtn.setAttribute('data-click',`${_.componentName}:changeNextStep`);
 	}
-	setSubmitBtn() {
+	setSubmitBtn(type = 'adding') {
 		const _ = this;
-		let stepBtn = _.f('.step-next-btn');
+		let stepBtn = _.f(`#${type}Form .step-next-btn`);
 		stepBtn.className = 'button-blue button-green step-next-btn';
 		stepBtn.textContent = 'Submit';
 		stepBtn.setAttribute('data-click',`${_.componentName}:createStudent`);
@@ -502,7 +522,7 @@ export class UsersModule extends AdminPage {
 			return void 0;
 		}
 		let
-			addingBody = _.f('.adding-body');
+			addingBody = _.f('#addingForm .adding-body');
 		addingBody.innerHTML = '<img src="/img/loader.gif">';
 		
 		_.clear(addingBody);
@@ -519,8 +539,8 @@ export class UsersModule extends AdminPage {
 		}
 		addingBody.append( _.markup(_.stepsObj[ _._$.addingStep ]()) );
 		
-		_.f('.adding-list-item.active').classList.remove('active');
-		_.f(`.adding-list-item:nth-child(${_._$.addingStep})`).classList.add('active');
+		_.f('#addingForm .adding-list-item.active').classList.remove('active');
+		_.f(`#addingForm .adding-list-item:nth-child(${_._$.addingStep})`).classList.add('active');
 	}
 	async handleAssignSteps() {
 		const _ = this;
@@ -534,23 +554,23 @@ export class UsersModule extends AdminPage {
 			return void 0;
 		}
 		let
-			addingBody = _.f('.adding-body');
+			addingBody = _.f('#assignForm .adding-body');
 		_.clear(addingBody);
 		if(_._$.assignStep == _.minStep){
-			_.setCancelBtn();
+			_.setCancelBtn('assign');
 		}else{
-			_.setPrevBtn();
+			_.setPrevBtn('assign');
 		}
 		if(_._$.assignStep == _.maxAssignStep){
-			_.setSubmitBtn();
+			_.setSubmitBtn('assign');
 		}else{
-			_.setNextBtn();
+			_.setNextBtn('assign');
 		}
 		
 		addingBody.append( _.markup( _.stepsAssignObj[ _._$.assignStep ]() ) );
 		
-		_.f('.adding-list-item.active').classList.remove('active');
-		_.f(`.adding-list-item:nth-child(${ _._$.assignStep })`).classList.add('active');
+		_.f('#assignForm .adding-list-item.active').classList.remove('active');
+		_.f(`#assignForm .adding-list-item:nth-child(${ _._$.assignStep })`).classList.add('active');
 	}
 	
 	init(){

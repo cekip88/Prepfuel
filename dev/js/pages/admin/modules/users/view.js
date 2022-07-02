@@ -191,16 +191,14 @@ export const view = {
 	removeCourseTpl(){
 		const _ = this;
 		return `
-			<div hidden>
-				<div class="modal-block student-profile-remove-popup" id="removeForm">
-					<h6 class="modal-title">
-						<span>Removing course</span>
-					</h6>
-					<p class="modal-text">Are you sure want to remove this course?</p>
-					<div class="modal-row">
-						<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
-						<button class="button-red" data-click="${_.componentName}:removeCourse"><span>Remove</span></button>
-					</div>
+			<div class="modal-block student-profile-remove-popup" id="removeForm">
+				<h6 class="modal-title">
+					<span>Removing course</span>
+				</h6>
+				<p class="modal-text">Are you sure want to remove this course?</p>
+				<div class="modal-row">
+					<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
+					<button class="button-red" data-click="${_.componentName}:removeCourse"><span>Remove</span></button>
 				</div>
 			</div>
 		`;
@@ -208,8 +206,7 @@ export const view = {
 	assignStudent(){
 		const _ = this;
 		return `
-			<div hidden>
-				<div class="admin-modal"	id="assignForm">
+			<div class="admin-modal"	id="assignForm">
 					<div class="block test-block adding-block">
 					<div class="test-header">
 						<h5 class="block-title test-title adding-header-title">
@@ -263,7 +260,6 @@ export const view = {
 					</div>
 				</div>
 				</div>
-			</div>
 		`;
 	},
 	
@@ -305,23 +301,12 @@ export const view = {
 		`;
 	},
 
-	selectAvatarTpl(avatarsData){
+	selectAvatarTpl(){
 		const _ = this;
 		let tpl = `
-			<div class="avatars">
+			<div class="avatars" id="avatars">
 				<h3 class="avatars-title title">Select Avatar</h3>
-				<ul class="avatars-list">`;
-		for (let item of avatarsData) {
-			let imgTitle = item.avatar.split('.')[0];
-			tpl += `
-				<li class="avatars-item">
-					<button data-click="${_.componentName}:pickAvatar" title="${imgTitle}" value="${item['_id']}">
-						<img src="/img/${imgTitle}.svg" alt="${imgTitle}">
-					</button>
-				</li>`
-		}
-		tpl += `
-				</ul>
+				<ul class="avatars-list"></ul>
 				<div class="avatars-buttons">
 					<button class="button">Discard</button>
 					<button class="button-blue">Save</button>
@@ -330,7 +315,25 @@ export const view = {
 		`;
 		return tpl;
 	},
-	
+	avatarsItemsTpl(){
+		const _ = this;
+		let tpl = '';
+		for (let item of _.avatars) {
+			tpl += _.avatarsItemTpl(item);
+		}
+		return tpl;
+	},
+	avatarsItemTpl(item){
+		const _ = this;
+		let imgTitle = item.avatar.split('.')[0];
+		return `
+				<li class="avatars-item">
+					<button data-click="${_.componentName}:pickAvatar" title="${imgTitle}" value="${item['_id']}">
+						<img src="/img/${imgTitle}.svg" alt="${imgTitle}">
+					</button>
+				</li>`
+	},
+
 	assignStepTwo(stepData){
 		const _ = this;
 		return `
@@ -616,7 +619,7 @@ export const view = {
 				<div class="adding-section">
 					<h4 class="adding-subtitle">Student Personal Info</h4>
 					<div class="adding-avatar">
-						<button data-click="${_.componentName}:selectAvatar">
+						<button data-click="${_.componentName}:selectAvatar" data-callback="addStudent">
 							<strong class="adding-avatar-letter">${_.studentInfo.avatar ? '<img src="/img/' + _.metaInfo.avatarName + '.svg">' : 'K'}</strong>
 							<span class="adding-avatar-link">Select Avatar</span>
 						</button>
@@ -854,25 +857,25 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">First name</label>
 					</div>
-					<g-input type="text" name="firstName"  data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input type="text" name="firstName" value="${_.parentInfo.firstName ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 				<div class="profile-form-row">
 					<div class="form-label-row">
 						<label class="form-label">Last name</label>
 					</div>
-					<g-input type="text" name="lastName"  data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input type="text" name="lastName" value="${_.parentInfo.lastName ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 				<div class="profile-form-row">
 					<div class="form-label-row">
 						<label class="form-label">Email</label>
 					</div>
-					<g-input type="email" name="email"  data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input type="email" name="email" value="${_.parentInfo.email ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 				<div class="profile-form-row">
 					<div class="form-label-row">
 						<label class="form-label">Phone Number</label>
 					</div>
-					<g-input type="email" name="phone"  data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input type="email" name="phone" value="${_.parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 			</div>
 			<div class="adding-section">
@@ -882,14 +885,14 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Password</label>
 					</div>
-					<g-input type="password" name="password"  data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input"></g-input>
+					<g-input type="password" name="password" value="${_.parentInfo.password ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input"></g-input>
 				</div>
 				<p class="adding-text">8+ characters, with min. one number, one uppercase letter and one special character</p>
 				<div class="adding-inpt small">
 					<div class="form-label-row">
 						<label class="form-label">Repeat password</label>
 					</div>
-					<g-input type="password" name="cpass" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input"></g-input>
+					<g-input type="password" name="cpass" value="${_.parentInfo.cpass ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input"></g-input>
 				</div>
 			</div>
 			<button class="adding-generate" data-click="${_.componentName}:generatePassword">Generate Password</button>
@@ -961,7 +964,7 @@ export const view = {
 							<input type="radio" id="have_registered" class="adding-radio" name="registered" checked>
 							<label class="form-label adding-label-have" for="have_registered">Have registered</label>
 						</div>
-						<g-input type='date' data-change="${_.componentName}:fillStudentInfo" class="select adding-select" name="testDate" classname="adding-select" icon="false" xlink="select-arrow-bottom" placeholder="Press to choose your official test date"></g-input>
+						<g-input type='date' format="month DD, YYYY" value="${_.studentInfo.testDate ?? ''}" data-change="${_.componentName}:fillStudentInfo" class="select adding-select" name="testDate" classname="adding-select" icon="false" xlink="select-arrow-bottom" placeholder="Press to choose your official test date"></g-input>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
@@ -1187,11 +1190,10 @@ export const view = {
 						<div class="student-profile-left">
 							<h4 class="admin-block-graytitle">Student Personal Info</h4>
 							<div class="adding-avatar">
-								<label for="avatar">
-									<strong class="adding-avatar-letter">K</strong>
+								<button data-click="${_.componentName}:selectAvatar">
+									<strong class="adding-avatar-letter">${_.studentInfo.avatar ? '<img src="/img/' + _.studentInfo.avatar.avatar + '.svg">' : _.studentInfo.firstName.substr(0,1)}</strong>
 									<span class="adding-avatar-link">Select Avatar</span>
-									<input type="file">
-								</label>
+								</button>
 							</div>
 							<div class="adding-section">
 								<div class="adding-inpt-row">
@@ -1266,8 +1268,6 @@ export const view = {
 						</div>
 					</div>
 				</div>
-				${_.assignStudent()}
-				${_.removeCourseTpl()}
 			</div>
 		`;
 	},
@@ -1282,6 +1282,17 @@ export const view = {
 				<strong class="breadcrumbs-current">Brooklyn Simmons Profile</strong>
 			</div>
 		`;
-	}
+	},
+
+	adminFooter(){
+		const _ = this;
+		return `
+			<div hidden>
+				${_.assignStudent()}
+				${_.removeCourseTpl()}
+				${_.selectAvatarTpl()}
+			</div>
+		`
+	},
 	
 }

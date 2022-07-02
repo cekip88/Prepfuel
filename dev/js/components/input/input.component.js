@@ -252,7 +252,7 @@ export default class GInput extends GComponent {
 
 		_.removeAttribute('data-current-date');
 		_.triggerChangeEvent();
-		_.datePickerClose(clickData);
+		if (clickData) _.datePickerClose(clickData);
 	}
 	rangeChangeDate(clickData,dateValues){
 		const _ = this;
@@ -630,13 +630,18 @@ export default class GInput extends GComponent {
 		});
 		if (_.isDate()) {
 			_.setAttribute('style','position:relative;')
-			if (_.attr('value')) _.fillDate(_.attr('value'))
+			if (_.attr('value')) {
+				let dateValues = _.fillDate(_.attr('value'));
+				if (!_.isDateRange()) _.notRangeChangeDate(null,dateValues);
+				else _.rangeChangeDate(null,dateValues);
+			}
 		}
 		_.type = _.attr('type');
 		if(_.attr('symbol'))
 		_.symbol = _.attr('symbol');
 		_.symbolImg = _.attr('symbolImg');
 		_.trigger('appended');
+
 	}
 	
 	styleSheets(){
