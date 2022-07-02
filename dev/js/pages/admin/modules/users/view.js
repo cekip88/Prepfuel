@@ -60,7 +60,7 @@ export const view = {
 				<td>
 					<div class="tbl-item">
 						<div class="users-photo-icon">
-							<img src="/img/${avatar}.svg" alt="${avatar}">
+							${avatar ? '<img src="/img/' + avatar + '.svg" alt="' + avatar + '">' : ''}
 						</div>
 						<div class="users-info">
 							<h6 class="users-info-name">${rowData.firstName} ${rowData.lastName}</h6>
@@ -181,7 +181,6 @@ export const view = {
 								</thead>
 								<tbody class="tbl-body"><tr><td><img src='/img/loader.gif' class='loader'></td></tr></tbody>
 							</table>
-							
 						</div>
 					</div>
 				</div>
@@ -618,7 +617,7 @@ export const view = {
 					<h4 class="adding-subtitle">Student Personal Info</h4>
 					<div class="adding-avatar">
 						<button data-click="${_.componentName}:selectAvatar">
-							<strong class="adding-avatar-letter">K</strong>
+							<strong class="adding-avatar-letter">${_.studentInfo.avatar ? '<img src="/img/' + _.metaInfo.avatarName + '.svg">' : 'K'}</strong>
 							<span class="adding-avatar-link">Select Avatar</span>
 						</button>
 					</div>
@@ -688,7 +687,7 @@ export const view = {
 		return `
 			<div class="block" id="assignParent">
 				<div class="block-header">
-					<h2 class="block-title">Parents <span class="users-count"></span></h2>
+					<h2 class="block-title">Parents (<span class="users-count"></span>)</h2>
 					<div class="block-header-item block-header-search">
 						<svg><use xlink:href="#search"></use></svg>
 						<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input>
@@ -760,7 +759,7 @@ export const view = {
 									<th><div class="tbl-item right">Action</div></th>
 								</tr>
 							</thead>
-							<tbody class="tbl-body"></tbody>
+							<tbody class="tbl-body"><tr><td><img src='/img/loader.gif' class='loader'></td></tr></tbody>
 						</table>
 					</div>
 				</div>

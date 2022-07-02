@@ -33,8 +33,9 @@ class _Model {
 			'data': request
 		});
 	}
-	getUsers(role,page=1) {
+	getUsers({role,page = 1,update}) {
 		const _ = this;
+		if(!update)	if(_[`${role}sData`]) return Promise.resolve(_[`${role}sData`]);
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.endpoints['usersList']}/?role=${role}&page=${page}`, {
 				method: 'GET',
@@ -43,7 +44,7 @@ class _Model {
 			if(rawResponse.status < 210) {
 				let response = await rawResponse.json();
 				if(response['status'] == 'success') {
-					_.usersData = response;
+					_[`${role}sData`] = response;
 					resolve(response);
 				} else {
 					_.wrongResponse('getUsers', response);
@@ -53,10 +54,6 @@ class _Model {
 			}
 			resolve(null);
 		});
-	}
-	getParents() {
-		const _ = this;
-		return _.getUsers('parent');
 	}
 	createParent(studentData) {
 		const _ = this;
