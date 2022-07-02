@@ -18,7 +18,8 @@ export class UsersModule extends AdminPage {
 		Model.currentUsersType = 'student';
 
 		//_.studentsInfo =
-		G_Bus.trigger(_.componentName,'showErrorPopup','Course has been successfully removed')
+		//G_Bus.trigger(_.componentName,'showSuccessPopup','Course has been successfully removed')
+		//G_Bus.trigger(_.componentName,'showErrorPopup','Error, try again later')
 	}
 	define() {
 		const _ = this;
@@ -34,8 +35,9 @@ export class UsersModule extends AdminPage {
 
 		_.set({
 			addingStep : 1,
-			assignStep : 1
+			assignStep : 1,
 		});
+
 		G_Bus
 			.on(_,[
 				'handleErrors',
@@ -49,6 +51,7 @@ export class UsersModule extends AdminPage {
 				'fillParentInfo','assignStudentToParent',
 				'selectAvatar','pickAvatar',
 				'showSuccessPopup','showErrorPopup','closePopup',
+				'generatePassword',
 			]);
 	}
 	async createParent(){
@@ -224,7 +227,7 @@ export class UsersModule extends AdminPage {
 		_['metaInfo'].level = stepData[pos]['levels'][0]['title'];
 		levelButtons.innerHTML = _.levelButtons(stepData[pos]);
 	}
-	async changeSection({item,event}) {
+	async changeSection({item,event}){
 		const _ = this;
 		_.subSection = item.getAttribute('section');
 		_.moduleStructure = {
@@ -280,8 +283,12 @@ export class UsersModule extends AdminPage {
 		const _ =  this;
 		_.f('BODY').append(_.markup(_.successPopupTpl(text,'red')));
 	}
-	closePopup({item}){
-		item.closest('.label').remove();
+	closePopup(clickData){
+		const _ = this;
+		let label;
+		if (clickData && clickData.item) label = clickData.item.closest('.label');
+		else label = _.f('.label');
+		if (label) label.remove();
 	}
 
 
@@ -357,8 +364,41 @@ export class UsersModule extends AdminPage {
 		courseInfo.innerHTML = _.emptyCourseInfo();
 		G_Bus.trigger('modaler','closeModal');
 	}
-	
-	
+
+	generatePassword(){
+		const _ = this;
+		let
+			len = Math.ceil((Math.random() * 8)) + 8,
+			inputs = _.f('G-INPUT[type="password"]'),
+			password = '',
+			input;
+
+		for (let i = 0; i < len; i++) {
+			let number = Math.ceil(Math.random() * 68);
+			if (number < 7) number += 32;
+			else if (number < 17) number += 41;
+			else if (number < 43) number += 48;
+			else number += 54;
+			password += String.fromCharCode(number)
+		}
+
+		for (let i = 0; i < inputs.length; i++) {
+			inputs[i].value = password;
+			if (!i) {
+				input = inputs[i].shadow.querySelector('INPUT');
+				input.type = 'text';
+				input.select();
+				document.execCommand("copy");
+			}
+		}
+
+		G_Bus.trigger(_.componentName,'showSuccessPopup','Password Generated and Copied')
+
+		setTimeout(()=>{
+			G_Bus.trigger(_.componentName,'closePopup');
+			input.type = 'password';
+		},2000)
+	}
 	
 	setCancelBtn(){
 		const _ = this;
