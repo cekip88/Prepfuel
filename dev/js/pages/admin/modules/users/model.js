@@ -15,6 +15,7 @@ class _Model {
 			addingStepTwo: `${env.backendUrl}/user/add-student-step2`,
 			addingStepThree: `${env.backendUrl}/user/add-student-step3`,
 			addingStepFour: `${env.backendUrl}/user/add-student-step4`,
+			assignCourse: `${env.backendUrl}/user/assign-plan`,
 		};
 	}
 	wrongResponse(method, response){
@@ -51,6 +52,28 @@ class _Model {
 				}
 			} else {
 				_.wrongRequest('getUsers', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+	assignCourse(assignData) {
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['assignCourse']}`, {
+				method: 'POST',
+				headers: _.baseHeaders,
+				body: JSON.stringify(assignData)
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('assignCourse', response);
+				}
+			} else {
+				_.wrongRequest('assignCourse', rawResponse)
 			}
 			resolve(null);
 		});

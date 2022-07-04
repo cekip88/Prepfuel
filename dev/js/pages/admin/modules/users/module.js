@@ -47,7 +47,7 @@ export class UsersModule extends AdminPage {
 				'changeNextStep','changePrevStep','jumpToStep',
 				'showProfile','showRemovePopup','removeCourse',
 				'domReady',
-				'assignParent','addNewParent','skipParent',
+				'assignParent','addNewParent','assignCourse','skipParent',
 				'changeTestType','changeStudentLevel',
 				'fillStudentInfo','createStudent',
 				'fillParentInfo','assignStudentToParent',
@@ -56,6 +56,17 @@ export class UsersModule extends AdminPage {
 				'generatePassword',
 			]);
 	}
+	async assignCourse({item}) {
+		const _ = this;
+		let response = await Model.assignCourse(_.studentInfo);
+		if(!response){
+			return void 0;
+		}
+		
+		G_Bus.trigger('modaler','closeModal');
+		
+	}
+	
 	async createParent(){
 		const _ = this;
 		
@@ -82,7 +93,7 @@ export class UsersModule extends AdminPage {
 		G_Bus.trigger(_.componentName,'showSuccessPopup','Student has been successfully added');
 
 		let users = await Model.getUsers({role:_.subSection,page: 1,update: true});
-		_.fillUserTable(users)
+		_.fillUserTable(users);
 	}
 	/*
 	* Fill methods
@@ -326,6 +337,7 @@ export class UsersModule extends AdminPage {
 		_.studentInfo['currentSchool'] = currentStudent['currentSchool'];
 		_.studentInfo['currentPlan'] = currentStudent['currentPlan'];
 		_.studentInfo['grade'] = currentStudent['grade'];
+		_.studentInfo['studentId'] = studentId;
 		
 		_.subSection = item.getAttribute('section');
 		_.moduleStructure = {
@@ -360,6 +372,58 @@ export class UsersModule extends AdminPage {
 		if (label) label.remove();
 	}
 	// Show methods end
+	
+	// Validation methods
+	nextStepBtnValidation(){
+		const _ = this;
+		let stepBtn = _.f(`#addingForm .step-next-btn`);
+		if (_.validationsSteps.indexOf(_._$.addingStep) >= 0) {
+			if (!_.stepValidation()) {
+				stepBtn.setAttribute('disabled',true);
+				return void 0;
+			}
+		}
+		stepBtn.removeAttribute('disabled')
+	}
+	stepValidation(){
+		const _ = this;
+		if (_._$.addingStep == 2) {
+			return _.stepTwoValidation();
+		} else if (_._$.addingStep == 3) {
+			return _.stepThreeValidation();
+		}
+	}
+	stepTwoValidation(){
+		const _ = this;
+		if (_.studentInfo.firstName) {
+			if (_.studentInfo.lastName) {
+				if (_.studentInfo.email) {
+					if (_.studentInfo.avatar) {
+						if (_.studentInfo.password) {
+							if (_.studentInfo.cpass) {
+								if (_.studentInfo.cpass == _.studentInfo.password) {
+									return true;
+								} else {
+									_.showErrorPopup('Password and Repeat password must match');
+									setTimeout(_.closePopup.bind(_),3000)
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+	stepThreeValidation(){
+		const _ = this;
+		if (_.metaInfo && _.metaInfo.parentAddType == 'addNewParent') {
+		
+		}
+	}
+	// Validation methods end
+	
+	
 	
 	handleErrors({method,data}){
 		const _ = this;
@@ -491,53 +555,7 @@ export class UsersModule extends AdminPage {
 
 
 
-	nextStepBtnValidation(){
-		const _ = this;
-		let stepBtn = _.f(`#addingForm .step-next-btn`);
-		if (_.validationsSteps.indexOf(_._$.addingStep) >= 0) {
-			if (!_.stepValidation()) {
-				stepBtn.setAttribute('disabled',true);
-				return void 0;
-			}
-		}
-		stepBtn.removeAttribute('disabled')
-	}
-	stepValidation(){
-		const _ = this;
-		if (_._$.addingStep == 2) {
-			return _.stepTwoValidation();
-		} else if (_._$.addingStep == 3) {
-			return _.stepThreeValidation();
-		}
-	}
-	stepTwoValidation(){
-		const _ = this;
-		if (_.studentInfo.firstName) {
-			if (_.studentInfo.lastName) {
-				if (_.studentInfo.email) {
-					if (_.studentInfo.avatar) {
-						if (_.studentInfo.password) {
-							if (_.studentInfo.cpass) {
-								if (_.studentInfo.cpass == _.studentInfo.password) {
-									return true;
-								} else {
-									_.showErrorPopup('Password and Repeat password must match');
-									setTimeout(_.closePopup.bind(_),3000)
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
-	stepThreeValidation(){
-		const _ = this;
-		if (_.metaInfo && _.metaInfo.parentAddType == 'addNewParent') {
 
-		}
-	}
 	setCancelBtn(type = 'adding') {
 		const _ = this;
 		let stepBtn = _.f(`#${type}Form .step-prev-btn`);
@@ -563,7 +581,13 @@ export class UsersModule extends AdminPage {
 		let stepBtn = _.f(`#${type}Form .step-next-btn`);
 		stepBtn.className = 'button-blue button-green step-next-btn';
 		stepBtn.textContent = 'Submit';
-		stepBtn.setAttribute('data-click',`${_.componentName}:createStudent`);
+		if(type === 'adding') {
+			stepBtn.setAttribute('data-click',`${_.componentName}:createStudent`);
+		}
+		if(type = 'assign'){
+			stepBtn.setAttribute('data-click',`${_.componentName}:assignCourse`);
+		}
+		
 	}
 	changeNextStep({item}) {
 		const _ = this;

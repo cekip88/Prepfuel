@@ -261,7 +261,7 @@ export const view = {
 						<button class="test-footer-back step-prev-btn" data-click="${_.componentName}:changePrevStep" type="assign" step="1">
 							<span>Cancel</span>
 						</button>
-						<button class="button-blue step-next-btn" data-click="${_.componentName}:changeNextStep" type='assign' step="2">
+						<button class="button-blue step-next-btn" data-click="${_.componentName}:changeNextStep" type='assign'  step="2">
 							<span>Next</span>
 						</button>
 					</div>
@@ -531,9 +531,7 @@ export const view = {
 	},
 	levelButtons(stepData){
 		const _ = this;
-	
-	
-		let tpl = ``;
+			let tpl = ``;
 		stepData.levels.forEach( (item) => {
 			let activeClass = '';
 			if(_.studentInfo['level']){
@@ -1276,8 +1274,11 @@ export const view = {
 									<div class="form-label-row">
 										<label class="form-label">Grade</label>
 									</div>
-									<g-select class="select adding-select" name="grade" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;Have not decided yet&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" ">
-									<input type="hidden" name="testField" slot="value"></g-select>
+									<g-select class="select adding-select" name="grade" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course"
+									items="[
+									{&quot;value&quot;:1,&quot;text&quot;:&quot;Have not decided yet&quot;},
+									{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},
+									{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]"></g-select>
 								</div>
 							</div>
 						</div>
