@@ -449,10 +449,14 @@ export class UsersModule extends AdminPage {
 		_.parentInfo = {};
 	}
 	
-	removeCourse({item}) {
+	async removeCourse({item}) {
 		const _ = this;
 		let courseInfo = _.f('.student-profile-course-info');
 		_.clear(courseInfo);
+		let removeResponse = await Model.removeCourse({
+			studentId:_.studentInfo['_id'],
+			courseId:_.studentInfo.currentPlan.course['_id'],
+		});
 		courseInfo.innerHTML = _.emptyCourseInfo();
 		G_Bus.trigger('modaler','closeModal');
 	}
@@ -488,8 +492,6 @@ export class UsersModule extends AdminPage {
 			input.type = 'password';
 		},2000)
 	}
-
-
 
 	nextStepBtnValidation(){
 		const _ = this;
