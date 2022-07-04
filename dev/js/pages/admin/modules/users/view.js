@@ -62,6 +62,7 @@ export const view = {
 	},
 	usersBodyRowTpl(plan,rowData,user){
 		const _ = this;
+		let course = plan && plan['course'] ? plan['course'].title + ' ' + plan['level']['title'] : '';
 		let avatar = rowData.avatar ? rowData.avatar.avatar.split('.')[0] : '';
 		let tpl = `
 				<td>
@@ -77,7 +78,7 @@ export const view = {
 				</td>
 				<td>
 					<div class="tbl-item">
-						<div class="users-course brown">${plan['course']['title']} ${plan['level']['title']}</div>
+						<div class="users-course brown">${course}</div>
 				</div>
 			</td>
 			<td>
@@ -273,6 +274,7 @@ export const view = {
 	choiseSelectStudent(choiseData,title='School you are interested in applying to'){
 		const _ = this;
 		let activeFirst,activeSecond,activeThird;
+
 		if(_.studentInfo.firstSchool) activeFirst = `_id:${_.studentInfo.firstSchool}`;
 		if(_.studentInfo.secondSchool) activeSecond = `_id:${_.studentInfo.secondSchool}`;
 		if(_.studentInfo.thirdSchool) activeThird = `_id:${_.studentInfo.thirdSchool}`;
@@ -1176,6 +1178,9 @@ export const view = {
 	},
 	courseInfo(choiseData){
 		const _ = this;
+		let plan = _.studentInfo["currentPlan"];
+		let course = plan && plan['course'] ? plan['course'].title : '';
+		console.log(_.studentInfo)
 		return `
 			<div class="adding-section">
 				<h4 class="adding-subtitle withmar">Course & Test Information</h4>
@@ -1183,7 +1188,7 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Course</label>
 					</div>
-					<g-input type="text" name="course" value='${_.studentInfo["currentPlan"]["course"]['title']}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+					<g-input type="text" name="course" value='${course}' class="g-form-item" classname="form-input adding-inpt"></g-input>
 					</div>
 				<div class="adding-inpt">
 					<div class="form-label-row">
@@ -1204,8 +1209,13 @@ export const view = {
 			<button class="student-profile-remove" data-click="${_.componentName}:showRemovePopup">Remove This Course</button>
 		`;
 	},
-	profile(profileData){
+	profile(){
 		const _ = this;
+		let gradeActive;
+		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade}`;
+		console.log(_.stepFour)
+		let gradeItems = _.createSelectItems(_.stepFour.grades, 'value:_id;text:grade', gradeActive);
+		console.log(_.studentInfo.grade)
 		return `
 			<div class="section">
 				${_.breadCrumbs()}
@@ -1275,10 +1285,7 @@ export const view = {
 										<label class="form-label">Grade</label>
 									</div>
 									<g-select class="select adding-select" name="grade" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course"
-									items="[
-									{&quot;value&quot;:1,&quot;text&quot;:&quot;Have not decided yet&quot;},
-									{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},
-									{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]"></g-select>
+									items=${JSON.stringify(gradeItems)}></g-select>
 								</div>
 							</div>
 						</div>
