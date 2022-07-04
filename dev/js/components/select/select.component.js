@@ -48,6 +48,9 @@ export default class GSelect extends GComponent {
 	get value(){
 		return 	this.selectedValues;
 	}
+	get textContent(){
+		return 	this.shadow.querySelector('.g-select-body .active span').textContent;
+	}
 
 	hasOption(prop,option){
 		const _ = this;
@@ -123,6 +126,15 @@ export default class GSelect extends GComponent {
 			slot.value = '';
 		}
 		else slot.value = JSON.stringify(_.selectedValues);
+	}
+	setText(){
+		const _ = this;
+		let slot =_.querySelector('[slot="value"]');
+		if(!_.selectedTexts.length){
+			slot.removeAttribute('textContent');
+			slot.setAttribute('textContent','');
+		}
+		else slot.setAttribute('textContent',_.selectedTexts);
 	}
 	setTitle(option){
 		const _ = this;
@@ -318,6 +330,7 @@ export default class GSelect extends GComponent {
 			}
 		} else {
 			_.shadow.querySelector('SLOT').value = '';
+			_.selectedTexts = [];
 			_.selectedValues = [];
 			_.titles = [];
 			let activeOptions = _.shadow.querySelectorAll('[data-active]');

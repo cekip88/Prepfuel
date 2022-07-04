@@ -1,7 +1,7 @@
 import {G_Bus} from "../../../../libs/G_Control.js";
 import {Model}  from "./model.js";
 import {AdminPage} from "../../admin.page.js";
-
+// Открывается саммари если нге обновляешь страницу
 export class UsersModule extends AdminPage {
 	constructor() {
 		super();
@@ -34,7 +34,7 @@ export class UsersModule extends AdminPage {
 		_.metaInfo = {};
 		_.subSection = 'student';
 		_.validationsSteps = [/*2,3,4,5*/];
-
+		_.parentSkipped =  false;
 		_.set({
 			addingStep : 1,
 			assignStep : 1,
@@ -78,9 +78,7 @@ export class UsersModule extends AdminPage {
 	async assignCourse({item}) {
 		const _ = this;
 		let response = await Model.assignCourse(_.studentInfo);
-		if(!response){
-			return void 0;
-		}
+		if(!response)	return void 0;
 		_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.addingStepFourData());
 		G_Bus.trigger('modaler','closeModal');
 		_.showSuccessPopup('Course has been successfully assigned');
@@ -92,14 +90,15 @@ export class UsersModule extends AdminPage {
 	}
 	async createStudent(){
 		const _ = this;
-		if(!_.studentInfo['parentId']){
-			let parent = await Model.createParent(_.parentInfo);
-			_.studentInfo['parentId'] = parent['_id'];
+		if(!_.parentSkipped){
+			if(!_.studentInfo['parentId']){
+				let parent = await Model.createParent(_.parentInfo);
+				_.studentInfo['parentId'] = parent['_id'];
+			}
 		}
 		let response = await Model.createStudent(_.studentInfo);
 
 		if (!response) {
-
 			return;
 		}
 
@@ -134,6 +133,9 @@ export class UsersModule extends AdminPage {
 			value = item.value;
 		if( typeof value == 'object'){
 			value = value+'';
+		}
+		if( (prop == 'firstSchool') || (prop == 'secondSchool')|| (prop == 'thirdSchool')|| (prop == 'grade')){
+			_.metaInfo[prop] = item.textContent;
 		}
 		_['studentInfo'][prop] = value;
 	}
@@ -250,7 +252,7 @@ export class UsersModule extends AdminPage {
 		_.clear(cont);
 		cont.classList.remove('full');
 		cont.append(_.markup(_.assignNewParent()))
-
+		_.parentSkipped =  false;
 		_.metaInfo.parentAddType = 'adding';
 	}
 	async selectAvatar(clickData) {
@@ -436,7 +438,6 @@ export class UsersModule extends AdminPage {
 									return true;
 								} else {
 									_.showErrorPopup('Password and Repeat password must match');
-									
 								}
 							}
 						}
@@ -465,9 +466,6 @@ export class UsersModule extends AdminPage {
 	}
 	
 
-	
-	
-
 	connectTableHead(selector) {
 		const _ = this;
 		let
@@ -493,7 +491,8 @@ export class UsersModule extends AdminPage {
 		cont.classList.remove('full');
 
 		_.metaInfo.parentAddType = 'skip'
-		cont.append(_.markup(_.skipParentTpl()))
+		cont.append(_.markup(_.skipParentTpl()));
+		_.parentSkipped=  true;
 	}
 	async assignParent(clickData = null) {
 		const _ = this;
@@ -513,7 +512,7 @@ export class UsersModule extends AdminPage {
 
 		_.fillParentBlock(usersData);
 		_.fillParentsTable(usersData);
-
+		_.parentSkipped =  false;
 		_.metaInfo.parentAddType = 'assign';
 	}
 	assignStudentToParent({item}) {
@@ -524,8 +523,8 @@ export class UsersModule extends AdminPage {
 
 		item.textContent = 'Assigned';
 		_.studentInfo['parentId'] = item.getAttribute('data-id');
-
-		_.parentInfo = {};
+		let currentParent = Model.parentsData.response.filter( parent => parent['_id'] == _.studentInfo['parentId'] )[0];
+		_.parentInfo = currentParent['user'];
 	}
 	
 	async removeCourse({item}) {
@@ -538,6 +537,9 @@ export class UsersModule extends AdminPage {
 		});
 		courseInfo.innerHTML = _.emptyCourseInfo();
 		G_Bus.trigger('modaler','closeModal');
+		_.studentInfo.firstSchool = null;
+		_.studentInfo.secondSchool = null;
+		_.studentInfo.thirdSchool = null;
 	}
 
 	generatePassword(){
@@ -603,7 +605,7 @@ export class UsersModule extends AdminPage {
 		if(type === 'adding') {
 			stepBtn.setAttribute('data-click',`${_.componentName}:createStudent`);
 		}
-		if(type = 'assign'){
+		if(type == 'assign'){
 			stepBtn.setAttribute('data-click',`${_.componentName}:assignCourse`);
 		}
 		

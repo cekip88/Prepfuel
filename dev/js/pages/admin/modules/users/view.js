@@ -1011,8 +1011,37 @@ export const view = {
 			</div>
 		`;
 	},
+	
+	
+	parentSkippedTpl(){
+		const _ = this;
+		return `
+			<li class="adding-summary-item">
+				<strong>Skipped for now</strong>
+			</li>
+		`;
+	},
+	parentTpl(){
+		const _ = this;
+		return `
+			<li class="adding-summary-item">
+				<span>First Name:</span>
+				<strong>${_.parentInfo.firstName ?? ''}</strong>
+			</li>
+			<li class="adding-summary-item">
+				<span>Last Name:</span>
+				<strong>${_.parentInfo.lastName ?? ''}</strong>
+			</li>
+			<li class="adding-summary-item">
+				<span>Email:</span>
+				<strong>${_.parentInfo.email ?? ''}</strong>
+			</li>
+		`;
+	},
+	
 	addingStepSix(){
 		const _ = this;
+		let testDate = _.studentInfo['testDate'] ? _.createdAtFormat(_.studentInfo['testDate']) : ''
 		return `
 			<div class="adding-center">
 				<h3 class="adding-title">Summary</h3>
@@ -1024,11 +1053,11 @@ export const view = {
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
 							<span>Chosen Course:</span>
-							<strong>${_.studentInfo.course}</strong>
+							<strong>${_.metaInfo.course}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Chosen Level:</span>
-							<strong>${_.studentInfo.level}</strong>
+							<strong>${_.metaInfo.level}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Plan:</span>
@@ -1044,15 +1073,15 @@ export const view = {
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
 							<span>First Name:</span>
-							<strong>${_.studentInfo.firstName}</strong>
+							<strong>${_.studentInfo.firstName ?? ''}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Last Name:</span>
-							<strong>${_.studentInfo.lastName}</strong>
+							<strong>${_.studentInfo.lastName ?? ''}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Email:</span>
-							<strong>${_.studentInfo.email}</strong>
+							<strong>${_.studentInfo.email ?? ''}</strong>
 						</li>
 					</ul>
 				</div>
@@ -1062,9 +1091,7 @@ export const view = {
 						<button class="adding-summary-btn" data-click="${_.componentName}:jumpToStep" type='adding' step="3">Edit</button>
 					</div>
 					<ul class="adding-summary-list">
-						<li class="adding-summary-item">
-							<strong>Skipped for now</strong>
-						</li>
+						${_.parentSkipped ? _.parentSkippedTpl() : _.parentTpl()}
 					</ul>
 				</div>
 				<div class="adding-section">
@@ -1075,23 +1102,23 @@ export const view = {
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
 							<span>Current School:</span>
-							<strong>${_.studentInfo.currentSchool}</strong>
+							<strong>${_.studentInfo.currentSchool ?? ''}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Grade:</span>
-							<strong>${_.studentInfo.grade}</strong>
+							<strong>${_.metaInfo.grade ?? ''}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>First Choice:</span>
-							<strong>${_.studentInfo.firstSchool}</strong>
+							<strong>${_.metaInfo.firstSchool ?? ''}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Second Choice:</span>
-							<strong>${_.studentInfo.secondSchool}</strong>
+							<strong>${_.metaInfo.secondSchool ?? ''}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Third Choice:</span>
-							<strong>${_.studentInfo.thirdSchool}</strong>
+							<strong>${_.metaInfo.thirdSchool ?? ''}</strong>
 						</li>
 					</ul>
 				</div>
@@ -1103,7 +1130,7 @@ export const view = {
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
 							<span>Registered Official Test Date:</span>
-							<strong>${_.studentInfo.testDate}</strong>
+							<strong>${testDate}</strong>
 						</li>
 					</ul>
 				</div>
