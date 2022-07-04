@@ -45,26 +45,45 @@ export class UsersModule extends AdminPage {
 				'handleErrors',
 				'addStudent','showAssignPopup',
 				'changeNextStep','changePrevStep','jumpToStep',
-				'showProfile','showRemovePopup','removeCourse',
+				'showRemovePopup','removeCourse',
 				'domReady',
 				'assignParent','addNewParent','assignCourse','skipParent',
-				'changeTestType','changeStudentLevel',
+				'changeTestType','changeStudentLevel','changeSection',
 				'fillStudentInfo','createStudent',
 				'fillParentInfo','assignStudentToParent',
 				'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
 				'showSuccessPopup','showErrorPopup','closePopup',
-				'generatePassword',
+				'generatePassword'
 			]);
 	}
+	async domReady(data){
+		const _ = this;
+		if (_.subSection === 'student') {
+			let
+				item,update= false;
+			if(data){
+				item = data.item;
+				update = item.hasAttribute('rerender');
+			}
+			let tableData = await Model.getUsers({role:_.subSection,update: update});
+			_.fillUserTable(tableData);
+			_.stepFour = await Model.addingStepFourData();
+			//
+		}
+		if(_.subSection == 'profile'){
+			_.fillProfile(data);
+		}
+	}
+	
 	async assignCourse({item}) {
 		const _ = this;
 		let response = await Model.assignCourse(_.studentInfo);
 		if(!response){
 			return void 0;
 		}
-		
+		_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.addingStepFourData());
 		G_Bus.trigger('modaler','closeModal');
-		
+		_.showSuccessPopup('Course has been successfully assigned');
 	}
 	
 	async createParent(){
@@ -173,6 +192,26 @@ export class UsersModule extends AdminPage {
 		_.clear(tbody)
 		tbody.append(...tableData);
 		_.connectTableHead('#assignParent');
+	}
+	async fillProfile({item}) {
+		const _ = this;
+		let
+			studentId = item.getAttribute('data-id'),
+			currentStudent = Model.studentsData.response.filter( student => student['_id'] == studentId )[0];
+		_.studentInfo = Object.assign(_.studentInfo,currentStudent['user']);
+		_.studentInfo['currentSchool'] = currentStudent['currentSchool'];
+		_.studentInfo['currentPlan'] = currentStudent['currentPlan'];
+		_.studentInfo['grade'] = currentStudent['grade']['_id'];
+		_.studentInfo['studentId'] = studentId;
+		_.subSection = item.getAttribute('section');
+		_.f('.profile-body').innerHTML = _.profile();
+		
+		if (currentStudent['currentPlan']){
+			_.studentInfo['firstSchool'] = currentStudent['currentPlan'].firstSchool ? currentStudent['currentPlan'].firstSchool['_id'] : '';
+			_.studentInfo['secondSchool'] = currentStudent['currentPlan'].secondSchool ? currentStudent['currentPlan'].secondSchool['_id'] : '';
+			_.studentInfo['thirdSchool'] = currentStudent['currentPlan'].thirdSchool ? currentStudent['currentPlan'].thirdSchool['_id'] : '';
+			_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.addingStepFourData());
+		} else _.f('.student-profile-course-info').innerHTML = _.emptyCourseInfo();
 	}
 	// Fill methods end
 	
@@ -307,13 +346,25 @@ export class UsersModule extends AdminPage {
 	async changeSection({item,event}) {
 		const _ = this;
 		_.subSection = item.getAttribute('section');
-		_.moduleStructure = {
-			'header':'fullHeader',
-			'header-tabs':'adminTabs',
-			'body-tabs':'usersBodyTabs',
-			'body': _.flexible(),
-		};
-		await _.render();
+		let struct = _.flexible();
+		await _.render(struct,{item});
+	}
+	flexible(){
+		const _ = this;
+		if(_.subSection === 'profile') {
+			return {
+				'body': 'profileBody'
+			};
+		}
+		if(_.subSection === 'student') {
+			return {
+				'body': 'usersBody'
+			};
+		} else if (_.subSection === 'parents') {
+			return '';
+		} else if (_.subSection === 'payments') {
+			return '';
+		}
 	}
 	// Change methods end
 	
@@ -328,36 +379,7 @@ export class UsersModule extends AdminPage {
 		_.f('#assignForm').querySelector('.adding-body').innerHTML = _.addingStepOne(stepOneData);
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#assignForm'});
 	}
-	async showProfile({item}) {
-		const _ = this;
-		let
-			studentId = item.getAttribute('data-id'),
-			currentStudent = Model.studentsData.response.filter( student => student['_id'] == studentId )[0];
-		_.studentInfo = Object.assign(_.studentInfo,currentStudent['user']);
-		_.studentInfo['currentSchool'] = currentStudent['currentSchool'];
-		_.studentInfo['currentPlan'] = currentStudent['currentPlan'];
-		_.studentInfo['grade'] = currentStudent['grade']['_id'];
-		_.studentInfo['studentId'] = studentId;
-		_.stepFour = await Model.addingStepFourData();
-		_.subSection = item.getAttribute('section');
-		_.moduleStructure = {
-			'header':'fullHeader',
-			'header-tabs':'adminTabs',
-			'body-tabs':'usersBodyTabs',
-			'body': 'profile',
-			'footer': 'adminFooter'
-		};
 
-		await _.render();
-
-
-		if (currentStudent['currentPlan']){
-			_.studentInfo['firstSchool'] = currentStudent['currentPlan'].firstSchool['_id'];
-			_.studentInfo['secondSchool'] = currentStudent['currentPlan'].secondSchool['_id'];
-			_.studentInfo['thirdSchool'] = currentStudent['currentPlan'].thirdSchool['_id'];
-			_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.addingStepFourData());
-		} else _.f('.student-profile-course-info').innerHTML = _.emptyCourseInfo();
-	}
 	showRemovePopup({item}) {
 		const _ = this;
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#removeForm','closeBtn':'hide'});
@@ -371,6 +393,7 @@ export class UsersModule extends AdminPage {
 		const _ =  this;
 		_.closePopup();
 		_.f('BODY').append(_.markup(_.successPopupTpl(text,'red')));
+		setTimeout(_.closePopup.bind(_),3000)
 	}
 	closePopup(clickData) {
 		const _ = this;
@@ -413,7 +436,7 @@ export class UsersModule extends AdminPage {
 									return true;
 								} else {
 									_.showErrorPopup('Password and Repeat password must match');
-									setTimeout(_.closePopup.bind(_),3000)
+									
 								}
 							}
 						}
@@ -441,25 +464,9 @@ export class UsersModule extends AdminPage {
 		}
 	}
 	
-	async domReady(){
-		const _ = this;
-		if (_.subSection === 'student') {
-			let tableData = await Model.getUsers({role:_.subSection});
-			_.fillUserTable(tableData);
-			//
-		}
-	}
+
 	
-	flexible(){
-		const _ = this;
-		if(_.subSection === 'student') {
-			return 'usersBody';
-		} else if (_.subSection === 'parents') {
-			return '';
-		} else if (_.subSection === 'payments') {
-			return '';
-		}
-	}
+	
 
 	connectTableHead(selector) {
 		const _ = this;
@@ -566,6 +573,8 @@ export class UsersModule extends AdminPage {
 	}
 
 
+
+	
 	setCancelBtn(type = 'adding') {
 		const _ = this;
 		let stepBtn = _.f(`#${type}Form .step-prev-btn`);

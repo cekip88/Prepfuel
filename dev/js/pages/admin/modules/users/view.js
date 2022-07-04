@@ -98,7 +98,7 @@ export const view = {
 							<use xlink:href="#trash"></use>
 						</svg>
 					</button>
-					<button class="users-btn button profile" data-click="${_.componentName}:showProfile" data-id="${user._id}">Profile</button>
+					<button class="users-btn button profile" data-click="${_.componentName}:changeSection" section="profile" data-id="${user._id}">Profile</button>
 				</div>
 			</td>
 		`
@@ -1178,9 +1178,10 @@ export const view = {
 	},
 	courseInfo(choiseData){
 		const _ = this;
-		let plan = _.studentInfo["currentPlan"];
-		let course = plan && plan['course'] ? plan['course'].title : '';
-		console.log(_.studentInfo)
+		let
+			plan = _.studentInfo["currentPlan"],
+			course = plan && plan['course'] ? plan['course'].title : '',
+			testDate = plan && plan['testDate'] ? _.createdAtFormat(plan['testDate']) : '';
 		return `
 			<div class="adding-section">
 				<h4 class="adding-subtitle withmar">Course & Test Information</h4>
@@ -1194,7 +1195,7 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Official test date</label>
 					</div>
-					<g-input type="text" name="testDate" value='${_.createdAtFormat(_.studentInfo['currentPlan']["testDate"])}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+					<g-input type="text" name="testDate" value='${testDate}' class="g-form-item" classname="form-input adding-inpt"></g-input>
 					</div>
 			</div>
 			${_.choiseSelectStudent(choiseData,'Application School List')}
@@ -1209,13 +1210,17 @@ export const view = {
 			<button class="student-profile-remove" data-click="${_.componentName}:showRemovePopup">Remove This Course</button>
 		`;
 	},
+	profileBody(){
+		const _ = this;
+		return `
+			<div class='profile-body'><img src="/img/loader.gif"></div>
+		`;
+	},
 	profile(){
 		const _ = this;
 		let gradeActive;
 		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade}`;
-		console.log(_.stepFour)
 		let gradeItems = _.createSelectItems(_.stepFour.grades, 'value:_id;text:grade', gradeActive);
-		console.log(_.studentInfo.grade)
 		return `
 			<div class="section">
 				${_.breadCrumbs()}
@@ -1302,7 +1307,7 @@ export const view = {
 					<div class="student-profile-footer">
 						<button class="student-profile-delete">Delete User Profile</button>
 						<div class="student-profile-actions">
-							<button class="test-footer-back" data-click="AdminPage:changeSection" section="/admin/users">
+							<button class="test-footer-back" data-click="${_.componentName}:changeSection" section="student" rerender>
 								<span>Discard</span>
 							</button>
 							<button class="button-blue">
@@ -1322,7 +1327,7 @@ export const view = {
 				<span class="breadcrumbs-delimiter">/</span>
 				<a href="#" class="breadcrumbs-item">Students</a>
 				<span class="breadcrumbs-delimiter">/</span>
-				<strong class="breadcrumbs-current">Brooklyn Simmons Profile</strong>
+				<strong class="breadcrumbs-current">${_.studentInfo['firstName']} ${_.studentInfo['lastName']} Profile</strong>
 			</div>
 		`;
 	},

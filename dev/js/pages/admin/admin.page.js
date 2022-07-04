@@ -76,9 +76,7 @@ export class AdminPage extends G {
 			module._$ = {};
 		}
 		module.super_$=_._$;
-		return Promise.resolve(module.render({
-			structure: _.pageStructure,
-		}));
+		return Promise.resolve(module.render());
 	}
 	createdAtFormat(value,format = 'month DD, YYYY'){
 		value = value.split('T')[0].split('-');

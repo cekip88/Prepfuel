@@ -657,22 +657,23 @@ export class DashboardModule extends AdminPage{
 	async changeSection({item,event}) {
 		const _ = this;
 		_.subSection = item.getAttribute('section');
-		_.moduleStructure = {
-			'header':'fullHeader',
-			'header-tabs':'adminTabs',
-			'body-tabs':'dashboardTabs',
-			'body': _.flexible(),
-		};
-		await _.render();
+		let struct = _.flexible();
+		await _.render(struct,{item});
 	}
 	flexible(){
 		const _ = this;
 		if(_.subSection == 'students') {
-			return 'studentDashboardBody';
+			return {
+				'body': 'studentDashboardBody'
+			}
 		} else if (_.subSection == 'parents') {
-			return 'parentsDashboardBody';
+			return {
+				'body': 'parentsDashboardBody'
+			}
 		} else if (_.subSection == 'payments') {
-			return 'paymentsDashboardBody';
+			return {
+				'body': 'paymentsDashboardBody'
+			}
 		}
 	}
 	domReady() {

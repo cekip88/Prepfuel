@@ -32,19 +32,33 @@ export class G extends G_G{
 		_.pageStructure[prop] = id;
 	}
 	define(){	}
-	async render(params){
+	async render(updateStructure,renderData){
 		const _ = this;
-		for (let key in _.pageStructure) {
-			let part = _.pageStructure[key];
-			if (part['id'] !== _.moduleStructure[key]) {
-				_.pageStructure[key]['id'] = _.moduleStructure[key];
-				_.clear(part['container']);
-				if ( _[_.moduleStructure[key]] && _.moduleStructure[key]) {
-					part['container'].append(_.markup(await _[_.moduleStructure[key]]()));
+		if(!updateStructure) {
+			for(let key in _.pageStructure) {
+				let part = _.pageStructure[key];
+				if(part['id'] !== _.moduleStructure[key]) {
+					_.pageStructure[key]['id'] = _.moduleStructure[key];
+					_.clear(part['container']);
+					if(_[_.moduleStructure[key]] && _.moduleStructure[key]) {
+						part['container'].append(_.markup(await _[_.moduleStructure[key]]()));
+					}
 				}
 			}
+			G_Bus.trigger(_.componentName,'domReady',renderData);
+			return void 'render done';
 		}
-		G_Bus.trigger(_.componentName,'domReady');
+		for(let key in updateStructure) {
+			let part = _.pageStructure[key];
+			_.clear(part['container']);
+			if(updateStructure[key] == null) continue;
+			if(_[updateStructure[key]]){
+				part['container'].append(_.markup(await _[updateStructure[key]]()));
+			}
+		}
+		
+		
+		G_Bus.trigger(_.componentName,'domReady',renderData);
 	}
 	getModule(blockData){
 		/*
