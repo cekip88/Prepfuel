@@ -131,6 +131,16 @@ body
 	&-gap
 		margin-bottom: 24px
 
+.loader
+	+wh(25px)
+	//position: absolute
+	display: inline-block
+	vertical-align: middle
+	margin: auto
+	//transform: translateY(-25%)
+	&-parent
+		justify-content: center
+		text-align: center
 
 .title,.block-title,.block-main-title
 	width: 100%
@@ -2779,6 +2789,7 @@ div.tbl-head
 	&-button
 		+wh(100%,56px)
 		+bdrs(6px)
+		margin-bottom: 10px
 		font: 18px $f_bold
 		border: 1px dashed rgb($neutral-400)
 		background-color: rgba(245,248,250,.4)
@@ -2787,6 +2798,8 @@ div.tbl-head
 			border-color: rgb($blue-text)
 		&.disabled
 			color: rgb($neutral-400)
+		&:last-child
+			margin-bottom: 0
 	&-plan
 		+w(100%)
 		+bdrs(18px)
@@ -2944,6 +2957,9 @@ div.tbl-head
 				box-shadow: 0 0 30px rgba(56,71,109,.09)
 			.table-cont
 				max-height: 370px
+.level,.adding
+	&-buttons
+		flex-wrap: wrap
 .admin
 	padding-bottom: 48px
 	&-title
@@ -3071,6 +3087,11 @@ div.tbl-head
 				object-position: bottom
 			&:not(:first-child)
 				margin-left: -8px
+	&-skip
+		padding: 20px 0
+		font: 24px "Poppins-SemiBold"
+		color: #A1A5B7
+		text-align: center
 .newUsers
 	&-item
 		@extend %dfa
@@ -3341,6 +3362,8 @@ div.tbl-head
 				font: 16px $f_bold
 				color: rgb($blue-text)
 				background-color: #E1F0FF
+			&-info
+				text-align: left
 
 .plansBlock
 	&-reasons
@@ -3427,17 +3450,6 @@ div.tbl-head
 	&-graphic
 		margin-bottom: 20px
 
-.loader
-	+wh(25px)
-	//position: absolute
-	display: inline-block
-	vertical-align: middle
-	margin: auto
-	//transform: translateY(-25%)
-	&-parent
-		justify-content: center
-		text-align: center
-
 .avatars
 	width: 90vw
 	padding: 10px
@@ -3456,8 +3468,10 @@ div.tbl-head
 			+wh(100%,80px)
 			border-radius: 12px
 			align-items: flex-end
+			border: 2px solid transparent
 			overflow: hidden
 			background-color: rgb($neutral-200)
+			transition: .35s ease
 			&:hover,&.active
 				border-color: rgb($blue)
 		img
@@ -3512,3 +3526,5 @@ div.tbl-head
 		right: 0
 		svg
 			+wh(20px)
+
+

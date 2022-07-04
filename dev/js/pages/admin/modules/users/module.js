@@ -33,6 +33,7 @@ export class UsersModule extends AdminPage {
 		_.studentInfo = {};
 		_.metaInfo = {};
 		_.subSection = 'student';
+		_.validationsSteps = [/*2,3,4,5*/];
 
 		_.set({
 			addingStep : 1,
@@ -46,11 +47,11 @@ export class UsersModule extends AdminPage {
 				'changeNextStep','changePrevStep','jumpToStep',
 				'showProfile','showRemovePopup','removeCourse',
 				'domReady',
-				'assignParent','addNewParent',
+				'assignParent','addNewParent','skipParent',
 				'changeTestType','changeStudentLevel',
 				'fillStudentInfo','createStudent',
 				'fillParentInfo','assignStudentToParent',
-				'selectAvatar','pickAvatar',
+				'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
 				'showSuccessPopup','showErrorPopup','closePopup',
 				'generatePassword',
 			]);
@@ -74,6 +75,7 @@ export class UsersModule extends AdminPage {
 
 		_.studentInfo = {};
 		_.parentInfo = {};
+		_.parents = {};
 		_.metaInfo = {};
 
 		G_Bus.trigger('modaler','closeModal');
@@ -198,6 +200,8 @@ export class UsersModule extends AdminPage {
 		_.clear(cont);
 		cont.classList.remove('full');
 		cont.append(_.markup(_.assignNewParent()))
+
+		_.metaInfo.parentAddType = 'adding';
 	}
 	async selectAvatar(clickData) {
 		const _ = this;
@@ -231,14 +235,24 @@ export class UsersModule extends AdminPage {
 		item.classList.add('active')
 
 		let avatarName = item.getAttribute('title');
-		let img = _.markup(`<img src="/img/${avatarName}.svg">`)
+		_['metaInfo'].avatarName = avatarName;
+		_['metaInfo'].avatar = item.value;
+	}
+	confirmAvatar({item}){
+		const _ = this;
+
+		_['studentInfo'].avatar = _['metaInfo'].avatar;
+		_['studentInfo'].avatarName = _['metaInfo'].avatarName;
+
+		let img = _.markup(`<img src="/img/${_['studentInfo'].avatarName}.svg">`)
 		let avatarCont = _.f('.adding-avatar-letter');
 		_.clear(avatarCont);
 		avatarCont.append(img);
 
-		_['studentInfo'].avatar = item.value;
-		_['metaInfo'].avatarName = avatarName;
-
+		_.closeAvatar({item})
+	}
+	closeAvatar({item}){
+		const _ = this;
 		let
 			modalCont = item.closest('.avatars'),
 			callback = modalCont.getAttribute('data-callback');
@@ -391,10 +405,24 @@ export class UsersModule extends AdminPage {
 			item.style = `width:${w}px;flex: 0 0 ${w}px;`
 		})
 	}
-	async assignParent({item}) {
+	skipParent ({item}) {
 		const _ = this;
 		item.parentElement.querySelector('.active').classList.remove('active');
 		item.classList.add('active')
+		let cont = _.f('.adding-assign-body');
+		_.clear(cont);
+		cont.classList.remove('full');
+
+		_.metaInfo.parentAddType = 'skip'
+		cont.append(_.markup(_.skipParentTpl()))
+	}
+	async assignParent(clickData = null) {
+		const _ = this;
+		if (clickData) {
+			let item = clickData.item;
+			item.parentElement.querySelector('.active').classList.remove('active');
+			item.classList.add('active')
+		}
 
 		let cont = _.f('.adding-assign-body');
 		_.clear(cont);
@@ -402,14 +430,23 @@ export class UsersModule extends AdminPage {
 		cont.append(_.markup(_.assignParentTpl()))
 
 		let usersData = await Model.getUsers({role: 'parent'});
+		_.parents = usersData;
 
 		_.fillParentBlock(usersData);
-		_.fillParentsTable(usersData)
+		_.fillParentsTable(usersData);
+
+		_.metaInfo.parentAddType = 'assign';
 	}
 	assignStudentToParent({item}) {
 		const _ = this;
+		if (_.studentInfo['parentId']) {
+			item.closest('.table').querySelector(`.users-btn[data-id="${_.studentInfo['parentId']}"]`).textContent = 'Assign';
+		}
+
 		item.textContent = 'Assigned';
 		_.studentInfo['parentId'] = item.getAttribute('data-id');
+
+		_.parentInfo = {};
 	}
 	
 	removeCourse({item}) {
@@ -451,7 +488,56 @@ export class UsersModule extends AdminPage {
 			input.type = 'password';
 		},2000)
 	}
-	
+
+
+
+	nextStepBtnValidation(){
+		const _ = this;
+		let stepBtn = _.f(`#addingForm .step-next-btn`);
+		if (_.validationsSteps.indexOf(_._$.addingStep) >= 0) {
+			if (!_.stepValidation()) {
+				stepBtn.setAttribute('disabled',true);
+				return void 0;
+			}
+		}
+		stepBtn.removeAttribute('disabled')
+	}
+	stepValidation(){
+		const _ = this;
+		if (_._$.addingStep == 2) {
+			return _.stepTwoValidation();
+		} else if (_._$.addingStep == 3) {
+			return _.stepThreeValidation();
+		}
+	}
+	stepTwoValidation(){
+		const _ = this;
+		if (_.studentInfo.firstName) {
+			if (_.studentInfo.lastName) {
+				if (_.studentInfo.email) {
+					if (_.studentInfo.avatar) {
+						if (_.studentInfo.password) {
+							if (_.studentInfo.cpass) {
+								if (_.studentInfo.cpass == _.studentInfo.password) {
+									return true;
+								} else {
+									_.showErrorPopup('Password and Repeat password must match');
+									setTimeout(_.closePopup.bind(_),3000)
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+	stepThreeValidation(){
+		const _ = this;
+		if (_.metaInfo && _.metaInfo.parentAddType == 'addNewParent') {
+
+		}
+	}
 	setCancelBtn(type = 'adding') {
 		const _ = this;
 		let stepBtn = _.f(`#${type}Form .step-prev-btn`);
@@ -484,6 +570,7 @@ export class UsersModule extends AdminPage {
 		let type = item.getAttribute('type');
 		if( type == 'adding' ) {
 			if(_.maxStep > _._$.addingStep) _._$.addingStep++;
+			_.nextStepBtnValidation();
 		}else{
 			if(_.maxAssignStep > _._$.assignStep) _._$.assignStep++;
 		}
@@ -493,6 +580,7 @@ export class UsersModule extends AdminPage {
 		let type = item.getAttribute('type');
 		if( type == 'adding' ) {
 			if(_._$.addingStep > _.minStep) _._$.addingStep--;
+			_.nextStepBtnValidation();
 		}else{
 			if(_._$.assignStep > _.minStep) _._$.assignStep--;
 		}

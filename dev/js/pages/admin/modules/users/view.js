@@ -10,11 +10,18 @@ export const view = {
 			</div>
 		`;
 	},
-	pagination(){
+	pagination(count = null,limit = null){
 		const _ = this;
 		return `
 			<div class="pagination pagination-top fill">
-				<div class="pagination-info"><span>1 - <i class="gusers-limit"><img src='/img/loader.gif' class='loader'></i> of <i class="gusers-count "><img src='/img/loader.gif' class='loader'></i></span></div>
+				<div class="pagination-info">
+					<span>
+						1 - 
+						<i class="gusers-limit">${limit !== null ? limit : "<img src='/img/loader.gif' class='loader'>"}</i>
+						 of 
+						<i class="gusers-count ">${count !== null ? count : "<img src='/img/loader.gif' class='loader'>"}</i>
+					</span>
+				</div>
 				<div class="pagination-links">
 					<a class="pagination-arrow pagination-prev" href="#">
 						<svg class="arrow">
@@ -308,8 +315,8 @@ export const view = {
 				<h3 class="avatars-title title">Select Avatar</h3>
 				<ul class="avatars-list"></ul>
 				<div class="avatars-buttons">
-					<button class="button">Discard</button>
-					<button class="button-blue">Save</button>
+					<button class="button" data-click="${_.componentName}:closeAvatar">Discard</button>
+					<button class="button-blue" data-click="${_.componentName}:confirmAvatar">Save</button>
 				</div>
 			</div>
 		`;
@@ -620,7 +627,7 @@ export const view = {
 					<h4 class="adding-subtitle">Student Personal Info</h4>
 					<div class="adding-avatar">
 						<button data-click="${_.componentName}:selectAvatar" data-callback="addStudent">
-							<strong class="adding-avatar-letter">${_.studentInfo.avatar ? '<img src="/img/' + _.metaInfo.avatarName + '.svg">' : 'K'}</strong>
+							<strong class="adding-avatar-letter">${_.studentInfo.avatarName ? '<img src="/img/' + _.studentInfo.avatarName + '.svg">' : 'K'}</strong>
 							<span class="adding-avatar-link">Select Avatar</span>
 						</button>
 					</div>
@@ -670,27 +677,42 @@ export const view = {
 	},
 	addingStepThree() {
 		const _ = this;
-		return `
+		let width = '';
+		if (_.metaInfo && _.metaInfo.parentAddType && _.metaInfo.parentAddType == 'assign') width = 'full';
+		let tpl =  `
 			<h3 class="adding-title">Parent Information</h3>
 			<div class="adding-section">
 				<div class="adding-label">Select the way of adding a parent</div>
 				<div class="adding-buttons">
-					<button class="adding-button" data-click="${_.componentName}:assignParent">Assign from base</button>
-					<button class="adding-button active" data-click="${_.componentName}:addNewParent">Add new parent</button>
-					<button class="adding-button">Skip for now</button>
+					<button class="adding-button ${_.metaInfo && _.metaInfo.parentAddType == 'assign' ? 'active' : ''}" data-click="${_.componentName}:assignParent">Assign from base</button>
+					<button class="adding-button ${(_.metaInfo && _.metaInfo.parentAddType == 'adding') || !_.metaInfo || !_.metaInfo.parentAddType ? 'active' : ''}" data-click="${_.componentName}:addNewParent">Add new parent</button>
+					<button class="adding-button ${_.metaInfo && _.metaInfo.parentAddType == 'skip' ? 'active' : ''}" data-click="${_.componentName}:skipParent">Skip for now</button>
 				</div>
 			</div>
-			<div class="adding-assign-body">
-				${_.assignNewParent()}
-			</div>
-		`;
+			<div class="adding-assign-body ${width}">`;
+		if (!_.metaInfo || !_.metaInfo.parentAddType || _.metaInfo.parentAddType == 'adding') {
+			tpl += _.assignNewParent();
+		} else if (_.metaInfo.parentAddType == 'assign') {
+			tpl += _.assignParentTpl(true);
+		} else {
+			tpl += _.skipParentTpl();
+		}
+		tpl += `</div>`;
+		return tpl;
 	},
-	assignParentTpl(){
+	skipParentTpl(){
+		return `<h2 class="parent-skip">You can assign or add parent later</h2>`
+	},
+	assignParentTpl(asked = false){
 		const _ = this;
-		return `
+		let
+			count = asked ? _.parents.total : null,
+			limit = asked ? _.parents.limit : null;
+		if (count < limit) limit = count;
+		let tpl = `
 			<div class="block" id="assignParent">
 				<div class="block-header">
-					<h2 class="block-title">Parents (<span class="users-count"></span>)</h2>
+					<h2 class="block-title">Parents (<span class="users-count">${count ?? ''}</span>)</h2>
 					<div class="block-header-item block-header-search">
 						<svg><use xlink:href="#search"></use></svg>
 						<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input>
@@ -703,7 +725,7 @@ export const view = {
 						<g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" style="--class:select block-header-select; --action:testChange; --name:testField; --classname:filter-select; --arrowsvg:img/sprite.svg#select-arrow;"><input type="hidden" name="testField" slot="value"></g-select>
 					</div>
 				</div>
-				${_.pagination()}
+				${_.pagination(count,limit)}
 				<div class="tbl">
 					<div class="tbl-head">
 						<div class="tbl-item"> 
@@ -762,12 +784,19 @@ export const view = {
 									<th><div class="tbl-item right">Action</div></th>
 								</tr>
 							</thead>
-							<tbody class="tbl-body"><tr><td><img src='/img/loader.gif' class='loader'></td></tr></tbody>
+							<tbody class="tbl-body">`;
+							if (asked) {
+								for (let item of _.parents.response) {
+									tpl += '<tr class="tbl-row">' + _.parentsBodyRowTpl(item) + '</tr>';
+								}
+							} else tpl += `<tr class="tbl-row"><td><img src='/img/loader.gif' class='loader'></td></tr>`;
+							tpl += `</tbody>
 						</table>
 					</div>
 				</div>
 			</div>
 		`
+		return tpl;
 	},
 	parentsBodyRowsTpl(usersData){
 		const _ = this;
@@ -824,7 +853,13 @@ export const view = {
 			<td>
 				<div class="tbl-item right actions">
 					<button class="users-btn button profile">Profile</button>
-					<button class="users-btn button-blue profile" data-id="${rowData['_id']}"  data-click=${_.componentName}:assignStudentToParent>Assign</button>
+					<button 
+						class="users-btn button-blue profile" 
+						data-id="${rowData['_id']}"  
+						data-click=${_.componentName}:assignStudentToParent
+					>
+						${_.studentInfo['parentId'] && _.studentInfo['parentId'] == rowData['_id'] ? 'Assigned' : 'Assign'}
+					</button>
 				</div>
 			</td>
 		`
@@ -1192,7 +1227,7 @@ export const view = {
 							<div class="adding-avatar">
 								<button data-click="${_.componentName}:selectAvatar">
 									<strong class="adding-avatar-letter">${_.studentInfo.avatar ? '<img src="/img/' + _.studentInfo.avatar.avatar + '.svg">' : _.studentInfo.firstName.substr(0,1)}</strong>
-									<span class="adding-avatar-link">Select Avatar</span>
+									<span class="adding-avatar-link">${_.studentInfo.avatar ? 'Change' : 'Select'} Avatar</span>
 								</button>
 							</div>
 							<div class="adding-section">
