@@ -513,10 +513,14 @@ export class UsersModule extends AdminPage {
 		_.parentInfo = {};
 	}
 	
-	removeCourse({item}) {
+	async removeCourse({item}) {
 		const _ = this;
 		let courseInfo = _.f('.student-profile-course-info');
 		_.clear(courseInfo);
+		let removeResponse = await Model.removeCourse({
+			studentId:_.studentInfo['_id'],
+			courseId:_.studentInfo.currentPlan.course['_id'],
+		});
 		courseInfo.innerHTML = _.emptyCourseInfo();
 		G_Bus.trigger('modaler','closeModal');
 	}
@@ -555,6 +559,50 @@ export class UsersModule extends AdminPage {
 
 
 
+	nextStepBtnValidation(){
+		const _ = this;
+		let stepBtn = _.f(`#addingForm .step-next-btn`);
+		if (_.validationsSteps.indexOf(_._$.addingStep) >= 0) {
+			if (!_.stepValidation()) {
+				stepBtn.setAttribute('disabled',true);
+				return void 0;
+			}
+		}
+		stepBtn.removeAttribute('disabled')
+	}
+	stepValidation(){
+		const _ = this;
+		if (_._$.addingStep == 2) {
+			return _.stepTwoValidation();
+		} else if (_._$.addingStep == 3) {
+			return _.stepThreeValidation();
+		}
+	}
+	stepTwoValidation(){
+		const _ = this;
+		if (_.studentInfo.firstName) {
+			if (_.studentInfo.lastName) {
+				if (_.studentInfo.email) {
+					if (_.studentInfo.avatar) {
+						if (_.studentInfo.password) {
+							if (_.studentInfo.cpass) {
+								if (_.studentInfo.cpass == _.studentInfo.password) {
+									return true;
+								} else {
+									_.showErrorPopup('Password and Repeat password must match');
+									setTimeout(_.closePopup.bind(_),3000)
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+	stepThreeValidation(){
+		const _ = this;
+		if (_.metaInfo && _.metaInfo.parentAddType == 'addNewParent') {
 
 	setCancelBtn(type = 'adding') {
 		const _ = this;

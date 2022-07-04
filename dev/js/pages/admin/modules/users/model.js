@@ -16,6 +16,7 @@ class _Model {
 			addingStepThree: `${env.backendUrl}/user/add-student-step3`,
 			addingStepFour: `${env.backendUrl}/user/add-student-step4`,
 			assignCourse: `${env.backendUrl}/user/assign-plan`,
+			removeCourse: `${env.backendUrl}/user/remove-plan`,
 		};
 	}
 	wrongResponse(method, response){
@@ -207,6 +208,28 @@ class _Model {
 				}
 			} else {
 				_.wrongRequest('addingStepFourData', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+
+	removeCourse(removeData){
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['removeCourse']}`, {
+				method: 'DELETE',
+				headers: _.baseHeaders,
+				body: JSON.stringify(removeData)
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('removeCourse', response);
+				}
+			} else {
+				_.wrongRequest('removeCourse', rawResponse)
 			}
 			resolve(null);
 		});
