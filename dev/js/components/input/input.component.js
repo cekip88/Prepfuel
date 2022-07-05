@@ -35,7 +35,6 @@ export default class GInput extends GComponent {
 			.on('setCheckboxValue',_.setCheckboxValue.bind(_))
 	}
 	
-	
 	get name(){
 		const _ = this;
 		return _.attr('name');
@@ -83,7 +82,6 @@ export default class GInput extends GComponent {
 		const _ = this;
 		_.shadow.querySelector('.inpt-title').textContent = value;
 	}
-
 	
 	/* Outside methods*/
 	
@@ -112,7 +110,6 @@ export default class GInput extends GComponent {
 	
 	/* Outside methods*/
 	/* Inside methods*/
-
 
 	datePick({value:value}) {
 		const _ = this;
@@ -675,7 +672,6 @@ export default class GInput extends GComponent {
 		  width: 100%;
 		  height: 54px;
 		  border: 1px solid transparent;
-		  padding: 0 15px;
 		  border-radius: 6px;
 		  background-color: rgb(var(--neutral-100));
 		}
@@ -698,7 +694,7 @@ export default class GInput extends GComponent {
 		  height: 50px;
 		  display: inline-flex;
 		  align-items: center;
-		  padding: var(--gap) 0 var(--gap) var(--gap);
+		  padding: var(--gap) 0 var(--gap) 12px;
 		  overflow: hidden;
 		}
 		.inpt-value:before {

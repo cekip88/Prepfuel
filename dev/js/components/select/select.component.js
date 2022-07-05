@@ -290,7 +290,6 @@ export default class GSelect extends GComponent {
 		})
 	}
 
-
 	createHiddenInput(data){
 		const _ = this;
 		return _.markup(_.getTpl('hiddenInput')(data));
@@ -605,7 +604,7 @@ export default class GSelect extends GComponent {
 			  padding: 0 12px;
 			  border-radius: 6px;
 			  background-color: rgb(var(--neutral-100));
-			  color: rgb(var(--neutral-500));
+			  color: #000;
 			  font-family: var(--f_bold);
 			}
 			

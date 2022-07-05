@@ -354,6 +354,7 @@ export const view = {
 	},
 	assignStepFour(){
 		const _ = this;
+		let schoolTitles = [_.metaInfo.firstSchool,_.metaInfo.secondSchool,_.metaInfo.thirdSchool];
 		return `
 			<div class="adding-center">
 				<h3 class="adding-title">Summary</h3>
@@ -382,20 +383,7 @@ export const view = {
 						<strong class="adding-summary-title">Application School List</strong>
 						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" type='assign' step="2">Edit</button>
 					</div>
-					<ul class="adding-summary-list">
-						<li class="adding-summary-item">
-							<span>First Choice:</span>
-							<strong>${_.studentInfo.firstSchool}</strong>
-						</li>
-						<li class="adding-summary-item">
-							<span>Second Choice:</span>
-							<strong>${_.studentInfo.secondSchool}</strong>
-						</li>
-						<li class="adding-summary-item">
-							<span>Third Choice:</span>
-							<strong>${_.studentInfo.thirdSchool}</strong>
-						</li>
-					</ul>
+					<ul class="adding-summary-list">${_.addingSummarySchoolsTpl(schoolTitles)}</ul>
 				</div>
 				<div class="adding-section">
 					<div class="adding-summary">
@@ -405,7 +393,7 @@ export const view = {
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
 							<span>Registered Official Test Date:</span>
-							<strong>${_.studentInfo.testDate}</strong>
+							<strong>${_.dateFormatting(_.studentInfo.testDate,'month DD, YYYY')}</strong>
 						</li>
 					</ul>
 				</div>
@@ -457,6 +445,21 @@ export const view = {
 				</div>
 			</div>
 		`;
+	},
+	addingSummarySchoolsTpl(schoolTitles){
+		const _ = this;
+		if (!schoolTitles.length) return;
+		let tpl = '', i = -1,titles = ['First Choice','Second Choice','Third Choice']
+		for (let schoolTitle of schoolTitles) {
+			i++;
+			if (!schoolTitle) continue;
+			tpl += `
+				<li class="adding-summary-item">
+					<span>${titles[i]}:</span>
+					<strong>${schoolTitle}</strong>
+				</li>`;
+		}
+		return tpl;
 	},
 	addingStudent(){
 		const _ = this;
@@ -996,14 +999,14 @@ export const view = {
 					<h4 class="adding-subtitle withmar">Registered Official Test Date</h4>
 					<div class="adding-inpt adding-radio-row">
 						<div class="form-label-row">
-							<input type="radio" id="have_registered" class="adding-radio" name="registered" checked>
+							<input type="radio" id="have_registered" class="adding-radio" name="registered" data-change="${_.componentName}:skipTestDate" ${_.studentInfo.testDatePicked ? 'checked' : ''}>
 							<label class="form-label adding-label-have" for="have_registered">Have registered</label>
 						</div>
 						<g-input type='date' format="month DD, YYYY" value="${_.studentInfo.testDate ?? ''}" data-change="${_.componentName}:fillStudentInfo" class="select adding-select" name="testDate" classname="adding-select" icon="false" xlink="select-arrow-bottom" placeholder="Press to choose your official test date"></g-input>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
-							<input type="radio" id="have_yet" class="adding-radio" name="registered">
+							<input type="radio" id="have_yet" class="adding-radio" name="registered" data-change="${_.componentName}:skipTestDate" ${!_.studentInfo.testDatePicked ? 'checked' : ''}>
 							<label class="form-label adding-label-have" for="have_yet">Have not registered yet</label>
 						</div>
 					</div>
@@ -1011,8 +1014,6 @@ export const view = {
 			</div>
 		`;
 	},
-	
-	
 	parentSkippedTpl(){
 		const _ = this;
 		return `
@@ -1041,7 +1042,8 @@ export const view = {
 	
 	addingStepSix(){
 		const _ = this;
-		let testDate = _.studentInfo['testDate'] ? _.createdAtFormat(_.studentInfo['testDate']) : ''
+		let testDate = 'Have not registered yet';
+		if (_.studentInfo.testDatePicked) testDate = _.studentInfo['testDate'] ? _.createdAtFormat(_.studentInfo['testDate']) : '';
 		return `
 			<div class="adding-center">
 				<h3 class="adding-title">Summary</h3>
@@ -1222,6 +1224,7 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Official test date</label>
 					</div>
+					<g-input type="date" name="testDate" format="month DD, YYYY" icon="false" value="${_.studentInfo['currentPlan']["testDate"] ? _.createdAtFormat(_.studentInfo['currentPlan']["testDate"]) : ''}" class="g-form-item" classname="form-input adding-inpt"></g-input>
 					<g-input type="text" name="testDate" value='${testDate}' class="g-form-item" classname="form-input adding-inpt"></g-input>
 					</div>
 			</div>

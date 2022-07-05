@@ -49,7 +49,7 @@ export class UsersModule extends AdminPage {
 				'domReady',
 				'assignParent','addNewParent','assignCourse','skipParent',
 				'changeTestType','changeStudentLevel','changeSection',
-				'fillStudentInfo','createStudent',
+				'fillStudentInfo','createStudent','skipTestDate',
 				'fillParentInfo','assignStudentToParent',
 				'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
 				'showSuccessPopup','showErrorPopup','closePopup',
@@ -74,7 +74,7 @@ export class UsersModule extends AdminPage {
 			_.fillProfile(data);
 		}
 	}
-	
+
 	async assignCourse({item}) {
 		const _ = this;
 		let response = await Model.assignCourse(_.studentInfo);
@@ -132,12 +132,17 @@ export class UsersModule extends AdminPage {
 			prop = item.getAttribute('name'),
 			value = item.value;
 		if( typeof value == 'object'){
-			value = value+'';
+			value = value + '';
 		}
 		if( (prop == 'firstSchool') || (prop == 'secondSchool')|| (prop == 'thirdSchool')|| (prop == 'grade')){
 			_.metaInfo[prop] = item.textContent;
 		}
 		_['studentInfo'][prop] = value;
+	}
+	skipTestDate({item}){
+		const _ = this;
+		if (item.id === 'have_registered') _.studentInfo.testDatePicked = true;
+		else _.studentInfo.testDatePicked = false;
 	}
 	fillDataByClass({className,data}){
 		const _ = this;
@@ -207,7 +212,7 @@ export class UsersModule extends AdminPage {
 		_.studentInfo['studentId'] = studentId;
 		_.subSection = item.getAttribute('section');
 		_.f('.profile-body').innerHTML = _.profile();
-		
+
 		if (currentStudent['currentPlan']){
 			_.studentInfo['firstSchool'] = currentStudent['currentPlan'].firstSchool ? currentStudent['currentPlan'].firstSchool['_id'] : '';
 			_.studentInfo['secondSchool'] = currentStudent['currentPlan'].secondSchool ? currentStudent['currentPlan'].secondSchool['_id'] : '';
@@ -373,15 +378,38 @@ export class UsersModule extends AdminPage {
 	// Show methods
 	async showAssignPopup({item}) {
 		const _ = this;
-		let stepOneData = await Model.addingStepOneData();
-		_['studentInfo'].course = stepOneData[0]['_id'];
-		_['studentInfo'].level = stepOneData[0]['levels'][0]['_id'];
-		_['metaInfo'].course = stepOneData[0]['title'];
-		_['metaInfo'].level = stepOneData[0]['levels'][0]['title'];
-		_.f('#assignForm').querySelector('.adding-body').innerHTML = _.addingStepOne(stepOneData);
+
+
+		let inner = '';
+		if (_._$.assignStep === 1) {
+
+			let stepOneData = await Model.addingStepOneData();
+			_['studentInfo'].course = stepOneData[0]['_id'];
+			_['studentInfo'].level = stepOneData[0]['levels'][0]['_id'];
+			_['metaInfo'].course = stepOneData[0]['title'];
+			_['metaInfo'].level = stepOneData[0]['levels'][0]['title'];
+
+			inner = _.addingStepOne(stepOneData);
+
+		} else if (_._$.assignStep === 2) {
+			inner = _.assignStepTwo(await Model.step4);
+		} else if (_._$.assignStep === 3) {
+			inner = _.addingStepThree();
+		} else if (_._$.assignStep === 4) {
+			inner = _.assignStepFour();
+		}
+
+		_.f('#assignForm').querySelector('.adding-body').innerHTML = inner;
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#assignForm'});
 	}
 
+		/*if (currentStudent.currentPlan){
+			if (currentStudent.currentPlan.firstSchool) _.studentInfo['firstSchool'] = currentStudent.currentPlan.firstSchool['_id'];
+			if (currentStudent.currentPlan.secondSchool) _.studentInfo['secondSchool'] = currentStudent.currentPlan.secondSchool['_id'];
+			if (currentStudent.currentPlan.thirdSchool) _.studentInfo['thirdSchool'] = currentStudent.currentPlan.thirdSchool['_id'];
+			_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.addingStepFourData());
+		} else _.f('.student-profile-course-info').innerHTML = _.emptyCourseInfo();
+	}*/
 	showRemovePopup({item}) {
 		const _ = this;
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#removeForm','closeBtn':'hide'});
@@ -454,7 +482,33 @@ export class UsersModule extends AdminPage {
 		}
 	}
 	// Validation methods end
-	
+
+	// Formatting method
+	dateFormatting(dateValue,format = 'MM-DD-YYYY'){
+		const _ = this;
+		if (!dateValue) return 'No date';
+		let
+			date = new Date(dateValue),
+			outValue = format,
+			days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Sunday'],
+			months = ['January','February','March','April','May','June','July','August','September','October','November','December'],
+			DD = date.getDate(),
+			month = date.getMonth() + 1,
+			MM = month >= 10 ? month : '0' + month,
+			YYYY = date.getFullYear();
+
+		if (DD < 10) DD = '0' + DD;
+
+		outValue = outValue.replace('DD',DD.toString());
+		outValue = outValue.replace('MM',MM.toString());
+		outValue = outValue.replace('YYYY',YYYY.toString());
+		outValue = outValue.replace('month',months[month - 1]);
+		outValue = outValue.replace('weekDay',days[date.getDay()]);
+
+		return outValue;
+	}
+	// End formatting method
+
 	
 	
 	handleErrors({method,data}){
@@ -568,15 +622,12 @@ export class UsersModule extends AdminPage {
 		}
 		G_Bus.trigger(_.componentName,'showSuccessPopup','Password Generated and Copied')
 
-		setTimeout(()=>{
-			G_Bus.trigger(_.componentName,'closePopup');
-			input.type = 'password';
-		},2000)
+		setTimeout(()=>{input.type = 'password'},2000)
 	}
 
 
 
-	
+
 	setCancelBtn(type = 'adding') {
 		const _ = this;
 		let stepBtn = _.f(`#${type}Form .step-prev-btn`);
