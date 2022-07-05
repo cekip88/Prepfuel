@@ -253,9 +253,7 @@ export const view = {
 									</div>
 								</li>
 							</ol>
-							<div class="adding-body">
-							
-							</div>
+							<div class="adding-body"></div>
 						</div>
 					</div>
 					<div class="test-footer">

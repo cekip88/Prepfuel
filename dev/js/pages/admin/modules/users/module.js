@@ -69,7 +69,7 @@ export class UsersModule extends AdminPage {
 			_.fillUserTable(tableData);
 			_.stepFour = await Model.addingStepFourData();
 			_.studentInfo = {};
-			_._$.addingStep = 1;
+			_._$.assignStep = 1;
 			//
 		}
 		if(_.subSection == 'profile'){
@@ -214,7 +214,7 @@ export class UsersModule extends AdminPage {
 		_.studentInfo['studentId'] = studentId;
 		_.subSection = item.getAttribute('section');
 		_.f('.profile-body').innerHTML = _.profile();
-		_._$.assignStep = 1;
+		_._$.addingStep = 1;
 
 		if (currentStudent['currentPlan']){
 			_.studentInfo['firstSchool'] = currentStudent['currentPlan'].firstSchool ? currentStudent['currentPlan'].firstSchool['_id'] : '';
@@ -340,12 +340,15 @@ export class UsersModule extends AdminPage {
 
 		let
 			pos = parseInt(item.getAttribute('pos')),
-			levelButtons = _.f('.level-buttons');
+			levelButtons = item.closest('.adding-body').querySelector('.level-buttons');
+
+
 		_.clear(levelButtons);
 		levelButtons.innerHTML = '<img src="/img/loader.gif">';
 
 		let stepData = await Model.addingStepOneData();
 		_.coursePos = pos;
+
 
 		_['studentInfo'].course = stepData[pos]['_id'];
 		_['studentInfo'].level = stepData[pos]['levels'][0]['_id'];
@@ -680,6 +683,7 @@ export class UsersModule extends AdminPage {
 		}
 		let
 			addingBody = _.f('#addingForm .adding-body');
+		if (!addingBody) return void 0;
 		addingBody.innerHTML = '<img src="/img/loader.gif">';
 		
 		_.clear(addingBody);
@@ -712,6 +716,7 @@ export class UsersModule extends AdminPage {
 		}
 		let
 			addingBody = _.f('#assignForm .adding-body');
+		if (!addingBody) return void 0;
 		_.clear(addingBody);
 		if(_._$.assignStep == _.minStep){
 			_.setCancelBtn('assign');
