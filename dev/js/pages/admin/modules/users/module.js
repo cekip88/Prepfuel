@@ -68,6 +68,8 @@ export class UsersModule extends AdminPage {
 			let tableData = await Model.getUsers({role:_.subSection,update: update});
 			_.fillUserTable(tableData);
 			_.stepFour = await Model.addingStepFourData();
+			_.studentInfo = {};
+			_._$.addingStep = 1;
 			//
 		}
 		if(_.subSection == 'profile'){
@@ -205,13 +207,14 @@ export class UsersModule extends AdminPage {
 		let
 			studentId = item.getAttribute('data-id'),
 			currentStudent = Model.studentsData.response.filter( student => student['_id'] == studentId )[0];
-		_.studentInfo = Object.assign(_.studentInfo,currentStudent['user']);
+		_.studentInfo = Object.assign({},currentStudent['user']);
 		_.studentInfo['currentSchool'] = currentStudent['currentSchool'];
 		_.studentInfo['currentPlan'] = currentStudent['currentPlan'];
 		_.studentInfo['grade'] = currentStudent['grade']['_id'];
 		_.studentInfo['studentId'] = studentId;
 		_.subSection = item.getAttribute('section');
 		_.f('.profile-body').innerHTML = _.profile();
+		_._$.assignStep = 1;
 
 		if (currentStudent['currentPlan']){
 			_.studentInfo['firstSchool'] = currentStudent['currentPlan'].firstSchool ? currentStudent['currentPlan'].firstSchool['_id'] : '';
@@ -369,7 +372,7 @@ export class UsersModule extends AdminPage {
 			};
 		} else if (_.subSection === 'parents') {
 			return '';
-		} else if (_.subSection === 'payments') {
+		} else if (_.subSection === 'admins') {
 			return '';
 		}
 	}
@@ -483,33 +486,6 @@ export class UsersModule extends AdminPage {
 	}
 	// Validation methods end
 
-	// Formatting method
-	dateFormatting(dateValue,format = 'MM-DD-YYYY'){
-		const _ = this;
-		if (!dateValue) return 'No date';
-		let
-			date = new Date(dateValue),
-			outValue = format,
-			days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Sunday'],
-			months = ['January','February','March','April','May','June','July','August','September','October','November','December'],
-			DD = date.getDate(),
-			month = date.getMonth() + 1,
-			MM = month >= 10 ? month : '0' + month,
-			YYYY = date.getFullYear();
-
-		if (DD < 10) DD = '0' + DD;
-
-		outValue = outValue.replace('DD',DD.toString());
-		outValue = outValue.replace('MM',MM.toString());
-		outValue = outValue.replace('YYYY',YYYY.toString());
-		outValue = outValue.replace('month',months[month - 1]);
-		outValue = outValue.replace('weekDay',days[date.getDay()]);
-
-		return outValue;
-	}
-	// End formatting method
-
-	
 	
 	handleErrors({method,data}){
 		const _ = this;
@@ -624,9 +600,6 @@ export class UsersModule extends AdminPage {
 
 		setTimeout(()=>{input.type = 'password'},2000)
 	}
-
-
-
 
 	setCancelBtn(type = 'adding') {
 		const _ = this;

@@ -354,6 +354,9 @@ export const view = {
 	},
 	assignStepFour(){
 		const _ = this;
+
+		let testDate = 'Have not registered yet';
+		if (_.studentInfo.testDatePicked) testDate = _.createdAtFormat(_.studentInfo['testDate']);
 		let schoolTitles = [_.metaInfo.firstSchool,_.metaInfo.secondSchool,_.metaInfo.thirdSchool];
 		return `
 			<div class="adding-center">
@@ -393,7 +396,7 @@ export const view = {
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
 							<span>Registered Official Test Date:</span>
-							<strong>${_.dateFormatting(_.studentInfo.testDate,'month DD, YYYY')}</strong>
+							<strong>${testDate}</strong>
 						</li>
 					</ul>
 				</div>
@@ -1043,7 +1046,8 @@ export const view = {
 	addingStepSix(){
 		const _ = this;
 		let testDate = 'Have not registered yet';
-		if (_.studentInfo.testDatePicked) testDate = _.studentInfo['testDate'] ? _.createdAtFormat(_.studentInfo['testDate']) : '';
+		if (_.studentInfo.testDatePicked) testDate = _.createdAtFormat(_.studentInfo['testDate']);
+		let schoolTitles = [_.metaInfo.firstSchool,_.metaInfo.secondSchool,_.metaInfo.thirdSchool];
 		return `
 			<div class="adding-center">
 				<h3 class="adding-title">Summary</h3>
@@ -1110,18 +1114,7 @@ export const view = {
 							<span>Grade:</span>
 							<strong>${_.metaInfo.grade ?? ''}</strong>
 						</li>
-						<li class="adding-summary-item">
-							<span>First Choice:</span>
-							<strong>${_.metaInfo.firstSchool ?? ''}</strong>
-						</li>
-						<li class="adding-summary-item">
-							<span>Second Choice:</span>
-							<strong>${_.metaInfo.secondSchool ?? ''}</strong>
-						</li>
-						<li class="adding-summary-item">
-							<span>Third Choice:</span>
-							<strong>${_.metaInfo.thirdSchool ?? ''}</strong>
-						</li>
+						${_.addingSummarySchoolsTpl(schoolTitles)}
 					</ul>
 				</div>
 				<div class="adding-section">

@@ -79,12 +79,13 @@ export class AdminPage extends G {
 		return Promise.resolve(module.render());
 	}
 	createdAtFormat(value,format = 'month DD, YYYY'){
+		if (!value) return 'No date'
 		value = value.split('T')[0].split('-');
 		let
-		year = value[0],
-		month = value[1],
-		day = value[2],
-		months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+			year = value[0],
+			month = value[1],
+			day = value[2],
+			months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 		
 		let res = format;
 		res = res.replace('DD',day)
