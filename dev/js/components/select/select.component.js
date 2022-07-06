@@ -263,10 +263,10 @@ export default class GSelect extends GComponent {
 		}
 		if (!_.multiple) {
 			_.close();
+		} else {
+			_.optionsSort(item);
+			_.open();
 		}
-
-		_.optionsSort(item);
-		if (_.multiple) _.open()
 		_.triggerChangeEvent();
 	}
 	unChoose({item}){
@@ -350,7 +350,7 @@ export default class GSelect extends GComponent {
 			  --body-display: none;
 			  --body-max-height: 0px;
 			}
-			.g-select-line {
+			.g-select-body.multiple .g-select-line {
 				width: calc(100% - 16px);
 				height: 1px;
 				flex: 0 0 1px;
