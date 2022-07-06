@@ -62,8 +62,10 @@ export class AdminPage extends G {
 		let
 			section = item.getAttribute('section'),
 			tpl = section.split('/')[2];
+		if(_.currentSection == section) return void 0;
 		if(section) history.pushState(null, null, section);
 		_.moduleRender([tpl]);
+		_.currentSection = section;
 	}
 	async moduleRender(params){
 		const _ = this;
@@ -75,7 +77,7 @@ export class AdminPage extends G {
 		if(!module._$){
 			module._$ = {};
 		}
-		module.super_$=_._$;
+		module.super_$ = _._$;
 		return Promise.resolve(module.render());
 	}
 	createdAtFormat(value,format = 'month DD, YYYY'){
@@ -101,6 +103,7 @@ export class AdminPage extends G {
 		_.header = await _.getBlock({name:'header'},'blocks');
 		if(params.length > 0){
 			await _.moduleRender(params);
+			_.currentSection = '/admin/' + params[0];
 		}
 
 		setTimeout(()=>{

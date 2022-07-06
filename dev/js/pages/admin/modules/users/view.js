@@ -93,7 +93,7 @@ export const view = {
 							<use xlink:href="#write"></use> 
 						</svg>
 					</button>
-					<button class="users-btn button" data-click="${_.componentName}:showRemoveUserPopup">
+					<button class="users-btn button" data-click="${_.componentName}:showRemoveUserPopup"  data-id="${user._id}">
 						<svg class="button-icon">
 							<use xlink:href="#trash"></use>
 						</svg>
@@ -192,7 +192,7 @@ export const view = {
 						</div>
 					</div>
 				</div>
-				${_.addingStudent()}
+				
 			</div>
 		`;
 	},
@@ -358,6 +358,7 @@ export const view = {
 
 	assignStepTwo(stepData){
 		const _ = this;
+		console.log(stepData);
 		return `
 			<div class="adding-center">
 				<h3 class="adding-title">Application School List</h3>
@@ -564,15 +565,19 @@ export const view = {
 		});
 		return tpl;
 	},
+	
+	// Adding steps
 	addingStepOne(stepData){
 		const _ = this;
-		let tpl = `
-			<h3 class="adding-title">Course & Plan</h3>
-			<div class="adding-section">
-				<div class="adding-label">What test is the student purchasing?</div>
-				<div class="adding-buttons">
+		let
+			courses = stepData['courses'],
+			tpl = `
+				<h3 class="adding-title">Course & Plan</h3>
+				<div class="adding-section">
+					<div class="adding-label">What test is the student purchasing?</div>
+					<div class="adding-buttons">
 		`;
-		stepData.forEach( (item,cnt) => {
+		courses.forEach( (item,cnt) => {
 			let activeClass = '';
 			if(_.studentInfo['course']){
 				if(_.studentInfo['course'] == item._id){
@@ -591,7 +596,7 @@ export const view = {
 			<div class="adding-section">
 				<div class="adding-label">What level of the test student plan to take?</div>
 				<div class="adding-buttons level-buttons loader-parent">
-					${_.levelButtons(stepData[_.coursePos])}
+					${_.levelButtons(courses[_.coursePos])}
 				</div>
 			</div>
 			<div class="adding-section">
@@ -719,265 +724,6 @@ export const view = {
 		tpl += `</div>`;
 		return tpl;
 	},
-	skipParentTpl(){
-		return `<h2 class="parent-skip">You can assign or add parent later</h2>`
-	},
-	assignParentTpl(asked = false){
-		const _ = this;
-		let
-			count = asked ? _.parents.total : null,
-			limit = asked ? _.parents.limit : null;
-		if (count < limit) limit = count;
-		let tpl = `
-			<div class="block" id="assignParent">
-				<div class="block-header">
-					<h2 class="block-title">Parents (<span class="users-count">${count ?? ''}</span>)</h2>
-					<div class="block-header-item block-header-search">
-						<svg><use xlink:href="#search"></use></svg>
-						<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input>
-					</div>
-					<div class="block-header-item block-header-date">
-						<svg><use xlink:href="#calendar"></use></svg>
-						<g-input class="block-header-input block-header-date" type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input>
-					</div>
-					<div class="block-header-item block-header-select">
-						<g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" style="--class:select block-header-select; --action:testChange; --name:testField; --classname:filter-select; --arrowsvg:img/sprite.svg#select-arrow;"><input type="hidden" name="testField" slot="value"></g-select>
-					</div>
-				</div>
-				${_.pagination(count,limit)}
-				<div class="tbl">
-					<div class="tbl-head">
-						<div class="tbl-item"> 
-							<span>USER Name</span>
-							<div class="tbl-sort-btns">
-								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-							</div>
-						</div>
-						<div class="tbl-item">
-							<span>Students</span>
-							<div class="tbl-sort-btns">
-								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-							</div>
-						</div>
-						<div class="tbl-item right"><span>date Registered</span>
-							<div class="tbl-sort-btns">
-								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-							</div>
-						</div>
-						<div class="tbl-item right">Action</div>
-					</div>
-					<div class="table-cont loader-parent">
-						<table class="table">
-							<thead class="tbl-head">
-								<tr>
-									<th>
-										<div class="tbl-item">
-											<span>USER Name</span>
-											<div class="tbl-sort-btns">
-												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-											</div> 
-										</div>
-									</th>
-									<th>
-										<div class="tbl-item">
-											<span>Students</span>
-											<div class="tbl-sort-btns">
-												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-											</div> 
-										</div>
-									</th>
-									<th>
-										<div class="tbl-item right">
-											<span>date Registered</span>
-											<div class="tbl-sort-btns">
-												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-											</div> 
-										</div>
-									</th>
-									<th><div class="tbl-item right">Action</div></th>
-								</tr>
-							</thead>
-							<tbody class="tbl-body">`;
-							if (asked) {
-								for (let item of _.parents.response) {
-									tpl += '<tr class="tbl-row">' + _.parentsBodyRowTpl(item) + '</tr>';
-								}
-							} else tpl += `<tr class="tbl-row"><td><img src='/img/loader.gif' class='loader'></td></tr>`;
-							tpl += `</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-		`
-		return tpl;
-	},
-	parentsBodyRowsTpl(usersData){
-		const _ = this;
-		let trs = [];
-		usersData = usersData['response'];
-		for(let item of usersData){
-			let tr = document.createElement('TR');
-			tr.className= 'tbl-row';
-			tr.setAttribute('user-id',item['_id']);
-			tr.innerHTML = _.parentsBodyRowTpl(item);
-			trs.push(tr);
-		}
-		return trs;
-	},
-	parentsBodyRowTpl(rowData){
-		const _ = this;
-		let tpl = `
-			<td>
-				<div class="tbl-item">
-					<div class="parent-table-avatar">
-						<span>${rowData['user'].firstName.substr(0,1)}</span>
-					</div>
-					<div class="users-info">
-						<h6 class="users-info-name">${rowData['user'].firstName} ${rowData['user'].lastName}</h6>
-						<span class="users-info-email">${rowData['user'].email}</span>
-					</div>
-				</div>
-			</td>
-			<td>
-				<div class="tbl-item parent-table-students-block">`;
-
-		if (rowData.students.length) {
-			tpl += `<div class="parent-table-students">`;
-			for (let item of rowData.students) {
-				if(rowData.students.length) {
-					let avatar = item.user.avatar ? item.user.avatar.avatar : '';
-					tpl += `<div class="parent-table-student">${avatar ? '<img src="/img/' + avatar + '.svg">' : ''}</div>`
-				}
-			}
-			tpl += `
-				</div>
-				<div class="parent-table-students-count">${rowData.students.length} student${rowData.students.length > 1 ? 's' : ''}</div>`
-		} else {
-			tpl += `<div class="parent-table-students-empty">No Students</div>`
-		}
-		tpl += `
-				</div>
-			</td>
-			<td>
-				<div class="tbl-item right">
-					<div class="users-date">${_.createdAtFormat(rowData.createdAt)}</div>
-				</div>
-			</td>
-			<td>
-				<div class="tbl-item right actions">
-					<button class="users-btn button profile">Profile</button>
-					<button 
-						class="users-btn button-blue profile" 
-						data-id="${rowData['_id']}"  
-						data-click=${_.componentName}:assignStudentToParent
-					>
-						${_.studentInfo['parentId'] && _.studentInfo['parentId'] == rowData['_id'] ? 'Assigned' : 'Assign'}
-					</button>
-				</div>
-			</td>
-		`
-		return tpl;
-	},
-	assignFromBase(){
-		const _ = this;
-	},
-	assignNewParent(){
-		const _ = this;
-		return `
-			<div class="adding-section">
-				<h4 class="adding-subtitle">Parent Personal Info</h4>
-				<div class="adding-avatar">
-					<div class="profile-img-row">
-						<div class="profile-img">
-							<div class="profile-img-letter">
-								${this.super_$.firstName[0].toUpperCase()}
-							</div>
-						</div>
-						<div class="profile-img-desc">
-							Allowed *.jpeg,*.jpg, *.png, *.gif<br>
-							Max size of 3.1 MB
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="adding-section">
-				<div class="profile-form-row">
-					<div class="form-label-row">
-						<label class="form-label">First name</label>
-					</div>
-					<g-input type="text" name="firstName" value="${_.parentInfo.firstName ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
-				</div>
-				<div class="profile-form-row">
-					<div class="form-label-row">
-						<label class="form-label">Last name</label>
-					</div>
-					<g-input type="text" name="lastName" value="${_.parentInfo.lastName ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
-				</div>
-				<div class="profile-form-row">
-					<div class="form-label-row">
-						<label class="form-label">Email</label>
-					</div>
-					<g-input type="email" name="email" value="${_.parentInfo.email ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
-				</div>
-				<div class="profile-form-row">
-					<div class="form-label-row">
-						<label class="form-label">Phone Number</label>
-					</div>
-					<g-input type="email" name="phone" value="${_.parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
-				</div>
-			</div>
-			<div class="adding-section">
-				<h4 class="adding-subtitle">Password</h4>
-				<p class="adding-text">Password will be sent to a student via email invitation to the platform</p>
-				<div class="adding-inpt small">
-					<div class="form-label-row">
-						<label class="form-label">Password</label>
-					</div>
-					<g-input type="password" name="password" value="${_.parentInfo.password ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input"></g-input>
-				</div>
-				<p class="adding-text">8+ characters, with min. one number, one uppercase letter and one special character</p>
-				<div class="adding-inpt small">
-					<div class="form-label-row">
-						<label class="form-label">Repeat password</label>
-					</div>
-					<g-input type="password" name="cpass" value="${_.parentInfo.cpass ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input"></g-input>
-				</div>
-			</div>
-			<button class="adding-generate" data-click="${_.componentName}:generatePassword">Generate Password</button>
-		`;
-	},
-	
-	createSelectItems(items,template,active){
-		const _ = this;
-		let outItems = [];
-		let templateSplit = template.split(';');
-		for (let item of items) {
-			let arrItem = {};
-			templateSplit.forEach(( spl) => {
-				let
-					splitItem = spl.split(':'),
-					selectProp = splitItem[0],
-					dataProp = splitItem[1];
-				arrItem[selectProp] = item[dataProp];
-				if(active){
-					let activeSplit = active.split(':'),
-							activeProp = activeSplit[0],
-							activeValue = activeSplit[1];
-					if(item[activeProp] == activeValue){
-						arrItem['active'] = true;
-					}
-				}
-			});
-			outItems.push(arrItem);
-		}
-		return outItems;
-	},
 	addingStepFour(stepData){
 		const _ = this;
 		let gradeActive;
@@ -1030,32 +776,6 @@ export const view = {
 			</div>
 		`;
 	},
-	parentSkippedTpl(){
-		const _ = this;
-		return `
-			<li class="adding-summary-item">
-				<strong>Skipped for now</strong>
-			</li>
-		`;
-	},
-	parentTpl(){
-		const _ = this;
-		return `
-			<li class="adding-summary-item">
-				<span>First Name:</span>
-				<strong>${_.parentInfo.firstName ?? ''}</strong>
-			</li>
-			<li class="adding-summary-item">
-				<span>Last Name:</span>
-				<strong>${_.parentInfo.lastName ?? ''}</strong>
-			</li>
-			<li class="adding-summary-item">
-				<span>Email:</span>
-				<strong>${_.parentInfo.email ?? ''}</strong>
-			</li>
-		`;
-	},
-	
 	addingStepSix(){
 		const _ = this;
 		let testDate = 'Have not registered yet';
@@ -1191,6 +911,294 @@ export const view = {
 			</div>
 		`;
 	},
+	// Adding steps end
+	
+	skipParentTpl(){
+		return `<h2 class="parent-skip">You can assign or add parent later</h2>`
+	},
+	assignParentTpl(asked = false){
+		const _ = this;
+		let
+			count = asked ? _.parents.total : null,
+			limit = asked ? _.parents.limit : null;
+		if (count < limit) limit = count;
+		let tpl = `
+			<div class="block" id="assignParent">
+				<div class="block-header">
+					<h2 class="block-title">Parents (<span class="users-count">${count ?? ''}</span>)</h2>
+					<div class="block-header-item block-header-search">
+						<svg><use xlink:href="#search"></use></svg>
+						<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input>
+					</div>
+					<div class="block-header-item block-header-date">
+						<svg><use xlink:href="#calendar"></use></svg>
+						<g-input class="block-header-input block-header-date" type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input>
+					</div>
+					<div class="block-header-item block-header-select">
+						<g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" style="--class:select block-header-select; --action:testChange; --name:testField; --classname:filter-select; --arrowsvg:img/sprite.svg#select-arrow;"><input type="hidden" name="testField" slot="value"></g-select>
+					</div>
+				</div>
+				${_.pagination(count,limit)}
+				<div class="tbl">
+					<div class="tbl-head">
+						<div class="tbl-item"> 
+							<span>USER Name</span>
+							<div class="tbl-sort-btns">
+								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							</div>
+						</div>
+						<div class="tbl-item">
+							<span>Students</span>
+							<div class="tbl-sort-btns">
+								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							</div>
+						</div>
+						<div class="tbl-item right"><span>date Registered</span>
+							<div class="tbl-sort-btns">
+								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							</div>
+						</div>
+						<div class="tbl-item right">Action</div>
+					</div>
+					<div class="table-cont loader-parent">
+						<table class="table">
+							<thead class="tbl-head">
+								<tr>
+									<th>
+										<div class="tbl-item">
+											<span>USER Name</span>
+											<div class="tbl-sort-btns">
+												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											</div> 
+										</div>
+									</th>
+									<th>
+										<div class="tbl-item">
+											<span>Students</span>
+											<div class="tbl-sort-btns">
+												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											</div> 
+										</div>
+									</th>
+									<th>
+										<div class="tbl-item right">
+											<span>date Registered</span>
+											<div class="tbl-sort-btns">
+												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											</div> 
+										</div>
+									</th>
+									<th><div class="tbl-item right">Action</div></th>
+								</tr>
+							</thead>
+							<tbody class="tbl-body">`;
+		if (asked) {
+			for (let item of _.parents.response) {
+				tpl += '<tr class="tbl-row">' + _.parentsBodyRowTpl(item) + '</tr>';
+			}
+		} else tpl += `<tr class="tbl-row"><td><img src='/img/loader.gif' class='loader'></td></tr>`;
+		tpl += `</tbody>
+				</table>
+			</div>
+			</div>
+			</div>
+		`
+		return tpl;
+	},
+	parentsBodyRowsTpl(usersData){
+		const _ = this;
+		let trs = [];
+		usersData = usersData['response'];
+		for(let item of usersData){
+			let tr = document.createElement('TR');
+			tr.className= 'tbl-row';
+			tr.setAttribute('user-id',item['_id']);
+			tr.innerHTML = _.parentsBodyRowTpl(item);
+			trs.push(tr);
+		}
+		return trs;
+	},
+	parentsBodyRowTpl(rowData){
+		const _ = this;
+		let tpl = `
+			<td>
+				<div class="tbl-item">
+					<div class="parent-table-avatar">
+						<span>${rowData['user'].firstName.substr(0,1)}</span>
+					</div>
+					<div class="users-info">
+						<h6 class="users-info-name">${rowData['user'].firstName} ${rowData['user'].lastName}</h6>
+						<span class="users-info-email">${rowData['user'].email}</span>
+					</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item parent-table-students-block">`;
+		if (rowData.students.length) {
+			tpl += `<div class="parent-table-students">`;
+			for (let item of rowData.students) {
+				if(rowData.students.length) {
+					let avatar = item.user.avatar ? item.user.avatar.avatar : '';
+					tpl += `<div class="parent-table-student">${avatar ? '<img src="/img/' + avatar + '.svg">' : ''}</div>`
+				}
+			}
+			tpl += `
+				</div>
+				<div class="parent-table-students-count">${rowData.students.length} student${rowData.students.length > 1 ? 's' : ''}</div>`
+		} else {
+			tpl += `<div class="parent-table-students-empty">No Students</div>`
+		}
+		tpl += `
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item right">
+					<div class="users-date">${_.createdAtFormat(rowData.createdAt)}</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item right actions">
+					<button class="users-btn button profile">Profile</button>
+					<button 
+						class="users-btn button-blue profile" 
+						data-id="${rowData['_id']}"  
+						data-click=${_.componentName}:assignStudentToParent
+					>
+						${_.studentInfo['parentId'] && _.studentInfo['parentId'] == rowData['_id'] ? 'Assigned' : 'Assign'}
+					</button>
+				</div>
+			</td>
+		`
+		return tpl;
+	},
+	assignFromBase(){
+		const _ = this;
+	},
+	assignNewParent(){
+		const _ = this;
+		return `
+			<div class="adding-section">
+				<h4 class="adding-subtitle">Parent Personal Info</h4>
+				<div class="adding-avatar">
+					<div class="profile-img-row">
+						<div class="profile-img">
+							<div class="profile-img-letter">
+								${this.super_$.firstName[0].toUpperCase()}
+							</div>
+						</div>
+						<div class="profile-img-desc">
+							Allowed *.jpeg,*.jpg, *.png, *.gif<br>
+							Max size of 3.1 MB
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="adding-section">
+				<div class="profile-form-row">
+					<div class="form-label-row">
+						<label class="form-label">First name</label>
+					</div>
+					<g-input type="text" name="firstName" value="${_.parentInfo.firstName ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+				</div>
+				<div class="profile-form-row">
+					<div class="form-label-row">
+						<label class="form-label">Last name</label>
+					</div>
+					<g-input type="text" name="lastName" value="${_.parentInfo.lastName ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+				</div>
+				<div class="profile-form-row">
+					<div class="form-label-row">
+						<label class="form-label">Email</label>
+					</div>
+					<g-input type="email" name="email" value="${_.parentInfo.email ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+				</div>
+				<div class="profile-form-row">
+					<div class="form-label-row">
+						<label class="form-label">Phone Number</label>
+					</div>
+					<g-input type="email" name="phone" value="${_.parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+				</div>
+			</div>
+			<div class="adding-section">
+				<h4 class="adding-subtitle">Password</h4>
+				<p class="adding-text">Password will be sent to a student via email invitation to the platform</p>
+				<div class="adding-inpt small">
+					<div class="form-label-row">
+						<label class="form-label">Password</label>
+					</div>
+					<g-input type="password" name="password" value="${_.parentInfo.password ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input"></g-input>
+				</div>
+				<p class="adding-text">8+ characters, with min. one number, one uppercase letter and one special character</p>
+				<div class="adding-inpt small">
+					<div class="form-label-row">
+						<label class="form-label">Repeat password</label>
+					</div>
+					<g-input type="password" name="cpass" value="${_.parentInfo.cpass ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input"></g-input>
+				</div>
+			</div>
+			<button class="adding-generate" data-click="${_.componentName}:generatePassword">Generate Password</button>
+		`;
+	},
+	
+	createSelectItems(items,template,active){
+		const _ = this;
+		let outItems = [];
+		let templateSplit = template.split(';');
+		for (let item of items) {
+			let arrItem = {};
+			templateSplit.forEach(( spl) => {
+				let
+					splitItem = spl.split(':'),
+					selectProp = splitItem[0],
+					dataProp = splitItem[1];
+				arrItem[selectProp] = item[dataProp];
+				if(active){
+					let activeSplit = active.split(':'),
+							activeProp = activeSplit[0],
+							activeValue = activeSplit[1];
+					if(item[activeProp] == activeValue){
+						arrItem['active'] = true;
+					}
+				}
+			});
+			outItems.push(arrItem);
+		}
+		return outItems;
+	},
+	
+	parentSkippedTpl(){
+		const _ = this;
+		return `
+			<li class="adding-summary-item">
+				<strong>Skipped for now</strong>
+			</li>
+		`;
+	},
+	parentTpl(){
+		const _ = this;
+		return `
+			<li class="adding-summary-item">
+				<span>First Name:</span>
+				<strong>${_.parentInfo.firstName ?? ''}</strong>
+			</li>
+			<li class="adding-summary-item">
+				<span>Last Name:</span>
+				<strong>${_.parentInfo.lastName ?? ''}</strong>
+			</li>
+			<li class="adding-summary-item">
+				<span>Email:</span>
+				<strong>${_.parentInfo.email ?? ''}</strong>
+			</li>
+		`;
+	},
+	
+	
 
 	successPopupTpl(text,color){
 		const _ = this;
@@ -1246,6 +1254,18 @@ export const view = {
 		`;
 	},
 	
+	notifications(){
+		const _ = this;
+		return `
+			<h1>Notifications</h1>
+		`;
+	},
+	activityHistory(){
+		const _ = this;
+		return `
+			<h1>Activity History</h1>
+		`;
+	},
 	parentsInfo(){
 		const _ = this;
 		return `
@@ -1427,6 +1447,7 @@ export const view = {
 		const _ = this;
 		return `
 			<div hidden>
+				${_.addingStudent()}
 				${_.assignStudent()}
 				${_.removeCourseTpl()}
 				${_.removeUserTpl()}
