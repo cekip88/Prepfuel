@@ -192,7 +192,7 @@ export const view = {
 						</div>
 					</div>
 				</div>
-				${_.addingStudent()}
+				
 			</div>
 		`;
 	},
@@ -564,15 +564,20 @@ export const view = {
 		});
 		return tpl;
 	},
+	
+	// Adding steps
 	addingStepOne(stepData){
 		const _ = this;
-		let tpl = `
-			<h3 class="adding-title">Course & Plan</h3>
-			<div class="adding-section">
-				<div class="adding-label">What test is the student purchasing?</div>
-				<div class="adding-buttons">
+		let
+			courses = stepData['courses'],
+			tpl = `
+				<h3 class="adding-title">Course & Plan</h3>
+				<div class="adding-section">
+					<div class="adding-label">What test is the student purchasing?</div>
+					<div class="adding-buttons">
 		`;
-		stepData.forEach( (item,cnt) => {
+
+		courses.forEach( (item,cnt) => {
 			let activeClass = '';
 			if(_.studentInfo['course']){
 				if(_.studentInfo['course'] == item._id){
@@ -591,7 +596,7 @@ export const view = {
 			<div class="adding-section">
 				<div class="adding-label">What level of the test student plan to take?</div>
 				<div class="adding-buttons level-buttons loader-parent">
-					${_.levelButtons(stepData[_.coursePos])}
+					${_.levelButtons(courses[_.coursePos])}
 				</div>
 			</div>
 			<div class="adding-section">
@@ -719,6 +724,195 @@ export const view = {
 		tpl += `</div>`;
 		return tpl;
 	},
+	addingStepFour(stepData){
+		const _ = this;
+		let gradeActive;
+		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade}`;
+		let gradeItems = _.createSelectItems(stepData.grades, 'value:_id;text:grade', gradeActive);
+		return `
+			<div class="adding-center">
+				<h3 class="adding-title">School Information</h3>
+				<div class="adding-section">
+					<h4 class="adding-subtitle withmar">Your current school</h4>
+					<div class="adding-inpt small">
+						<div class="form-label-row">
+							<label class="form-label">Current school</label>
+						</div>
+						<g-input type="text" value="${_.studentInfo.currentSchool ?? ''}" name="currentSchool" data-input="${_.componentName}:fillStudentInfo" class="g-form-item" classname="form-input adding-inpt"></g-input>
+					</div>
+					<div class="adding-inpt">
+						<div class="form-label-row">
+							<label class="form-label">Grade</label>
+						</div>
+						<g-select class="select adding-select" name="grade" classname="adding-select" data-change="${_.componentName}:fillStudentInfo" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
+						 items='${JSON.stringify(gradeItems)}'></g-select>
+					</div>
+				</div>
+				${_.choiseSelectStudent(stepData)}
+			</div>
+		`;
+	},
+	addingStepFive(){
+		const _ = this;
+		return `
+			<div class="adding-center">
+				<h3 class="adding-title">Test Information</h3>
+				<div class="adding-section">
+					<h4 class="adding-subtitle withmar">Registered Official Test Date</h4>
+					<div class="adding-inpt adding-radio-row">
+						<div class="form-label-row">
+							<input type="radio" id="have_registered" class="adding-radio" name="registered" data-change="${_.componentName}:skipTestDate" ${_.studentInfo.testDatePicked ? 'checked' : ''}>
+							<label class="form-label adding-label-have" for="have_registered">Have registered</label>
+						</div>
+						<g-input type='date' format="month DD, YYYY" value="${_.studentInfo.testDate ?? ''}" data-change="${_.componentName}:fillStudentInfo" class="select adding-select" name="testDate" classname="adding-select" icon="false" xlink="select-arrow-bottom" placeholder="Press to choose your official test date"></g-input>
+					</div>
+					<div class="adding-inpt">
+						<div class="form-label-row">
+							<input type="radio" id="have_yet" class="adding-radio" name="registered" data-change="${_.componentName}:skipTestDate" ${!_.studentInfo.testDatePicked ? 'checked' : ''}>
+							<label class="form-label adding-label-have" for="have_yet">Have not registered yet</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		`;
+	},
+	addingStepSix(){
+		const _ = this;
+		let testDate = 'Have not registered yet';
+		if (_.studentInfo.testDatePicked) testDate = _.createdAtFormat(_.studentInfo['testDate']);
+		let schoolTitles = [_.metaInfo.firstSchool,_.metaInfo.secondSchool,_.metaInfo.thirdSchool];
+		return `
+			<div class="adding-center">
+				<h3 class="adding-title">Summary</h3>
+				<div class="adding-section">
+					<div class="adding-summary">
+						<strong class="adding-summary-title">Course & plan</strong>
+						<button class="adding-summary-btn" data-click="${_.componentName}:jumpToStep" type='adding' step="1">Edit</button>
+					</div>
+					<ul class="adding-summary-list">
+						<li class="adding-summary-item">
+							<span>Chosen Course:</span>
+							<strong>${_.metaInfo.course}</strong>
+						</li>
+						<li class="adding-summary-item">
+							<span>Chosen Level:</span>
+							<strong>${_.metaInfo.level}</strong>
+						</li>
+						<li class="adding-summary-item">
+							<span>Plan:</span>
+							<strong>FREE</strong>
+						</li>
+					</ul>
+				</div>
+				<div class="adding-section">
+					<div class="adding-summary">
+						<strong class="adding-summary-title">Account Settings</strong>
+						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" type='adding' step="2">Edit</button>
+					</div>
+					<ul class="adding-summary-list">
+						<li class="adding-summary-item">
+							<span>First Name:</span>
+							<strong>${_.studentInfo.firstName ?? ''}</strong>
+						</li>
+						<li class="adding-summary-item">
+							<span>Last Name:</span>
+							<strong>${_.studentInfo.lastName ?? ''}</strong>
+						</li>
+						<li class="adding-summary-item">
+							<span>Email:</span>
+							<strong>${_.studentInfo.email ?? ''}</strong>
+						</li>
+					</ul>
+				</div>
+				<div class="adding-section">
+					<div class="adding-summary">
+						<strong class="adding-summary-title">Parent Information</strong>
+						<button class="adding-summary-btn" data-click="${_.componentName}:jumpToStep" type='adding' step="3">Edit</button>
+					</div>
+					<ul class="adding-summary-list">
+						${_.parentSkipped ? _.parentSkippedTpl() : _.parentTpl()}
+					</ul>
+				</div>
+				<div class="adding-section">
+					<div class="adding-summary">
+						<strong class="adding-summary-title">School Information</strong>
+						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" type='adding' step="4">Edit</button>
+					</div>
+					<ul class="adding-summary-list">
+						<li class="adding-summary-item">
+							<span>Current School:</span>
+							<strong>${_.studentInfo.currentSchool ?? ''}</strong>
+						</li>
+						<li class="adding-summary-item">
+							<span>Grade:</span>
+							<strong>${_.metaInfo.grade ?? ''}</strong>
+						</li>
+						${_.addingSummarySchoolsTpl(schoolTitles)}
+					</ul>
+				</div>
+				<div class="adding-section">
+					<div class="adding-summary">
+						<strong class="adding-summary-title">Test Information</strong>
+						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" type='adding' step="5">Edit</button>
+					</div>
+					<ul class="adding-summary-list">
+						<li class="adding-summary-item">
+							<span>Registered Official Test Date:</span>
+							<strong>${testDate}</strong>
+						</li>
+					</ul>
+				</div>
+				<div class="adding-section">
+					<div class="adding-summary">
+						<strong class="adding-summary-title">Discount</strong>
+					</div>
+					<table class="adding-summary-table">
+						<thead>
+							<tr>
+								<th>Course</th>
+								<th>Membership</th>
+								<th>Plan</th>
+								<th>Amount</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>SHSAT</td>
+								<td>-</td>
+								<td>Free</td>
+								<td>$ 0.00</td>
+							</tr>
+							<tr>
+								<td colspan="3"></td>
+								<td>
+									<ul class="adding-summary-table-list">
+										<li>
+											<span>Subtotal:</span>
+											<strong>$ 0.00</strong>
+										</li>
+										<li>
+											<span>VAT 0%</span>
+											<strong> 0.00</strong>
+										</li>
+										<li>
+											<span>Subtotal + VAT:</span>
+											<strong>$ 0.00</strong>
+										</li>
+										<li>
+											<span>Total:</span>
+											<strong>$ 0.00</strong>
+										</li>
+									</ul>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		`;
+	},
+	// Adding steps end
+	
 	skipParentTpl(){
 		return `<h2 class="parent-skip">You can assign or add parent later</h2>`
 	},
@@ -978,58 +1172,7 @@ export const view = {
 		}
 		return outItems;
 	},
-	addingStepFour(stepData){
-		const _ = this;
-		let gradeActive;
-		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade}`;
-		let gradeItems = _.createSelectItems(stepData.grades, 'value:_id;text:grade', gradeActive);
-		return `
-			<div class="adding-center">
-				<h3 class="adding-title">School Information</h3>
-				<div class="adding-section">
-					<h4 class="adding-subtitle withmar">Your current school</h4>
-					<div class="adding-inpt small">
-						<div class="form-label-row">
-							<label class="form-label">Current school</label>
-						</div>
-						<g-input type="text" value="${_.studentInfo.currentSchool ?? ''}" name="currentSchool" data-input="${_.componentName}:fillStudentInfo" class="g-form-item" classname="form-input adding-inpt"></g-input>
-					</div>
-					<div class="adding-inpt">
-						<div class="form-label-row">
-							<label class="form-label">Grade</label>
-						</div>
-						<g-select class="select adding-select" name="grade" classname="adding-select" data-change="${_.componentName}:fillStudentInfo" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
-						 items='${JSON.stringify(gradeItems)}'></g-select>
-					</div>
-				</div>
-				${_.choiseSelectStudent(stepData)}
-			</div>
-		`;
-	},
-	addingStepFive(){
-		const _ = this;
-		return `
-			<div class="adding-center">
-				<h3 class="adding-title">Test Information</h3>
-				<div class="adding-section">
-					<h4 class="adding-subtitle withmar">Registered Official Test Date</h4>
-					<div class="adding-inpt adding-radio-row">
-						<div class="form-label-row">
-							<input type="radio" id="have_registered" class="adding-radio" name="registered" data-change="${_.componentName}:skipTestDate" ${_.studentInfo.testDatePicked ? 'checked' : ''}>
-							<label class="form-label adding-label-have" for="have_registered">Have registered</label>
-						</div>
-						<g-input type='date' format="month DD, YYYY" value="${_.studentInfo.testDate ?? ''}" data-change="${_.componentName}:fillStudentInfo" class="select adding-select" name="testDate" classname="adding-select" icon="false" xlink="select-arrow-bottom" placeholder="Press to choose your official test date"></g-input>
-					</div>
-					<div class="adding-inpt">
-						<div class="form-label-row">
-							<input type="radio" id="have_yet" class="adding-radio" name="registered" data-change="${_.componentName}:skipTestDate" ${!_.studentInfo.testDatePicked ? 'checked' : ''}>
-							<label class="form-label adding-label-have" for="have_yet">Have not registered yet</label>
-						</div>
-					</div>
-				</div>
-			</div>
-		`;
-	},
+	
 	parentSkippedTpl(){
 		const _ = this;
 		return `
@@ -1056,141 +1199,7 @@ export const view = {
 		`;
 	},
 	
-	addingStepSix(){
-		const _ = this;
-		let testDate = 'Have not registered yet';
-		if (_.studentInfo.testDatePicked) testDate = _.createdAtFormat(_.studentInfo['testDate']);
-		let schoolTitles = [_.metaInfo.firstSchool,_.metaInfo.secondSchool,_.metaInfo.thirdSchool];
-		return `
-			<div class="adding-center">
-				<h3 class="adding-title">Summary</h3>
-				<div class="adding-section">
-					<div class="adding-summary">
-						<strong class="adding-summary-title">Course & plan</strong>
-						<button class="adding-summary-btn" data-click="${_.componentName}:jumpToStep" type='adding' step="1">Edit</button>
-					</div>
-					<ul class="adding-summary-list">
-						<li class="adding-summary-item">
-							<span>Chosen Course:</span>
-							<strong>${_.metaInfo.course}</strong>
-						</li>
-						<li class="adding-summary-item">
-							<span>Chosen Level:</span>
-							<strong>${_.metaInfo.level}</strong>
-						</li>
-						<li class="adding-summary-item">
-							<span>Plan:</span>
-							<strong>FREE</strong>
-						</li>
-					</ul>
-				</div>
-				<div class="adding-section">
-					<div class="adding-summary">
-						<strong class="adding-summary-title">Account Settings</strong>
-						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" type='adding' step="2">Edit</button>
-					</div>
-					<ul class="adding-summary-list">
-						<li class="adding-summary-item">
-							<span>First Name:</span>
-							<strong>${_.studentInfo.firstName ?? ''}</strong>
-						</li>
-						<li class="adding-summary-item">
-							<span>Last Name:</span>
-							<strong>${_.studentInfo.lastName ?? ''}</strong>
-						</li>
-						<li class="adding-summary-item">
-							<span>Email:</span>
-							<strong>${_.studentInfo.email ?? ''}</strong>
-						</li>
-					</ul>
-				</div>
-				<div class="adding-section">
-					<div class="adding-summary">
-						<strong class="adding-summary-title">Parent Information</strong>
-						<button class="adding-summary-btn" data-click="${_.componentName}:jumpToStep" type='adding' step="3">Edit</button>
-					</div>
-					<ul class="adding-summary-list">
-						${_.parentSkipped ? _.parentSkippedTpl() : _.parentTpl()}
-					</ul>
-				</div>
-				<div class="adding-section">
-					<div class="adding-summary">
-						<strong class="adding-summary-title">School Information</strong>
-						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" type='adding' step="4">Edit</button>
-					</div>
-					<ul class="adding-summary-list">
-						<li class="adding-summary-item">
-							<span>Current School:</span>
-							<strong>${_.studentInfo.currentSchool ?? ''}</strong>
-						</li>
-						<li class="adding-summary-item">
-							<span>Grade:</span>
-							<strong>${_.metaInfo.grade ?? ''}</strong>
-						</li>
-						${_.addingSummarySchoolsTpl(schoolTitles)}
-					</ul>
-				</div>
-				<div class="adding-section">
-					<div class="adding-summary">
-						<strong class="adding-summary-title">Test Information</strong>
-						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" type='adding' step="5">Edit</button>
-					</div>
-					<ul class="adding-summary-list">
-						<li class="adding-summary-item">
-							<span>Registered Official Test Date:</span>
-							<strong>${testDate}</strong>
-						</li>
-					</ul>
-				</div>
-				<div class="adding-section">
-					<div class="adding-summary">
-						<strong class="adding-summary-title">Discount</strong>
-					</div>
-					<table class="adding-summary-table">
-						<thead>
-							<tr>
-								<th>Course</th>
-								<th>Membership</th>
-								<th>Plan</th>
-								<th>Amount</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>SHSAT</td>
-								<td>-</td>
-								<td>Free</td>
-								<td>$ 0.00</td>
-							</tr>
-							<tr>
-								<td colspan="3"></td>
-								<td>
-									<ul class="adding-summary-table-list">
-										<li>
-											<span>Subtotal:</span>
-											<strong>$ 0.00</strong>
-										</li>
-										<li>
-											<span>VAT 0%</span>
-											<strong> 0.00</strong>
-										</li>
-										<li>
-											<span>Subtotal + VAT:</span>
-											<strong>$ 0.00</strong>
-										</li>
-										<li>
-											<span>Total:</span>
-											<strong>$ 0.00</strong>
-										</li>
-									</ul>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-		`;
-	},
+	
 
 	successPopupTpl(text,color){
 		const _ = this;
@@ -1246,6 +1255,18 @@ export const view = {
 		`;
 	},
 	
+	notifications(){
+		const _ = this;
+		return `
+			<h1>Notifications</h1>
+		`;
+	},
+	activityHistory(){
+		const _ = this;
+		return `
+			<h1>Activity History</h1>
+		`;
+	},
 	parentsInfo(){
 		const _ = this;
 		return `
@@ -1427,6 +1448,7 @@ export const view = {
 		const _ = this;
 		return `
 			<div hidden>
+				${_.addingStudent()}
 				${_.assignStudent()}
 				${_.removeCourseTpl()}
 				${_.removeUserTpl()}

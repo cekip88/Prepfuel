@@ -232,29 +232,15 @@ export class UsersModule extends AdminPage {
 	// Adding methods
 	async addStudent({item}) {
 		const _ = this;
-		G_Bus.trigger('modaler','showModal', {type:'html',target:'#addingForm'});
-		let stepTpl;
 		if(_._$.addingStep == 1 ){
-			let stepOneData = await Model.addingStepOneData();
-			if (!_.studentInfo.course) _['studentInfo'].course = stepOneData[0]['_id'];
-			if (!_.studentInfo.level) _['studentInfo'].level = stepOneData[0]['levels'][0]['_id'];
-			stepTpl = _.addingStepOne(stepOneData);
-		} else if(_._$.addingStep == 2 ){
-			let stepData = await Model.addingStepTwoData();
-			stepTpl = _.addingStepTwo(stepData);
-		} else if(_._$.addingStep == 3 ){
-			let stepData = await Model.addingStepThreeData();
-			stepTpl = _.addingStepThree(stepData);
-		} else if(_._$.addingStep == 4 ){
-			let stepData = await Model.addingStepFourData();
-			stepTpl = _.addingStepFour(stepData);
-		} else if(_._$.addingStep == 5 ){
-			stepTpl = _.addingStepFive();
-		} else if(_._$.addingStep == 6 ){
-			stepTpl = _.addingStepSix();
+			let stepOneData = await Model.wizardData;
+			if (!_.studentInfo.course) _['studentInfo'].course = stepOneData['courses'][0]['_id'];
+			if (!_.studentInfo.level) _['studentInfo'].level = stepOneData['courses'][0]['levels'][0]['_id'];
 		}
-
-		_.f('#addingForm .adding-body').innerHTML = stepTpl;
+		_._$.addingStep = _._$.addingStep;
+	
+		G_Bus.trigger('modaler','showModal', {type:'html',target:'#addingForm'});
+	
 	}
 	addNewParent({item}) {
 		const _ = this;
@@ -341,24 +327,18 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		item.parentNode.querySelector('.active').classList.remove('active');
 		item.classList.add('active');
-
 		let
 			pos = parseInt(item.getAttribute('pos')),
 			levelButtons = item.closest('.adding-body').querySelector('.level-buttons');
-
-
 		_.clear(levelButtons);
 		levelButtons.innerHTML = '<img src="/img/loader.gif">';
-
-		let stepData = await Model.addingStepOneData();
+		let stepData = await Model.getWizardData();
 		_.coursePos = pos;
-
-
-		_['studentInfo'].course = stepData[pos]['_id'];
-		_['studentInfo'].level = stepData[pos]['levels'][0]['_id'];
-		_['metaInfo'].course = stepData[pos]['title'];
-		_['metaInfo'].level = stepData[pos]['levels'][0]['title'];
-		levelButtons.innerHTML = _.levelButtons(stepData[pos]);
+		_['studentInfo'].course = stepData['courses'][pos]['_id'];
+		_['studentInfo'].level = stepData['courses'][pos]['levels'][0]['_id'];
+		_['metaInfo'].course = stepData['courses'][pos]['title'];
+		_['metaInfo'].level = stepData['courses'][pos]['levels'][0]['title'];
+		levelButtons.innerHTML = _.levelButtons(stepData['courses'][pos]);
 	}
 	async changeSection({item,event}) {
 		const _ = this;
@@ -377,6 +357,12 @@ export class UsersModule extends AdminPage {
 		}
 		if(pos == 1){
 			studentInner.innerHTML = _.parentsInfo();
+		}
+		if(pos == 2){
+			studentInner.innerHTML = _.activityHistory();
+		}
+		if(pos == 3){
+			studentInner.innerHTML = _.notifications();
 		}
 	}
 	
@@ -427,13 +413,7 @@ export class UsersModule extends AdminPage {
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#assignForm'});
 	}
 
-		/*if (currentStudent.currentPlan){
-			if (currentStudent.currentPlan.firstSchool) _.studentInfo['firstSchool'] = currentStudent.currentPlan.firstSchool['_id'];
-			if (currentStudent.currentPlan.secondSchool) _.studentInfo['secondSchool'] = currentStudent.currentPlan.secondSchool['_id'];
-			if (currentStudent.currentPlan.thirdSchool) _.studentInfo['thirdSchool'] = currentStudent.currentPlan.thirdSchool['_id'];
-			_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.addingStepFourData());
-		} else _.f('.student-profile-course-info').innerHTML = _.emptyCourseInfo();
-	}*/
+	
 	showRemovePopup({item}) {
 		const _ = this;
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#removeForm','closeBtn':'hide'});
@@ -698,12 +678,14 @@ export class UsersModule extends AdminPage {
 	}
 	async handleAddingSteps() {
 		const _ = this;
+		
 		if(!_.initedUpdate){
+			let wizardData = await Model.getWizardData();
 			_.stepsObj = {
-				1: _.addingStepOne.bind(_,await Model.addingStepOneData()),
-				2: _.addingStepTwo.bind(_,await Model.addingStepTwoData()),
-				3: _.addingStepThree.bind(_,await Model.addingStepThreeData()),
-				4: _.addingStepFour.bind(_,await Model.addingStepFourData()),
+				1: _.addingStepOne.bind(_,wizardData),
+				2: _.addingStepTwo.bind(_,wizardData),
+				3: _.addingStepThree.bind(_,wizardData),
+				4: _.addingStepFour.bind(_,wizardData),
 				5: _.addingStepFive.bind(_),
 				6: _.addingStepSix.bind(_)
 			};
@@ -713,7 +695,6 @@ export class UsersModule extends AdminPage {
 			addingBody = _.f('#addingForm .adding-body');
 		if (!addingBody) return void 0;
 		addingBody.innerHTML = '<img src="/img/loader.gif">';
-		
 		_.clear(addingBody);
 		
 		if(_._$.addingStep == _.minStep){
@@ -733,10 +714,12 @@ export class UsersModule extends AdminPage {
 	}
 	async handleAssignSteps() {
 		const _ = this;
+		
 		if(!_.initedUpdate){
+			let wizardData = await Model.getWizardData();
 			_.stepsAssignObj = {
-				1: _.addingStepOne.bind(_,await Model.addingStepOneData()),
-				2: _.assignStepTwo.bind(_,await Model.addingStepFourData()),
+				1: _.addingStepOne.bind(_,wizardData),
+				2: _.assignStepTwo.bind(_,wizardData),
 				3: _.addingStepFive.bind(_),
 				4: _.assignStepFour.bind(_),
 			};
@@ -756,6 +739,7 @@ export class UsersModule extends AdminPage {
 		}else{
 			_.setNextBtn('assign');
 		}
+		
 		addingBody.append( _.markup( _.stepsAssignObj[ _._$.assignStep ]() ) );
 		
 		_.f('#assignForm .adding-list-item.active').classList.remove('active');
@@ -764,9 +748,10 @@ export class UsersModule extends AdminPage {
 	
 	async init(){
 		const _ = this;
-		await Model.getWizardData()
+		
 		_._( _.handleAddingSteps.bind(_),['addingStep']);
 		_._( _.handleAssignSteps.bind(_),[ 'assignStep' ]);
+		console.log(Model);
 	}
 	
 }
