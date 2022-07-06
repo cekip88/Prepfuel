@@ -43,7 +43,7 @@ export class UsersModule extends AdminPage {
 		G_Bus
 			.on(_,[
 				'handleErrors',
-				'addStudent','showAssignPopup',
+				'addStudent','showAssignPopup','showRemoveUserPopup','removeUser',
 				'changeNextStep','changePrevStep','jumpToStep',
 				'showRemovePopup','removeCourse',
 				'domReady',
@@ -438,10 +438,15 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#removeForm','closeBtn':'hide'});
 	}
+	showRemoveUserPopup({item}){
+		console.log(this.studentInfo)
+		G_Bus.trigger('modaler','showModal', {type:'html',target:'#removeUserForm','closeBtn':'hide'});
+	}
 	showSuccessPopup(text) {
 		const _ =  this;
 		_.closePopup();
 		_.f('BODY').append(_.markup(_.successPopupTpl(text,'green')));
+		setTimeout(_.closePopup.bind(_),3000)
 	}
 	showErrorPopup(text) {
 		const _ =  this;
@@ -589,6 +594,13 @@ export class UsersModule extends AdminPage {
 		_.studentInfo.firstSchool = null;
 		_.studentInfo.secondSchool = null;
 		_.studentInfo.thirdSchool = null;
+	}
+	async removeUser({item}){
+		const _ = this;
+		//_.changeSection()
+		item.setAttribute('renderer',true);
+		item.setAttribute('section','student');
+		G_Bus.trigger(_.componentName,'changeSection',{item})
 	}
 
 	generatePassword(){

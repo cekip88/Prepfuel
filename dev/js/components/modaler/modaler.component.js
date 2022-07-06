@@ -94,7 +94,7 @@ export default class GModaler extends GComponent {
 			  align-items: center;
 			}
 			.modaler-shadow {
-			  background-color: #B5B5C3;
+			  background-color: rgba(0,0,0,.29);
 			}
 			.modaler-inner {
 			  overflow-y: auto;

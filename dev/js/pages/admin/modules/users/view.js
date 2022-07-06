@@ -93,7 +93,7 @@ export const view = {
 							<use xlink:href="#write"></use> 
 						</svg>
 					</button>
-					<button class="users-btn button">
+					<button class="users-btn button" data-click="${_.componentName}:showRemoveUserPopup">
 						<svg class="button-icon">
 							<use xlink:href="#trash"></use>
 						</svg>
@@ -211,6 +211,21 @@ export const view = {
 			</div>
 		`;
 	},
+	removeUserTpl(){
+		const _ = this;
+		return `
+			<div class="modal-block student-profile-remove-popup" id="removeUserForm">
+				<h6 class="modal-title">
+					<span>Delete student profile</span>
+				</h6>
+				<p class="modal-text">Are you sure you want to delete this student profile?</p>
+				<div class="modal-row">
+					<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
+					<button class="button-red" data-click="${_.componentName}:removeUser"><span>Remove</span></button>
+				</div>
+			</div>
+		`;
+	},
 	assignStudent(){
 		const _ = this;
 		return `
@@ -269,7 +284,7 @@ export const view = {
 		`;
 	},
 	
-	choiseSelectStudent(choiseData,title='School you are interested in applying to'){
+	choiseSelectStudent(choiceData,title='School you are interested in applying to'){
 		const _ = this;
 		let activeFirst,activeSecond,activeThird;
 
@@ -277,9 +292,9 @@ export const view = {
 		if(_.studentInfo.secondSchool) activeSecond = `_id:${_.studentInfo.secondSchool}`;
 		if(_.studentInfo.thirdSchool) activeThird = `_id:${_.studentInfo.thirdSchool}`;
 		let
-			firstItems = _.createSelectItems(choiseData.schools,"value:_id;text:school",activeFirst),
-			secondItems = _.createSelectItems(choiseData.schools,"value:_id;text:school",activeSecond),
-			thirdItems = _.createSelectItems(choiseData.schools,"value:_id;text:school",activeThird);
+			firstItems = _.createSelectItems(choiceData.schools,"value:_id;text:school",activeFirst),
+			secondItems = _.createSelectItems(choiceData.schools,"value:_id;text:school",activeSecond),
+			thirdItems = _.createSelectItems(choiceData.schools,"value:_id;text:school",activeThird);
 		return `
 			<div class="adding-section">
 					<h4 class="adding-subtitle withmar">${title}</h4>
@@ -1196,7 +1211,7 @@ export const view = {
 			<button  class="student-profile-course-empty-btn" data-click="${_.componentName}:showAssignPopup">Assign SHSAT Course</button>
 		`;
 	},
-	courseInfo(choiseData){
+	courseInfo(choiceData){
 		const _ = this;
 		let
 			plan = _.studentInfo["currentPlan"],
@@ -1218,7 +1233,7 @@ export const view = {
 					<g-input type="date" name="testDate" format="month DD, YYYY" icon="false" value="${_.studentInfo['currentPlan']["testDate"] ? _.createdAtFormat(_.studentInfo['currentPlan']["testDate"]) : ''}" class="g-form-item" classname="form-input adding-inpt"></g-input>
 					</div>
 			</div>
-			${_.choiseSelectStudent(choiseData,'Application School List')}
+			${_.choiseSelectStudent(choiceData,'Application School List')}
 			<div class="adding-section">
 				<h4 class="adding-subtitle withmar">Membership Plan</h4>
 				<div class="student-profile-plan">
@@ -1414,6 +1429,7 @@ export const view = {
 			<div hidden>
 				${_.assignStudent()}
 				${_.removeCourseTpl()}
+				${_.removeUserTpl()}
 				${_.selectAvatarTpl()}
 			</div>
 		`
