@@ -9,13 +9,31 @@ export class CoursesModule extends AdminPage {
 			'header-tabs':'adminTabs',
 			'body-tabs':'coursesBodyTabs',
 			'body':'coursesBody',
-			'footer':'adminFooter'
+			'footer':'coursesFooter'
 		}
 	}
 
 	async asyncDefine(){
 		const _ = this;
-
+		_.folders = [
+			{
+				'_id':'asfklajfoijasdf',
+				'title': 'ISEE Upper',
+				'modified': '2021-05-1'
+			},{
+				'_id':'fasdfasdfasdf',
+				'title': 'ISEE Middle',
+				'modified': '2021-05-1'
+			},{
+				'_id':'fasdfaafsdfsdfasdf',
+				'title': 'ISEE Lower',
+				'modified': '2021-05-1'
+			},{
+				'_id':'asdfdffadsfdsafads',
+				'title': 'SSAT Upper',
+				'modified': '2021-05-1'
+			}
+		];
 	}
 	define() {
 		const _ = this;
@@ -32,6 +50,16 @@ export class CoursesModule extends AdminPage {
 		console.log(data)
 	}
 
+
+	// Fill methods
+	fillTableRowsCount(){
+		const _ = this;
+		let countCont = _.f('.courses-rows-count');
+		_.clear(countCont);
+		let text = _.folders.length + _.folders.length === 1 ? 'item' : 'items';
+		countCont.textContent = text;
+	}
+	// End fill methods
 
 	
 	init(){

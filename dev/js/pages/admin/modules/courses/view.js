@@ -6,6 +6,9 @@ export const view = {
 			</div>
 		`;
 	},
+	coursesFooter(){
+		return ``;
+	},
 
 	searchBlockHeader(){
 		return `
@@ -38,17 +41,17 @@ export const view = {
 		for (let i = 0; i < crumbs.length; i++) {
 			if (i !== crumbs.length - 1) {
 				tpl += `
-					<a href="#" class="breadcrumbs-item">${crumbs[i]}</a>
+					<a href="${crumbs[i].path}" class="breadcrumbs-item">${crumbs[i].title}</a>
 					<span class="breadcrumbs-delimiter">/</span>
 				`
 			} else {
-				tpl += `<strong class="breadcrumbs-current">${crumbs[i]}</strong>`
+				tpl += `<strong class="breadcrumbs-current">${crumbs[i].title}</strong>`
 			}
 		}
 		tpl += '</div>';
 		return tpl;
 	},
-	coursesTable(){
+	coursesTableTpl(){
 		let tpl = `
 			<div class="tbl">
 				<div class="tbl-head">
@@ -103,8 +106,11 @@ export const view = {
 			<div class="section">
 				<div class="block courses-block">
 					${_.searchBlockHeader()}
-					${_.breadCrumbs(['Courses','ISEE Upper'])}
-					${_.coursesTable()}
+					<div class="courses-block-crumbs">
+						${_.breadCrumbs([{title:'Courses',path:''},{title:'ISEE Upper',path:''}])}
+						<div class="courses-rows-count"><img src="/img/loader.gif"></div>
+					</div>
+					${_.coursesTableTpl()}
 				</div>
 			</div>
 		`;

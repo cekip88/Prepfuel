@@ -3556,5 +3556,16 @@ div.tbl-head
 			.item,button
 				width: 100%
 				margin-top: 20px
-		.breadcrumbs
-			margin: 20px 0 0
+		&-crumbs
+			@extend %dfi
+			margin-top: 20px
+			.breadcrumbs
+				margin: 0
+	&-rows
+		&-count
+			height: 26px
+			padding: 4px 9px
+			border-radius: 6px
+			font: $fz12 $p_medium
+			color: #366CF9
+			line-height: 18px
