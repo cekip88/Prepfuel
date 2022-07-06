@@ -1216,7 +1216,6 @@ export const view = {
 						<label class="form-label">Official test date</label>
 					</div>
 					<g-input type="date" name="testDate" format="month DD, YYYY" icon="false" value="${_.studentInfo['currentPlan']["testDate"] ? _.createdAtFormat(_.studentInfo['currentPlan']["testDate"]) : ''}" class="g-form-item" classname="form-input adding-inpt"></g-input>
-					<g-input type="text" name="testDate" value='${testDate}' class="g-form-item" classname="form-input adding-inpt"></g-input>
 					</div>
 			</div>
 			${_.choiseSelectStudent(choiseData,'Application School List')}
@@ -1231,111 +1230,167 @@ export const view = {
 			<button class="student-profile-remove" data-click="${_.componentName}:showRemovePopup">Remove This Course</button>
 		`;
 	},
-	profileBody(){
+	
+	parentsInfo(){
 		const _ = this;
 		return `
-			<div class='profile-body'><img src="/img/loader.gif"></div>
+			<div class="tbl">
+				<div class="tbl-head">
+					<div class="tbl-item"><span>USER Name</span>
+						<div class="tbl-sort-btns">
+							<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+						</div>
+					</div>
+					<div class="tbl-item right"><span>Date Registered</span>
+						<div class="tbl-sort-btns">
+							<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+						</div>
+					</div>
+					<div class="tbl-item right">Action</div>
+				</div>
+				<div class="table-cont loader-parent">
+					<table class="table">
+						<thead class="tbl-head">
+							<tr>
+								<th>
+									<div class="tbl-item">
+										<span>USER Name</span>
+										<div class="tbl-sort-btns">
+											<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+										</div>
+									</div>
+								</th>
+								<th><div class="tbl-item">Courses</div></th>
+								<th>
+									<div class="tbl-item right">
+										<span>date Registered</span>
+										<div class="tbl-sort-btns">
+											<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+										</div>
+									</div>
+								</th>
+								<th><div class="tbl-item right">Action</div></th>
+							</tr>
+						</thead>
+						<tbody class="tbl-body"><tr><td><img src='/img/loader.gif' class='loader'></td></tr></tbody>
+					</table>
+				</div>
+			</div>
+		`;
+	},
+	personalInfo(){
+		const _ = this;
+		let gradeActive;
+		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade}`;
+		let gradeItems = _.createSelectItems(_.wizardData.grades, 'value:_id;text:grade', gradeActive);
+		return `
+			<div class="student-profile-row">
+				<div class="student-profile-left">
+					<h4 class="admin-block-graytitle">Student Personal Info</h4>
+					<div class="adding-avatar">
+						<button data-click="${_.componentName}:selectAvatar">
+							<strong class="adding-avatar-letter">${_.studentInfo.avatar ? '<img src="/img/' + _.studentInfo.avatar.avatar + '.svg">' : _.studentInfo.firstName.substr(0,1)}</strong>
+							<span class="adding-avatar-link">${_.studentInfo.avatar ? 'Change' : 'Select'} Avatar</span>
+						</button>
+					</div>
+					<div class="adding-section">
+						<div class="adding-inpt-row">
+							<div class="adding-inpt small">
+								<div class="form-label-row">
+									<label class="form-label">First name</label>
+								</div>
+								<g-input type="text" name="first_name" value='${_.studentInfo["firstName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+							</div>
+							<div class="adding-inpt small">
+								<div class="form-label-row">
+									<label class="form-label">Last name</label>
+								</div>
+								<g-input type="text" name="last_name" value='${_.studentInfo["lastName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+							</div>
+						</div>
+						<div class="adding-inpt">
+							<div class="form-label-row">
+								<label class="form-label">Email</label>
+							</div>
+							<g-input type="text" name="email" value='${_.studentInfo["email"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+							</div>
+						<div class="adding-inpt">
+							<div class="form-label-row">
+								<label class="form-label">Date registered</label>
+							</div>
+							<g-input type="text" name="date"  value='${_.createdAtFormat(_.studentInfo["createdAt"])}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+							</div>
+					</div>
+					<div class="adding-section">
+						<h4 class="adding-subtitle">Password</h4>
+						<p class="adding-text">Students' password can be changed by a linked parent or by admin manually</p>
+						<button class="adding-generate student-profile-send">Send Link To A Parent To Reset Password</button>
+						<button class="student-profile-change">Change Manually</button>
+					</div>
+					<div class="adding-section">
+						<h4 class="adding-subtitle withmar">Your current school</h4>
+						<div class="adding-inpt small">
+							<div class="form-label-row">
+								<label class="form-label">Current school</label>
+							</div>
+							<g-input type="text" name="current_school" value='${_.studentInfo["currentSchool"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+						</div>
+						<div class="adding-inpt">
+							<div class="form-label-row">
+								<label class="form-label">Grade</label>
+							</div>
+							<g-select class="select adding-select" name="grade" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course"
+							items=${JSON.stringify(gradeItems)}></g-select>
+						</div>
+					</div>
+				</div>
+				<div class="student-profile-right">
+					<h4 class="admin-block-graytitle">Courses & Plans</h4>
+					<div class="student-profile-courses-btns">
+						<button class="student-profile-courses-btn">ISEE</button>
+						<button class="student-profile-courses-btn">SSAT</button>
+						<button class="student-profile-courses-btn active">SHSAT</button>
+					</div>
+					<div class="student-profile-course-info loader-parent"><img src='/img/loader.gif' class='loader'></div>
+				</div>
+			</div>
+			<div class="student-profile-footer">
+				<button class="student-profile-delete">Delete User Profile</button>
+				<div class="student-profile-actions">
+					<button class="test-footer-back" data-click="${_.componentName}:changeSection" section="student" rerender>
+						<span>Discard</span>
+					</button>
+					<button class="button-blue">
+						<span>Save Changes</span>
+					</button>
+				</div>
+			</div>
 		`;
 	},
 	profile(){
 		const _ = this;
-		let gradeActive;
-		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade}`;
-		let gradeItems = _.createSelectItems(_.stepFour.grades, 'value:_id;text:grade', gradeActive);
+		//${_.personalInfo()}
 		return `
 			<div class="section">
 				${_.breadCrumbs()}
 				<div class="block">
 					${_.sectionHeaderTpl({
 						title: 'Student Profile',
-						buttons:{
-							'Personal Info':'active',
-							'Parents Info':'',
-							'Activity History':'',
-							'Notifications':'',
+						buttonsData:{
+							action:`data-click="${_.componentName}:changeProfileTab"`,
+							buttons:[
+								{title:'Personal Info',active:'active',},
+								{title:'Parents Info'},
+								{title:'Activity History'},
+								{title:'Notifications'}
+							]
 						}
 					})}
-					<div class="student-profile-row">
-						<div class="student-profile-left">
-							<h4 class="admin-block-graytitle">Student Personal Info</h4>
-							<div class="adding-avatar">
-								<button data-click="${_.componentName}:selectAvatar">
-									<strong class="adding-avatar-letter">${_.studentInfo.avatar ? '<img src="/img/' + _.studentInfo.avatar.avatar + '.svg">' : _.studentInfo.firstName.substr(0,1)}</strong>
-									<span class="adding-avatar-link">${_.studentInfo.avatar ? 'Change' : 'Select'} Avatar</span>
-								</button>
-							</div>
-							<div class="adding-section">
-								<div class="adding-inpt-row">
-									<div class="adding-inpt small">
-										<div class="form-label-row">
-											<label class="form-label">First name</label>
-										</div>
-										<g-input type="text" name="first_name" value='${_.studentInfo["firstName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
-									</div>
-									<div class="adding-inpt small">
-										<div class="form-label-row">
-											<label class="form-label">Last name</label>
-										</div>
-										<g-input type="text" name="last_name" value='${_.studentInfo["lastName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
-									</div>
-								</div>
-								<div class="adding-inpt">
-									<div class="form-label-row">
-										<label class="form-label">Email</label>
-									</div>
-									<g-input type="text" name="email" value='${_.studentInfo["email"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
-									</div>
-								<div class="adding-inpt">
-									<div class="form-label-row">
-										<label class="form-label">Date registered</label>
-									</div>
-									<g-input type="text" name="date"  value='${_.createdAtFormat(_.studentInfo["createdAt"])}' class="g-form-item" classname="form-input adding-inpt"></g-input>
-									</div>
-							</div>
-							<div class="adding-section">
-								<h4 class="adding-subtitle">Password</h4>
-								<p class="adding-text">Students' password can be changed by a linked parent or by admin manually</p>
-								<button class="adding-generate student-profile-send">Send Link To A Parent To Reset Password</button>
-								<button class="student-profile-change">Change Manually</button>
-							</div>
-							<div class="adding-section">
-								<h4 class="adding-subtitle withmar">Your current school</h4>
-								<div class="adding-inpt small">
-									<div class="form-label-row">
-										<label class="form-label">Current school</label>
-									</div>
-									<g-input type="text" name="current_school" value='${_.studentInfo["currentSchool"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
-								</div>
-								<div class="adding-inpt">
-									<div class="form-label-row">
-										<label class="form-label">Grade</label>
-									</div>
-									<g-select class="select adding-select" name="grade" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course"
-									items=${JSON.stringify(gradeItems)}></g-select>
-								</div>
-							</div>
-						</div>
-						<div class="student-profile-right">
-							<h4 class="admin-block-graytitle">Courses & Plans</h4>
-							<div class="student-profile-courses-btns">
-								<button class="student-profile-courses-btn">ISEE</button>
-								<button class="student-profile-courses-btn">SSAT</button>
-								<button class="student-profile-courses-btn active">SHSAT</button>
-							</div>
-							<div class="student-profile-course-info loader-parent"><img src='/img/loader.gif' class='loader'></div>
-						</div>
-					</div>
-					<div class="student-profile-footer">
-						<button class="student-profile-delete">Delete User Profile</button>
-						<div class="student-profile-actions">
-							<button class="test-footer-back" data-click="${_.componentName}:changeSection" section="student" rerender>
-								<span>Discard</span>
-							</button>
-							<button class="button-blue">
-								<span>Save Changes</span>
-							</button>
-						</div>
-					</div>
+					<div class="student-profile-inner"><img src="/img/loader.gif"></div>
 				</div>
 			</div>
 		`;

@@ -53,11 +53,12 @@ export class UsersModule extends AdminPage {
 				'fillParentInfo','assignStudentToParent',
 				'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
 				'showSuccessPopup','showErrorPopup','closePopup',
-				'generatePassword'
+				'generatePassword','changeProfileTab'
 			]);
 	}
 	async domReady(data){
 		const _ = this;
+		_.wizardData = await Model.wizardData;
 		if (_.subSection === 'student') {
 			let
 				item,update= false;
@@ -67,7 +68,7 @@ export class UsersModule extends AdminPage {
 			}
 			let tableData = await Model.getUsers({role:_.subSection,update: update});
 			_.fillUserTable(tableData);
-			_.stepFour = await Model.addingStepFourData();
+			
 			_.studentInfo = {};
 			_._$.assignStep = 1;
 			//
@@ -199,18 +200,24 @@ export class UsersModule extends AdminPage {
 		tbody.append(...tableData);
 		_.connectTableHead('#assignParent');
 	}
-	async fillProfile({item}) {
+	async fillProfile(profileData) {
 		const _ = this;
+		let studentId;
+		if(profileData['item']){
+			studentId = profileData['item'].getAttribute('data-id');
+			_.subSection = profileData['item'].getAttribute('section');
+		}else{
+			studentId = profileData['studentId'];
+		}
 		let
-			studentId = item.getAttribute('data-id'),
 			currentStudent = Model.studentsData.response.filter( student => student['_id'] == studentId )[0];
 		_.studentInfo = Object.assign({},currentStudent['user']);
 		_.studentInfo['currentSchool'] = currentStudent['currentSchool'];
 		_.studentInfo['currentPlan'] = currentStudent['currentPlan'];
 		_.studentInfo['grade'] = currentStudent['grade']['_id'];
 		_.studentInfo['studentId'] = studentId;
-		_.subSection = item.getAttribute('section');
-		_.f('.profile-body').innerHTML = _.profile();
+		
+		_.f('.student-profile-inner').innerHTML = _.personalInfo();
 		_._$.addingStep = 1;
 
 		if (currentStudent['currentPlan']){
@@ -359,11 +366,25 @@ export class UsersModule extends AdminPage {
 		let struct = _.flexible();
 		await _.render(struct,{item});
 	}
+	async changeProfileTab({item}) {
+		const _ = this;
+		let pos = item.getAttribute('data-pos');
+		item.parentNode.querySelector('.active').classList.remove('active');
+		item.classList.add('active');
+		let studentInner = _.f('.student-profile-inner');
+		if(pos == 0){
+			_.fillProfile({studentId:_.studentInfo['studentId']});
+		}
+		if(pos == 1){
+			studentInner.innerHTML = _.parentsInfo();
+		}
+	}
+	
 	flexible(){
 		const _ = this;
 		if(_.subSection === 'profile') {
 			return {
-				'body': 'profileBody'
+				'body': 'profile'
 			};
 		}
 		if(_.subSection === 'student') {
@@ -426,7 +447,7 @@ export class UsersModule extends AdminPage {
 		const _ =  this;
 		_.closePopup();
 		_.f('BODY').append(_.markup(_.successPopupTpl(text,'red')));
-		setTimeout(_.closePopup.bind(_),3000)
+		setTimeout(_.closePopup.bind(_),3000);
 	}
 	closePopup(clickData) {
 		const _ = this;
@@ -729,11 +750,11 @@ export class UsersModule extends AdminPage {
 		_.f(`#assignForm .adding-list-item:nth-child(${ _._$.assignStep })`).classList.add('active');
 	}
 	
-	init(){
+	async init(){
 		const _ = this;
+		await Model.getWizardData()
 		_._( _.handleAddingSteps.bind(_),['addingStep']);
 		_._( _.handleAssignSteps.bind(_),[ 'assignStep' ]);
-		console.log(Model);
 	}
 	
 }

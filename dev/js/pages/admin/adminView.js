@@ -119,31 +119,36 @@ export const adminView = {
 			</section>
 			`;
 	},
-	sectionHeaderTpl({title,subtitle,buttons,gap = true}){
-		let tpl = buttons ? `<div class="section-header ${gap ? 'block-gap' : ''}">` : '';
+	sectionHeaderTpl({title,subtitle,buttonsData,gap = true}){
+		let tpl = buttonsData ? `<div class="section-header ${gap ? 'block-gap' : ''}">` : '';
 		
 		if (!title && subtitle) {
-			tpl += `<h6 class="admin-subtitle ${!buttons && gap ? "block-gap" : ''}"><span>${subtitle}</span></h6>`
+			tpl += `<h6 class="admin-subtitle ${!buttonsData && gap ? "block-gap" : ''}"><span>${subtitle}</span></h6>`
 		} else if (!subtitle && title) {
-			tpl += `<h5 class="admin-title ${!buttons && gap ? "block-gap" : ''}"><span>${title}</span></h5>`
+			tpl += `<h5 class="admin-title ${!buttonsData && gap ? "block-gap" : ''}"><span>${title}</span></h5>`
 		} else if (title && subtitle) {
 			tpl += `
-				<div ${!buttons && gap ? 'class="block-gap"' : ''}>
+				<div ${!buttonsData && gap ? 'class="block-gap"' : ''}>
 					<h5 class="admin-title"><span>${title}</span></h5>
 					<h6 class="admin-subtitle"><span>${subtitle}</span></h6>
 				</div>
 			`
 		}
 		
-		if (buttons) {
+		if (buttonsData) {
 			tpl += `<div class="section-buttons">`;
-			for (let key in buttons) {
-				tpl += `<button class="section-button ${buttons[key]}"><span>${key}</span></button>`
+			let buttonAction = buttonsData.action, pos = 0;
+			for(let button of buttonsData['buttons']){
+				tpl += `<button ${buttonAction} class="section-button ${button['active'] ?? ''}" data-pos="${pos}"><span>${button['title']}</span></button>`;
+				pos++;
 			}
+		/*	for (let key in buttons) {
+				tpl += `<button class="section-button ${buttons[key]}"><span>${key}</span></button>`
+			}*/
 			tpl += '</div>';
 		}
 		
-		tpl += buttons ? '</div>' : '';
+		tpl += buttonsData ? '</div>' : '';
 		return tpl
 	},
 };

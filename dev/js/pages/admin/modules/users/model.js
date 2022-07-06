@@ -17,6 +17,7 @@ class _Model {
 			addingStepFour: `${env.backendUrl}/user/add-student-step4`,
 			assignCourse: `${env.backendUrl}/user/assign-plan`,
 			removeCourse: `${env.backendUrl}/user/remove-plan`,
+			wizardData: `${env.backendUrl}/user/wizard-data`,
 		};
 	}
 	wrongResponse(method, response){
@@ -124,6 +125,28 @@ class _Model {
 		});
 	}
 	
+	getWizardData(){
+		const _ = this;
+		if(_.wizardData) return Promise.resolve(_.wizardData);
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['wizardData']}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					_.wizardData = response['response'];
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('getWizardData', response);
+				}
+			} else {
+				_.wrongRequest('getWizardData', rawResponse)
+			}
+			resolve(null);
+		});
+	}
 	addingStepOneData(){
 		const _ = this;
 		if(_.step1) return Promise.resolve(_.step1);
