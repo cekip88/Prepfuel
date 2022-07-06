@@ -22,7 +22,7 @@ export class UsersModule extends AdminPage {
 		//G_Bus.trigger(_.componentName,'showSuccessPopup','Course has been successfully removed')
 		//G_Bus.trigger(_.componentName,'showErrorPopup','Error, try again later')
 	}
-	define() {
+	define(){
 		const _ = this;
 		_.componentName = 'UsersModule';
 		_.maxStep = 6;
@@ -87,6 +87,16 @@ export class UsersModule extends AdminPage {
 		_.showSuccessPopup('Course has been successfully assigned');
 	}
 	
+	clearData(){
+		const _ = this;
+		_.studentInfo = {};
+		_.parentInfo = {};
+		_.parents = {};
+		_.metaInfo = {};
+		_.parentSkipped = false;
+		_.coursePos = 0;
+	}
+	
 	async createParent(){
 		const _ = this;
 		
@@ -100,19 +110,13 @@ export class UsersModule extends AdminPage {
 			}
 		}
 		let response = await Model.createStudent(_.studentInfo);
-
 		if (!response) {
-			return;
+			return void 0;
 		}
-
-		_.studentInfo = {};
-		_.parentInfo = {};
-		_.parents = {};
-		_.metaInfo = {};
-
+		_.clearData();
 		G_Bus.trigger('modaler','closeModal');
 		G_Bus.trigger(_.componentName,'showSuccessPopup','Student has been successfully added');
-
+		_._$.addingStep = 1;
 		let users = await Model.getUsers({role:_.subSection,page: 1,update: true});
 		_.fillUserTable(users);
 	}
@@ -232,11 +236,7 @@ export class UsersModule extends AdminPage {
 	// Adding methods
 	async addStudent({item}) {
 		const _ = this;
-		if(_._$.addingStep == 1 ){
-			let stepOneData = await Model.wizardData;
-			if (!_.studentInfo.course) _['studentInfo'].course = stepOneData['courses'][0]['_id'];
-			if (!_.studentInfo.level) _['studentInfo'].level = stepOneData['courses'][0]['levels'][0]['_id'];
-		}
+		
 		_._$.addingStep = _._$.addingStep;
 	
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#addingForm'});
@@ -258,7 +258,7 @@ export class UsersModule extends AdminPage {
 
 		let listCont = _.f('.avatars-list');
 		if (!listCont.children.length ) {
-			_.avatars = await Model.step2;
+			_.avatars = await Model.wizardData['avatars'];
 			listCont.append(_.markup(_.avatarsItemsTpl()));
 		}
 
@@ -279,8 +279,9 @@ export class UsersModule extends AdminPage {
 	}
 	pickAvatar({item}) {
 		const _ = this;
-		let listCont = item.closest('.avatars-list');
-		let activeBtn = listCont.querySelector('.active');
+		let
+			listCont = item.closest('.avatars-list'),
+			activeBtn = listCont.querySelector('.active');
 		if (activeBtn) activeBtn.classList.remove('active');
 		item.classList.add('active')
 
@@ -319,13 +320,13 @@ export class UsersModule extends AdminPage {
 	// Change methods
 	changeStudentLevel({item}) {
 		const _ = this;
-		item.parentNode.querySelector('.active').classList.remove('active');
+		if(item.parentNode.querySelector('.active')) 	item.parentNode.querySelector('.active').classList.remove('active');
 		item.classList.add('active');
 		_['studentInfo'].level = item.getAttribute('data-id');
 	}
 	async changeTestType({item}) {
 		const _ = this;
-		item.parentNode.querySelector('.active').classList.remove('active');
+		if(item.parentNode.querySelector('.active'))  item.parentNode.querySelector('.active').classList.remove('active');
 		item.classList.add('active');
 		let
 			pos = parseInt(item.getAttribute('pos')),
@@ -419,8 +420,9 @@ export class UsersModule extends AdminPage {
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#removeForm','closeBtn':'hide'});
 	}
 	showRemoveUserPopup({item}){
-		console.log(this.studentInfo)
-		G_Bus.trigger('modaler','showModal', {type:'html',target:'#removeUserForm','closeBtn':'hide'});
+		const _ = this;
+		_.studentInfo['studentId'] = item.getAttribute('data-id');
+		G_Bus.trigger('modaler','showModal', {item:item,type:'html',target:'#removeUserForm','closeBtn':'hide'});
 	}
 	showSuccessPopup(text) {
 		const _ =  this;
@@ -577,10 +579,11 @@ export class UsersModule extends AdminPage {
 	}
 	async removeUser({item}){
 		const _ = this;
-		//_.changeSection()
-		item.setAttribute('renderer',true);
+		let response = await Model.removeStudent(_.studentInfo['studentId']);
+		item.setAttribute('rerender',true);
 		item.setAttribute('section','student');
 		G_Bus.trigger(_.componentName,'changeSection',{item})
+		G_Bus.trigger('modaler','closeModal',{item})
 	}
 
 	generatePassword(){
@@ -678,7 +681,6 @@ export class UsersModule extends AdminPage {
 	}
 	async handleAddingSteps() {
 		const _ = this;
-		
 		if(!_.initedUpdate){
 			let wizardData = await Model.getWizardData();
 			_.stepsObj = {
@@ -707,7 +709,14 @@ export class UsersModule extends AdminPage {
 		}else{
 			_.setNextBtn();
 		}
-		addingBody.append( _.markup(_.stepsObj[ _._$.addingStep ]()) );
+		if(_._$.addingStep == 1 ){
+			let stepOneData = await Model.wizardData;
+			if (!_.studentInfo.course) _['studentInfo'].course = stepOneData['courses'][0]['_id'];
+			if (!_.studentInfo.level) _['studentInfo'].level = stepOneData['courses'][0]['levels'][0]['_id'];
+			if (!_['metaInfo'].course) _['metaInfo'].course = stepOneData['courses'][0]['title'];
+			if (!_['metaInfo'].level) _['metaInfo'].level = stepOneData['courses'][0]['levels'][0]['title'];
+		}
+		addingBody.append( _.markup( _.stepsObj[ _._$.addingStep ]() ) );
 		
 		_.f('#addingForm .adding-list-item.active').classList.remove('active');
 		_.f(`#addingForm .adding-list-item:nth-child(${_._$.addingStep})`).classList.add('active');

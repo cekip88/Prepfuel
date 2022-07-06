@@ -93,7 +93,7 @@ export const view = {
 							<use xlink:href="#write"></use> 
 						</svg>
 					</button>
-					<button class="users-btn button" data-click="${_.componentName}:showRemoveUserPopup">
+					<button class="users-btn button" data-click="${_.componentName}:showRemoveUserPopup"  data-id="${user._id}">
 						<svg class="button-icon">
 							<use xlink:href="#trash"></use>
 						</svg>
@@ -358,6 +358,7 @@ export const view = {
 
 	assignStepTwo(stepData){
 		const _ = this;
+		console.log(stepData);
 		return `
 			<div class="adding-center">
 				<h3 class="adding-title">Application School List</h3>
@@ -576,7 +577,6 @@ export const view = {
 					<div class="adding-label">What test is the student purchasing?</div>
 					<div class="adding-buttons">
 		`;
-
 		courses.forEach( (item,cnt) => {
 			let activeClass = '';
 			if(_.studentInfo['course']){
@@ -998,15 +998,15 @@ export const view = {
 								</tr>
 							</thead>
 							<tbody class="tbl-body">`;
-							if (asked) {
-								for (let item of _.parents.response) {
-									tpl += '<tr class="tbl-row">' + _.parentsBodyRowTpl(item) + '</tr>';
-								}
-							} else tpl += `<tr class="tbl-row"><td><img src='/img/loader.gif' class='loader'></td></tr>`;
-							tpl += `</tbody>
-						</table>
-					</div>
-				</div>
+		if (asked) {
+			for (let item of _.parents.response) {
+				tpl += '<tr class="tbl-row">' + _.parentsBodyRowTpl(item) + '</tr>';
+			}
+		} else tpl += `<tr class="tbl-row"><td><img src='/img/loader.gif' class='loader'></td></tr>`;
+		tpl += `</tbody>
+				</table>
+			</div>
+			</div>
 			</div>
 		`
 		return tpl;
@@ -1040,7 +1040,6 @@ export const view = {
 			</td>
 			<td>
 				<div class="tbl-item parent-table-students-block">`;
-
 		if (rowData.students.length) {
 			tpl += `<div class="parent-table-students">`;
 			for (let item of rowData.students) {

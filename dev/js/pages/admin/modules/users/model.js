@@ -10,6 +10,7 @@ class _Model {
 		_.endpoints = {
 			usersList: `${env.backendUrl}/admin`,
 			createStudent: `${env.backendUrl}/user/create-student`,
+			removeStudent: `${env.backendUrl}/user/student`,
 			createParent: `${env.backendUrl}/admin/create-parent`,
 			addingStepOne: `${env.backendUrl}/user/add-student-step1`,
 			addingStepTwo: `${env.backendUrl}/user/add-student-step2`,
@@ -257,6 +258,26 @@ class _Model {
 			resolve(null);
 		});
 	}
-
+	removeStudent(studentId){
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['removeStudent']}/${studentId}`, {
+				method: 'DELETE',
+				headers: _.baseHeaders
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				console.log(response);
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('removeCourse', response);
+				}
+			} else {
+				_.wrongRequest('removeCourse', rawResponse)
+			}
+			resolve(null);
+		});
+	}
 }
 export const Model = new _Model();
