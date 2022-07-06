@@ -72,8 +72,8 @@ export class G extends G_G{
 					pageName = blockData.pageName,
 					moduleInc = 'Module',
 					fileType ='',
-					name = rawParams[0] ? rawParams[0] : rawParams[1],
-					params = blockData.params ? blockData.params : {},
+					name = rawParams[0] ?? rawParams[1],
+					params = blockData.params ?? {},
 					moduleStr = name.charAt(0).toUpperCase() + name.substr(1)+ moduleInc,
 					pathModule = `/pages/${pageName}/modules/${name}/module.js`,
 					pathView = `/pages/${pageName}/modules/${name}/view.js`;

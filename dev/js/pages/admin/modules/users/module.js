@@ -115,9 +115,7 @@ export class UsersModule extends AdminPage {
 		let users = await Model.getUsers({role:_.subSection,page: 1,update: true});
 		_.fillUserTable(users);
 	}
-	/*
-	* Fill methods
-	* */
+	// Fill methods
 	fillParentInfo({item}){
 		const _ = this;
 		let
@@ -143,8 +141,7 @@ export class UsersModule extends AdminPage {
 	}
 	skipTestDate({item}){
 		const _ = this;
-		if (item.id === 'have_registered') _.studentInfo.testDatePicked = true;
-		else _.studentInfo.testDatePicked = false;
+		_.studentInfo.testDatePicked = (item.id === 'have_registered');
 	}
 	fillDataByClass({className,data}){
 		const _ = this;
@@ -224,7 +221,7 @@ export class UsersModule extends AdminPage {
 		} else _.f('.student-profile-course-info').innerHTML = _.emptyCourseInfo();
 	}
 	// Fill methods end
-	
+
 	// Adding methods
 	async addStudent({item}) {
 		const _ = this;
@@ -489,7 +486,6 @@ export class UsersModule extends AdminPage {
 	}
 	// Validation methods end
 
-	
 	handleErrors({method,data}){
 		const _ = this;
 		console.log(method,data);
@@ -497,7 +493,6 @@ export class UsersModule extends AdminPage {
 			console.log('Users not found ',data);
 		}
 	}
-	
 
 	connectTableHead(selector) {
 		const _ = this;
@@ -728,7 +723,6 @@ export class UsersModule extends AdminPage {
 		}else{
 			_.setNextBtn('assign');
 		}
-		
 		addingBody.append( _.markup( _.stepsAssignObj[ _._$.assignStep ]() ) );
 		
 		_.f('#assignForm .adding-list-item.active').classList.remove('active');

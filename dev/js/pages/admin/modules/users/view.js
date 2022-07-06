@@ -137,7 +137,7 @@ export const view = {
 									{&quot;value&quot;:6,&quot;text&quot;:&quot;SHSAT 9th&quot;,&quot;active&quot;:true}
 								]"></g-select>
 						</div>
-						<button class="button-blue" data-click="${_.componentName}:addStudent"><span>Add Student</span>
+						<button class="block-header-item button-blue" data-click="${_.componentName}:addStudent"><span>Add Student</span>
 							<svg class="button-icon">
 								<use xlink:href="#plus"></use>
 							</svg>

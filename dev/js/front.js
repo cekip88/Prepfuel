@@ -105,6 +105,7 @@ new router().init({
 				'/admin/dashboard': 'admin',
 				'/admin/profile': 'admin',
 				'/admin/users': 'admin',
+				'/admin/courses': 'admin',
 			}
 		},
 		'student':{

@@ -54,6 +54,8 @@ g-body
 	+w(calc($desk - 64px))
 
 .button
+	&-blue
+		white-space: nowrap
 	&-white
 		border: 1px solid transparent
 		@extend %transition-d
@@ -74,34 +76,33 @@ g-body
 		flex-wrap: nowrap
 		.block-title
 			width: initial
-		&-input
-			width: 240px
-			flex: 0 0 240px
-		&-select
-			width: 340px
-			flex: 0 0 340px
-		&-date
-			width: 200px
-			flex-basis: 200px
-		.button-blue
-			margin-left: auto
-			white-space: nowrap
-			width: initial
 		&-input,&-select,&-item,.button-blue
 			margin-top: 0
 		&-input,&-select,&-item
 			margin-left: 16px
 		&-item
+			width: initial
 			.block-header
 				&-input,&-select
 					width: 100%
 					margin: 0
-		&-search
-			width: 240px
-			flex: 0 0 240px
-		&-select
-			width: 340px
-			flex: 0 0 340px
+		.block
+			&-header
+				.button-blue
+					margin-left: auto
+					width: initial
+				&-select
+					width: 340px
+					flex: 0 0 340px
+				&-input
+					width: 240px
+					flex: 0 0 240px
+				&-search
+					width: 240px
+					flex: 0 0 240px
+				&-date
+					width: 200px
+					flex-basis: 200px
 	&-main
 		&-title
 			font-size: $fz34
@@ -559,4 +560,21 @@ thead.tbl-head
 		transition: .35s ease
 		&:hover
 			transform: rotate(180deg)
+
+
+
+.courses
+	&-block
+		&-header
+			justify-content: flex-start
+			.item,button
+				height: 34px
+				margin-top: 0
+			button
+				width: initial
+				margin-left: 16px
+			.block-header-search
+				flex: 0 0 320px
+				width: 320px
+				margin-right: auto
 
