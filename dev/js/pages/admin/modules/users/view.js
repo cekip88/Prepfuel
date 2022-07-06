@@ -161,7 +161,7 @@ export const view = {
 							</div>
 							<div class="tbl-item right">Action</div>
 						</div>
-						<div class="table-cont loader-parent">
+						<div class="table-cont table-cont-students loader-parent">
 							<table class="table">
 								<thead class="tbl-head">
 									<tr>

@@ -53,7 +53,7 @@ export const view = {
 	},
 	coursesTableTpl(){
 		let tpl = `
-			<div class="tbl">
+			<div class="tbl folders-table">
 				<div class="tbl-head">
 					<div class="tbl-item"><span>Name</span>
 						<div class="tbl-sort-btns">
@@ -99,6 +99,46 @@ export const view = {
 				</div>
 		`;
 		return tpl
+	},
+	foldersRowsTpl(usersData){
+		const _ = this;
+		let trs = [];
+		usersData = usersData['response'];
+		if(!usersData) return void 0;
+		for(let item of usersData){
+			let tr = document.createElement('TR');
+			tr.className= 'tbl-row';
+			tr.setAttribute('user-id',item['_id']);
+			tr.innerHTML = _.foldersRowTpl(item);
+			trs.push(tr);
+		}
+		return trs;
+	},
+	foldersRowTpl(rowData){
+		const _ = this;
+		let tpl = `
+				<td>
+					<div class="tbl-item courses-table-title">
+						<div class="courses-table-icon">
+							<svg><use xlink:href="#folder"></use></svg>
+						</div>
+						<h6 class="courses-table-name">${rowData.title}</h6>
+					</div>
+				</td>
+				<td>
+					<div class="tbl-item courses-table-date">
+						${_.createdAtFormat(rowData.modified)}
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item right">
+					<button class="courses-action">
+						<span></span><span></span><span></span>
+					</button>
+				</div>
+			</td>
+		`
+		return tpl;
 	},
 	coursesBody(){
 		const _ = this;

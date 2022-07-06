@@ -2607,7 +2607,7 @@ div.tbl-head
 		&-name,&-email
 			white-space: nowrap
 	&-info-name,&-date
-		font-family: $f_bold
+		font-family: $f_semi
 	&-date
 		line-height: $fz20
 		color: rgb($neutral-800)
@@ -3563,9 +3563,19 @@ div.tbl-head
 				margin: 0
 	&-rows
 		&-count
+			@extend %dfc
 			height: 26px
-			padding: 4px 9px
+			padding: 0 9px
 			border-radius: 6px
+			background-color: #F1F5FF
 			font: $fz12 $p_medium
 			color: #366CF9
 			line-height: 18px
+	&-table
+		&-icon
+			margin-right: 10px
+			svg
+				width: 16px
+				height: 14px
+		&-name
+			font: 1em $f_semi
