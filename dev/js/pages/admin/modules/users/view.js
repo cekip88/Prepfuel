@@ -54,7 +54,7 @@ export const view = {
 		for(let item of usersData){
 			let tr = document.createElement('TR');
 			tr.className= 'tbl-row';
-			tr.setAttribute('user-id',item['user']['_id']);
+			tr.setAttribute('user-id',item['_id']);
 			tr.innerHTML = _.usersBodyRowTpl(item['currentPlan'],item['user'],item);
 			trs.push(tr);
 		}
@@ -1430,7 +1430,7 @@ export const view = {
 				</div>
 			</div>
 			<div class="student-profile-footer">
-				<button class="student-profile-delete">Delete User Profile</button>
+				<button class="student-profile-delete" data-click="${_.componentName}:showRemoveUserPopup" data-id="${_.studentInfo['studentId']}">Delete User Profile</button>
 				<div class="student-profile-actions">
 					<button class="test-footer-back" data-click="${_.componentName}:changeSection" section="student" rerender>
 						<span>Discard</span>
