@@ -68,13 +68,15 @@ export class UsersModule extends AdminPage {
 			}
 			let tableData = await Model.getUsers({role:_.subSection,update: update});
 			_.fillUserTable(tableData);
-			
+
+			_.currentPage = 'main';
 			_.studentInfo = {};
 			_._$.assignStep = 1;
 			//
 		}
 		if(_.subSection == 'profile'){
 			_.fillProfile(data);
+			_.currentPage = 'profile';
 		}
 	}
 
@@ -225,7 +227,7 @@ export class UsersModule extends AdminPage {
 		_.studentInfo['currentSchool'] = currentStudent['currentSchool'];
 		_.studentInfo['currentPlan'] = currentStudent['currentPlan'];
 		_.studentInfo['grade'] = currentStudent['grade']['_id'];
-		_.studentInfo['studentId'] = studentId;
+		_.studentInfo['studentId'] = currentStudent._id;
 		
 		_.f('.student-profile-inner').innerHTML = _.personalInfo();
 		_._$.addingStep = 1;
@@ -422,6 +424,7 @@ export class UsersModule extends AdminPage {
 	showRemoveUserPopup({item}){
 		const _ = this;
 		_.studentInfo['studentId'] = item.getAttribute('data-id');
+		//_.metaInfo['sourse'] = '';
 		G_Bus.trigger('modaler','showModal', {item:item,type:'html',target:'#removeUserForm','closeBtn':'hide'});
 	}
 	showSuccessPopup(text) {
@@ -591,11 +594,19 @@ export class UsersModule extends AdminPage {
 	}
 	async removeUser({item}){
 		const _ = this;
+		console.log(_.studentInfo)
 		let response = await Model.removeStudent(_.studentInfo['studentId']);
-		item.setAttribute('rerender',true);
-		item.setAttribute('section','student');
-		G_Bus.trigger(_.componentName,'changeSection',{item})
+		if (!response) return;
+		
+		if (_.currentPage == 'profile') {
+			item.setAttribute('rerender',true);
+			item.setAttribute('section','student');
+			G_Bus.trigger(_.componentName,'changeSection',{item})
+		} else {
+			_.f(`TR[user-id="${_.studentInfo['studentId']}"]`).remove();
+		}
 		G_Bus.trigger('modaler','closeModal',{item})
+		_.showSuccessPopup('Student profile deleted')
 	}
 
 	generatePassword(){
