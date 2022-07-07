@@ -1256,11 +1256,29 @@ export const view = {
 		`;
 	},
 	
-	notifications(){
+	notifications(notifications){
 		const _ = this;
-		return `
-			<h1>Notifications</h1>
+		let tpl = `
+			<h1 class="title">Notifications</h1>
+			<ul class="student-notifications-list">`;
+			for(let notification of notifications){
+				let id = Math.random().toString(36).substr(2, 9);
+				tpl+=`<li class="student-notifications-list-item">
+					<label for="${id}" class="student-notifications-list-item-label">
+						<div class="student-notifications-list-item-content">
+							<h5 class="student-notifications-list-item-title">${notification['title']}</h5>
+							<h6 class="student-notifications-list-item-subtitle">${notification['subtitle']}</h6>
+						</div>
+						<div class="student-notifications-list-item-action">
+							<input id="${id}" type="checkbox">
+							<span class="student-notifications-list-item-action-btn"></span>
+						</div>
+					</label>
+				</li>`
+			}
+			`</ul>
 		`;
+			return tpl;
 	},
 	activityHistory(){
 		const _ = this;

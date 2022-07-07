@@ -3408,7 +3408,49 @@ div.tbl-head
 				background-color: #E1F0FF
 			&-info
 				text-align: left
-
+		&-inner
+			&.short
+				max-width: 588px
+				margin: auto
+	&-notifications
+		&-list
+			&-item
+				margin-top: 48px
+				&-label
+					@extend %dfi
+					input[type="checkbox"]
+						display: none
+					input[type="checkbox"]:checked+span
+						background-color: rgb($blue-text)
+					input[type="checkbox"]:checked+span:after
+						left: 3px
+				&-title,&-subtitle
+					max-width: 322px
+				&-title
+					font: 16px $f_bold
+					line-height: 24px
+					color: rgb($neutral-800)
+				&-subtitle
+					font: 14px $f_reg
+					line-height: 20px
+					color: rgb($neutral-500)
+				&-action-btn
+					+wh(44px,30px)
+					+bdrs(30px)
+					display: block
+					position: relative
+					background: rgba(235, 237, 243, 1)
+					transition: .35s ease
+					&:after
+						+wh(24px)
+						+bdrs(24px)
+						box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08)
+						background-color: #fff
+						transition: .35s ease
+						content: ''
+						position: absolute
+						top: 3px
+						left: 17px
 
 .plansBlock
 	&-reasons

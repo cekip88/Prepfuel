@@ -1,7 +1,7 @@
 import {G_Bus} from "../../../../libs/G_Control.js";
 import {Model}  from "./model.js";
 import {AdminPage} from "../../admin.page.js";
-// Открывается саммари если нге обновляешь страницу
+// Открывается саммари если не обновляешь страницу
 export class UsersModule extends AdminPage {
 	constructor() {
 		super();
@@ -368,11 +368,13 @@ export class UsersModule extends AdminPage {
 		item.parentNode.querySelector('.active').classList.remove('active');
 		item.classList.add('active');
 		let studentInner = _.f('.student-profile-inner');
+		studentInner.classList.remove('short')
 		if(pos == 0){
 			_.fillProfile({studentId:_.studentInfo['studentId']});
 		}
 		if(pos == 1){
 			studentInner.innerHTML = _.parentsInfo();
+		
 			let parentsData = await Model.getUsers({role: 'parent'});
 			_.fillParentsInfoTable(parentsData);
 		}
@@ -380,7 +382,9 @@ export class UsersModule extends AdminPage {
 			studentInner.innerHTML = _.activityHistory();
 		}
 		if(pos == 3){
-			studentInner.innerHTML = _.notifications();
+			studentInner.classList.add('short');
+			let notifications = await Model.getAdminNotifications();
+			studentInner.innerHTML = _.notifications(notifications);
 		}
 	}
 	

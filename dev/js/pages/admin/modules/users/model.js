@@ -208,5 +208,39 @@ class _Model {
 			resolve(null);
 		});
 	}
+	
+	
+	getAdminNotifications(){
+		return [{
+			title: 'Welcome email',
+			subtitle: 'Admin or parent added student to a platform'
+		},{
+			title: 'Create a practice schedule reminder email',
+			subtitle: 'Student should create a practice schedule to start skill practice'
+		},{
+			title: 'Daily study reminders for students',
+			subtitle: 'Remind student about scheduled skill practice'
+		},{
+			title: 'Weekly study reminders for students',
+			subtitle: 'Remind student about scheduled skills practices'
+		},{
+			title: 'Monthly study reminders for students',
+			subtitle: 'Remind student about scheduled skills practices'
+		},{
+			title: 'Practice test reminder ',
+			subtitle: 'Remind about the practice test a day before the start'
+		},{
+			title: 'Session activity emails',
+			subtitle: 'Activity summary each time student logs in and completes work'
+		},{
+			title: 'Weekly progress emails',
+			subtitle: 'Weekly updates to gauge perfomance and progress'
+		},{
+			title: 'Promotional discounts',
+			subtitle: 'Promotional discounts & new courses oferings'
+		}
+		]
+	}
+	
 }
 export const Model = new _Model();
