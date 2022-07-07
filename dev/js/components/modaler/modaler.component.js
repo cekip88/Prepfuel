@@ -113,7 +113,7 @@ export default class GModaler extends GComponent {
 			  cursor: pointer;
 			  position: absolute;
 			  right: 10px;
-			  top: 15px;
+			  top: 20px;
 			}
 			.modaler-close:before, .modaler-close:after {
 			  width: 3px;
@@ -132,7 +132,7 @@ export default class GModaler extends GComponent {
 			
 			@media screen and (min-width: 768px) {
 			  .modaler-close {
-			    top: 26px;
+			    top: 30px;
 			    right: 38px;
 			  }
 			}

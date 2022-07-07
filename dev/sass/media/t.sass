@@ -116,6 +116,7 @@
 	&-top
 		justify-content: flex-start
 
+
 .head
 	&-logo
 		max-width: initial
@@ -227,6 +228,7 @@
 			margin-bottom: 0
 			flex-basis: initial
 
+
 .skills
 	&-level
 		&-title
@@ -234,6 +236,8 @@
 		&-list
 			.skills-level-item
 				width: 50%
+
+
 .essay
 	&-result
 		&-loader
@@ -268,12 +272,16 @@
 				margin-left: 48px
 			&-circle
 				margin: 0
+
+
 .circle
 	+wh(310px)
 	&>svg
 		+wh(310px)
 	circle
 		r: 134
+
+
 .stats
 	.stars
 		&-info
@@ -287,9 +295,12 @@
 					line-height: $fz24
 	.circle
 		margin: 40px auto
+
+
 .questions
 	&-item
 		width: 17%
+
 
 .modal
 	+w(calc($tablet - 70px))
@@ -372,6 +383,7 @@
 		font-size: $fz16
 		line-height: $fz24
 
+
 .form
 	&-block
 		width: 100%
@@ -394,6 +406,8 @@
 			height: 15px
 			margin: 0 5px
 			border-bottom: 2px dotted
+
+
 .remove-btn
 	width: 42px
 	flex: 0 0 42px
@@ -433,6 +447,7 @@
 			.g-form-item
 				+w(100%)
 
+
 .adding
 	&-inner
 		+w(650px)
@@ -442,9 +457,11 @@
 			column-gap: 20px
 	&-button
 		margin-bottom: 0
+
 .adding,.level
 	&-buttons
 		flex-wrap: nowrap
+
 
 .watch
 	&-table
@@ -499,7 +516,6 @@
 		width: calc((100% - 60px) / 7)
 
 
-
 .courses
 	&-block
 		&-header
@@ -508,3 +524,10 @@
 			display: flex
 			flex-wrap: wrap
 			justify-content: space-between
+
+
+.uploadFile
+	&-body
+		display: flex
+		flex-direction: column
+		align-items: center

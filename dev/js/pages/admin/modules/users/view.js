@@ -481,7 +481,6 @@ export const view = {
 	addingStudent(){
 		const _ = this;
 		return `
-			<div hidden>
 				<div class="admin-modal"	id="addingForm">
 					<div class="block test-block adding-block">
 					<div class="test-header">
@@ -548,7 +547,6 @@ export const view = {
 					</div>
 				</div>
 				</div>
-			</div>
 		`;
 	},
 	levelButtons(stepData){
