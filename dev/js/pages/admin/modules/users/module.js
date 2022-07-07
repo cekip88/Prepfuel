@@ -128,7 +128,7 @@ export class UsersModule extends AdminPage {
 		let users = await Model.getUsers({role:_.subSection,page: 1,update: true});
 		_.fillUserTable(users);
 	}
-	async updateStudent(){
+	async updateStudent({item}){
 		const _ = this;
 		let response = await Model.updateStudent({
 			'studentId': _.studentInfo['studentId'],
@@ -141,6 +141,11 @@ export class UsersModule extends AdminPage {
 			"currentSchool": _.studentInfo['currentSchool']
 		});
 		if(!response) return void 0;
+
+		item.setAttribute('rerender',true);
+		item.setAttribute('section','student');
+		G_Bus.trigger(_.componentName,'changeSection',{item})
+		_.showSuccessPopup('Student profile updated')
 	}
 	// Fill methods
 	fillParentInfo({item}){
@@ -614,7 +619,6 @@ export class UsersModule extends AdminPage {
 	}
 	async removeUser({item}){
 		const _ = this;
-		console.log(_.studentInfo)
 		let response = await Model.removeStudent(_.studentInfo['studentId']);
 		if (!response) return;
 		
