@@ -17,6 +17,19 @@ export class UsersModule extends AdminPage {
 	async asyncDefine(){
 		const _ = this;
 		Model.currentUsersType = 'student';
+		_.activityHeaderData = [
+			{title:'40h:35min:57sec',info:'Total time spent in App'},
+			{title:'28min:30sec',info:'Average time spent per session'},
+			{title:'86',info:'Number of sessions'},
+			{title:'Sunday March 17, 2022',info:'Last session'},
+		]
+		_.activityData = [
+			{course:'ISEE',color:'turquoise',date:'2022-03-17',timeIn:'10:00 AM',timeOut:'10:45 AM',duration:'00:45:40'},
+			{course:'ISEE',color:'turquoise',date:'2022-03-16',timeIn:'10:00 AM',timeOut:'10:45 AM',duration:'00:45:40'},
+			{course:'SHSAT',color:'blue',date:'2022-03-15',timeIn:'10:00 AM',timeOut:'10:45 AM',duration:'00:45:40'},
+			{course:'ISEE',color:'turquoise',date:'2022-03-14',timeIn:'10:00 AM',timeOut:'10:45 AM',duration:'00:45:40'},
+			{course:'ISEE',color:'turquoise',date:'2022-03-13',timeIn:'10:00 AM',timeOut:'10:45 AM',duration:'00:45:40'},
+		];
 
 		//_.studentsInfo =
 		//G_Bus.trigger(_.componentName,'showSuccessPopup','Course has been successfully removed')
@@ -247,7 +260,12 @@ export class UsersModule extends AdminPage {
 		tbody.append(...tableData);
 		_.connectTableHead('.student-profile-inner');
 	}
-	
+	fillActivityTable(){
+		const _ = this;
+		let table = _.f('.activity-table .tbl-body');
+		_.clear(table);
+		table.append(..._.activityBodyRowsTpl(_.activityData));
+	}
 	// Fill methods end
 
 	// Adding methods
@@ -382,6 +400,8 @@ export class UsersModule extends AdminPage {
 		}
 		if(pos == 2){
 			studentInner.innerHTML = _.activityHistory();
+			_.fillActivityTable();
+			_.connectTableHead('.activity-table')
 		}
 		if(pos == 3){
 			studentInner.classList.add('short');

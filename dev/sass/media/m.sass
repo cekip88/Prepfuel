@@ -3742,3 +3742,39 @@ div.tbl-head
 			color: rgb($neutral-800)
 		&-text
 			color: rgb($neutral-600)
+
+.activity
+	&-header
+		&-list
+			@extend %dfi
+			flex-wrap: wrap
+		&-block
+			@extend %dfa
+			margin-bottom: 10px
+		&-icon
+			@extend %dfc
+			+wh(44px)
+			margin-right: 12px
+			border-radius: 8px
+			svg
+				+wh(24px)
+			&.violet
+				background-color: rgb($viol-light)
+				svg
+					fill: rgb($viol)
+			&.blue
+				background-color: rgb($blue-light)
+			&.turquoise
+				background-color: rgb($turquoise-light)
+				svg
+					fill: rgb($turquoise)
+			&.brown
+				background-color: rgb($brown-light)
+				svg
+					fill: rgb($brown)
+		&-title
+			font: $fz18 $p_semi
+			color: rgb($neutral-900)
+		&-text
+			font: 1em $p_reg
+			color: rgb($neutral-500)

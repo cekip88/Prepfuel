@@ -1282,9 +1282,144 @@ export const view = {
 	},
 	activityHistory(){
 		const _ = this;
-		return `
-			<h1>Activity History</h1>
+		let tpl = `
+			<div class="activity-header-list">${_.activityHistoryHeaderTpl(_.activityHeaderData)}</div>
+			<div class="activity-table">${_.activityTableTpl()}</div>
 		`;
+		return tpl;
+	},
+	activityHistoryHeaderTpl(headerData){
+		let tpl = '',colors = ['violet','turquoise','blue','brown'],icons = ['newClock','activity','equalizer','calendar'];
+		for (let i = 0; i < headerData.length; i++) {
+			tpl += `
+				<div class="activity-header-block">
+					<div class="activity-header-icon ${colors[i]}">
+						<svg><use xlink:href="#${icons[i]}"></use></svg>
+					</div>
+					<div class="activity-header-info">
+						<div class="activity-header-title">${headerData[i].title}</div>
+						<div class="activity-header-text">${headerData[i].info}</div>
+					</div>
+				</div>
+			`
+		}
+		return tpl;
+	},
+	activityBodyRowsTpl(activityData){
+		const _ = this;
+		let trs = [];
+		if(!activityData.length) return void 0;
+		for(let item of activityData){
+			let tr = document.createElement('TR');
+			tr.className= 'tbl-row';
+			tr.setAttribute('user-id',item['_id']);
+			tr.innerHTML = _.activityBodyRowTpl(item);
+			trs.push(tr);
+		}
+		return trs;
+	},
+	activityBodyRowTpl(rowData){
+		const _ = this;
+		let date = _.createdAtFormat(rowData.date);
+		let tpl = `
+			<td>
+				<div class="tbl-item">
+					<div class="users-course ${rowData.color}">${rowData.course}</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item">
+					<div class="users-date">${date}</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item">
+					<div class="users-date">${rowData.timeIn}</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item">
+					<div class="users-date">${rowData.timeOut}</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item">
+					<div class="users-date">${rowData.duration}</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item right">
+					<button class="users-btn button profile">Details</button>
+				</div>
+			</td>
+		`
+		return tpl;
+	},
+	activityTableTpl(){
+		return `
+			<div class="tbl">
+				<div class="tbl-head">
+					<div class="tbl-item"><span>Course</span>
+						<div class="tbl-sort-btns">
+							<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+						</div> 
+					</div>
+					<div class="tbl-item"><span>Date</span>
+						<div class="tbl-sort-btns">
+							<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+						</div>
+					</div>
+					<div class="tbl-item">Time in</div>
+					<div class="tbl-item">time out</div>
+					<div class="tbl-item"><span>session duration</span>
+						<div class="tbl-sort-btns">
+							<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+						</div>
+					</div>
+					<div class="tbl-item right">Action</div>
+				</div>
+				<div class="table-cont table-cont-students loader-parent">
+					<table class="table">
+						<thead class="tbl-head">
+							<tr>
+								<th>
+									<div class="tbl-item">
+										<span>Course</span>
+										<div class="tbl-sort-btns">
+											<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+										</div> 
+									</div>
+								</th>
+								<th>
+									<div class="tbl-item "><span>Date</span>
+										<div class="tbl-sort-btns">
+											<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+										</div>
+									</div>
+								</th>
+								<th><div class="tbl-item">Time in</div></th>
+								<th><div class="tbl-item">time out</div></th>
+								<th>
+									<div class="tbl-item"><span>session duration</span>
+										<div class="tbl-sort-btns">
+											<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+										</div>
+									</div>
+								</th>
+								<th><div class="tbl-item right">Action</div></th>
+							</tr>
+						</thead>
+						<tbody class="tbl-body"><tr><td><img src='/img/loader.gif' class='loader'></td></tr></tbody>
+					</table>
+				</div>
+			</div>
+		`
 	},
 	parentsInfoRow(rowData){
 		const _ = this;
