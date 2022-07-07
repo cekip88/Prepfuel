@@ -31,9 +31,6 @@
 			color: rgb($neutral-800)
 		&.active:hover
 			color: rgb($white)
-g-body
-	.section
-		padding-bottom: 24px
 .col
 	width: 588px
 	&.wide
@@ -119,7 +116,6 @@ g-body
 
 .title
 	margin-bottom: 0
-
 
 .head
 	&-button
@@ -585,10 +581,22 @@ thead.tbl-head
 				width: 320px
 				margin-right: auto
 	&-table
+		height: calc(100vh - 488px)
 		&-title
 			width: 613px
+		&-name
+			white-space: initial
 		&-date
 			width: 240px
 		&-action
 			width: 107px
 
+
+.uploadFile
+	&-form
+		width: calc(100vw - 240px)
+	&-title
+		font-size: $fz26
+		letter-spacing: -.02em
+	&-dragarea
+		height: 480px

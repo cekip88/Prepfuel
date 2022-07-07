@@ -129,7 +129,9 @@ body
 				display: block
 	&-gap
 		margin-bottom: 24px
-
+g-modaler
+	.block
+		margin: 0
 .loader
 	+wh(25px)
 	//position: absolute
@@ -1803,6 +1805,7 @@ body
 			span
 				font-family: $p_medium
 				color: rgb($neutral-400)
+
 .circle
 	@extend %dfc
 	+wh(268px)
@@ -1854,6 +1857,7 @@ body
 			color: rgb($neutral-500)
 			font-size: 1em
 			text-align: center
+
 .stats
 	.stats
 		&-subtitle
@@ -2242,6 +2246,7 @@ body
 	&-block
 		padding: 24px
 
+
 .check
 	&-list
 		input:checked ~ .check-label
@@ -2510,6 +2515,8 @@ body
 						font-size: $fz13
 						color: rgb($neutral-400)
 						line-height: $fz19
+
+
 .blue-icon
 	+wh(48px)
 	padding: 10px
@@ -2523,6 +2530,7 @@ body
 		svg
 			fill: rgb($blue)
 
+
 .remove-btn
 	@extend %dfc
 	+wh(100%,42px)
@@ -2532,6 +2540,7 @@ body
 	svg
 		+wh(14px)
 		display: none
+
 
 .tbl
 	margin-top: 24px
@@ -2981,6 +2990,8 @@ div.tbl-head
 .level,.adding
 	&-buttons
 		flex-wrap: wrap
+
+
 .admin
 	padding-bottom: 48px
 	&-title
@@ -3067,6 +3078,8 @@ div.tbl-head
 			line-height: 24px
 			color: rgb($neutral-400)
 			margin: 20px 0 32px
+
+
 .parent
 	&-table
 		&-avatar
@@ -3113,6 +3126,8 @@ div.tbl-head
 		font: 24px "Poppins-SemiBold"
 		color: #A1A5B7
 		text-align: center
+
+
 .newUsers
 	&-item
 		@extend %dfa
@@ -3229,6 +3244,7 @@ div.tbl-head
 		&.turquoise-light
 			stroke: rgb($turquoise-light)
 
+
 .marker
 	&-info
 		&-row
@@ -3282,6 +3298,7 @@ div.tbl-head
 		&.turquoise-light
 			stroke: rgb($turquoise-light)
 
+
 .breadcrumbs
 	font: 14px $p_medium
 	margin: 24px 0
@@ -3290,6 +3307,7 @@ div.tbl-head
 		line-height: 20px
 	&-current
 		color: rgb($neutral-800)
+
 
 .student
 	&-profile
@@ -3386,6 +3404,7 @@ div.tbl-head
 			&-info
 				text-align: left
 
+
 .plansBlock
 	&-reasons
 		margin-bottom: 20px
@@ -3467,9 +3486,11 @@ div.tbl-head
 	&-list
 		margin-top: 20px
 
+
 .revenue
 	&-graphic
 		margin-bottom: 20px
+
 
 .avatars
 	width: 90vw
@@ -3505,6 +3526,7 @@ div.tbl-head
 		border-top: 1px solid rgb($neutral-200)
 		button
 			margin-left: 16px
+
 
 .success-label
 	@extend %dfa
@@ -3549,7 +3571,6 @@ div.tbl-head
 			+wh(20px)
 
 
-
 .courses
 	&-block
 		&-header
@@ -3579,3 +3600,94 @@ div.tbl-head
 				height: 14px
 		&-name
 			font: 1em $f_semi
+			white-space: nowrap
+		&-action
+			position: relative
+	&-action
+		@extend %dfc
+		padding: 15px 10px
+		border-radius: 6px
+		background-color: #F3F6F9
+		span
+			+wh(2.5px)
+			margin-right: 2.5px
+			border-radius: 100%
+			background-color: #7E8299
+			&:last-child
+				margin-right: 0
+		&,span
+			transition: .35s ease
+		&:hover
+			background-color: #7E8299
+			span
+				background-color: #F3F6F9
+		&:hover + .courses-actions
+			opacity: 1
+			visibility: visible
+	&-actions
+		padding: 9px
+		background: #FFFFFF
+		box-shadow: 0 10px 60px rgba(192,195,200,.2)
+		border-radius: 12px
+		position: absolute
+		right: 12px
+		top: 12px
+		opacity: 0
+		visibility: hidden
+		z-index: 1
+		transition: .35s ease
+		&:hover
+			opacity: 1
+			visibility: visible
+		button
+			width: 100%
+			padding: 9px 12px
+			white-space: nowrap
+			text-align: left
+			font-family: $f_medium
+			font-size: $fz12
+			color: #7E8299
+			line-height: 14px
+			transition: .35s ease
+			&.red
+				color: #D9214E
+			&:hover
+				color: rgb($blue-text)
+
+
+.uploadFile
+	&-form
+		width: 90vw
+		height: calc(100vh - 100px)
+		.test-header
+			border-bottom: none
+		label
+			margin: 48px auto 0
+			width: initial
+	&-title
+		color: rgb($neutral-900)
+	&-subtitle
+		padding: 8px 0 16px
+		font: $fz16 $f_reg
+		color: $neutral-700
+	&-dragarea
+		@extend %dfc
+		+wh(100%,30vh)
+		padding: 20px
+		background: #F1FAFF
+		border: 1px dashed #00A3FF
+		border-radius: 6px
+		&-inner
+			@extend %dfa
+		&-icon
+			margin-right: 16px
+			svg
+				+wh(25px,30px)
+		&-info
+			font: $fz16 $f_medium
+			line-height: 22px
+		&-title
+			margin-bottom: 2px
+			color: rgb($neutral-800)
+		&-text
+			color: rgb($neutral-600)
