@@ -35,18 +35,25 @@ export const view = {
 		`
 	},
 	breadCrumbs(crumbs){
-		let tpl = `<div class="breadcrumbs">`;
+		const _ = this;
+		let tpl = `<div class="breadcrumbs">
+			${_.fillBreadCrumbs(crumbs)}
+		</div>`;
+		return tpl;
+	},
+	fillBreadCrumbs(crumbs){
+		const _ = this;
+		let tpl = '';
 		for (let i = 0; i < crumbs.length; i++) {
 			if (i !== crumbs.length - 1) {
 				tpl += `
-					<a href="${crumbs[i].path}" class="breadcrumbs-item">${crumbs[i].title}</a>
+					<a id="${crumbs[i].id}" data-position="${crumbs[i].position}" class="breadcrumbs-item" data-click="${_.componentName}:moveToFolder">${crumbs[i].title}</a>
 					<span class="breadcrumbs-delimiter">/</span>
 				`
 			} else {
 				tpl += `<strong class="breadcrumbs-current">${crumbs[i].title}</strong>`
 			}
 		}
-		tpl += '</div>';
 		return tpl;
 	},
 	coursesTableTpl(){
@@ -101,11 +108,10 @@ export const view = {
 	filesRowsTpl(usersData){
 		const _ = this;
 		let trs = [];
-		usersData = usersData['response'];
 		if(!usersData) return void 0;
 		for(let item of usersData){
 			let tr = document.createElement('TR');
-			tr.className= 'tbl-row';
+			tr.className = 'tbl-row';
 			tr.setAttribute('user-id',item['_id']);
 			tr.innerHTML = _.filesRowTpl(item);
 			trs.push(tr);
@@ -117,10 +123,7 @@ export const view = {
 		let tpl = `
 				<td>
 					<div class="tbl-item courses-table-title">
-						<div class="courses-table-icon">
-							<svg><use xlink:href="${rowData.type == 'folder' ? '#folder' : '#uploadedFile'}"></use></svg>
-						</div>
-						<h6 class="courses-table-name">${rowData.title}</h6>
+						${rowData.type == 'folder' ? _.folderTitle(rowData) : _.fileTitle(rowData)}
 					</div>
 				</td>
 				<td>
@@ -130,10 +133,13 @@ export const view = {
 			</td>
 			<td>
 				<div class="tbl-item right courses-table-action">
-					<button class="courses-action">
-						<span></span><span></span><span></span>
-					</button>
-					${rowData.type == 'folder' ? _.folderActions() : _.fileActions()}
+					${rowData.type == 'file' ? '<button class="courses-action-btn users-btn button">Preview</button>' : ''}
+					<div class="courses-action">
+						${rowData.type == 'folder' ? _.folderActions() : _.fileActions()}
+						<button class="courses-action-btn users-btn button">
+							<span></span><span></span><span></span>
+						</button>
+					</div>
 				</div>
 			</td>
 		`
@@ -159,6 +165,29 @@ export const view = {
 			</div>
 		`
 	},
+	folderTitle(rowData){
+		const _ = this;
+		return `
+			<button class="courses-table-button" id="${rowData._id}" data-click="${_.componentName}:moveToFolder">
+				<div class="courses-table-icon">
+					<svg><use xlink:href="#folder"></use></svg>
+				</div>
+				<span class="courses-table-name">${rowData.title}</span>
+			</button>
+		`
+	},
+	fileTitle(rowData){
+		const _ = this;
+		return `
+			<div class="courses-table-div" id="${rowData._id}">
+				<div class="courses-table-icon">
+					<svg><use xlink:href="#uploadedFile"></use></svg>
+				</div>
+				<span class="courses-table-name">${rowData.title}</span>
+			</div>
+		`
+	},
+
 	uploadFileTpl(){
 		return `
 			<form id="uploadFileForm" class="block uploadFile-form">

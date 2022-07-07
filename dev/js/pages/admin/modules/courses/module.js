@@ -15,40 +15,17 @@ export class CoursesModule extends AdminPage {
 
 	async asyncDefine(){
 		const _ = this;
-		_.filesData = {
-			response: [
-				{
-					'_id':'asfklajfoijasdf',
-					'title': 'ISEE Upper',
-					'type': 'folder',
-					'modified': '2021-05-1'
-				},{
-					'_id':'fasdfasdfasdf',
-					'title': 'ISEE Middle',
-					'type': 'folder',
-					'modified': '2021-05-1'
-				},{
-					'_id':'fasdfaafsdfsdfasdf',
-					'title': 'ISEE Lower',
-					'type': 'folder',
-					'modified': '2021-05-1'
-				},{
-					'_id':'asdfdffadsfdsafads',
-					'title': 'SSAT Upper',
-					'type': 'file',
-				'modified': '2021-05-1'
-			}
-		]};
-		_.tableCrumbs = [{title:'Courses',path:''},{title:'ISEE Upper',path:''}];
+		_.filesData = Model.getFolderData().response;
 	}
 	define() {
 		const _ = this;
 		_.componentName = 'CoursesModule';
-
+		_.tableCrumbs = [{'title':'Courses','id':'','position':0}];
 
 		G_Bus
 			.on(_,[
 				'domReady',
+				'moveToFolder',
 				'showUploadFile',
 			]);
 	}
@@ -68,7 +45,7 @@ export class CoursesModule extends AdminPage {
 	// End show methods
 
 	// Fill methods
-	fillTableRowsCount(selector,count = this.filesData['response'].length){
+	fillTableRowsCount(selector,count = this.filesData.length){
 		const _ = this;
 		let countCont = _.f(selector);
 		_.clear(countCont);
@@ -83,7 +60,35 @@ export class CoursesModule extends AdminPage {
 		cont.append(...rows);
 		_.connectTableHead();
 	}
+	rebuildBreadCrumbs(item){
+		const _ = this;
+		let id = item.getAttribute('id');
+		if (item.hasAttribute('data-position')) {
+			let position = item.getAttribute('data-position');
+			_.tableCrumbs = _.tableCrumbs.slice(0,parseInt(position) + 1);
+		} else {
+			_.tableCrumbs.push({'title':item.textContent,id,'position':_.tableCrumbs.length})
+		}
+		let breadCrumbs = _.f('.breadcrumbs');
+		_.clear(breadCrumbs);
+		breadCrumbs.append(_.markup(_.fillBreadCrumbs(_.tableCrumbs)));
+	}
 	// End fill methods
+
+	// Navigation methods
+	moveToFolder({item}) {
+		const _ = this;
+		let id = item.getAttribute('id');
+		let itemsData = Model.getFolderData(id);
+		if (itemsData.status != 'success') return void 0;
+		_.filesData = itemsData.response;
+
+		_.fillFoldersTable();
+		_.rebuildBreadCrumbs(item);
+		_.fillTableRowsCount('.courses-rows-count');
+	}
+
+	// End navigation methods
 
 	connectTableHead(selector) {
 		const _ = this;

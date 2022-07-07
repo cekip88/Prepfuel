@@ -513,6 +513,10 @@
 	&-head
 		background-color: rgb($neutral-200)
 		border-radius: 12px
+		th:first-child .tbl-item,&>.tbl-item:first-child
+			padding-left: 24px
+		th:last-child .tbl-item,&>.tbl-item:last-child
+			padding-right: 24px
 	&-item
 		background-color: transparent
 div.tbl-head
@@ -523,7 +527,11 @@ thead.tbl-head
 	display: none
 .table-cont
 	overflow-y: scroll
-	padding-right: 10px
+	padding-right: 12px
+	td
+		&:last-child
+			.tbl-item
+				padding-right: 0
 	&-students
 		max-height: 540px
 

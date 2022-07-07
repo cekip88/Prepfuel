@@ -2551,6 +2551,7 @@ g-modaler
 		padding: 12px
 		&.right
 			justify-content: flex-end
+			margin-left: auto
 		&.actions
 			.button-blue
 				padding: 7px 12px
@@ -2561,14 +2562,13 @@ g-modaler
 			&,span
 				font-family: $f_bold
 				font-size: 12px
+				line-height: 16px
 				letter-spacing: 0.03em
 				color: rgb($neutral-400)
 				white-space: nowrap
 		th:first-child .tbl-item,&>.tbl-item:first-child
-			padding-left: 24px
 			border-radius: 12px 0 0 12px
 		th:last-child .tbl-item,&>.tbl-item:last-child
-			padding-right: 24px
 			border-radius: 0 12px 12px 0
 	&-sort
 		&-btns
@@ -2722,7 +2722,6 @@ div.tbl-head
 .table
 	+w(100%)
 	td
-		padding: 12px 0
 		border-bottom: 1px dashed #E4E6EF
 	&-cont
 		min-height: 40px
@@ -3593,6 +3592,12 @@ div.tbl-head
 			color: #366CF9
 			line-height: 18px
 	&-table
+		&-button,&-div
+			@extend %dfa
+		&-button
+			&:hover
+				span
+					color: rgb($blue-text)
 		&-icon
 			margin-right: 10px
 			svg
@@ -3601,44 +3606,42 @@ div.tbl-head
 		&-name
 			font: 1em $f_semi
 			white-space: nowrap
+		&-date
+			font: $fz16 $f_reg
+			color: rgb($neutral-600)
 		&-action
 			position: relative
 	&-action
-		@extend %dfc
-		padding: 15px 10px
-		border-radius: 6px
-		background-color: #F3F6F9
-		span
-			+wh(2.5px)
-			margin-right: 2.5px
-			border-radius: 100%
-			background-color: #7E8299
-			&:last-child
-				margin-right: 0
-		&,span
-			transition: .35s ease
-		&:hover
-			background-color: #7E8299
+		&-btn
+			@extend %dfc
+			font-size: $fz12
+			font-family: $f_reg
+			&:not(:last-child)
+				margin-right: 8px
 			span
-				background-color: #F3F6F9
-		&:hover + .courses-actions
+				+wh(2.5px)
+				margin-right: 2.5px
+				border-radius: 100%
+				background-color: #7E8299
+				&:last-child
+					margin-right: 0
+			&,span
+				transition: .35s ease
+		&:hover .courses-actions
 			opacity: 1
 			visibility: visible
+			z-index: 1
 	&-actions
 		padding: 9px
 		background: #FFFFFF
 		box-shadow: 0 10px 60px rgba(192,195,200,.2)
 		border-radius: 12px
 		position: absolute
-		right: 12px
+		right: 0
 		top: 12px
 		opacity: 0
 		visibility: hidden
-		z-index: 1
-		transition: .35s ease
-		&:hover
-			opacity: 1
-			visibility: visible
+		z-index: -1
 		button
 			width: 100%
 			padding: 9px 12px
