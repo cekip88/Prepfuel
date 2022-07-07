@@ -1009,7 +1009,7 @@ export const view = {
 		`
 		return tpl;
 	},
-	parentsBodyRowsTpl(usersData){
+	parentsBodyRowsTpl(usersData,type='adding'){
 		const _ = this;
 		let trs = [];
 		usersData = usersData['response'];
@@ -1017,7 +1017,11 @@ export const view = {
 			let tr = document.createElement('TR');
 			tr.className= 'tbl-row';
 			tr.setAttribute('user-id',item['_id']);
-			tr.innerHTML = _.parentsBodyRowTpl(item);
+			if(type=='adding'){
+				tr.innerHTML = _.parentsBodyRowTpl(item);
+			} else{
+				tr.innerHTML = _.parentsInfoRow(item);
+			}
 			trs.push(tr);
 		}
 		return trs;
@@ -1264,6 +1268,40 @@ export const view = {
 			<h1>Activity History</h1>
 		`;
 	},
+	parentsInfoRow(rowData){
+		const _ = this;
+		let tpl = `
+			<td>
+				<div class="tbl-item">
+					<div class="parent-table-avatar">
+						<span>${rowData['user'].firstName.substr(0,1)}</span>
+					</div>
+					<div class="users-info">
+						<h6 class="users-info-name">${rowData['user'].firstName} ${rowData['user'].lastName}</h6>
+						<span class="users-info-email">${rowData['user'].email}</span>
+					</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item right">
+					<div class="users-date">${_.createdAtFormat(rowData.createdAt)}</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item right actions">
+					<button class="users-btn button profile">Profile</button>
+					<button
+						class="users-btn button-blue profile"
+						data-id="${rowData['_id']}"
+						data-click=${_.componentName}:deleteParent
+					>
+						<svg><use xlink:href="#close"></use></svg>
+					</button>
+				</div>
+			</td>
+		`
+		return tpl;
+	},
 	parentsInfo(){
 		const _ = this;
 		return `
@@ -1283,7 +1321,7 @@ export const view = {
 					</div>
 					<div class="tbl-item right">Action</div>
 				</div>
-				<div class="table-cont loader-parent">
+				<div class="table-cont loader-parent parents-info-table">
 					<table class="table">
 						<thead class="tbl-head">
 							<tr>
@@ -1336,26 +1374,26 @@ export const view = {
 								<div class="form-label-row">
 									<label class="form-label">First name</label>
 								</div>
-								<g-input type="text" name="first_name" value='${_.studentInfo["firstName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+								<g-input type="text" name="firstName"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["firstName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
 							</div>
 							<div class="adding-inpt small">
 								<div class="form-label-row">
 									<label class="form-label">Last name</label>
 								</div>
-								<g-input type="text" name="last_name" value='${_.studentInfo["lastName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+								<g-input type="text" name="lastName"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["lastName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
 							</div>
 						</div>
 						<div class="adding-inpt">
 							<div class="form-label-row">
 								<label class="form-label">Email</label>
 							</div>
-							<g-input type="text" name="email" value='${_.studentInfo["email"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+							<g-input type="text" name="email"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["email"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
 							</div>
 						<div class="adding-inpt">
 							<div class="form-label-row">
 								<label class="form-label">Date registered</label>
 							</div>
-							<g-input type="text" name="date"  value='${_.createdAtFormat(_.studentInfo["createdAt"])}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+							<g-input type="text" name="testDate"  data-input="${_.componentName}:fillStudentInfo"  value='${_.createdAtFormat(_.studentInfo["createdAt"])}' class="g-form-item" classname="form-input adding-inpt"></g-input>
 							</div>
 					</div>
 					<div class="adding-section">
@@ -1370,13 +1408,13 @@ export const view = {
 							<div class="form-label-row">
 								<label class="form-label">Current school</label>
 							</div>
-							<g-input type="text" name="current_school" value='${_.studentInfo["currentSchool"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+							<g-input type="text" name="currentSchool"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["currentSchool"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
 						</div>
 						<div class="adding-inpt">
 							<div class="form-label-row">
 								<label class="form-label">Grade</label>
 							</div>
-							<g-select class="select adding-select" name="grade" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course"
+							<g-select class="select adding-select" name="grade"  data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course"
 							items=${JSON.stringify(gradeItems)}></g-select>
 						</div>
 					</div>
@@ -1397,7 +1435,7 @@ export const view = {
 					<button class="test-footer-back" data-click="${_.componentName}:changeSection" section="student" rerender>
 						<span>Discard</span>
 					</button>
-					<button class="button-blue">
+					<button class="button-blue" data-click="${_.componentName}:updateStudent">
 						<span>Save Changes</span>
 					</button>
 				</div>

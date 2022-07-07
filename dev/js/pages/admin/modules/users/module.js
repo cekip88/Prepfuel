@@ -53,7 +53,7 @@ export class UsersModule extends AdminPage {
 				'fillParentInfo','assignStudentToParent',
 				'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
 				'showSuccessPopup','showErrorPopup','closePopup',
-				'generatePassword','changeProfileTab'
+				'generatePassword','changeProfileTab','updateStudent'
 			]);
 	}
 	async domReady(data){
@@ -112,6 +112,20 @@ export class UsersModule extends AdminPage {
 		_._$.addingStep = 1;
 		let users = await Model.getUsers({role:_.subSection,page: 1,update: true});
 		_.fillUserTable(users);
+	}
+	async updateStudent(){
+		const _ = this;
+		let response = await Model.updateStudent({
+			'studentId': _.studentInfo['studentId'],
+			'firstName': _.studentInfo['firstName'],
+			"lastName": _.studentInfo['lastName'],
+			"email": _.studentInfo['email'],
+			"password": _.studentInfo['password'],
+			"avatar": _.studentInfo['avatar'],
+			"grade": _.studentInfo['grade'],
+			"currentSchool": _.studentInfo['currentSchool']
+		});
+		if(!response) return void 0;
 	}
 	// Fill methods
 	fillParentInfo({item}){
@@ -190,7 +204,6 @@ export class UsersModule extends AdminPage {
 	}
 	async fillParentsTable(parentsData){
 		const _ = this;
-		
 		let tbody = _.f(`#assignParent .tbl-body`);
 		let tableData = _.parentsBodyRowsTpl(parentsData);
 		_.clear(tbody)
@@ -221,9 +234,18 @@ export class UsersModule extends AdminPage {
 			_.studentInfo['firstSchool'] = currentStudent['currentPlan'].firstSchool ? currentStudent['currentPlan'].firstSchool['_id'] : '';
 			_.studentInfo['secondSchool'] = currentStudent['currentPlan'].secondSchool ? currentStudent['currentPlan'].secondSchool['_id'] : '';
 			_.studentInfo['thirdSchool'] = currentStudent['currentPlan'].thirdSchool ? currentStudent['currentPlan'].thirdSchool['_id'] : '';
-			_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.addingStepFourData());
+			_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.getWizardData());
 		} else _.f('.student-profile-course-info').innerHTML = _.emptyCourseInfo();
 	}
+	async fillParentsInfoTable(parentsData){
+		const _ = this;
+		let tbody = _.f(`.parents-info-table .tbl-body`);
+		let tableData = _.parentsBodyRowsTpl(parentsData,'parentsInfo');
+		_.clear(tbody)
+		tbody.append(...tableData);
+		_.connectTableHead('.student-profile-inner');
+	}
+	
 	// Fill methods end
 
 	// Adding methods
@@ -351,6 +373,8 @@ export class UsersModule extends AdminPage {
 		}
 		if(pos == 1){
 			studentInner.innerHTML = _.parentsInfo();
+			let parentsData = await Model.getUsers({role: 'parent'});
+			_.fillParentsInfoTable(parentsData);
 		}
 		if(pos == 2){
 			studentInner.innerHTML = _.activityHistory();
@@ -382,28 +406,6 @@ export class UsersModule extends AdminPage {
 	// Show methods
 	async showAssignPopup({item}) {
 		const _ = this;
-
-/*
-		let inner = '';
-		if (_._$.assignStep === 1) {
-
-			let stepOneData = await Model.addingStepOneData();
-			_['studentInfo'].course = stepOneData[0]['_id'];
-			_['studentInfo'].level = stepOneData[0]['levels'][0]['_id'];
-			_['metaInfo'].course = stepOneData[0]['title'];
-			_['metaInfo'].level = stepOneData[0]['levels'][0]['title'];
-
-			inner = _.addingStepOne(stepOneData);
-
-		} else if (_._$.assignStep === 2) {
-			inner = _.assignStepTwo(await Model.step4);
-		} else if (_._$.assignStep === 3) {
-			inner = _.addingStepThree();
-		} else if (_._$.assignStep === 4) {
-			inner = _.assignStepFour();
-		}
-
-		_.f('#assignForm').querySelector('.adding-body').innerHTML = inner;*/
 		_._$.assignStep = _._$.assignStep;
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#assignForm'});
 	}
@@ -538,7 +540,7 @@ export class UsersModule extends AdminPage {
 		cont.append(_.markup(_.assignParentTpl()))
 
 		let usersData = await Model.getUsers({role: 'parent'});
-		_.parents = usersData;
+		//_.parents = usersData;
 
 		_.fillParentBlock(usersData);
 		_.fillParentsTable(usersData);
@@ -561,7 +563,8 @@ export class UsersModule extends AdminPage {
 		let response = await Model.assignCourse(_.studentInfo);
 		if(!response)	return void 0;
 		_.studentInfo['currentPlan'] = response['currentPlan'];
-		_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.addingStepFourData());
+		let wizardData = await Model.getWizardData();
+		_.f('.student-profile-course-info').innerHTML = _.courseInfo(wizardData);
 		G_Bus.trigger('modaler','closeModal');
 		_.showSuccessPopup('Course has been successfully assigned');
 	}
@@ -579,7 +582,7 @@ export class UsersModule extends AdminPage {
 		_.studentInfo.secondSchool = null;
 		_.studentInfo.thirdSchool = null;
 		_.studentInfo.testDate = null;
-		_.studentInfo.testDatePicked = null;
+		_.studentInfo.testDatePicked = false;
 		_._$.assignStep = 1;
 	}
 	async removeUser({item}){

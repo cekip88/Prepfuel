@@ -10,12 +10,9 @@ class _Model {
 		_.endpoints = {
 			usersList: `${env.backendUrl}/admin`,
 			createStudent: `${env.backendUrl}/user/create-student`,
-			removeStudent: `${env.backendUrl}/user/student`,
+			updateStudent: `${env.backendUrl}/user/update-student`,
+			removeStudent: `${env.backendUrl}/user/delete-student`,
 			createParent: `${env.backendUrl}/admin/create-parent`,
-			addingStepOne: `${env.backendUrl}/user/add-student-step1`,
-			addingStepTwo: `${env.backendUrl}/user/add-student-step2`,
-			addingStepThree: `${env.backendUrl}/user/add-student-step3`,
-			addingStepFour: `${env.backendUrl}/user/add-student-step4`,
 			assignCourse: `${env.backendUrl}/user/assign-plan`,
 			removeCourse: `${env.backendUrl}/user/remove-plan`,
 			wizardData: `${env.backendUrl}/user/wizard-data`,
@@ -80,6 +77,28 @@ class _Model {
 			resolve(null);
 		});
 	}
+	getWizardData(){
+		const _ = this;
+		if(_.wizardData) return Promise.resolve(_.wizardData);
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['wizardData']}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					_.wizardData = response['response'];
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('getWizardData', response);
+				}
+			} else {
+				_.wrongRequest('getWizardData', rawResponse)
+			}
+			resolve(null);
+		});
+	}
 	createParent(studentData) {
 		const _ = this;
 		return new Promise(async resolve => {
@@ -124,117 +143,28 @@ class _Model {
 			resolve(null);
 		});
 	}
+	updateStudent(studentData) {
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['updateStudent']}/${studentData['studentId']}`, {
+				method: 'PUT',
+				headers: _.baseHeaders,
+				body: JSON.stringify(studentData)
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('updateStudent', response);
+				}
+			} else {
+				_.wrongRequest('updateStudent', rawResponse)
+			}
+			resolve(null);
+		});
+	}
 	
-	getWizardData(){
-		const _ = this;
-		if(_.wizardData) return Promise.resolve(_.wizardData);
-		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.endpoints['wizardData']}`, {
-				method: 'GET',
-				headers: _.baseHeaders,
-			});
-			if(rawResponse.status < 210) {
-				let response = await rawResponse.json();
-				if(response['status'] == 'success') {
-					_.wizardData = response['response'];
-					resolve(response['response']);
-				} else {
-					_.wrongResponse('getWizardData', response);
-				}
-			} else {
-				_.wrongRequest('getWizardData', rawResponse)
-			}
-			resolve(null);
-		});
-	}
-	addingStepOneData(){
-		const _ = this;
-		if(_.step1) return Promise.resolve(_.step1);
-		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.endpoints['addingStepOne']}`, {
-				method: 'GET',
-				headers: _.baseHeaders,
-			});
-			if(rawResponse.status < 210) {
-				let response = await rawResponse.json();
-				if(response['status'] == 'success') {
-					_.step1 = response['response'];
-					resolve(response['response']);
-				} else {
-					_.wrongResponse('addingStepOneData', response);
-				}
-			} else {
-				_.wrongRequest('addingStepOneData', rawResponse)
-			}
-			resolve(null);
-		});
-	}
-	addingStepTwoData(){
-		const _ = this;
-		if(_.step2) return Promise.resolve(_.step2);
-		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.endpoints['addingStepTwo']}`, {
-				method: 'GET',
-				headers: _.baseHeaders,
-			});
-			if(rawResponse.status < 210) {
-				let response = await rawResponse.json();
-				if(response['status'] == 'success') {
-					_.step2 = response['response'];
-					resolve(response['response']);
-				} else {
-					_.wrongResponse('addingStepTwoData', response);
-				}
-			} else {
-				_.wrongRequest('addingStepTwoData', rawResponse)
-			}
-			resolve(null);
-		});
-	}
-	addingStepThreeData(){
-		const _ = this;
-		if(_.step3) return Promise.resolve(_.step3);
-		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.endpoints['addingStepThree']}`, {
-				method: 'GET',
-				headers: _.baseHeaders,
-			});
-			if(rawResponse.status < 210) {
-				let response = await rawResponse.json();
-				if(response['status'] == 'success') {
-					_.step3 = response['response'];
-					resolve(response['response']);
-				} else {
-					_.wrongResponse('addingStepThreeData', response);
-				}
-			} else {
-				_.wrongRequest('addingStepThreeData', rawResponse)
-			}
-			resolve(null);
-		});
-	}
-	addingStepFourData(){
-		const _ = this;
-		if(_.step4) return Promise.resolve(_.step4);
-		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.endpoints['addingStepFour']}`, {
-				method: 'GET',
-				headers: _.baseHeaders,
-			});
-			if(rawResponse.status < 210) {
-				let response = await rawResponse.json();
-				if(response['status'] == 'success') {
-					_.step4 = response['response'];
-					resolve(response['response']);
-				} else {
-					_.wrongResponse('addingStepFourData', response);
-				}
-			} else {
-				_.wrongRequest('addingStepFourData', rawResponse)
-			}
-			resolve(null);
-		});
-	}
 
 	removeCourse(removeData){
 		const _ = this;
