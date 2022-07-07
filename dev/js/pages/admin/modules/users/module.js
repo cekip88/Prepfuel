@@ -78,14 +78,7 @@ export class UsersModule extends AdminPage {
 		}
 	}
 
-	async assignCourse({item}) {
-		const _ = this;
-		let response = await Model.assignCourse(_.studentInfo);
-		if(!response)	return void 0;
-		_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.addingStepFourData());
-		G_Bus.trigger('modaler','closeModal');
-		_.showSuccessPopup('Course has been successfully assigned');
-	}
+	
 	
 	clearData(){
 		const _ = this;
@@ -390,7 +383,7 @@ export class UsersModule extends AdminPage {
 	async showAssignPopup({item}) {
 		const _ = this;
 
-
+/*
 		let inner = '';
 		if (_._$.assignStep === 1) {
 
@@ -410,7 +403,8 @@ export class UsersModule extends AdminPage {
 			inner = _.assignStepFour();
 		}
 
-		_.f('#assignForm').querySelector('.adding-body').innerHTML = inner;
+		_.f('#assignForm').querySelector('.adding-body').innerHTML = inner;*/
+		_._$.assignStep = _._$.assignStep;
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#assignForm'});
 	}
 
@@ -562,7 +556,15 @@ export class UsersModule extends AdminPage {
 		let currentParent = Model.parentsData.response.filter( parent => parent['_id'] == _.studentInfo['parentId'] )[0];
 		_.parentInfo = currentParent['user'];
 	}
-	
+	async assignCourse({item}) {
+		const _ = this;
+		let response = await Model.assignCourse(_.studentInfo);
+		if(!response)	return void 0;
+		_.studentInfo['currentPlan'] = response['currentPlan'];
+		_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.addingStepFourData());
+		G_Bus.trigger('modaler','closeModal');
+		_.showSuccessPopup('Course has been successfully assigned');
+	}
 	async removeCourse({item}) {
 		const _ = this;
 		let courseInfo = _.f('.student-profile-course-info');
@@ -576,6 +578,9 @@ export class UsersModule extends AdminPage {
 		_.studentInfo.firstSchool = null;
 		_.studentInfo.secondSchool = null;
 		_.studentInfo.thirdSchool = null;
+		_.studentInfo.testDate = null;
+		_.studentInfo.testDatePicked = null;
+		_._$.assignStep = 1;
 	}
 	async removeUser({item}){
 		const _ = this;
@@ -738,6 +743,16 @@ export class UsersModule extends AdminPage {
 			addingBody = _.f('#assignForm .adding-body');
 		if (!addingBody) return void 0;
 		_.clear(addingBody);
+		
+		if (_._$.assignStep === 1) {
+			let wizardData = await Model.getWizardData();
+			_['studentInfo'].course = wizardData['courses'][0]['_id'];
+			_['studentInfo'].level = wizardData['courses'][0]['levels'][0]['_id'];
+			_['metaInfo'].course = wizardData['courses'][0]['title'];
+			_['metaInfo'].level = wizardData['courses'][0]['levels'][0]['title'];
+		}
+		
+		
 		if(_._$.assignStep == _.minStep){
 			_.setCancelBtn('assign');
 		}else{

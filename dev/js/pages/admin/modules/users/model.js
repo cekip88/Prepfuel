@@ -70,7 +70,6 @@ class _Model {
 			if(rawResponse.status < 210) {
 				let response = await rawResponse.json();
 				if(response['status'] == 'success') {
-					
 					resolve(response['response']);
 				} else {
 					_.wrongResponse('assignCourse', response);

@@ -1236,7 +1236,7 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Official test date</label>
 					</div>
-					<g-input type="date" name="testDate" format="month DD, YYYY" icon="false" value="${_.studentInfo['currentPlan']["testDate"] ? _.createdAtFormat(_.studentInfo['currentPlan']["testDate"]) : ''}" class="g-form-item" classname="form-input adding-inpt"></g-input>
+					<g-input type="date" name="testDate" format="month DD, YYYY" icon="false" value="${testDate}" class="g-form-item" classname="form-input adding-inpt"></g-input>
 					</div>
 			</div>
 			${_.choiseSelectStudent(choiceData,'Application School List')}
