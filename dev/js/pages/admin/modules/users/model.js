@@ -13,9 +13,11 @@ class _Model {
 			updateStudent: `${env.backendUrl}/user/update-student`,
 			removeStudent: `${env.backendUrl}/user/delete-student`,
 			createParent: `${env.backendUrl}/admin/create-parent`,
+			removeParent: `${env.backendUrl}/admin/parents`,
 			assignCourse: `${env.backendUrl}/user/assign-plan`,
 			removeCourse: `${env.backendUrl}/user/remove-plan`,
 			wizardData: `${env.backendUrl}/user/wizard-data`,
+			tests: `${env.backendUrl}/tests`,
 		};
 	}
 	wrongResponse(method, response){
@@ -200,10 +202,31 @@ class _Model {
 				if(response['status'] == 'success') {
 					resolve(response['response']);
 				} else {
-					_.wrongResponse('removeCourse', response);
+					_.wrongResponse('removeStudent', response);
 				}
 			} else {
-				_.wrongRequest('removeCourse', rawResponse)
+				_.wrongRequest('removeStudent', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+	removeParent(parentId){
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['removeParent']}/${parentId}`, {
+				method: 'DELETE',
+				headers: _.baseHeaders
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				console.log(response);
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('removeParent', response);
+				}
+			} else {
+				_.wrongRequest('removeParent', rawResponse)
 			}
 			resolve(null);
 		});
@@ -240,6 +263,28 @@ class _Model {
 			subtitle: 'Promotional discounts & new courses oferings'
 		}
 		]
+	}
+	getTests(){
+		const _ = this;
+		if(_.tests) return Promise.resolve(_.tests);
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['tests']}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					_.tests = response['response'];
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('getTests', response);
+				}
+			} else {
+				_.wrongRequest('getTests', rawResponse)
+			}
+			resolve(null);
+		});
 	}
 	
 }

@@ -721,13 +721,7 @@ export class DashboardModule extends AdminPage{
 		return string;
 	}
 
-	switchSubNavigate(){
-		const _ = this;
-		let cont = _.f('.subnavigate');
-		cont.querySelector('.active').classList.remove('active');
-		cont.querySelector(`[section="${_.subSection}"]`).classList.add('active')
-	}
-
+	
 	newUsersFill(data){
 		const _ = this;
 		let cont = _.f('.newUsers-list');

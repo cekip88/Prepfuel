@@ -12,7 +12,7 @@ export const view = {
 					<button class="button-blue" data-click="StudentPage:changeSection;" section="/student/schedule" ><span>Choose your practice schedule</span></button>
 				</div>
 			</div>
-			${_.scheduleBlock()}
+			
 			<br><br>
 		`;
 	},

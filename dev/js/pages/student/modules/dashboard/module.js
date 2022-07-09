@@ -25,7 +25,6 @@ export class DashboardModule extends StudentPage{
 	define() {
 		const _ = this;
 		_.componentName = 'Dashboard';
-	//	G_Bus.on(_,['changeModule'])
 	}
 	async init() {
 		const _ = this;

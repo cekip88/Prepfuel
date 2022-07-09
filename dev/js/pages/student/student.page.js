@@ -70,9 +70,7 @@ class StudentPage extends G{
 			'structure':_.pageStructure
 		});
 		module.headerBlock = _.header;
-		return Promise.resolve(module.render({
-			structure: _.pageStructure
-		}));
+		return Promise.resolve(module.render());
 	}
 	async init(blockData){
 		const _ = this;

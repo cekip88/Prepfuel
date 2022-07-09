@@ -1,11 +1,12 @@
 export const view = {
 	usersBodyTabs(){
+		const _ = this;
 		return `
 			<div class="subnavigate">
 				<div class="section">
-					<button class="subnavigate-button active"><span>Students</span></button>
-					<button class="subnavigate-button"><span>Parents</span></button>
-					<button class="subnavigate-button"><span>Admins</span></button>
+					<button class="subnavigate-button active" data-click="${_.componentName}:changeSection" section="student"><span>Students</span></button>
+					<button class="subnavigate-button" data-click="${_.componentName}:changeSection" section="parent"><span>Parents</span></button>
+					<button class="subnavigate-button" data-click="${_.componentName}:changeSection" section="admin"><span>Admins</span></button>
 				</div>
 			</div>
 		`;
@@ -107,7 +108,7 @@ export const view = {
 	usersBody(){
 		const _ = this;
 		return `
-			<div class="section users-page">
+			<div class="section users-page" id="usersBody">
 				<div class="block">
 					<div class="block-header">
 						<h2 class="block-title">Students (<span class="users-count gusers-count"><img src='/img/loader.gif' class='loader'></span>)</h2>
@@ -196,6 +197,7 @@ export const view = {
 			</div>
 		`;
 	},
+	
 	removeCourseTpl(){
 		const _ = this;
 		return `
@@ -222,6 +224,21 @@ export const view = {
 				<div class="modal-row">
 					<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
 					<button class="button-red" data-click="${_.componentName}:removeUser"><span>Remove</span></button>
+				</div>
+			</div>
+		`;
+	},
+	removeParentTpl(){
+		const _ = this;
+		return `
+			<div class="modal-block student-profile-remove-popup" id="removeParentForm">
+				<h6 class="modal-title">
+					<span>Delete parent profile</span>
+				</h6>
+				<p class="modal-text">Are you sure you want to delete this parent profile?</p>
+				<div class="modal-row">
+					<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
+					<button class="button-red" data-click="${_.componentName}:removeParent"><span>Remove</span></button>
 				</div>
 			</div>
 		`;
@@ -1019,7 +1036,9 @@ export const view = {
 			tr.setAttribute('user-id',item['_id']);
 			if(type=='adding'){
 				tr.innerHTML = _.parentsBodyRowTpl(item);
-			} else{
+			} else if(type == 'single') {
+				tr.innerHTML = _.parentsSingleBodyRowTpl(item);
+			}else {
 				tr.innerHTML = _.parentsInfoRow(item);
 			}
 			trs.push(tr);
@@ -1074,6 +1093,62 @@ export const view = {
 					>
 						${_.studentInfo['parentId'] && _.studentInfo['parentId'] == rowData['_id'] ? 'Assigned' : 'Assign'}
 					</button>
+				</div>
+			</td>
+		`
+		return tpl;
+	},
+	parentsSingleBodyRowTpl(rowData){
+		const _ = this;
+		let tpl = `
+			<td>
+				<div class="tbl-item">
+					<div class="parent-table-avatar">
+						<span>${rowData['user'].firstName.substr(0,1)}</span>
+					</div>
+					<div class="users-info">
+						<h6 class="users-info-name">${rowData['user'].firstName} ${rowData['user'].lastName}</h6>
+						<span class="users-info-email">${rowData['user'].email}</span>
+					</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item parent-table-students-block">`;
+					if (rowData.students.length) {
+						tpl += `<div class="parent-table-students">`;
+						for (let item of rowData.students) {
+							if(rowData.students.length) {
+								let avatar = item.user.avatar ? item.user.avatar.avatar : '';
+								tpl += `<div class="parent-table-student">${avatar ? '<img src="/img/' + avatar + '.svg">' : ''}</div>`
+							}
+						}
+			tpl += `
+				</div>
+				<div class="parent-table-students-count">${rowData.students.length} student${rowData.students.length > 1 ? 's' : ''}</div>`
+		} else {
+			tpl += `<div class="parent-table-students-empty">No Students</div>`
+		}
+		tpl += `
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item right">
+					<div class="users-date">${_.createdAtFormat(rowData.createdAt)}</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item right actions">
+					<button class="users-btn button">
+						<svg class="button-icon">
+							<use xlink:href="#write"></use>
+						</svg>
+					</button>
+					<button class="users-btn button" data-click="${_.componentName}:showRemoveParentPopup"  data-id="${rowData._id}">
+						<svg class="button-icon">
+							<use xlink:href="#trash"></use>
+						</svg>
+					</button>
+					<button class="users-btn button profile">Profile</button>
 				</div>
 			</td>
 		`
@@ -1218,7 +1293,12 @@ export const view = {
 		const _ = this;
 		return `
 			<h5 class="student-profile-course-empty">Currently, there is no ISEE course assign to this student</h5>
-			<button  class="student-profile-course-empty-btn" data-click="${_.componentName}:showAssignPopup">Assign SHSAT Course</button>
+			<button  class="student-profile-course-empty-btn" data-click="${_.componentName}:showAssignPopup">
+				<svg class="button-icon">
+					<use xlink:href="#plus"></use>
+				</svg>
+				<span>Assign SHSAT Course</span>
+			</button>
 		`;
 	},
 	courseInfo(choiceData){
@@ -1597,10 +1677,9 @@ export const view = {
 	},
 	profile(){
 		const _ = this;
-		//${_.personalInfo()}
 		return `
 			<div class="section">
-				${_.breadCrumbs()}
+				<div class="breadcrumbs"></div>
 				<div class="block">
 					${_.sectionHeaderTpl({
 						title: 'Student Profile',
@@ -1619,16 +1698,14 @@ export const view = {
 			</div>
 		`;
 	},
-	breadCrumbs(){
+	breadCrumbsTpl(crumbs){
 		const _ = this;
 		return `
-			<div class="breadcrumbs">
-				<a href="#" class="breadcrumbs-item">Users</a>
-				<span class="breadcrumbs-delimiter">/</span>
-				<a href="#" class="breadcrumbs-item">Students</a>
-				<span class="breadcrumbs-delimiter">/</span>
-				<strong class="breadcrumbs-current">${_.studentInfo['firstName']} ${_.studentInfo['lastName']} Profile</strong>
-			</div>
+			<a href="#" class="breadcrumbs-item">Users</a>
+			<span class="breadcrumbs-delimiter">/</span>
+			<a href="#" class="breadcrumbs-item">Students</a>
+			<span class="breadcrumbs-delimiter">/</span>
+			<strong class="breadcrumbs-current">${_.studentInfo['firstName']} ${_.studentInfo['lastName']} Profile</strong>
 		`;
 	},
 
@@ -1640,9 +1717,112 @@ export const view = {
 				${_.assignStudent()}
 				${_.removeCourseTpl()}
 				${_.removeUserTpl()}
+				${_.removeParentTpl()}
 				${_.selectAvatarTpl()}
 			</div>
 		`
 	},
 	
+	
+	
+	// Parents Page
+	parentsBody(){
+		const _ = this;
+		let filterSelectOptions = [
+			{
+				value: 1, text: 'All parents',active:true
+			},{
+				value: 2, text: 'No students',
+			},{
+				value: 3, text: 'With students',
+			}
+		];
+		return `
+			<div class="section users-page" id="bodyParents">
+				<div class="block">
+					<div class="block-header">
+						<h2 class="block-title">Parents (<span class="users-count gusers-count"><img src='/img/loader.gif' class='loader'></span>)</h2>
+						<div class="block-header-item block-header-search">
+							<svg><use xlink:href="#search"></use></svg>
+							<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input>
+						</div>
+						<div class="block-header-item block-header-date">
+							<svg><use xlink:href="#calendar"></use></svg>
+							<g-input class="block-header-input block-header-date"  type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input>
+						</div>
+						<div class="block-header-item block-header-select">
+							<g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents"
+							items='${JSON.stringify(filterSelectOptions)}'></g-select>
+						</div>
+						<button class="block-header-item button-blue" data-click="${_.componentName}:addParent"><span>Add Parent</span>
+							<svg class="button-icon">
+								<use xlink:href="#plus"></use>
+							</svg>
+						</button>
+					</div>
+					${_.pagination()}
+					<div class="tbl">
+			      <div class="tbl-head">
+			        <div class="tbl-item">
+			          <span>USER Name</span>
+			          <div class="tbl-sort-btns">
+			            <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			            <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			          </div>
+			        </div>
+			        <div class="tbl-item">
+			          <span>Students</span>
+			          <div class="tbl-sort-btns">
+			            <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			            <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			          </div>
+			        </div>
+			        <div class="tbl-item right"><span>date Registered</span>
+			          <div class="tbl-sort-btns">
+			            <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			            <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			          </div>
+			        </div>
+			        <div class="tbl-item right">Action</div>
+			      </div>
+			      <div class="table-cont loader-parent">
+			        <table class="table">
+			          <thead class="tbl-head">
+			          <tr>
+			            <th>
+			              <div class="tbl-item">
+			                <span>USER Name</span>
+			                <div class="tbl-sort-btns">
+			                  <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                  <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                </div>
+			              </div>
+			            </th>
+			            <th>
+			              <div class="tbl-item">
+			                <span>Students</span>
+			                <div class="tbl-sort-btns">
+			                  <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                  <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                </div>
+			              </div>
+			            </th>
+			            <th>
+			              <div class="tbl-item right">
+			                <span>date Registered</span>
+			                <div class="tbl-sort-btns">
+			                  <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                  <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                </div>
+			              </div>
+			            </th>
+			            <th><div class="tbl-item right">Action</div></th>
+			          </tr>
+			          </thead>
+			          <tbody class="tbl-body">
+							</div>
+					</div>
+			</div>
+		`;
+	},
 }

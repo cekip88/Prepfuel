@@ -150,10 +150,15 @@ export default class G_G{
 		if(!_[_.handlersName].length){
 			return  void 0;
 		}
+	
 		if(!_.initedUpdate){
 			_[_.handlersName].forEach( fnObj => {
+				let obj = {};
 				for(let innerProp in fnObj) {
-					fnObj[innerProp]();
+					obj[innerProp] = _[_.stateName][innerProp];
+				}
+				for(let innerProp in fnObj) {
+					fnObj[innerProp](obj);
 				}
 			});
 		}
@@ -162,11 +167,15 @@ export default class G_G{
 		}
 		
 		_[_.handlersName].forEach( fnObj => {
+			let obj = {};
+			for(let innerProp in fnObj){
+				obj[innerProp] = _[_.stateName][innerProp];
+			}
 			for(let innerProp in fnObj){
 				if(~props.indexOf(innerProp)){
-					fnObj[innerProp]();
+					fnObj[innerProp](obj);
 				}else if(innerProp === '')	{
-					fnObj[innerProp]();
+					fnObj[innerProp](obj);
 				}
 			}
 		});
@@ -188,7 +197,6 @@ export default class G_G{
 				_[_.handlersName].push(propObj);
 			}
 		}
-
 	}
 
 	async start(props){

@@ -55,7 +55,7 @@ class _Model{
 					resolve(_.tests);
 				}
 			}else{
-				G.trigger('TestPage','showResults',response);
+				G_Bus.trigger('TestPage','showResults',rawResponse);
 			}
 		});
 	}

@@ -870,9 +870,10 @@ export const view = {
 	testsBody(){
 		const _ = this;
 		//${_.testScoreHeaderTpl()}
+		//${/*_.tempTestListTpl()*/}
 		return `
 			${_.testScoreHeaderTpl()}
-			${_.tempTestListTpl()}
+			
 		`;
 	}
 	
