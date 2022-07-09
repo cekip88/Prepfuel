@@ -375,7 +375,6 @@ export const view = {
 
 	assignStepTwo(stepData){
 		const _ = this;
-		console.log(stepData);
 		return `
 			<div class="adding-center">
 				<h3 class="adding-title">Application School List</h3>
@@ -1572,6 +1571,7 @@ export const view = {
 						</thead>
 						<tbody class="tbl-body"><tr><td><img src='/img/loader.gif' class='loader'></td></tr></tbody>
 					</table>
+					<button>Add parent</button>
 				</div>
 			</div>
 		`;

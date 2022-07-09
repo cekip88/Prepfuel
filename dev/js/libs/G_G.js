@@ -144,20 +144,40 @@ export default class G_G{
 		}
 	}
 	/* Working with Dom methods */
-
+	catchDepObj(dep){
+		const _ = this;
+		let obj = {};
+		_[_.handlersName].forEach( (fnObj,index) => {
+			let keys = Object.values(fnObj);
+			for(let innerProp in fnObj) {
+				if(fnObj.dep === dep){
+					let stateProps = keys[1].split(',');
+					for(let prop of stateProps){
+						obj[prop] = _[_.stateName][prop];
+					}
+					break;
+				}
+			}
+		});
+		return obj;
+	}
 	update(props){
 		const _ = this;
 		if(!_[_.handlersName].length){
 			return  void 0;
 		}
-	
+		//console.log(_[_.handlersName]);
 		if(!_.initedUpdate){
 			_[_.handlersName].forEach( fnObj => {
-				let obj = {};
+				let obj;
 				for(let innerProp in fnObj) {
-					obj[innerProp] = _[_.stateName][innerProp];
+					if(innerProp == ""){
+						obj = Object.assign({},_[_.stateName]);
+					}
+					if(innerProp == 'dep') obj = _.catchDepObj(fnObj[innerProp]);
 				}
 				for(let innerProp in fnObj) {
+					if(innerProp == 'dep') continue;
 					fnObj[innerProp](obj);
 				}
 			});
@@ -167,11 +187,15 @@ export default class G_G{
 		}
 		
 		_[_.handlersName].forEach( fnObj => {
-			let obj = {};
-			for(let innerProp in fnObj){
-				obj[innerProp] = _[_.stateName][innerProp];
+			let obj;
+			for(let innerProp in fnObj) {
+				if(innerProp == ""){
+					obj = Object.assign({},_[_.stateName]);
+				}
+				if(innerProp == 'dep') obj = _.catchDepObj(fnObj[innerProp]);
 			}
 			for(let innerProp in fnObj){
+				if(innerProp == 'dep') continue;
 				if(~props.indexOf(innerProp)){
 					fnObj[innerProp](obj);
 				}else if(innerProp === '')	{
@@ -185,12 +209,18 @@ export default class G_G{
 		const _ = this;
 		if(!fn) return false;
 		if(deps.length){
-			deps.forEach( (dep)=>{
-				let propObj = { [dep.toString()] : fn  };
+			let
+				objDep = deps+'',
+				propObj = { [deps[0].toString()] : fn,dep: objDep};
+			if(!(~_[_.handlersName].indexOf(propObj))){
+				_[_.handlersName].push(propObj);
+			}
+		/*	deps.forEach( (dep)=>{
+				let propObj = { [dep.toString()] : fn,dep: objDep};
 				if(!(~_[_.handlersName].indexOf(propObj))){
 					_[_.handlersName].push(propObj);
 				}
-			});
+			});*/
 		}else{
 			let propObj = { [deps.toString()] : fn  };
 			if(!(~_[_.handlersName].indexOf(propObj))){

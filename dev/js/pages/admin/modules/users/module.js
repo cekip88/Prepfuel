@@ -86,12 +86,13 @@ export class UsersModule extends AdminPage {
 
 			_.currentPage = 'main';
 			_.studentInfo = {};
-			_._$.assignStep = 1;
+		//
 			//
 		}
 		if(_.subSection == 'profile'){
 			_.fillProfile(data);
 			_.currentPage = 'profile';
+			_._$.assignStep = 1;
 		}
 		if(_.subSection == 'parent'){
 			let
@@ -752,7 +753,7 @@ export class UsersModule extends AdminPage {
 			_._$.assignStep = step;
 		}
 	}
-	async handleAddingSteps(step) {
+	async handleAddingSteps({addingStep}) {
 		const _ = this;
 		if(!_.initedUpdate){
 			let wizardData = await Model.getWizardData();
@@ -772,31 +773,30 @@ export class UsersModule extends AdminPage {
 		addingBody.innerHTML = '<img src="/img/loader.gif">';
 		_.clear(addingBody);
 		
-		if(_._$.addingStep == _.minStep){
+		if(addingStep == _.minStep){
 			_.setCancelBtn();
 		}else{
 			_.setPrevBtn();
 		}
-		if(_._$.addingStep == _.maxStep){
+		if(addingStep == _.maxStep){
 			_.setSubmitBtn();
 		}else{
 			_.setNextBtn();
 		}
-		if(_._$.addingStep == 1 ){
+		if(addingStep == 1 ){
 			let stepOneData = await Model.wizardData;
 			if (!_.studentInfo.course) _['studentInfo'].course = stepOneData['courses'][0]['_id'];
 			if (!_.studentInfo.level) _['studentInfo'].level = stepOneData['courses'][0]['levels'][0]['_id'];
 			if (!_['metaInfo'].course) _['metaInfo'].course = stepOneData['courses'][0]['title'];
 			if (!_['metaInfo'].level) _['metaInfo'].level = stepOneData['courses'][0]['levels'][0]['title'];
 		}
-		addingBody.append( _.markup( _.stepsObj[ _._$.addingStep ]() ) );
+		addingBody.append( _.markup( _.stepsObj[ addingStep ]() ) );
 		
 		_.f('#addingForm .adding-list-item.active').classList.remove('active');
-		_.f(`#addingForm .adding-list-item:nth-child(${_._$.addingStep})`).classList.add('active');
+		_.f(`#addingForm .adding-list-item:nth-child(${addingStep})`).classList.add('active');
 	}
-	async handleAssignSteps() {
+	async handleAssignSteps({assignStep}) {
 		const _ = this;
-		
 		if(!_.initedUpdate){
 			let wizardData = await Model.getWizardData();
 			_.stepsAssignObj = {
@@ -812,38 +812,33 @@ export class UsersModule extends AdminPage {
 		if (!addingBody) return void 0;
 		_.clear(addingBody);
 		
-		if (_._$.assignStep === 1) {
+		if (assignStep === 1) {
 			let wizardData = await Model.getWizardData();
 			_['studentInfo'].course = wizardData['courses'][0]['_id'];
 			_['studentInfo'].level = wizardData['courses'][0]['levels'][0]['_id'];
 			_['metaInfo'].course = wizardData['courses'][0]['title'];
 			_['metaInfo'].level = wizardData['courses'][0]['levels'][0]['title'];
 		}
-		
-		
-		if(_._$.assignStep == _.minStep){
+		if ( assignStep == _.minStep){
 			_.setCancelBtn('assign');
 		}else{
 			_.setPrevBtn('assign');
 		}
-		if(_._$.assignStep == _.maxAssignStep){
+		if ( assignStep == _.maxAssignStep){
 			_.setSubmitBtn('assign');
 		}else{
 			_.setNextBtn('assign');
 		}
-
-		console.log(_.stepsAssignObj)
-		addingBody.append( _.markup( _.stepsAssignObj[ _._$.assignStep ]() ) );
+		addingBody.append( _.markup( _.stepsAssignObj[ assignStep ]() ) );
 		
 		_.f('#assignForm .adding-list-item.active').classList.remove('active');
-		_.f(`#assignForm .adding-list-item:nth-child(${ _._$.assignStep })`).classList.add('active');
+		_.f(`#assignForm .adding-list-item:nth-child(${ assignStep })`).classList.add('active');
 	}
 	
 	async init(){
 		const _ = this;
-		
-		_._( _.handleAddingSteps.bind(_),['addingStep','test']);
-		_._( _.handleAssignSteps.bind(_),[ 'assignStep' ]);
+		_._( _.handleAddingSteps.bind(_),['addingStep'] );
+		_._( _.handleAssignSteps.bind(_),[ 'assignStep' ] );
 	}
 	
 }
