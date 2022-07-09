@@ -484,25 +484,6 @@ export class UsersModule extends AdminPage {
 		_.parentInfo['parentId'] = item.getAttribute('data-id');
 		G_Bus.trigger('modaler','showModal', {item:item,type:'html',target:'#removeParentForm','closeBtn':'hide'});
 	}
-	showSuccessPopup(text) {
-		const _ =  this;
-		_.closePopup();
-		_.f('BODY').append(_.markup(_.successPopupTpl(text,'green')));
-		setTimeout(_.closePopup.bind(_),3000)
-	}
-	showErrorPopup(text) {
-		const _ =  this;
-		_.closePopup();
-		_.f('BODY').append(_.markup(_.successPopupTpl(text,'red')));
-		setTimeout(_.closePopup.bind(_),3000);
-	}
-	closePopup(clickData) {
-		const _ = this;
-		let label;
-		if (clickData && clickData.item) label = clickData.item.closest('.label');
-		else label = _.f('.label');
-		if (label) label.remove();
-	}
 	// Show methods end
 	
 	// Validation methods
@@ -850,7 +831,8 @@ export class UsersModule extends AdminPage {
 		}else{
 			_.setNextBtn('assign');
 		}
-		
+
+		console.log(_.stepsAssignObj)
 		addingBody.append( _.markup( _.stepsAssignObj[ _._$.assignStep ]() ) );
 		
 		_.f('#assignForm .adding-list-item.active').classList.remove('active');
@@ -862,7 +844,6 @@ export class UsersModule extends AdminPage {
 		
 		_._( _.handleAddingSteps.bind(_),['addingStep','test']);
 		_._( _.handleAssignSteps.bind(_),[ 'assignStep' ]);
-		console.log(await Model.getTests());
 	}
 	
 }

@@ -42,7 +42,12 @@ export default class GInput extends GComponent {
 	get value(){
 		const _ = this;
 		if (_.isDate()) {
-			return _.shadow.querySelector('.inpt-date').value
+			if (!_.isDateRange()) {
+				return _.shadow.querySelector('.inpt-date').value.trim()
+			}
+			let from = _.shadow.querySelector('.inpt-date[data-type="from"]').value,
+				to = _.shadow.querySelector('.inpt-date[data-type="to"]').value.trim();
+			return !from ? null : (from + (to ? '|' + to : ''));
 		}
 		if(_.isSymbolPassword()) {
 			if(_.type == 'password') {
@@ -111,19 +116,18 @@ export default class GInput extends GComponent {
 	/* Outside methods*/
 	/* Inside methods*/
 
-	datePick({value:value}) {
+	datePick({value}) {
 		const _ = this;
-		if (_.hasAttribute('active') && _.isDateRange()) _.closeDatePicker();
 
-		if (_.getAttribute('active')) return;
+		if (_.hasAttribute('active')) return;
 		_.setAttribute('active',true);
 
-		if (!value) value = _.getAttribute('value');
-		let
-			date = _.getDate(value),
-			tpl = _.datePickerTpl(date);
+		if (!value) value = _.value;
+		if (_.isDateRange() && value) value = value.split('|')[0];
 
 		let
+			date = _.getDate(value ?? ''),
+			tpl = _.datePickerTpl(date),
 			year = date.getFullYear(),
 			month = date.getMonth() + 1,
 			day = date.getDate();
@@ -131,13 +135,14 @@ export default class GInput extends GComponent {
 		if (day < 10) day = '0' + day;
 		_.setAttribute('data-current-date',`${year}-${month}-${day}`);
 
-		let activeDate = _.getAttribute('value');
-		if (_.isThatMonth(activeDate,year + '-' + month)) {
-			let day = activeDate.substring(activeDate.length - 2);
-			_.markerPickedDay(tpl,day);
+		if (!_.isDateRange()) {
+			let checkValue = _.value ?? _.fillDate(new Date(),'date').outDate;
+			if (_.isThatMonth(checkValue, year + '-' + month)) _.markerPickedDay(tpl,checkValue.substring(checkValue.length - 2))
+		} else {
+			// Отрисовка активных дней начала и конца для input date range
 		}
 
-		if (!_.getAttribute('data-previous')) {
+		if (!_.isPrevious()) {
 			let currentDate = new Date();
 			if (_.isThatMonth(currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1),year + '-' + month)) {
 				_.disablePrev(tpl,currentDate.getDate());
@@ -146,15 +151,10 @@ export default class GInput extends GComponent {
 
 		_.shadow.append(tpl);
 	}
-	closeDatePicker(){
-		const _ = this;
-		console.log(_)
-
-	}
 	getDate(value){
 		const _ = this;
 		if (value) {
-			if (!_.getAttribute('data-previous')) {
+			if (!_.isPrevious()) {
 				let date = new Date();
 				let valueItems = value.split('-');
 				if (parseInt(valueItems[0]) > date.getFullYear()) return new Date(value);
@@ -207,8 +207,17 @@ export default class GInput extends GComponent {
 			days = _.datePickerDays(),
 			body = _.datePickerBody(date);
 
-		tpl.className = 'date-picker';
-		tpl.append(headTpl,days,body);
+		if (_.isDateRange()) {
+			tpl.className = 'date-picker range';
+			tpl.append(_.markup(_.getTpl('datePickerLeft')));
+			let right = document.createElement('DIV');
+			right.className = 'date-picker-right';
+			right.append(headTpl,days,body);
+			tpl.append(right);
+		} else {
+			tpl.className = 'date-picker';
+			tpl.append(headTpl,days,body);
+		}
 		return tpl;
 	}
 	datePickerHeadTpl(date){
@@ -249,25 +258,34 @@ export default class GInput extends GComponent {
 
 		_.removeAttribute('data-current-date');
 		_.triggerChangeEvent();
-		if (clickData) _.datePickerClose(clickData);
+		_.datePickerClose();
 	}
-	rangeChangeDate(clickData,dateValues){
+	rangeChangeDate({item},dateValues){
 		const _ = this;
 		let fromDate = _.getAttribute('fromDate') ?? '';
 		let toDate = _.getAttribute('toDate') ?? '';
+		let input = _.shadow.querySelector('.date-value');
 
-		if (!fromDate) {
+		if (!_.firstClick) {
+			_.firstClick = dateValues;
+			input.value = dateValues.outValue;
+			let activeItem = item.parentElement.querySelector('.active');
+			if (activeItem) activeItem.classList.remove('active');
+			item.classList.add('active');
 			_.setAttribute('fromDate',dateValues.outDate);
-		} else if (!toDate) {
-			_.setAttribute('toDate',dateValues.outDate)
+			_.shadow.querySelector('.inpt-date[data-type="from"]').value = dateValues.outDate;
+			input.focus();
 		} else {
-
+			input.value += ' - ' + dateValues.outValue;
+			_.setAttribute('toDate',dateValues.outDate);
+			_.shadow.querySelector('.inpt-date[data-type="to"]').value = dateValues.outDate;
+			_.datePickerClose();
 		}
 	}
-	fillDate(dateValue){
+	fillDate(dateValue,type = 'value'){
 		const _ = this;
 		let
-			date = new Date(dateValue),
+			date = type === 'value' ? new Date(dateValue) : dateValue,
 			format = _.attr('format') ?? 'MM-DD-YYYY',
 			outValue = format,
 			days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Sunday'],
@@ -295,7 +313,9 @@ export default class GInput extends GComponent {
 	datePickerClose(){
 		const _ = this;
 		_.removeAttribute('active');
-		_.shadow.querySelector('.date-picker').remove();
+		let datePicker = _.shadow.querySelector('.date-picker');
+		if (datePicker) datePicker.remove();
+		if (_.firstClick) _.firstClick = undefined;
 	}
 	nextMonth(){
 		const _ = this;
@@ -538,6 +558,9 @@ export default class GInput extends GComponent {
 	}
 	isDateRange(){
 		return this.hasAttribute('range');
+	}
+	isPrevious(){
+		return this.hasAttribute('previous');
 	}
 	isCheckbox(){
 		return (this.attr('type') === 'checkbox') || (this.attr('type') === 'radio');
@@ -896,9 +919,6 @@ export default class GInput extends GComponent {
 		}
 		
 		.date-picker {
-		  padding: 16px;
-		  display: flex;
-		  flex-direction: column;
 		  background-color: #fff;
 		  border-radius: 8px;
 		  box-shadow: 0 10px 60px rgba(192, 195, 200, 0.2);
@@ -906,7 +926,48 @@ export default class GInput extends GComponent {
 		  position: absolute;
 		  z-index: 1;
 		  top: 40px;
-		  left: 0;
+		  right: 0;
+		}
+		.date-picker:not(.range) {
+		  padding: 16px;
+		}
+		.date-picker.range {
+		  display: flex;
+		  flex-direction: column;
+		}
+		.date-picker-right {
+			padding: 16px;
+		}
+		.date-picker-left {
+			order: 2;
+			display: flex;
+			flex-direction: column;
+			padding: 4px;
+			position: relative;
+		}
+		.date-picker-left:after {
+			display: block;
+			content: '';
+			width: 1px;
+			height: calc(100% - 16px);
+			background-color: #EBEDF3;
+			position: absolute;
+			right: 0;
+			top: 8px;
+		}
+		.date-picker-left-button {
+			width: 100%;
+			padding: 8px 12px;
+			text-align: left;
+			font-size: 14px;
+			font-family: "roboto-semibold";
+			color: #7E8299;
+			white-space: nowrap;
+			transition: .35s ease;
+		}
+		.date-picker-left-button.active,.date-picker-left-button:hover {
+			background-color: #F5F8FA;
+			color: #00A3FF;
 		}
 		.date-picker-header, .date-picker-days, .date-picker-body {
 		  width: calc(32px * 7);
@@ -989,7 +1050,7 @@ export default class GInput extends GComponent {
 		}
 		
 		.inpt.form-search {
-		  padding: 0 23px;
+		  padding: 0 0 0 23px;
 		}
 		.inpt.form-search, .inpt.form-search .inpt-value {
 		  height: 34px !important;
@@ -1001,6 +1062,14 @@ export default class GInput extends GComponent {
 		}
 		.inpt.form-search svg {
 		  bottom: 7px;
+		}
+		@media screen and (min-width: 768px) {
+			.date-picker.range {
+				flex-direction: row;
+			}
+			.date-picker-left {
+			order: initial;
+			}
 		}
 		`;
 	}

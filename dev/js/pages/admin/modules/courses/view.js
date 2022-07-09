@@ -51,7 +51,7 @@ export const view = {
 					<span class="breadcrumbs-delimiter">/</span>
 				`
 			} else {
-				tpl += `<strong class="breadcrumbs-current">${crumbs[i].title}</strong>`
+				tpl += `<strong class="breadcrumbs-current" id="${crumbs[i].id}">${crumbs[i].title}</strong>`
 			}
 		}
 		return tpl;
@@ -189,6 +189,7 @@ export const view = {
 	},
 
 	uploadFileTpl(){
+		const _ = this;
 		return `
 			<form id="uploadFileForm" class="block uploadFile-form">
 				<div class="test-header">
@@ -208,7 +209,7 @@ export const view = {
 						</div>
 					</div>
 					<label for="uploadInput" class="button-blue"><span>Choose File To Upload</span></label>
-					<input type="file" hidden id="uploadInput">
+					<input type="file" hidden id="uploadInput" data-change="${_.componentName}:uploadCSV">
 				</div>
 			</form>
 		`

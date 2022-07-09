@@ -27,6 +27,7 @@ export class CoursesModule extends AdminPage {
 				'domReady',
 				'moveToFolder',
 				'showUploadFile',
+				'uploadCSV',
 			]);
 	}
 	async domReady(data){
@@ -42,6 +43,7 @@ export class CoursesModule extends AdminPage {
 		const _ = this;
 		G_Bus.trigger('modaler','showModal',{type:'html',target:'#uploadFileForm'})
 	}
+
 	// End show methods
 
 	// Fill methods
@@ -69,6 +71,7 @@ export class CoursesModule extends AdminPage {
 		} else {
 			_.tableCrumbs.push({'title':item.textContent,id,'position':_.tableCrumbs.length})
 		}
+
 		let breadCrumbs = _.f('.breadcrumbs');
 		_.clear(breadCrumbs);
 		breadCrumbs.append(_.markup(_.fillBreadCrumbs(_.tableCrumbs)));
@@ -90,6 +93,43 @@ export class CoursesModule extends AdminPage {
 
 	// End navigation methods
 
+	async uploadCSV({item:input}){
+		const _ = this;
+		let
+			file = input.files[0],
+			fileName = file.name,
+			splitArray = fileName.split('.'),
+			extension = splitArray[splitArray.length - 1],
+			title = fileName.substr(0,fileName.length - extension.length - 1);
+
+		if (extension !== 'csv') {
+			_.showErrorPopup('Wrong files format')
+			return;
+		}
+
+		let uploadData = new FormData();
+		uploadData.append('file',file,title + '.'  + extension);
+
+		let response = await Model.uploadCSV(uploadData);
+		if (response) {
+			let breadCrumbsStrong = _.f('.breadcrumbs strong');
+
+			let date = new Date();
+			Model.foldersData.push({
+				'_id':title,
+				'title': title,
+				'type': 'file',
+				'modified': date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate(),
+				'parentId': breadCrumbsStrong.getAttribute('id')
+			});
+
+
+			_.moveToFolder({item:breadCrumbsStrong});
+			G_Bus.trigger('modaler','closeModal');
+			_.showSuccessPopup(title  + '.csv uploaded')
+		}
+	}
+
 	connectTableHead(selector) {
 		const _ = this;
 		let
@@ -107,9 +147,10 @@ export class CoursesModule extends AdminPage {
 		})
 	}
 	
-	init(){
+	async init(){
 		const _ = this;
 		console.log(Model);
+		console.log(await Model.getTests());
 	}
 	
 }

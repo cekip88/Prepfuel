@@ -17,7 +17,6 @@ class _Model {
 			assignCourse: `${env.backendUrl}/user/assign-plan`,
 			removeCourse: `${env.backendUrl}/user/remove-plan`,
 			wizardData: `${env.backendUrl}/user/wizard-data`,
-			tests: `${env.backendUrl}/tests`,
 		};
 	}
 	wrongResponse(method, response){
@@ -264,28 +263,7 @@ class _Model {
 		}
 		]
 	}
-	getTests(){
-		const _ = this;
-		if(_.tests) return Promise.resolve(_.tests);
-		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.endpoints['tests']}`, {
-				method: 'GET',
-				headers: _.baseHeaders,
-			});
-			if(rawResponse.status < 210) {
-				let response = await rawResponse.json();
-				if(response['status'] == 'success') {
-					_.tests = response['response'];
-					resolve(response['response']);
-				} else {
-					_.wrongResponse('getTests', response);
-				}
-			} else {
-				_.wrongRequest('getTests', rawResponse)
-			}
-			resolve(null);
-		});
-	}
+
 	
 }
 export const Model = new _Model();

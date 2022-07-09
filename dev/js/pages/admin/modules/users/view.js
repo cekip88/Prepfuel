@@ -118,7 +118,7 @@ export const view = {
 						</div>
 						<div class="block-header-item block-header-date">
 							<svg><use xlink:href="#calendar"></use></svg>
-							<g-input class="block-header-input block-header-date"  type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input>
+							<g-input class="block-header-input block-header-date" range previous type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input>
 						</div>
 						<div class="block-header-item block-header-select">
 							<g-select
@@ -1277,17 +1277,7 @@ export const view = {
 	
 	
 
-	successPopupTpl(text,color){
-		const _ = this;
-		return `
-			<div class="success-label label ${color}">
-				<svg><use xlink:href="#checkmark-reverse"></use></svg>
-				<span>${text}</span>
-				<button data-click="${_.componentName}:closePopup">
-					<svg><use xlink:href="#close-transparent"></use></svg>
-				</button>
-			</div>`
-	},
+
 	///
 	emptyCourseInfo(){
 		const _ = this;

@@ -117,7 +117,7 @@ export default {
 			<span>Sa</span>
 		</div>
 	`},
-	'datePickerBody': (date)=>{
+	'datePickerBody': (date,)=>{
 		let lens = 31,
 			month = date.getMonth() + 1,
 			year = date.getFullYear();
@@ -143,7 +143,23 @@ export default {
 		}
 		tpl += '</div>'
 		return tpl;
-	}
+	},
+	datePickerLeft: ()=>{
+		return `
+			<div class="date-picker-left">
+				<button class="date-picker-left-button" data-click="inputRange" data-range="today">Today</button>
+				<button class="date-picker-left-button" data-click="inputRange" data-range="yesterday">Yesterday</button>
+				<button class="date-picker-left-button" data-click="inputRange" data-range="this_week">This week</button>
+				<button class="date-picker-left-button" data-click="inputRange" data-range="last_week">Last week</button>
+				<button class="date-picker-left-button" data-click="inputRange" data-range="past_two_weeks">Past two weeks</button>
+				<button class="date-picker-left-button" data-click="inputRange" data-range="this_month">This month</button>
+				<button class="date-picker-left-button" data-click="inputRange" data-range="last_month">Last month</button>
+				<button class="date-picker-left-button" data-click="inputRange" data-range="this_year">This year</button>
+				<button class="date-picker-left-button" data-click="inputRange" data-range="last_year">Last year</button>
+				<button class="date-picker-left-button" data-click="inputRange" data-range="all_time">All time</button>
+			</div>
+		`;
+	},
 }
 
 //${ (data['type'] == 'password') ? 'data-keydown="preparePassword"' : ''}
