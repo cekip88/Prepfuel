@@ -50,8 +50,7 @@ export class UsersModule extends AdminPage {
 		_.parentSkipped =  false;
 		_.set({
 			addingStep : 1,
-			assignStep : 1,
-			test: 'sdsadsadsad'
+			assignStep : 1
 		});
 
 		G_Bus
@@ -65,10 +64,11 @@ export class UsersModule extends AdminPage {
 				'assignParent','addNewParent','assignCourse','skipParent',
 				'changeTestType','changeStudentLevel','changeSection',
 				'fillStudentInfo','createStudent','skipTestDate',
-				'fillParentInfo','assignStudentToParent',
+				'fillParentInfo','assignStudentToParent','removeAssignedParent',
 				'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
 				'showSuccessPopup','showErrorPopup','closePopup',
-				'generatePassword','changeProfileTab','updateStudent'
+				'generatePassword','changeProfileTab','updateStudent',
+				'showAddParentPopup'
 			]);
 	}
 	async domReady(data){
@@ -485,6 +485,16 @@ export class UsersModule extends AdminPage {
 		_.parentInfo['parentId'] = item.getAttribute('data-id');
 		G_Bus.trigger('modaler','showModal', {item:item,type:'html',target:'#removeParentForm','closeBtn':'hide'});
 	}
+	showAddParentPopup({item}){
+		const _ = this;
+		let from = item.getAttribute('from');
+		_.f('.parent-popup-body').innerHTML = _.parentAddingFromProfile(from);
+		
+		G_Bus.trigger('modaler','showModal',{
+			type: 'html',
+			target: '#add-parent'
+		})
+	}
 	// Show methods end
 	
 	// Validation methods
@@ -582,8 +592,14 @@ export class UsersModule extends AdminPage {
 
 		let cont = _.f('.adding-assign-body');
 		_.clear(cont);
-		cont.classList.add('full')
-		cont.append(_.markup(_.assignParentTpl()))
+		cont.classList.add('full');
+		if(_.metaInfo.parentAssigned){
+			cont.append(_.markup(_.assignedParent(_.currentParent)));
+			return void 0;
+		}else{
+			cont.append(_.markup(_.assignParentTpl()));
+		}
+		
 
 		let usersData = await Model.getUsers({role: 'parent'});
 		_.parents = usersData;
@@ -599,10 +615,14 @@ export class UsersModule extends AdminPage {
 			item.closest('.table').querySelector(`.users-btn[data-id="${_.studentInfo['parentId']}"]`).textContent = 'Assign';
 		}
 
-		item.textContent = 'Assigned';
+		//item.textContent = 'Assigned';
 		_.studentInfo['parentId'] = item.getAttribute('data-id');
 		let currentParent = Model.parentsData.response.filter( parent => parent['_id'] == _.studentInfo['parentId'] )[0];
+		_.currentParent = currentParent;
+		_.metaInfo.parentAddType = 'assigned';
+		_.f('.parent-adding-table').innerHTML = _.assignedParent(currentParent);
 		_.parentInfo = currentParent['user'];
+		_.metaInfo.parentAssigned = true;
 	}
 	async assignCourse({item}) {
 		const _ = this;
@@ -656,7 +676,12 @@ export class UsersModule extends AdminPage {
 		G_Bus.trigger('modaler','closeModal',{item})
 		_.showSuccessPopup('Parent profile deleted')
 	}
-	
+	async removeAssignedParent({item}){
+		const _ = this;
+		_.studentInfo['parentId'] = null;
+		_.metaInfo.parentAssigned = false;
+		_.f('.parent-adding-table').innerHTML = _.assignParentTpl(true);
+	}
 	
 	
 

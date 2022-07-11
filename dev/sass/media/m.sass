@@ -286,6 +286,18 @@ g-modaler
 	&-red
 		background-color: rgb($red-dark)
 		color: rgb($white)
+	&-link
+		@extend %dfc
+		color: rgb($blue-text)
+		font: 16px $f_bold
+		line-height: 20px
+		margin: 30px auto 0
+		svg
+			+wh(15px)
+			margin-right: 12.5px
+			fill: rgb($blue-text)
+			
+			
 .pagination
 	@extend %dfa
 	@extend %fdc

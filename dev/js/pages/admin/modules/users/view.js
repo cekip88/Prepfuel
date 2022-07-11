@@ -727,11 +727,13 @@ export const view = {
 					<button class="adding-button ${_.metaInfo && _.metaInfo.parentAddType == 'skip' ? 'active' : ''}" data-click="${_.componentName}:skipParent">Skip for now</button>
 				</div>
 			</div>
-			<div class="adding-assign-body ${width}">`;
+			<div class="adding-assign-body ${width} parent-adding-table">`;
 		if (!_.metaInfo || !_.metaInfo.parentAddType || _.metaInfo.parentAddType == 'adding') {
 			tpl += _.assignNewParent();
 		} else if (_.metaInfo.parentAddType == 'assign') {
 			tpl += _.assignParentTpl(true);
+		} else if(_.metaInfo.parentAddType == 'assigned') {
+			tpl += _.assignedParent(_.currentParent)
 		} else {
 			tpl += _.skipParentTpl();
 		}
@@ -1086,7 +1088,7 @@ export const view = {
 				<div class="tbl-item right actions">
 					<button class="users-btn button profile">Profile</button>
 					<button 
-						class="users-btn button-blue profile" 
+						class="users-btn button-blue"
 						data-id="${rowData['_id']}"  
 						data-click=${_.componentName}:assignStudentToParent
 					>
@@ -1524,6 +1526,188 @@ export const view = {
 		`
 		return tpl;
 	},
+	
+	addParentPopup(){
+		const _ = this;
+		return `
+			<div id="add-parent">
+				<div class="block test-block adding-block">
+					<div class="test-header">
+						<h5 class="block-title test-title adding-header-title">
+							<span>Adding a Parent</span>
+						</h5>
+					</div>
+					<div class="adding-inner">
+						<div class="adding-row">
+							<ol class="adding-list">
+								<li class="adding-list-item active">
+									<strong class="adding-list-digit">1</strong>
+									<div class="adding-list-desc">
+										<h5 class="adding-list-title">Parent Information</h5>
+										<h6 class="adding-list-subtitle">Assign Or Add a Parent</h6>
+									</div>
+								</li>
+							</ol>
+							<div class="adding-body parent-popup-body"><img src="/img/loader.gif"></div>
+						</div>
+					</div>
+					<div class="test-footer">
+						<button class="test-footer-back step-prev-btn" data-click="modaler:closeModal">
+							<span>Cancel</span>
+						</button>
+						<button class="button-blue step-next-btn">
+							<span>Submit</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		`;
+	},
+	
+	headerParentAddingFromProfile(){
+		const _ = this;
+		return `
+			<div class="adding-section">
+				<div class="adding-label">Select the way of adding a parent</div>
+				<div class="adding-buttons">
+					<button class="adding-button" data-click="${_.componentName}:assignParent" type="assign">Assign from base</button>
+					<button class="adding-button active" data-click="${_.componentName}:addNewParent" type="adding">Add new parent</button>
+				</div>
+			</div>
+		`;
+	},
+	parentAddingFromProfile(from='profile'){
+		const _ = this;
+		let width = '';
+		if (_.metaInfo && _.metaInfo.parentAddType && _.metaInfo.parentAddType == 'assign') width = 'full';
+		let tpl =  `
+			<h3 class="adding-title">Parent Information</h3>
+			${from == 'profile' ? _.headerParentAddingFromProfile() : ''}
+			<div class="adding-assign-body ${width} parent-adding-table">`;
+				if (!_.metaInfo.parentAddType || _.metaInfo.parentAddType == 'adding') {
+					tpl += _.assignNewParent();
+				} else if (_.metaInfo.parentAddType == 'assign') {
+					tpl += _.assignParentTpl(true);
+				}
+		tpl += `</div>`;
+		return tpl;
+	},
+	assignedParent(parentInfo){
+		const _ = this;
+		let studentsTpl = ``,students = parentInfo.students;
+		if (students.length) {
+			studentsTpl += `<div class="parent-table-students">`;
+			for (let item of students) {
+				if(students.length) {
+					let avatar = item.user.avatar ? item.user.avatar.avatar : '';
+					studentsTpl += `<div class="parent-table-student">${avatar ? '<img src="/img/' + avatar + '.svg">' : ''}</div>`
+				}
+			}
+			studentsTpl += `
+				</div>
+				<div class="parent-table-students-count">${students.length} student${students.length > 1 ? 's' : ''}</div>`
+		} else {
+			studentsTpl += `<div class="parent-table-students-empty">No Students</div>`
+		}
+		return `
+			<div class="tbl">
+				<div class="tbl-head">
+						
+						<div class="tbl-item">
+							<span>USER Name</span>
+							<div class="tbl-sort-btns">
+								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							</div>
+						</div>
+						<div class="tbl-item">
+							<span>Students</span>
+							<div class="tbl-sort-btns">
+								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							</div>
+						</div>
+						<div class="tbl-item right">
+						<span>Date Registered</span>
+							<div class="tbl-sort-btns">
+								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							</div>
+						</div>
+						<div class="tbl-item right">Action</div>
+					</div>
+					<div class="table-cont">
+						<table class="table">
+							<thead class="tbl-head">
+								<tr>
+									<th>
+										<div class="tbl-item">
+											<span>USER Name</span>
+											<div class="tbl-sort-btns">
+												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											</div>
+										</div>
+									</th>
+									<th>
+										<div class="tbl-item">
+											<span>Students</span>
+											<div class="tbl-sort-btns">
+												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											</div>
+										</div>
+									</th>
+									<th>
+										<div class="tbl-item right">
+											<span>date Registered</span>
+											<div class="tbl-sort-btns">
+												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											</div>
+										</div>
+									</th>
+									<th><div class="tbl-item right">Action</div></th>
+								</tr>
+							</thead>
+							<tbody class="tbl-body">
+								<tr>
+									<td>
+										<div class="tbl-item">
+											<div class="parent-table-avatar">
+												<span>${parentInfo['user']['firstName'].toUpperCase()[0]}</span>
+											</div>
+											<div class="users-info">
+												<h6 class="users-info-name">${parentInfo['user']['firstName']} ${parentInfo['user']['lastName']}</h6>
+												<span class="users-info-email">${parentInfo['user']['email']}</span>
+											</div>
+										</div>
+									</td>
+									<td>
+									 ${studentsTpl}
+									</td>
+									<td>
+										<div class="tbl-item right">
+											<div class="users-date">${_.createdAtFormat(parentInfo.createdAt)}</div>
+										</div>
+									</td>
+									<td>
+										<div class="tbl-item right actions">
+											<button class="users-btn button profile" data-click="${_.componentName}:showParentProfile">Profile</button>
+											<button
+												class="users-btn button-red"
+												data-id="${parentInfo['_id']}"
+												data-click=${_.componentName}:removeAssignedParent
+											>Remove</button>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+				</div>
+			</div>
+		`;
+	},
 	parentsInfo(){
 		const _ = this;
 		return `
@@ -1571,11 +1755,18 @@ export const view = {
 						</thead>
 						<tbody class="tbl-body"><tr><td><img src='/img/loader.gif' class='loader'></td></tr></tbody>
 					</table>
-					<button>Add parent</button>
+					<button class="button-link blue" data-click="${_.componentName}:showAddParentPopup" from="profile">
+						<svg>
+							<use xlink:href="#plus2"></use>
+						</svg>
+						<span>Add parent</span>
+					</button>
 				</div>
 			</div>
 		`;
 	},
+
+	
 	personalInfo(){
 		const _ = this;
 		let gradeActive;
@@ -1699,6 +1890,11 @@ export const view = {
 		`;
 	},
 
+	parentProfileFromAddStudent(){
+		const _ = this;
+	},
+	
+	
 	adminFooter(){
 		const _ = this;
 		return `
@@ -1709,6 +1905,7 @@ export const view = {
 				${_.removeUserTpl()}
 				${_.removeParentTpl()}
 				${_.selectAvatarTpl()}
+				${_.addParentPopup()}
 			</div>
 		`
 	},
@@ -1744,9 +1941,10 @@ export const view = {
 							<g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents"
 							items='${JSON.stringify(filterSelectOptions)}'></g-select>
 						</div>
-						<button class="block-header-item button-blue" data-click="${_.componentName}:addParent"><span>Add Parent</span>
+						<button class="block-header-item button-blue" data-click="${_.componentName}:showAddParentPopup" from="body">
+							<span>Add Parent</span>
 							<svg class="button-icon">
-								<use xlink:href="#plus"></use>
+								<use xlink:href="#plus2"></use>
 							</svg>
 						</button>
 					</div>
