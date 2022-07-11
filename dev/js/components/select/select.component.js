@@ -378,6 +378,9 @@ export default class GSelect extends GComponent {
 			  transition: 0.35s ease;
 			  padding: 5px 10px;
 			}
+			.g-select-title {
+				margin-right: 23px;
+			}	
 			.g-select-head-cont {
 				width: calc(100% - 70px);
 				flex: 0 0 calc(100% - 70px);
@@ -390,8 +393,8 @@ export default class GSelect extends GComponent {
 				font: 14px "roboto-bold";
 			}
 			.g-select-head-label {
-				width: calc((100% - 20px) / 2);
-				flex: 0 0 calc((100% - 20px) / 2);
+				width: 113px;
+				flex: 0 0 113px;
 				padding: 2px 8px;
 				margin-right: 4px;
 				color: #5E6278;
@@ -476,8 +479,7 @@ export default class GSelect extends GComponent {
 			}
 			.g-select-option {
 			  width: 100%;
-			  margin-bottom: 12px;
-			  padding: 0 10px;
+			  padding: 10px;
 			  text-align: left;
 			  display: flex;
 			  justify-content: flex-start;
@@ -487,8 +489,13 @@ export default class GSelect extends GComponent {
 			  font-size: 14px;
 			  font-family: "roboto-medium";
 			  font-weight: 500;
+			  white-space: nowrap;
 			}
-			.g-select-option:last-child {
+			.multiple .g-select-option {
+			  margin-bottom: 12px;
+			  padding: 0 10px;
+			}
+			.multiple .g-select-option:last-child {
 				margin-bottom: 8px;
 			}
 			.g-select.active .g-select-body.multiple {
@@ -604,7 +611,7 @@ export default class GSelect extends GComponent {
 			  padding: 0 12px;
 			  border-radius: 6px;
 			  background-color: rgb(var(--neutral-100));
-			  color: #000;
+			  color: rgb(161, 165, 183);
 			  font-family: var(--f_bold);
 			}
 			
@@ -677,6 +684,12 @@ export default class GSelect extends GComponent {
 			}
 			.table-filter {
 			  font-size: calc(12em/14);
+			}
+			.form-row-select {
+				border: none;
+			}
+			.form-row-select .g-select-head{
+				height: 40px;
 			}
 		`;
 	}

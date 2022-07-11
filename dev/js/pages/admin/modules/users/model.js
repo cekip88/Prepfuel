@@ -170,7 +170,6 @@ class _Model {
 			resolve(null);
 		});
 	}
-	
 
 	removeCourse(removeData){
 		const _ = this;
@@ -235,8 +234,7 @@ class _Model {
 			resolve(null);
 		});
 	}
-	
-	
+
 	getAdminNotifications(){
 		return [{
 			title: 'Welcome email',
@@ -268,7 +266,6 @@ class _Model {
 		}
 		]
 	}
-
 	
 }
 export const Model = new _Model();

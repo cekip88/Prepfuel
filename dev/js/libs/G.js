@@ -56,8 +56,7 @@ export class G extends G_G{
 				part['container'].append(_.markup(await _[updateStructure[key]]()));
 			}
 		}
-		
-		
+
 		G_Bus.trigger(_.componentName,'domReady',renderData);
 	}
 	getModule(blockData){

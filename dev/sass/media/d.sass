@@ -64,6 +64,9 @@
 			background-color: rgb($neutral-500)
 			color: rgb($white)
 			border-color: rgb($white)
+	&-icon
+		&.large
+			+wh(15px)
 
 
 .block
@@ -75,7 +78,11 @@
 				color: rgb($neutral-800)
 	&-header
 		flex-wrap: nowrap
+		justify-content: flex-start
+		.button-blue
+			margin-left: auto
 		.block-title
+			min-width: 160px
 			width: initial
 		&-input,&-select,&-item,.button-blue
 			margin-top: 0
@@ -93,8 +100,8 @@
 					margin-left: auto
 					width: initial
 				&-select
-					width: 340px
-					flex: 0 0 340px
+					min-width: 150px
+					max-width: 340px
 				&-input
 					width: 240px
 					flex: 0 0 240px
@@ -454,6 +461,10 @@
 		overflow-y: scroll
 	&-inner
 		+w(1200px)
+	&-subtitle
+		font-size: $fz18
+	&-avatar
+		margin-top: 32px
 	&-assign
 		&-body
 			+w(589px)
@@ -525,15 +536,19 @@ div.tbl-head
 	margin-bottom: 20px
 thead.tbl-head
 	display: none
-.table-cont
-	overflow-y: scroll
-	padding-right: 12px
-	td
-		&:last-child
-			.tbl-item
-				padding-right: 0
-	&-students
-		max-height: 540px
+.table
+	&-cont
+		overflow-y: scroll
+		padding-right: 12px
+		td
+			&:last-child
+				.tbl-item
+					padding-right: 0
+		&-students
+			max-height: 540px
+	&-admin
+		&-title
+			width: 555px
 
 
 .parent
@@ -615,3 +630,7 @@ thead.tbl-head
 		&-block
 			width: initial
 			margin-bottom: 0
+
+.form
+	&-label
+		font-size: $fz15

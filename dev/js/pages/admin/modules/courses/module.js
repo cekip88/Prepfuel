@@ -114,27 +114,19 @@ export class CoursesModule extends AdminPage {
 			return;
 		}
 
+		console.log(file)
 		let uploadData = new FormData();
 		uploadData.append('file',file,title + '.'  + extension);
 
 		let response = await Model.uploadCSV(uploadData);
-		if (response) {
+		console.log(response)
+		/*if (response) {
 			let breadCrumbsStrong = _.f('.breadcrumbs strong');
-
-			let date = new Date();
-			Model.foldersData.push({
-				'_id':title,
-				'title': title,
-				'type': 'file',
-				'modified': date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate(),
-				'parentId': breadCrumbsStrong.getAttribute('id')
-			});
-
 
 			_.moveToFolder({item:breadCrumbsStrong});
 			G_Bus.trigger('modaler','closeModal');
 			_.showSuccessPopup(title  + '.csv uploaded')
-		}
+		}*/
 	}
 
 	connectTableHead(selector) {

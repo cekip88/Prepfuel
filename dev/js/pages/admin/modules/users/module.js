@@ -87,11 +87,14 @@ export class UsersModule extends AdminPage {
 
 			_.currentPage = 'main';
 			_.studentInfo = {};
-		//
-			//
 		}
 		if(_.subSection == 'profile'){
 			_.fillProfile(data);
+			_.currentPage = 'profile';
+			_._$.assignStep = 1;
+		}
+		if(_.subSection == 'adminProfile'){
+			_.fillAdminProfile(data);
 			_.currentPage = 'profile';
 			_._$.assignStep = 1;
 		}
@@ -104,6 +107,16 @@ export class UsersModule extends AdminPage {
 			}
 			let tableData = await Model.getUsers({role:_.subSection,update: update});
 			_.fillBodyParentsTable(tableData);
+		}
+		if (_.subSection == 'admin'){
+			let
+				item,update = false;
+			if(data){
+				item = data.item;
+				update = item.hasAttribute('rerender');
+			}
+			let tableData = await Model.getUsers({role:_.subSection,update: update});
+			_.fillBodyAdminsTable(tableData);
 		}
 	}
 	
@@ -262,7 +275,7 @@ export class UsersModule extends AdminPage {
 		if(profileData['item']){
 			studentId = profileData['item'].getAttribute('data-id');
 			_.subSection = profileData['item'].getAttribute('section');
-		}else{
+		} else {
 			studentId = profileData['studentId'];
 		}
 		let
@@ -282,7 +295,24 @@ export class UsersModule extends AdminPage {
 			_.studentInfo['thirdSchool'] = currentStudent['currentPlan'].thirdSchool ? currentStudent['currentPlan'].thirdSchool['_id'] : '';
 			_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.getWizardData());
 		} else _.f('.student-profile-course-info').innerHTML = _.emptyCourseInfo();
-		_.f('.breadcrumbs').innerHTML = _.breadCrumbsTpl();
+		_.f('.breadcrumbs').innerHTML = _.breadCrumbsTpl([{title:'Users'},{title:'Students'},{title:`${_.studentInfo['firstName']} ${_.studentInfo['lastName']} Profile`}]);
+	}
+	async fillAdminProfile(profileData) {
+		const _ = this;
+		let adminId;
+		if(profileData['item']){
+			adminId = profileData['item'].getAttribute('data-id');
+			_.subSection = profileData['item'].getAttribute('section');
+		} else {
+			adminId = profileData['studentId'];
+		}
+		let
+			currentAdmin = Model.adminsData.response.filter( admin => admin['_id'] == adminId )[0];
+		_.adminInfo = Object.assign({},currentAdmin['user']);
+		console.log(_.adminInfo)
+
+		_.f('.student-profile-inner').innerHTML = _.adminProfileInner();
+		_.f('.breadcrumbs').innerHTML = _.breadCrumbsTpl([{title:'Users'},{title:'Admins'},{title:`${_.adminInfo['firstName']} ${_.adminInfo['lastName']} Profile`}]);
 	}
 	async fillParentsInfoTable(parentsData){
 		const _ = this;
@@ -313,6 +343,22 @@ export class UsersModule extends AdminPage {
 			tableData = _.usersBodyRowsTpl(usersData,'parent');
 		tbody.append(...tableData);
 		_.connectTableHead(selector);
+	}
+
+
+	async fillBodyAdminsTable(parentsData){
+		const _ = this;
+		let
+			tbody = _.f(`#bodyAdmins .tbl-body`),
+			tableData = _.parentsBodyRowsTpl(parentsData,'single'),
+			total = parentsData['total'],
+			limit = parentsData['limit'];
+
+		_.fillDataByClass({className:`.gusers-count`,data:`${parentsData ? total : 0}`});
+		_.fillDataByClass({className:`.gusers-limit`,data:`${parentsData ? (limit <= total ? limit : total) : 0}`});
+		_.clear(tbody)
+		tbody.append(...tableData);
+		_.connectTableHead('#bodyAdmins');
 	}
 	// Fill methods end
 
@@ -484,6 +530,11 @@ export class UsersModule extends AdminPage {
 				'body': 'profile'
 			};
 		}
+		if(_.subSection === 'adminProfile') {
+			return {
+				'body': 'adminProfile'
+			};
+		}
 		if(_.subSection === 'student') {
 			return {
 				'body': 'usersBody'
@@ -492,8 +543,10 @@ export class UsersModule extends AdminPage {
 			return {
 				'body': 'parentsBody'
 			};
-		} else if (_.subSection === 'admins') {
-			return '';
+		} else if (_.subSection === 'admin') {
+			return {
+				'body':'adminsBody'
+			};
 		}
 	}
 	// Change methods end

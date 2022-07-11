@@ -33,6 +33,7 @@ export default class GInput extends GComponent {
 			.on('dateInputFocusOut',_.dateInputFocusOut.bind(_))
 			.on('changeDate',_.changeDate.bind(_))
 			.on('setCheckboxValue',_.setCheckboxValue.bind(_))
+			.on('inputRange',_.inputRange.bind(_))
 	}
 	
 	get name(){
@@ -115,6 +116,77 @@ export default class GInput extends GComponent {
 	
 	/* Outside methods*/
 	/* Inside methods*/
+	inputRange({item}){
+		const _ = this;
+		_.datePickerClose();
+		let curDate = new Date();
+		let curDateData = _.fillDate(curDate,'date');
+		let currentDate = curDate.getDate();
+		if (currentDate < 10) currentDate = '0' + currentDate;
+
+		let timeSkip = item.getAttribute('data-range');
+
+
+		_.datePick({value:curDateData.outValue.substr(0,7)})
+		let btn = _.shadow.querySelector(`.date-picker-body button[data-day="${currentDate}"]`);
+		_.changeDate({item:btn});
+
+		if (timeSkip == 'today') {
+			_.datePickerClose();
+			return;
+		}
+
+		let targetDate = _.getTargetDate(curDateData.outDate,timeSkip);
+		_.anotherMonth(targetDate.substr(0,7));
+		_.changeDate({item:_.shadow.querySelector(`.date-picker-body button[data-day="${targetDate.split('-')[2]}"]`)})
+
+		if (_.shadow.querySelector('.date-picker-body')) _.datePickerClose()
+	}
+	getTargetDate(currentDate,timeSkip){
+		const _ = this;
+		if (timeSkip == 'today') return currentDate;
+
+		let
+			curDateInfo = currentDate.split('-'),
+			year = parseInt(curDateInfo[0]),
+			month = parseInt(curDateInfo[1]),
+			day = parseInt(curDateInfo[2]);
+
+		let lens = _.getMonthLenth(month,year);
+
+		if (timeSkip == 'yesterday') day -= 1;
+		if (timeSkip == 'this_week') day += 7;
+		if (timeSkip == 'last_week') day -= 7;
+
+		if (day > lens) {
+			day = day - lens;
+			month++;
+		} else if (day < 0) {
+			month--;
+			if (month == 0) {
+				month = 12;
+				year--;
+			}
+			lens = _.getMonthLenth(month,year);
+			day = lens + day;
+		}
+		if (month > 12) {
+			month = month - 12;
+			year++;
+		}
+
+		return year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
+	}
+	getMonthLenth (month,year){
+		let lens = 31;
+		let shortMonths = [4,6,9,11];
+		if (shortMonths.indexOf(month) >= 0) lens = 30;
+		else if (month === 2) {
+			if (year % 4 === 0) lens = 29;
+			else lens = 28;
+		}
+		return lens;
+	}
 
 	datePick({value}) {
 		const _ = this;
@@ -155,6 +227,7 @@ export default class GInput extends GComponent {
 			}
 		}
 
+		//console.log(tpl.cloneNode(true))
 		_.shadow.append(tpl);
 	}
 	markerRangeDays(checkValues,value,tpl){

@@ -50,13 +50,15 @@ class _Model {
 		});
 	}
 
-
 	uploadCSV(uploadData){
 		const _ = this;
+		let contentLength = _.getContentLength(uploadData);
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(_.endpoints['csv'], {
 				method: 'POST',
-				headers: {"Content-Type": "multipart/form-data;charset=utf-8; boundary='sdasdczdas'"},
+				//headers: {"Content-Type": "multipart/form-data;"},
+				headers: {"Content-Type": "multipart/form-data;boundary='csvfile';","Content-Length":contentLength},
+				//charset=utf-8;boundary='csvfile'
 				//headers: _.baseHeaders,
 				//body: JSON.stringify(uploadData)
 				body: uploadData
@@ -73,6 +75,18 @@ class _Model {
 			}
 			resolve(null);
 		});
+	}
+	getContentLength(formData) {
+		const formDataEntries = [...formData.entries()]
+
+		const contentLength = formDataEntries.reduce((acc, [key, value]) => {
+			if (typeof value === 'string') return acc + value.length
+			if (typeof value === 'object') return acc + value.size
+
+			return acc
+		}, 0)
+
+		return contentLength
 	}
 }
 export const Model = new _Model();

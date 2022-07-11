@@ -87,7 +87,7 @@ export const view = {
 				</div>
 			</td>
 			<td>
-				<div class="tbl-item right">
+				<div class="tbl-item">
 					<div class="users-date">${_.createdAtFormat(rowData.createdAt)}</div>
 				</div>
 			</td>
@@ -154,9 +154,9 @@ export const view = {
 							<svg><use xlink:href="#calendar"></use></svg>
 							<g-input class="block-header-input block-header-date" range previous type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input>
 						</div>
-						<div class="block-header-item block-header-select">
+						<div class="block-header-item block-header-select" multiple>
 							<g-select
-								class="select block-header-select"
+								class="select"
 								multiple="true"
 								name="testField"
 								classname="filter-select table-filter" 
@@ -173,8 +173,8 @@ export const view = {
 								]"></g-select>
 						</div>
 						<button class="block-header-item button-blue" data-click="${_.componentName}:addStudent"><span>Add Student</span>
-							<svg class="button-icon">
-								<use xlink:href="#plus"></use>
+							<svg class="button-icon large">
+								<use xlink:href="#plus2"></use>
 							</svg>
 						</button> 
 					</div>
@@ -188,7 +188,7 @@ export const view = {
 								</div> 
 							</div>
 							<div class="tbl-item">Courses</div>
-							<div class="tbl-item right"><span>date Registered</span>
+							<div class="tbl-item"><span>date Registered</span>
 								<div class="tbl-sort-btns">
 									<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 									<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
@@ -211,7 +211,7 @@ export const view = {
 										</th>
 										<th><div class="tbl-item">Courses</div></th>
 										<th>
-											<div class="tbl-item right">
+											<div class="tbl-item">
 												<span>date Registered</span>
 												<div class="tbl-sort-btns">
 													<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
@@ -984,7 +984,7 @@ export const view = {
 						<g-input class="block-header-input block-header-date" type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input>
 					</div>
 					<div class="block-header-item block-header-select">
-						<g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" style="--class:select block-header-select; --action:testChange; --name:testField; --classname:filter-select; --arrowsvg:img/sprite.svg#select-arrow;"><input type="hidden" name="testField" slot="value"></g-select>
+						<g-select class="select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" style="--class:select block-header-select; --action:testChange; --name:testField; --classname:filter-select; --arrowsvg:img/sprite.svg#select-arrow;"><input type="hidden" name="testField" slot="value"></g-select>
 					</div>
 				</div>
 				${_.pagination(count,limit)}
@@ -1071,7 +1071,7 @@ export const view = {
 			if(type=='adding'){
 				tr.innerHTML = _.parentsBodyRowTpl(item);
 			} else if(type == 'single') {
-				tr.innerHTML = _.parentsSingleBodyRowTpl(item);
+				tr.innerHTML = _.subSection == 'parent' ? _.parentsSingleBodyRowTpl(item) : _.adminSingleBodyRowTpl(item);
 			}else {
 				tr.innerHTML = _.parentsInfoRow(item);
 			}
@@ -1166,7 +1166,7 @@ export const view = {
 				</div>
 			</td>
 			<td>
-				<div class="tbl-item right">
+				<div class="tbl-item">
 					<div class="users-date">${_.createdAtFormat(rowData.createdAt)}</div>
 				</div>
 			</td>
@@ -1914,13 +1914,18 @@ export const view = {
 	},
 	breadCrumbsTpl(crumbs){
 		const _ = this;
-		return `
-			<a href="#" class="breadcrumbs-item">Users</a>
-			<span class="breadcrumbs-delimiter">/</span>
-			<a href="#" class="breadcrumbs-item">Students</a>
-			<span class="breadcrumbs-delimiter">/</span>
-			<strong class="breadcrumbs-current">${_.studentInfo['firstName']} ${_.studentInfo['lastName']} Profile</strong>
-		`;
+		let tpl = ``;
+		for (let i = 0; i < crumbs.length; i++) {
+			if (i < crumbs.length - 1) {
+				tpl += `
+					<a href="${crumbs[i].href ?? '#'}" class="breadcrumbs-item">${crumbs[i].title}</a>
+					<span class="breadcrumbs-delimiter">/</span>
+				`
+			} else {
+				tpl += `<strong class="breadcrumbs-current">${crumbs[i].title}</strong>`
+			}
+		}
+		return tpl;
 	},
 
 	parentProfileFromAddStudent(){
@@ -2069,8 +2074,7 @@ export const view = {
 		`
 	},
 	
-	
-	
+
 	// Parents Page
 	parentsBody(){
 		const _ = this;
@@ -2097,12 +2101,12 @@ export const view = {
 							<g-input class="block-header-input block-header-date"  type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input>
 						</div>
 						<div class="block-header-item block-header-select">
-							<g-select class="select block-header-select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents"
+							<g-select class="select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents"
 							items='${JSON.stringify(filterSelectOptions)}'></g-select>
 						</div>
 						<button class="block-header-item button-blue" data-click="${_.componentName}:showAddParentPopup" from="body">
 							<span>Add Parent</span>
-							<svg class="button-icon">
+							<svg class="button-icon large">
 								<use xlink:href="#plus2"></use>
 							</svg>
 						</button>
@@ -2124,7 +2128,7 @@ export const view = {
 			            <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 			          </div>
 			        </div>
-			        <div class="tbl-item right"><span>date Registered</span>
+			        <div class="tbl-item"><span>date Registered</span>
 			          <div class="tbl-sort-btns">
 			            <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 			            <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
@@ -2155,7 +2159,7 @@ export const view = {
 			              </div>
 			            </th>
 			            <th>
-			              <div class="tbl-item right">
+			              <div class="tbl-item">
 			                <span>date Registered</span>
 			                <div class="tbl-sort-btns">
 			                  <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
@@ -2172,4 +2176,229 @@ export const view = {
 			</div>
 		`;
 	},
+
+	//admins page
+	adminsBody(){
+		const _ = this;
+		let filterSelectOptions = [
+			{
+				value: 1, text: 'All Roles',active:true
+			},{
+				value: 2, text: 'No students',
+			},{
+				value: 3, text: 'With students',
+			}
+		];
+		let tpl = `
+			<div class="section users-page" id="bodyAdmins">
+				<div class="block">
+					<div class="block-header">
+						<h2 class="block-title">Admins (<span class="users-count gusers-count"><img src='/img/loader.gif' class='loader'></span>)</h2>
+						<div class="block-header-item block-header-search">
+							<svg><use xlink:href="#search"></use></svg>
+							<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input>
+						</div>
+						<div class="block-header-item block-header-date">
+							<svg><use xlink:href="#calendar"></use></svg>
+							<g-input class="block-header-input block-header-date"  type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input>
+						</div>
+						<div class="block-header-item block-header-select">
+							<g-select class="select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Admins"
+							items='${JSON.stringify(filterSelectOptions)}'></g-select>
+						</div>
+						<button class="block-header-item button-blue" data-click="${_.componentName}:showAddAdminPopup" from="body">
+							<span>Add Admin</span>
+							<svg class="button-icon large">
+								<use xlink:href="#plus2"></use>
+							</svg>
+						</button>
+					</div>
+					${_.pagination()}
+					<div class="tbl">
+			      <div class="tbl-head">
+			        <div class="tbl-item">
+			          <span>USER Name</span>
+			          <div class="tbl-sort-btns">
+			            <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			            <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			          </div>
+			        </div>
+			        <div class="tbl-item">Role</div>
+			        <div class="tbl-item"><span>date Registered</span>
+			          <div class="tbl-sort-btns">
+			            <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			            <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			          </div>
+			        </div>
+			        <div class="tbl-item right">Action</div>
+			      </div>
+			      <div class="table-cont loader-parent">
+			        <table class="table">
+			          <thead class="tbl-head">
+			          <tr>
+			            <th>
+			              <div class="tbl-item">
+			                <span>USER Name</span>
+			                <div class="tbl-sort-btns">
+			                  <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                  <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                </div>
+			              </div>
+			            </th>
+			            <th>
+			              <div class="tbl-item">Role</div>
+			            </th>
+			            <th>
+			              <div class="tbl-item">
+			                <span>date Registered</span>
+			                <div class="tbl-sort-btns">
+			                  <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                  <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                </div>
+			              </div>
+			            </th>
+			            <th><div class="tbl-item right">Action</div></th>
+			          </tr>
+			          </thead>
+			          <tbody class="tbl-body">
+							</div>
+					</div>
+			</div>
+		`;
+		return tpl;
+	},
+	adminSingleBodyRowTpl(rowData){
+		const _ = this;
+		let tpl = `
+			<td>
+				<div class="tbl-item">
+					<div class="table-admin-title">
+						<div class="parent-table-avatar">
+							<span>${rowData['user'].firstName.substr(0,1)}</span>
+						</div>
+						<div class="users-info">
+							<h6 class="users-info-name">${rowData['user'].firstName} ${rowData['user'].lastName}</h6>
+							<span class="users-info-email">${rowData['user'].email}</span>
+						</div>
+					</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item">
+					<div class="users-course ${rowData.user.role == 'admin' ? 'blue' : 'violet'}">${rowData.user.role}</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item">
+					<div class="users-date">${_.createdAtFormat(rowData.createdAt)}</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item right actions">
+					<button class="users-btn button">
+						<svg class="button-icon">
+							<use xlink:href="#write"></use>
+						</svg>
+					</button>
+					<button class="users-btn button" data-click="${_.componentName}:showRemoveParentPopup"  data-id="${rowData._id}">
+						<svg class="button-icon">
+							<use xlink:href="#trash"></use>
+						</svg>
+					</button>
+					<button class="users-btn button profile" data-click="${_.componentName}:changeSection" section="adminProfile" data-id="${rowData._id}">Profile</button>
+				</div>
+			</td>
+		`
+		return tpl;
+	},
+	adminProfile(){
+		const _ = this;
+		return `
+			<div class="section">
+				<div class="breadcrumbs"></div>
+				<div class="block">
+					${_.sectionHeaderTpl({
+						title: 'Admin Profile',
+						buttonsData:{
+							action:`data-click="${_.componentName}:changeProfileTab"`,
+							buttons:[
+								{title:'Personal Info',active:'active',},
+								{title:'Activity History'}
+							]
+						}
+					})}
+					<div class="student-profile-inner"><img src="/img/loader.gif"></div>
+				</div>
+			</div>
+		`;
+	},
+	adminProfileInner(){
+		const _ = this;
+		let tpl = `
+			<div class="adding-center">
+				<div class="adding-section">
+				<h4 class="adding-subtitle">Admin Personal  Info</h4>
+				<div class="adding-avatar">
+					<div class="profile-img-row">
+						<div class="profile-img">
+							<div class="profile-img-letter">
+								${this.super_$.firstName[0].toUpperCase()}
+							</div>
+						</div>
+						<div class="profile-img-desc">
+							Allowed *.jpeg,*.jpg, *.png, *.gif<br>
+							Max size of 3.1 MB
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="adding-section">
+				<div class="profile-form-row">
+					<div class="form-label-row">
+						<label class="form-label">First name</label>
+					</div>
+					<g-input type="text" value="${_.adminInfo.firstName ?? ''}" name="firstName" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+				</div>
+				<div class="profile-form-row">
+					<div class="form-label-row">
+						<label class="form-label">Last name</label>
+					</div>
+					<g-input type="text" name="lastName" value="${_.adminInfo.lastName ?? ''}" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+				</div>
+				<div class="profile-form-row">
+					<div class="form-label-row">
+						<label class="form-label">Email</label>
+					</div>
+					<g-input type="email" name="email" value="${_.adminInfo.email ?? ''}" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+				</div>
+				<div class="profile-form-row">
+					<div class="form-label-row">
+						<label class="form-label">Role</label>
+					</div>
+					<g-select
+						class="select"
+						name="testField"
+						className="form-row-select"
+						classname="filter-select table-filter"
+						arrowsvg="/img/sprite.svg#select-arrow"
+						title="Role"
+						items=`;
+		if (_.adminInfo.role == 'admin') {
+			tpl += `"[
+				{&quot;value&quot;:0,&quot;text&quot;:&quot;Admin&quot;,&quot;active&quot;:&quot;true&quot;},
+				{&quot;value&quot;:1,&quot;text&quot;:&quot;Super Admin&quot;}
+			]"`;
+		} else if (_.adminInfo.role == 'superAdmin') {
+			tpl += `"[
+				{&quot;value&quot;:0,&quot;text&quot;:&quot;Admin&quot;,&quot;active&quot;:&quot;true&quot;},
+				{&quot;value&quot;:1,&quot;text&quot;:&quot;Super Admin&quot;}
+			]"`;
+		}
+
+		tpl += `></g-select>
+				</div>
+			</div>
+		`;
+		return tpl;
+	}
 }
