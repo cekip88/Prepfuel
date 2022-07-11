@@ -68,9 +68,10 @@ export class UsersModule extends AdminPage {
 				'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
 				'showSuccessPopup','showErrorPopup','closePopup',
 				'generatePassword','changeProfileTab','updateStudent',
-				'showAddParentPopup'
+				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab'
 			]);
 	}
+	
 	async domReady(data){
 		const _ = this;
 		_.wizardData = await Model.wizardData;
@@ -198,7 +199,7 @@ export class UsersModule extends AdminPage {
 			conts.textContent = data;
 		}
 	}
-	async fillUserTable(usersData){
+	async fillUserTable(usersData,selector){
 		const _ = this;
 		let
 			tbody = _.f('#usersBody .tbl-body'),
@@ -217,7 +218,7 @@ export class UsersModule extends AdminPage {
 		let
 			tableData = _.usersBodyRowsTpl(usersData);
 		tbody.append(...tableData);
-		_.connectTableHead();
+		_.connectTableHead(selector);
 	}
 	async fillParentBlock(usersData){
 		const _ = this;
@@ -296,6 +297,22 @@ export class UsersModule extends AdminPage {
 		let table = _.f('.activity-table .tbl-body');
 		_.clear(table);
 		table.append(..._.activityBodyRowsTpl(_.activityData));
+	}
+	
+	async fillStudentsTable(usersData,selector){
+		const _ = this;
+		let
+			tbody = _.f('#parent-profile-popup .tbl-body');
+		
+		_.clear(tbody);
+		
+		if(!usersData) {
+			return void 'no users data';
+		}
+		let
+			tableData = _.usersBodyRowsTpl(usersData,'parent');
+		tbody.append(...tableData);
+		_.connectTableHead(selector);
 	}
 	// Fill methods end
 
@@ -440,7 +457,26 @@ export class UsersModule extends AdminPage {
 			studentInner.innerHTML = _.notifications(notifications);
 		}
 	}
-	
+	async changeParentPopupProfileTab({item}) {
+		const _ = this;
+		let
+			pos = item.getAttribute('data-pos'),
+			parentId = _.f('#parent-profile-popup').getAttribute('data-id');
+		item.parentNode.querySelector('.active').classList.remove('active');
+		item.classList.add('active');
+		let container = _.f('.parent-popup-profile-body');
+		if(pos == 0){
+			container.classList.add('adding-center');
+			container.innerHTML = _.parentPersonalInfoTpl();
+		}
+		if(pos == 1){
+			container.classList.remove('adding-center');
+			container.innerHTML = _.parentChildesInfoTpl();
+			//let tableData = await Model.getUsers({role:'parent',update: true});
+			let tableData = Model.parentsData.response.filter( parent => parent['_id'] == parentId )[0];
+			_.fillStudentsTable(tableData['students'],'#parent-profile-popup');
+		}
+	}
 	flexible(){
 		const _ = this;
 		if(_.subSection === 'profile') {
@@ -494,6 +530,22 @@ export class UsersModule extends AdminPage {
 			type: 'html',
 			target: '#add-parent'
 		})
+	}
+	showPopupParentProfile({item}){
+		const _ = this;
+		let parentId = item.getAttribute('data-id')
+		_.f('#parent-profile-popup').setAttribute('data-id',parentId);
+		let tableData = Model.parentsData.response.filter( parent => parent['_id'] == parentId )[0];
+		_.parentInfo = tableData['user'];
+		
+		G_Bus.trigger('modaler','closeModal');
+		_.f('.parent-popup-profile-body').innerHTML = _.parentPersonalInfoTpl();
+		G_Bus.trigger('modaler','showModal',{
+			type: 'html',
+			target: '#parent-profile-popup',
+			closeBtn: 'hide'
+		});
+		
 	}
 	// Show methods end
 	
@@ -619,7 +671,6 @@ export class UsersModule extends AdminPage {
 		_.studentInfo['parentId'] = item.getAttribute('data-id');
 		let currentParent = Model.parentsData.response.filter( parent => parent['_id'] == _.studentInfo['parentId'] )[0];
 		_.currentParent = currentParent;
-		_.metaInfo.parentAddType = 'assigned';
 		_.f('.parent-adding-table').innerHTML = _.assignedParent(currentParent);
 		_.parentInfo = currentParent['user'];
 		_.metaInfo.parentAssigned = true;

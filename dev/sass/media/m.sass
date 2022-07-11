@@ -163,140 +163,7 @@ g-modaler
 	strong
 		font-family: $p_semi
 
-.button
-	color: rgb($neutral-600)
-	background-color: rgb($neutral-100)
-	&,&.reverse
-		&:not([disabled]):hover
-			color: rgb($white)
-			background-color: rgb($neutral-800)
-			.button-icon
-				fill: rgb($white)
-	&,&-blue,&-lightblue,&-transparent,&-icon,&-red
-		@extend %transition
-	&,&-blue,&-lightblue,&-transparent,&-red
-		@extend %dfc
-		font-family: $f_semi
-		&[disabled]
-			opacity: .3
-			cursor: initial
-	&,&-blue,&-lightblue,&-red
-		border-radius: 6px
-		border: 1px solid transparent
-	&,&-blue,&-red
-		padding: 13px 12px
-		&[disabled]
-			background-color: rgb($neutral-200)
-	&-lightblue,&-transparent
-		color: rgb($blue-text)
-	&-icon
-		+wh(10px)
-		margin-left: 11px
-		&:not(.hover)
-			&:not(.stroke)
-				fill: rgb($neutral-600)
-			&.stroke
-				stroke: rgb($neutral-600)
-		&.big
-			+wh(16px)
-		&:first-child
-			margin-left: 0
-			margin-right: 11px
-		&:last-child
-			margin-right: 0
-	&.reverse
-		border-color: rgb($neutral-600)
-		background-color: transparent
-	&-blue
-		background-color: rgb($blue)
-		color: rgb($white)
-		.button-icon
-			&:not(.stroke)
-				fill: rgb($white)
-			&.stroke
-				stroke: rgb($white)
-		&.reverse
-			background-color: transparent
-			color: rgb($blue)
-			border-color: rgb($blue)
-			.button-icon
-				fill: rgb($blue)
-		&,&.reverse
-			&:not([disabled]):hover
-				color: rgb($neutral-800)
-				background-color: rgb($blue-light)
-				border-color: transparent
-				.button-icon
-					&:not(.hover)
-						&:not(.stroke)
-							fill: rgb($neutral-800)
-						&.stroke
-							stroke: rgb($neutral-800)
-	&-lightblue
-		padding: 11px 20px
-		background-color: rgb($blue-light)
-		.button-icon
-			+wh(16px)
-			&:not(.hover)
-				fill: rgb($blue)
-				&.stroke
-					fill: none
-					stroke: rgb($blue)
-		&:not([disabled]):hover
-			background-color: rgb($blue)
-			color: rgb($white)
-			.button-icon
-				&:not(.stroke)
-					fill: rgb($white)
-				&.stroke
-					stroke: rgb($white)
-	&-transparent
-		span
-			position: relative
-			&:after
-				+af
-				+wh(0,1px)
-				position: absolute
-				bottom: -2px
-				left: 50%
-				background-color: rgb($blue)
-				transition: .35s ease
-		.button-icon
-			+wh(16px)
-			padding: 3px
-			border: 1px solid rgb($blue)
-			border-radius: 100%
-			fill: rgb($blue)
-		&:hover
-			span
-				&:after
-					width: 100%
-					left: 0
-			.button-icon
-				transform: rotate(90deg)
-	&-white
-		padding: 12px 20px
-		background-color: rgb($white)
-		border-radius: 6px
-		white-space: nowrap
-		font-family: $f_bold
-		color: rgb($neutral-500)
-	&.results
-		width: 100%
-	&-red
-		background-color: rgb($red-dark)
-		color: rgb($white)
-	&-link
-		@extend %dfc
-		color: rgb($blue-text)
-		font: 16px $f_bold
-		line-height: 20px
-		margin: 30px auto 0
-		svg
-			+wh(15px)
-			margin-right: 12.5px
-			fill: rgb($blue-text)
-			
+
 			
 .pagination
 	@extend %dfa
@@ -3791,3 +3658,141 @@ div.tbl-head
 		&-text
 			font: 1em $p_reg
 			color: rgb($neutral-500)
+
+.button
+	color: rgb($neutral-600)
+	background-color: rgb($neutral-100)
+	&,&.reverse
+		&:not([disabled]):hover
+			color: rgb($white)
+			background-color: rgb($neutral-800)
+			.button-icon
+				fill: rgb($white)
+	&,&-blue,&-lightblue,&-transparent,&-icon,&-red
+		@extend %transition
+	&,&-blue,&-lightblue,&-transparent,&-red
+		@extend %dfc
+		font-family: $f_semi
+		&[disabled]
+			opacity: .3
+			cursor: initial
+	&,&-blue,&-lightblue,&-red
+		border-radius: 6px
+		border: 1px solid transparent
+	&,&-blue,&-red
+		padding: 13px 12px
+		&[disabled]
+			background-color: rgb($neutral-200)
+	&-lightblue,&-transparent
+		color: rgb($blue-text)
+	&-icon
+		+wh(10px)
+		margin-left: 11px
+		&:not(.hover)
+			&:not(.stroke)
+				fill: rgb($neutral-600)
+			&.stroke
+				stroke: rgb($neutral-600)
+		&.big
+			+wh(16px)
+		&:first-child
+			margin-left: 0
+			margin-right: 11px
+		&:last-child
+			margin-right: 0
+	&.reverse
+		border-color: rgb($neutral-600)
+		background-color: transparent
+	&-blue
+		background-color: rgb($blue)
+		color: rgb($white)
+		.button-icon
+			&:not(.stroke)
+				fill: rgb($white)
+			&.stroke
+				stroke: rgb($white)
+		&.reverse
+			background-color: transparent
+			color: rgb($blue)
+			border-color: rgb($blue)
+			.button-icon
+				fill: rgb($blue)
+		&,&.reverse
+			&:not([disabled]):hover
+				color: rgb($neutral-800)
+				background-color: rgb($blue-light)
+				border-color: transparent
+				.button-icon
+					&:not(.hover)
+						&:not(.stroke)
+							fill: rgb($neutral-800)
+						&.stroke
+							stroke: rgb($neutral-800)
+	&-lightblue
+		padding: 11px 20px
+		background-color: rgb($blue-light)
+		.button-icon
+			+wh(16px)
+			&:not(.hover)
+				fill: rgb($blue)
+				&.stroke
+					fill: none
+					stroke: rgb($blue)
+		&:not([disabled]):hover
+			background-color: rgb($blue)
+			color: rgb($white)
+			.button-icon
+				&:not(.stroke)
+					fill: rgb($white)
+				&.stroke
+					stroke: rgb($white)
+	&-transparent
+		span
+			position: relative
+			&:after
+				+af
+				+wh(0,1px)
+				position: absolute
+				bottom: -2px
+				left: 50%
+				background-color: rgb($blue)
+				transition: .35s ease
+		.button-icon
+			+wh(16px)
+			padding: 3px
+			border: 1px solid rgb($blue)
+			border-radius: 100%
+			fill: rgb($blue)
+		&:hover
+			span
+				&:after
+					width: 100%
+					left: 0
+			.button-icon
+				transform: rotate(90deg)
+	&-white
+		padding: 12px 20px
+		background-color: rgb($white)
+		border-radius: 6px
+		white-space: nowrap
+		font-family: $f_bold
+		color: rgb($neutral-500)
+	&.results
+		width: 100%
+	&-red
+		background-color: rgb($red-dark)
+		color: rgb($white)
+	&-link
+		@extend %dfc
+		color: rgb($blue-text)
+		font: 16px $f_bold
+		line-height: 20px
+		margin: 30px auto 0
+		svg
+			+wh(15px)
+			margin-right: 12.5px
+			fill: rgb($blue-text)
+#parent-profile-popup .section-header
+	padding: 0px 32px
+#parent-profile-popup .adding-list
+	border-right: none

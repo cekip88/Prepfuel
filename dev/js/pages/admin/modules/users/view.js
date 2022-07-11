@@ -47,16 +47,20 @@ export const view = {
 			</div>
 		`;
 	},
-	usersBodyRowsTpl(usersData){
+	usersBodyRowsTpl(usersData,from='users'){
 		const _ = this;
 		let trs = [];
-		usersData = usersData['response'];
+		if(usersData['response'])	usersData = usersData['response'];
 		if(!usersData) return void 0;
 		for(let item of usersData){
 			let tr = document.createElement('TR');
 			tr.className= 'tbl-row';
 			tr.setAttribute('user-id',item['_id']);
-			tr.innerHTML = _.usersBodyRowTpl(item['currentPlan'],item['user'],item);
+			if(from === 'users') {
+				tr.innerHTML = _.usersBodyRowTpl(item['currentPlan'], item['user'], item);
+			}else{
+				tr.innerHTML = _.studentsBodyRowTpl(item['currentPlan'], item['user'], item);
+			}
 			trs.push(tr);
 		}
 		return trs;
@@ -100,6 +104,36 @@ export const view = {
 						</svg>
 					</button>
 					<button class="users-btn button profile" data-click="${_.componentName}:changeSection" section="profile" data-id="${user._id}">Profile</button>
+				</div>
+			</td>
+		`
+		return tpl;
+	},
+	studentsBodyRowTpl(plan,rowData,user){
+		
+		const _ = this;
+		let course = plan && plan['course'] ? plan['course'].title + ' ' + plan['level']['title'] : '';
+		let avatar = rowData.avatar ? rowData.avatar.avatar.split('.')[0] : '';
+		let tpl = `
+				<td>
+					<div class="tbl-item">
+						<div class="users-photo-icon">
+							${avatar ? '<img src="/img/' + avatar + '.svg" alt="' + avatar + '">' : ''}
+						</div>
+						<div class="users-info">
+							<h6 class="users-info-name">${rowData.firstName} ${rowData.lastName}</h6>
+							<span class="users-info-email">${rowData.email}</span>
+						</div>
+					</div>
+				</td>
+				<td>
+					<div class="tbl-item">
+						<div class="users-course brown">${course}</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item right">
+					<div class="users-date">${_.createdAtFormat(rowData.createdAt)}</div>
 				</div>
 			</td>
 		`
@@ -193,7 +227,6 @@ export const view = {
 						</div>
 					</div>
 				</div>
-				
 			</div>
 		`;
 	},
@@ -732,7 +765,7 @@ export const view = {
 			tpl += _.assignNewParent();
 		} else if (_.metaInfo.parentAddType == 'assign') {
 			tpl += _.assignParentTpl(true);
-		} else if(_.metaInfo.parentAddType == 'assigned') {
+			} else if(_.metaInfo.parentAddType == 'assigned') {
 			tpl += _.assignedParent(_.currentParent)
 		} else {
 			tpl += _.skipParentTpl();
@@ -1086,7 +1119,7 @@ export const view = {
 			</td>
 			<td>
 				<div class="tbl-item right actions">
-					<button class="users-btn button profile">Profile</button>
+					<button class="users-btn button profile" data-click="${_.componentName}:showPopupParentProfile" data-id="${rowData['_id']}">Profile</button>
 					<button 
 						class="users-btn button-blue"
 						data-id="${rowData['_id']}"  
@@ -1892,9 +1925,134 @@ export const view = {
 
 	parentProfileFromAddStudent(){
 		const _ = this;
+		return `
+			<div id="parent-profile-popup">
+				<div class="block test-block adding-block">
+					${_.sectionHeaderTpl({
+						title: 'Parent Profile',
+						buttonsData:{
+							action:`data-click="${_.componentName}:changeParentPopupProfileTab"`,
+							buttons:[
+								{title:'Personal Info',active:'active',},
+								{title:'Students'}
+							]
+						}
+					})}
+					<div class="adding-inner">
+						<div class="adding-row">
+							<div class="parent-popup-profile-body adding-center"><img src="/img/loader.gif"></div>
+						</div>
+					</div>
+					<div class="test-footer">
+						<button class="test-footer-back step-prev-btn">
+							<span>Back</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		`;
 	},
-	
-	
+	parentPersonalInfoTpl(parentInfo){
+		const _ = this;
+		return `
+			<div class="adding-section">
+				<h4 class="adding-subtitle">Parent Personal Info</h4>
+				<div class="adding-avatar">
+					<div class="profile-img-row">
+						<div class="profile-img">
+							<div class="profile-img-letter">
+								${this.super_$.firstName[0].toUpperCase()}
+							</div>
+						</div>
+						<div class="profile-img-desc">
+							Allowed *.jpeg,*.jpg, *.png, *.gif<br>
+							Max size of 3.1 MB
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="adding-section">
+				<div class="profile-form-row">
+					<div class="form-label-row">
+						<label class="form-label">First name</label>
+					</div>
+					<g-input type="text" name="firstName" value="${_.parentInfo.firstName ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+				</div>
+				<div class="profile-form-row">
+					<div class="form-label-row">
+						<label class="form-label">Last name</label>
+					</div>
+					<g-input type="text" name="lastName" value="${_.parentInfo.lastName ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+				</div>
+				<div class="profile-form-row">
+					<div class="form-label-row">
+						<label class="form-label">Email</label>
+					</div>
+					<g-input type="email" name="email" value="${_.parentInfo.email ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+				</div>
+				<div class="profile-form-row">
+					<div class="form-label-row">
+						<label class="form-label">Phone Number</label>
+					</div>
+					<g-input type="email" name="phone" value="${_.parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+				</div>
+			</div>
+		`;
+	},
+	parentChildesInfoTpl(childes){
+		const _ = this;
+		return `
+			<div class="section users-page" id="parentsStudentTable">
+				<div class="block">
+					<div class="tbl">
+						<div class="tbl-head">
+							<div class="tbl-item"><span>USER Name</span>
+								<div class="tbl-sort-btns">
+									<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+									<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								</div>
+							</div>
+							<div class="tbl-item">Courses</div>
+							<div class="tbl-item right"><span>Date Registered</span>
+								<div class="tbl-sort-btns">
+									<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+									<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								</div>
+							</div>
+						</div>
+						<div class="table-cont table-cont-students loader-parent">
+							<table class="table">
+								<thead class="tbl-head">
+									<tr>
+										<th>
+											<div class="tbl-item">
+												<span>USER Name</span>
+												<div class="tbl-sort-btns">
+													<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+													<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												</div>
+											</div>
+										</th>
+										<th><div class="tbl-item">Courses</div></th>
+										<th>
+											<div class="tbl-item right">
+												<span>Date Registered</span>
+												<div class="tbl-sort-btns">
+													<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+													<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												</div>
+											</div>
+										</th>
+									</tr>
+								</thead>
+								<tbody class="tbl-body"><tr><td><img src='/img/loader.gif' class='loader'></td></tr></tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		`;
+	},
 	adminFooter(){
 		const _ = this;
 		return `
@@ -1906,6 +2064,7 @@ export const view = {
 				${_.removeParentTpl()}
 				${_.selectAvatarTpl()}
 				${_.addParentPopup()}
+				${_.parentProfileFromAddStudent()}
 			</div>
 		`
 	},
