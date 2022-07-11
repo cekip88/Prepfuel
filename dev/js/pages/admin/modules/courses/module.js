@@ -15,7 +15,6 @@ export class CoursesModule extends AdminPage {
 
 	async asyncDefine(){
 		const _ = this;
-		_.filesData = Model.getFolderData().response;
 	}
 	define() {
 		const _ = this;
@@ -33,9 +32,17 @@ export class CoursesModule extends AdminPage {
 	async domReady(data){
 		const _ = this;
 
-		_.fillTableRowsCount('.courses-rows-count');
-		_.fillFoldersTable();
+		_.moveToFolder({})
 	}
+
+	// get data methods
+	async getFolderData(id,rerequest = false){
+		const _ = this;
+		if (!_.filesData || rerequest) _.filesData = await Model.getTests();
+		if (!id) return _.filesData;
+
+	}
+	// end get data methods
 
 
 	// Show methods
@@ -54,9 +61,9 @@ export class CoursesModule extends AdminPage {
 		let text = count + (count === 1 ? ' item' : ' items');
 		countCont.textContent = text;
 	}
-	fillFoldersTable(){
+	fillFoldersTable(filesData){
 		const _ = this;
-		let rows = _.filesRowsTpl(_.filesData);
+		let rows = _.filesRowsTpl(filesData);
 		let cont = _.f('.folders-table .tbl-body');
 		_.clear(cont);
 		cont.append(...rows);
@@ -79,14 +86,14 @@ export class CoursesModule extends AdminPage {
 	// End fill methods
 
 	// Navigation methods
-	moveToFolder({item}) {
+	async moveToFolder({item}) {
 		const _ = this;
-		let id = item.getAttribute('id');
-		let itemsData = Model.getFolderData(id);
-		if (itemsData.status != 'success') return void 0;
-		_.filesData = itemsData.response;
+		let id = item ? item.getAttribute('id') : null;
+		let itemsData = await _.getFolderData(id);
+		console.log(itemsData)
 
-		_.fillFoldersTable();
+		_.fillFoldersTable(itemsData);
+		return
 		_.rebuildBreadCrumbs(item);
 		_.fillTableRowsCount('.courses-rows-count');
 	}
@@ -150,7 +157,6 @@ export class CoursesModule extends AdminPage {
 	async init(){
 		const _ = this;
 		console.log(Model);
-		console.log(await Model.getTests());
 	}
 	
 }

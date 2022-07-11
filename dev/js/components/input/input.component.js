@@ -135,11 +135,17 @@ export default class GInput extends GComponent {
 		if (day < 10) day = '0' + day;
 		_.setAttribute('data-current-date',`${year}-${month}-${day}`);
 
+		let checkValue = _.value ?? _.fillDate(new Date(),'date').outDate;
 		if (!_.isDateRange()) {
-			let checkValue = _.value ?? _.fillDate(new Date(),'date').outDate;
 			if (_.isThatMonth(checkValue, year + '-' + month)) _.markerPickedDay(tpl,checkValue.substring(checkValue.length - 2))
 		} else {
 			// Отрисовка активных дней начала и конца для input date range
+			let checkValues = checkValue.split('|');
+			if (checkValues.length > 1 && value) {
+				_.markerRangeDays(checkValues,value,tpl);
+			} else {
+				if (_.isThatMonth(checkValue, year + '-' + month)) _.markerPickedDay(tpl,checkValue.substring(checkValue.length - 2))
+			}
 		}
 
 		if (!_.isPrevious()) {
@@ -151,6 +157,52 @@ export default class GInput extends GComponent {
 
 		_.shadow.append(tpl);
 	}
+	markerRangeDays(checkValues,value,tpl){
+		const _ = this;
+		let fromEarlier = _.checkEarlier(checkValues[0],value);
+		let toEarlier = _.checkEarlier(checkValues[1],value);
+		let days = tpl.querySelectorAll('.date-picker-body button');
+
+		if (fromEarlier.lessValue == 0 && (toEarlier.lessValue == 1 || toEarlier.isThatMonth)) {
+			let startDay = 0;
+			let stopDay = 999;
+			if (fromEarlier.isThatMonth) {
+				startDay = checkValues[0].split('-')[2];
+			}
+			if (toEarlier.isThatMonth) {
+				stopDay = checkValues[1].split('-')[2];
+			}
+			for (let i = 1; i <= days.length; i++) {
+				if (i == startDay || i == stopDay) days[i - 1].classList.add('active');
+				else if (i > startDay && i < stopDay) days[i - 1].classList.add('between');
+			}
+		}
+	}
+	checkEarlier(value0,value1){
+		const _ = this;
+
+		let lessValue = 0,isThatMonth = false;
+		value0 = value0.split('-');value1 = value1.split('-');
+
+		for (let i = 0; i < value0.length - 1; i++) {
+
+			if (parseInt(value0[i]) < parseInt(value1[i])) return {lessValue,isThatMonth};
+			else if (parseInt(value0[i]) > parseInt(value1[i])) {
+				lessValue = 1;
+				break;
+			}
+		}
+
+		if (!lessValue) {
+			isThatMonth = true;
+			if (parseInt(value0[2]) > parseInt(value1[2])) {
+				lessValue = 1;
+			}
+		}
+
+		return {lessValue,isThatMonth};
+	}
+
 	getDate(value){
 		const _ = this;
 		if (value) {
@@ -262,24 +314,56 @@ export default class GInput extends GComponent {
 	}
 	rangeChangeDate({item},dateValues){
 		const _ = this;
-		let fromDate = _.getAttribute('fromDate') ?? '';
-		let toDate = _.getAttribute('toDate') ?? '';
 		let input = _.shadow.querySelector('.date-value');
 
 		if (!_.firstClick) {
 			_.firstClick = dateValues;
 			input.value = dateValues.outValue;
-			let activeItem = item.parentElement.querySelector('.active');
-			if (activeItem) activeItem.classList.remove('active');
+			let activeItems = item.parentElement.querySelectorAll('.active');
+			if (activeItems.length) {
+				for (let item of activeItems) {
+					item.classList.remove('active');
+				}
+			}
+			let betweenItems = item.parentElement.querySelectorAll('.between');
+			if (betweenItems.length) {
+				for (let item of betweenItems) {
+					item.classList.remove('between');
+				}
+			}
 			item.classList.add('active');
 			_.setAttribute('fromDate',dateValues.outDate);
+			_.shadow.querySelector('.inpt-date[data-type="to"]').value = '';
 			_.shadow.querySelector('.inpt-date[data-type="from"]').value = dateValues.outDate;
 			input.focus();
 		} else {
-			input.value += ' - ' + dateValues.outValue;
-			_.setAttribute('toDate',dateValues.outDate);
-			_.shadow.querySelector('.inpt-date[data-type="to"]').value = dateValues.outDate;
+			let firstValue = input.value;
+			if (dateValues.outValue !== firstValue) {
+				input.value += ' - ' + dateValues.outValue;
+				_.setAttribute('toDate',dateValues.outDate);
+				_.shadow.querySelector('.inpt-date[data-type="to"]').value = dateValues.outDate;
+
+				_.checkFromTo();
+			}
 			_.datePickerClose();
+		}
+	}
+	checkFromTo(){
+		const _ = this;
+		let
+			from = _.getAttribute('fromDate'),
+			to = _.getAttribute('toDate');
+
+		let reverse = _.checkEarlier(from,to)['lessValue'];
+
+		if (reverse) {
+			let value = _.value.split('|');
+
+			_.setAttribute('fromDate',to);
+			_.setAttribute('toDate',from);
+			_.shadow.querySelector('.inpt-date[data-type="to"]').value = from;
+			_.shadow.querySelector('.inpt-date[data-type="from"]').value = to;
+			_.shadow.querySelector('.date-value').value = value[1] + ' - ' + value[0];
 		}
 	}
 	fillDate(dateValue,type = 'value'){
@@ -1026,6 +1110,9 @@ export default class GInput extends GComponent {
 		}
 		.date-picker-body span:nth-child(n+7), .date-picker-body button:nth-child(n+7) {
 		  border-top: none;
+		}
+		.date-picker-body .between {
+			background-color: #ECF8FF;
 		}
 		.date-picker-body .active {
 		  background-color: #00A3FF;

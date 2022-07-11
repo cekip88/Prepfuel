@@ -112,7 +112,7 @@ export const view = {
 		for(let item of usersData){
 			let tr = document.createElement('TR');
 			tr.className = 'tbl-row';
-			tr.setAttribute('user-id',item['_id']);
+			tr.setAttribute('data-id',item['_id']);
 			tr.innerHTML = _.filesRowTpl(item);
 			trs.push(tr);
 		}
