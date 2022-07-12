@@ -19,9 +19,52 @@ class _Model {
 			removeCourse: `/user/remove-plan`,
 			wizardData: `/user/wizard-data`,
 			updateAdmin: `/admin/admins`,
+			studentParents: `/admin/student`,
+			parentStudents: `/admin/parent`,
 		};
 	}
-	
+	getParentStudents(parentId){
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('parentStudents')}/${parentId}/students`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					console.log(response);
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('getParentStudents', response);
+				}
+			} else {
+				_.wrongRequest('getParentStudents', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+	getStudentParents(studentId){
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('studentParents')}/${studentId}/parents`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					console.log(response);
+					resolve(response);
+				} else {
+					_.wrongResponse('getStudentParents', response);
+				}
+			} else {
+				_.wrongRequest('getStudentParents', rawResponse)
+			}
+			resolve(null);
+		});
+	}
 	getEndpoint(endpoint) {
 		const _ = this;
 		return `${env.backendUrl}${_.endpoints[endpoint]}`;

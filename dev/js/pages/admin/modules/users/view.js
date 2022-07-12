@@ -1607,7 +1607,7 @@ export const view = {
 						<button class="test-footer-back step-prev-btn" data-click="modaler:closeModal">
 							<span>Cancel</span>
 						</button>
-						<button class="button-blue step-next-btn">
+						<button class="button-blue step-next-btn" data-click="${_.componentName}:createNewParent">
 							<span>Submit</span>
 						</button>
 					</div>

@@ -69,14 +69,14 @@ export class UsersModule extends AdminPage {
 				'showSuccessPopup','showErrorPopup','closePopup',
 				'generatePassword','changeProfileTab','updateStudent','updateAdmin',
 				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab',
-				'showHistoryDetails',
+				'showHistoryDetails','createNewParent'
 			]);
 	}
 	
 	async domReady(data){
 		const _ = this;
 		_.wizardData = await Model.wizardData;
-		if (_.subSection === 'student') {
+		if(_.subSection === 'student') {
 			let
 				item,update= false;
 			if(data){
@@ -106,7 +106,7 @@ export class UsersModule extends AdminPage {
 			let tableData = await Model.getUsers({role:_.subSection,update: update});
 			_.fillBodyParentsTable(tableData);
 		}
-		if (_.subSection == 'admin'){
+		if(_.subSection == 'admin'){
 			let
 				item,update = false;
 			if(data){
@@ -128,9 +128,14 @@ export class UsersModule extends AdminPage {
 		_.coursePos = 0;
 	}
 	
-	async createParent(){
+	async createNewParent(){
 		const _ = this;
-		
+		let response = await Model.createParent(_.parentInfo);
+		if(!response) return void 0;
+		G_Bus.trigger('modaler','closeModal');
+		G_Bus.trigger(_.componentName,'showSuccessPopup','Parent has been successfully added');
+		let users = await Model.getUsers({role:_.subSection,page: 1,update: true});
+		_.fillParentsTable(users);
 	}
 	async createStudent(){
 		const _ = this;
@@ -187,6 +192,7 @@ export class UsersModule extends AdminPage {
 		G_Bus.trigger(_.componentName,'changeSection',{item})
 		_.showSuccessPopup('Admin profile updated')
 	}
+	
 	// Fill methods
 	fillParentInfo({item}){
 		const _ = this;
@@ -343,7 +349,6 @@ export class UsersModule extends AdminPage {
 		_.clear(table);
 		table.append(..._.activityBodyRowsTpl(_.activityData));
 	}
-	
 	async fillStudentsTable(usersData,selector){
 		const _ = this;
 		let
@@ -504,7 +509,9 @@ export class UsersModule extends AdminPage {
 		if(pos == 1){
 			studentInner.classList.remove('short')
 			studentInner.innerHTML = _.parentsInfo();
-			let parentsData = await Model.getUsers({role: 'parent'});
+			//let parentsData = await Model.getUsers({role: 'parent'});
+			let parentsData = await Model.getStudentParents(_.studentInfo['studentId']);
+			
 			_.fillParentsInfoTable(parentsData);
 		}
 		if(pos == 2){
@@ -545,8 +552,10 @@ export class UsersModule extends AdminPage {
 			container.classList.remove('adding-center');
 			container.innerHTML = _.parentChildesInfoTpl();
 			//let tableData = await Model.getUsers({role:'parent',update: true});
-			let tableData = Model.parentsData.response.filter( parent => parent['_id'] == parentId )[0];
-			_.fillStudentsTable(tableData['students'],'#parent-profile-popup');
+			//let tableData = Model.parentsData.response.filter( parent => parent['_id'] == parentId )[0];
+			let tableData = await  Model.getParentStudents(parentId);
+			console.log(tableData);
+			_.fillStudentsTable(tableData,'#parent-profile-popup');
 		}
 	}
 	flexible(){
@@ -823,9 +832,9 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		let response = await Model.removeParent(_.parentInfo['parentId']);
 		if (!response) return;
-		_.f(`TR[user-id="${parentId}"]`).remove();
-		G_Bus.trigger('modaler','closeModal',{item})
-		_.showSuccessPopup('Parent profile deleted')
+		_.f(`TR[user-id="${_.parentInfo['parentId']}"]`).remove();
+		G_Bus.trigger('modaler','closeModal')
+		_.showSuccessPopup('Parent profile deleted');
 	}
 	async removeAssignedParent({item}){
 		const _ = this;
