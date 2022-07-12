@@ -261,6 +261,21 @@ export const view = {
 			</div>
 		`;
 	},
+	removeAdminTpl(){
+		const _ = this;
+		return `
+			<div class="modal-block student-profile-remove-popup" id="removeAdminForm">
+				<h6 class="modal-title">
+					<span>Delete admin profile</span>
+				</h6>
+				<p class="modal-text">Are you sure you want to delete this admin profile?</p>
+				<div class="modal-row">
+					<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
+					<button class="button-red" data-click="${_.componentName}:removeAdmin"><span>Remove</span></button>
+				</div>
+			</div>
+		`;
+	},
 	removeParentTpl(){
 		const _ = this;
 		return `
@@ -1308,9 +1323,6 @@ export const view = {
 			</li>
 		`;
 	},
-	
-	
-
 
 	///
 	emptyCourseInfo(){
@@ -1453,7 +1465,7 @@ export const view = {
 			</td>
 			<td>
 				<div class="tbl-item right">
-					<button class="users-btn button profile">Details</button>
+					<button class="users-btn button profile" data-click="${_.componentName}:showHistoryDetails">Details</button>
 				</div>
 			</td>
 		`
@@ -1524,6 +1536,13 @@ export const view = {
 				</div>
 			</div>
 		`
+	},
+	activityHistoryDetailsTpl(detailsData){
+		const _ = this;
+		let tpl = `
+			
+		`;
+		return tpl;
 	},
 	parentsInfoRow(rowData){
 		const _ = this;
@@ -1798,7 +1817,6 @@ export const view = {
 			</div>
 		`;
 	},
-
 	
 	personalInfo(){
 		const _ = this;
@@ -2066,6 +2084,7 @@ export const view = {
 				${_.assignStudent()}
 				${_.removeCourseTpl()}
 				${_.removeUserTpl()}
+				${_.removeAdminTpl()}
 				${_.removeParentTpl()}
 				${_.selectAvatarTpl()}
 				${_.addParentPopup()}
@@ -2322,12 +2341,12 @@ export const view = {
 						buttonsData:{
 							action:`data-click="${_.componentName}:changeProfileTab"`,
 							buttons:[
-								{title:'Personal Info',active:'active',},
-								{title:'Activity History'}
+								{title:'Personal Info',active:'active',pos:4},
+								{title:'Activity History',pos:5}
 							]
 						}
 					})}
-					<div class="student-profile-inner"><img src="/img/loader.gif"></div>
+					<div class="admin-profile-inner"><img src="/img/loader.gif"></div>
 				</div>
 			</div>
 		`;
@@ -2335,67 +2354,81 @@ export const view = {
 	adminProfileInner(){
 		const _ = this;
 		let tpl = `
-			<div class="adding-center">
+			<div class="adding-center wide">
 				<div class="adding-section">
-				<h4 class="adding-subtitle">Admin Personal  Info</h4>
-				<div class="adding-avatar">
-					<div class="profile-img-row">
-						<div class="profile-img">
-							<div class="profile-img-letter">
-								${this.super_$.firstName[0].toUpperCase()}
+					<h4 class="adding-subtitle">Admin Personal  Info</h4>
+					<div class="adding-avatar">
+						<div class="profile-img-row">
+							<div class="profile-img">
+								<div class="profile-img-letter">
+									${this.super_$.firstName[0].toUpperCase()}
+								</div>
+							</div>
+							<div class="profile-img-desc">
+								Allowed *.jpeg,*.jpg, *.png, *.gif<br>
+								Max size of 3.1 MB
 							</div>
 						</div>
-						<div class="profile-img-desc">
-							Allowed *.jpeg,*.jpg, *.png, *.gif<br>
-							Max size of 3.1 MB
+					</div>
+				</div>
+				<div class="adding-section">
+					<div class="profile-form-row">
+						<div class="form-label-row">
+							<label class="form-label">First name</label>
 						</div>
+						<g-input type="text" value="${_.adminInfo.firstName ?? ''}" name="firstName" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					</div>
+					<div class="profile-form-row">
+						<div class="form-label-row">
+							<label class="form-label">Last name</label>
+						</div>
+						<g-input type="text" name="lastName" value="${_.adminInfo.lastName ?? ''}" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					</div>
+					<div class="profile-form-row">
+						<div class="form-label-row">
+							<label class="form-label">Email</label>
+						</div>
+						<g-input type="email" name="email" value="${_.adminInfo.email ?? ''}" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					</div>
+					<div class="profile-form-row">
+						<div class="form-label-row">
+							<label class="form-label">Role</label>
+						</div>
+						<g-select
+							class="select"
+							name="testField"
+							className="form-row-select"
+							classname="filter-select table-filter"
+							arrowsvg="/img/sprite.svg#select-arrow"
+							title="Role"
+							items="[
+								{&quot;value&quot;:0,&quot;text&quot;:&quot;Admin&quot;${_.adminInfo.role == 'admin' ? ',&quot;active&quot;:&quot;true&quot;' : ''}},
+								{&quot;value&quot;:1,&quot;text&quot;:&quot;Super Admin&quot;${_.adminInfo.role == 'superAdmin' ? ',&quot;active&quot;:&quot;true&quot;' : ''}}
+						]"></g-select>
+					</div>
+					<div class="admin-profile-line"></div>
+					<div class="admin-profile-password">
+						<h3 class="admin-profile-password-title">Change Password</h3>
+						<button class="admin-profile-password-link">
+							<svg><use xlink:href="#mail"></use></svg>
+							<span>Send Link To Reset Password</span>
+						</button>
+						<button class="admin-profile-password-button">
+							<svg><use xlink:href="#edit-transparent"></use></svg>
+							<span>Change Manually</span>
+						</button>
 					</div>
 				</div>
 			</div>
-			<div class="adding-section">
-				<div class="profile-form-row">
-					<div class="form-label-row">
-						<label class="form-label">First name</label>
-					</div>
-					<g-input type="text" value="${_.adminInfo.firstName ?? ''}" name="firstName" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
-				</div>
-				<div class="profile-form-row">
-					<div class="form-label-row">
-						<label class="form-label">Last name</label>
-					</div>
-					<g-input type="text" name="lastName" value="${_.adminInfo.lastName ?? ''}" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
-				</div>
-				<div class="profile-form-row">
-					<div class="form-label-row">
-						<label class="form-label">Email</label>
-					</div>
-					<g-input type="email" name="email" value="${_.adminInfo.email ?? ''}" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
-				</div>
-				<div class="profile-form-row">
-					<div class="form-label-row">
-						<label class="form-label">Role</label>
-					</div>
-					<g-select
-						class="select"
-						name="testField"
-						className="form-row-select"
-						classname="filter-select table-filter"
-						arrowsvg="/img/sprite.svg#select-arrow"
-						title="Role"
-						items=`;
-		if (_.adminInfo.role == 'admin') {
-			tpl += `"[
-				{&quot;value&quot;:0,&quot;text&quot;:&quot;Admin&quot;,&quot;active&quot;:&quot;true&quot;},
-				{&quot;value&quot;:1,&quot;text&quot;:&quot;Super Admin&quot;}
-			]"`;
-		} else if (_.adminInfo.role == 'superAdmin') {
-			tpl += `"[
-				{&quot;value&quot;:0,&quot;text&quot;:&quot;Admin&quot;,&quot;active&quot;:&quot;true&quot;},
-				{&quot;value&quot;:1,&quot;text&quot;:&quot;Super Admin&quot;}
-			]"`;
-		}
-
-		tpl += `></g-select>
+			<div class="student-profile-footer">
+				<button class="student-profile-delete" data-click="${_.componentName}:showRemoveAdminPopup" data-id="${_.adminInfo['_id']}">Delete User Profile</button>
+				<div class="student-profile-actions">
+					<button class="test-footer-back" data-click="${_.componentName}:changeSection" section="admin" rerender>
+						<span>Discard</span>
+					</button>
+					<button class="button-blue" data-click="${_.componentName}:updateAdmin">
+						<span>Save Changes</span>
+					</button>
 				</div>
 			</div>
 		`;

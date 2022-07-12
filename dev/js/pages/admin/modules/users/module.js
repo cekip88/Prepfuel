@@ -56,7 +56,7 @@ export class UsersModule extends AdminPage {
 		G_Bus
 			.on(_,[
 				'handleErrors',
-				'addStudent','showAssignPopup','showRemoveUserPopup','removeUser',
+				'addStudent','showAssignPopup','showRemoveUserPopup','showRemoveAdminPopup','removeUser','removeAdmin',
 				'showRemoveParentPopup','removeParent',
 				'changeNextStep','changePrevStep','jumpToStep',
 				'showRemovePopup','removeCourse',
@@ -67,8 +67,9 @@ export class UsersModule extends AdminPage {
 				'fillParentInfo','assignStudentToParent','removeAssignedParent',
 				'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
 				'showSuccessPopup','showErrorPopup','closePopup',
-				'generatePassword','changeProfileTab','updateStudent',
-				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab'
+				'generatePassword','changeProfileTab','updateStudent','updateAdmin',
+				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab',
+				'showHistoryDetails',
 			]);
 	}
 	
@@ -85,17 +86,14 @@ export class UsersModule extends AdminPage {
 			let tableData = await Model.getUsers({role:_.subSection,update: update});
 			_.fillUserTable(tableData);
 
-			_.currentPage = 'main';
 			_.studentInfo = {};
 		}
 		if(_.subSection == 'profile'){
 			_.fillProfile(data);
-			_.currentPage = 'profile';
 			_._$.assignStep = 1;
 		}
 		if(_.subSection == 'adminProfile'){
 			_.fillAdminProfile(data);
-			_.currentPage = 'profile';
 			_._$.assignStep = 1;
 		}
 		if(_.subSection == 'parent'){
@@ -171,6 +169,23 @@ export class UsersModule extends AdminPage {
 		item.setAttribute('section','student');
 		G_Bus.trigger(_.componentName,'changeSection',{item})
 		_.showSuccessPopup('Student profile updated')
+	}
+	async updateAdmin({item}){
+		const _ = this;
+		let response = await Model.updateAdmin({
+			'_id': _.adminInfo['_id'],
+			'firstName': _.adminInfo['firstName'],
+			"lastName": _.adminInfo['lastName'],
+			"email": _.adminInfo['email'],
+			"password": _.adminInfo['password'],
+			"role": _.adminInfo['role'],
+		});
+		if(!response) return void 0;
+
+		item.setAttribute('rerender',true);
+		item.setAttribute('section','admin');
+		G_Bus.trigger(_.componentName,'changeSection',{item})
+		_.showSuccessPopup('Admin profile updated')
 	}
 	// Fill methods
 	fillParentInfo({item}){
@@ -304,14 +319,14 @@ export class UsersModule extends AdminPage {
 			adminId = profileData['item'].getAttribute('data-id');
 			_.subSection = profileData['item'].getAttribute('section');
 		} else {
-			adminId = profileData['studentId'];
+			adminId = profileData['_id'];
 		}
 		let
 			currentAdmin = Model.adminsData.response.filter( admin => admin['_id'] == adminId )[0];
 		_.adminInfo = Object.assign({},currentAdmin['user']);
-		console.log(_.adminInfo)
+		_.adminInfo['_id'] = adminId
 
-		_.f('.student-profile-inner').innerHTML = _.adminProfileInner();
+		_.f('.admin-profile-inner').innerHTML = _.adminProfileInner();
 		_.f('.breadcrumbs').innerHTML = _.breadCrumbsTpl([{title:'Users'},{title:'Admins'},{title:`${_.adminInfo['firstName']} ${_.adminInfo['lastName']} Profile`}]);
 	}
 	async fillParentsInfoTable(parentsData){
@@ -344,18 +359,16 @@ export class UsersModule extends AdminPage {
 		tbody.append(...tableData);
 		_.connectTableHead(selector);
 	}
-
-
-	async fillBodyAdminsTable(parentsData){
+	async fillBodyAdminsTable(adminsData){
 		const _ = this;
 		let
 			tbody = _.f(`#bodyAdmins .tbl-body`),
-			tableData = _.parentsBodyRowsTpl(parentsData,'single'),
-			total = parentsData['total'],
-			limit = parentsData['limit'];
+			tableData = _.parentsBodyRowsTpl(adminsData,'single'),
+			total = adminsData['total'],
+			limit = adminsData['limit'];
 
-		_.fillDataByClass({className:`.gusers-count`,data:`${parentsData ? total : 0}`});
-		_.fillDataByClass({className:`.gusers-limit`,data:`${parentsData ? (limit <= total ? limit : total) : 0}`});
+		_.fillDataByClass({className:`.gusers-count`,data:`${adminsData ? total : 0}`});
+		_.fillDataByClass({className:`.gusers-limit`,data:`${adminsData ? (limit <= total ? limit : total) : 0}`});
 		_.clear(tbody)
 		tbody.append(...tableData);
 		_.connectTableHead('#bodyAdmins');
@@ -483,16 +496,19 @@ export class UsersModule extends AdminPage {
 		item.parentNode.querySelector('.active').classList.remove('active');
 		item.classList.add('active');
 		let studentInner = _.f('.student-profile-inner');
-		studentInner.classList.remove('short')
+		let adminInner = _.f('.admin-profile-inner');
 		if(pos == 0){
+			studentInner.classList.remove('short')
 			_.fillProfile({studentId:_.studentInfo['studentId']});
 		}
 		if(pos == 1){
+			studentInner.classList.remove('short')
 			studentInner.innerHTML = _.parentsInfo();
 			let parentsData = await Model.getUsers({role: 'parent'});
 			_.fillParentsInfoTable(parentsData);
 		}
 		if(pos == 2){
+			studentInner.classList.remove('short')
 			studentInner.innerHTML = _.activityHistory();
 			_.fillActivityTable();
 			_.connectTableHead('.activity-table')
@@ -501,6 +517,16 @@ export class UsersModule extends AdminPage {
 			studentInner.classList.add('short');
 			let notifications = await Model.getAdminNotifications();
 			studentInner.innerHTML = _.notifications(notifications);
+		}
+		if(pos == 4){
+			adminInner.classList.remove('short')
+			_.fillAdminProfile({_id:_.adminInfo['_id']});
+		}
+		if(pos == 5){
+			adminInner.classList.remove('short')
+			adminInner.innerHTML = _.activityHistory();
+			_.fillActivityTable();
+			_.connectTableHead('.activity-table')
 		}
 	}
 	async changeParentPopupProfileTab({item}) {
@@ -529,13 +555,11 @@ export class UsersModule extends AdminPage {
 			return {
 				'body': 'profile'
 			};
-		}
-		if(_.subSection === 'adminProfile') {
+		} else if(_.subSection === 'adminProfile') {
 			return {
 				'body': 'adminProfile'
 			};
-		}
-		if(_.subSection === 'student') {
+		} else if(_.subSection === 'student') {
 			return {
 				'body': 'usersBody'
 			};
@@ -569,6 +593,10 @@ export class UsersModule extends AdminPage {
 		//_.metaInfo['sourse'] = '';
 		G_Bus.trigger('modaler','showModal', {item:item,type:'html',target:'#removeUserForm','closeBtn':'hide'});
 	}
+	showRemoveAdminPopup({item}){
+		const _ = this;
+		G_Bus.trigger('modaler','showModal', {item:item,type:'html',target:'#removeAdminForm','closeBtn':'hide'});
+	}
 	showRemoveParentPopup({item}){
 		const _ = this;
 		_.parentInfo['parentId'] = item.getAttribute('data-id');
@@ -599,6 +627,11 @@ export class UsersModule extends AdminPage {
 			closeBtn: 'hide'
 		});
 		
+	}
+
+	showHistoryDetails({item}){
+		const _ = this;
+
 	}
 	// Show methods end
 	
@@ -738,8 +771,7 @@ export class UsersModule extends AdminPage {
 		G_Bus.trigger('modaler','closeModal');
 		_.showSuccessPopup('Course has been successfully assigned');
 	}
-	
-	
+
 	async removeCourse({item}) {
 		const _ = this;
 		let courseInfo = _.f('.student-profile-course-info');
@@ -762,7 +794,7 @@ export class UsersModule extends AdminPage {
 		let response = await Model.removeStudent(_.studentInfo['studentId']);
 		if (!response) return;
 		
-		if (_.currentPage == 'profile') {
+		if (_.subSection == 'profile') {
 			item.setAttribute('rerender',true);
 			item.setAttribute('section','student');
 			G_Bus.trigger(_.componentName,'changeSection',{item})
@@ -771,6 +803,21 @@ export class UsersModule extends AdminPage {
 		}
 		G_Bus.trigger('modaler','closeModal',{item})
 		_.showSuccessPopup('Student profile deleted')
+	}
+	async removeAdmin({item}){
+		const _ = this;
+		let response = await Model.removeAdmin(_.adminInfo['_id']);
+		if (!response) return;
+
+		if (_.subSection == 'adminProfile') {
+			item.setAttribute('rerender',true);
+			item.setAttribute('section','admin');
+			G_Bus.trigger(_.componentName,'changeSection',{item})
+		} else {
+			_.f(`TR[user-id="${_.adminInfo['_id']}"]`).remove();
+		}
+		G_Bus.trigger('modaler','closeModal',{item})
+		_.showSuccessPopup('Admin profile deleted')
 	}
 	async removeParent({item}){
 		const _ = this;
@@ -786,8 +833,6 @@ export class UsersModule extends AdminPage {
 		_.metaInfo.parentAssigned = false;
 		_.f('.parent-adding-table').innerHTML = _.assignParentTpl(true);
 	}
-	
-	
 
 	generatePassword(){
 		const _ = this;

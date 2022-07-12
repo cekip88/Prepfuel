@@ -53,14 +53,16 @@ class _Model {
 	uploadCSV(uploadData){
 		const _ = this;
 		let contentLength = _.getContentLength(uploadData);
+		console.log(contentLength)
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(_.endpoints['csv'], {
 				method: 'POST',
-				//headers: {"Content-Type": "multipart/form-data;"},
-				headers: {"Content-Type": "multipart/form-data;boundary='csvfile';","Content-Length":contentLength},
+				headers: {
+					"Content-Type": "multipart/form-data;boundary='csvfile';",
+					"Content-Length": contentLength
+				},
 				//charset=utf-8;boundary='csvfile'
 				//headers: _.baseHeaders,
-				//body: JSON.stringify(uploadData)
 				body: uploadData
 			});
 			if(rawResponse.status < 210) {

@@ -2598,7 +2598,7 @@ div.tbl-head
 		&-row
 			margin-bottom: 1em
 			.select
-				width: 100%
+				min-width: 228px
 		&-label
 			font: 15px $f_medium
 			margin-bottom: 1em
@@ -2960,7 +2960,33 @@ div.tbl-head
 			font-size: $fz16
 			color: rgb($neutral-700)
 
-
+	&-profile
+		&-line
+			width: 100%
+			height: 1px
+			background-color: #EBEDF3
+			margin: 32px 0
+		&-password
+			@extend %df
+			align-items: flex-start
+			flex-direction: column
+			&-title
+				color: #3F4254
+				font: $fz16 $f_semi
+				line-height: 20px
+			&-link,&-button
+				margin-top: 24px
+				padding: 11px 12px
+				svg
+					+wh(16px,13px)
+					margin-right: 12px
+			&-link
+				svg
+					stroke: rgb($blue-text)
+				span
+					color: rgb($blue-text)
+					font: $fz16 $f_semi
+					line-height: 20px
 	&-block
 		&-graytitle
 			font: 18px $p_semi

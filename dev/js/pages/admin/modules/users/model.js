@@ -12,11 +12,13 @@ class _Model {
 			createStudent: `/user/create-student`,
 			updateStudent: `/user/update-student`,
 			removeStudent: `/user/delete-student`,
+			removeAdmin: `/admin/admins`,
 			createParent: `/admin/create-parent`,
 			removeParent: `/admin/parents`,
 			assignCourse: `/user/assign-plan`,
 			removeCourse: `/user/remove-plan`,
 			wizardData: `/user/wizard-data`,
+			updateAdmin: `/admin/admins`,
 		};
 	}
 	
@@ -170,6 +172,27 @@ class _Model {
 			resolve(null);
 		});
 	}
+	updateAdmin(adminData) {
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('updateAdmin')}/${adminData['_id']}`, {
+				method: 'PUT',
+				headers: _.baseHeaders,
+				body: JSON.stringify(adminData)
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('updateAdmin', response);
+				}
+			} else {
+				_.wrongRequest('updateAdmin', rawResponse)
+			}
+			resolve(null);
+		});
+	}
 
 	removeCourse(removeData){
 		const _ = this;
@@ -209,6 +232,26 @@ class _Model {
 				}
 			} else {
 				_.wrongRequest('removeStudent', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+	removeAdmin(adminId){
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('removeAdmin')}/${adminId}`, {
+				method: 'DELETE',
+				headers: _.baseHeaders
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('removeAdmin', response);
+				}
+			} else {
+				_.wrongRequest('removeAdmin', rawResponse)
 			}
 			resolve(null);
 		});
