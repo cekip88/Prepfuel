@@ -56,10 +56,10 @@ class _Model {
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(_.endpoints['csv'], {
 				method: 'POST',
-				headers: {
+			/*	headers: {
 					"Content-Type": "multipart/form-data;boundary='csvfile';",
 					"Content-Length": contentLength
-				},
+				},*/
 				//charset=utf-8;boundary='csvfile'
 				//headers: _.baseHeaders,
 				body: uploadData

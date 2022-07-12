@@ -16,14 +16,17 @@ export class TestsModule extends StudentPage{
 	}
 	async asyncDefine(){
 		const _ = this;
-		await Model.getTests(); // requests all user tests
+/*		await Model.getTests(); // requests all user tests
 		_.currentQuestion = Model.firstQuestion;
 		console.log('Current Question: ',_.currentQuestion);
 		_.set({
 			currentQuestion: Model.firstQuestion,
 		});
-		
+		*/
 	}
+	
+	
+	
 	async define(){
 		const _ = this;
 		_.componentName = 'TestPage';
@@ -31,7 +34,7 @@ export class TestsModule extends StudentPage{
 			'isGrid','showResults','showSummary','changeSection','setWrongAnswer','setCorrectAnswer','changeQuestion',
 			'jumpToQuestion','jumpToQuestion','saveBookmark','saveNote','changeInnerQuestionId','showForm','deleteNote',
 			'editNote','showTestLabelModal','startTimer','updateStorageTest','saveReport','changeTestSection','enterGridAnswer',
-			'resetTest'
+			'resetTest','domReady'
 		]);
 		//TestModel = new TestModel();
 		_.isLastQuestion = false;
@@ -54,6 +57,16 @@ export class TestsModule extends StudentPage{
 		_.set({
 			currentSection: 'welcome'
 		});
+	}
+	
+	async domReady(){
+		const _ = this;
+		await Model.getTests(); // requests all user tests
+		/*_.currentQuestion = Model.firstQuestion;
+		console.log('Current Question: ',_.currentQuestion);
+		_.set({
+			currentQuestion: Model.firstQuestion,
+		});*/
 	}
 	
 	get questionsPages(){return Model.currentSection['subSections'][0]['questionDatas']}

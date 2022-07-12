@@ -21,7 +21,33 @@ class _Model {
 			updateAdmin: `/admin/admins`,
 			studentParents: `/admin/student`,
 			parentStudents: `/admin/parent`,
+			assignStudentToParent: `/admin/assign/student-to-parent`,
 		};
+	}
+	
+	assignStudentToParent(parentId,studentId) {
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('assignStudentToParent')}`, {
+				method: 'POST',
+				headers: _.baseHeaders,
+				body: JSON.stringify({
+					sid: studentId,
+					pid: parentId
+				})
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('assignCourse', response);
+				}
+			} else {
+				_.wrongRequest('assignCourse', rawResponse)
+			}
+			resolve(null);
+		});
 	}
 	getParentStudents(parentId){
 		const _ = this;

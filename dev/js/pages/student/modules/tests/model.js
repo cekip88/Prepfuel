@@ -43,7 +43,8 @@ class _Model{
 		const _ = this;
 		// get all tests from Database
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(_.endpoints['tests'],{
+			//?testStandart=SHSAT&testType=test
+			let rawResponse = await fetch(`${_.endpoints['tests']}/`,{
 				method: 'GET',
 				headers:_.baseHeaders,
 			});

@@ -70,7 +70,7 @@ export class UsersModule extends AdminPage {
 				'showSuccessPopup','showErrorPopup','closePopup',
 				'generatePassword','changeProfileTab','updateStudent','updateAdmin',
 				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab',
-				'showHistoryDetails','createNewParent'
+				'showHistoryDetails','createNewParent','assignFirstParent'
 			]);
 
 		_.initialState = {
@@ -95,7 +95,7 @@ export class UsersModule extends AdminPage {
 		_.wizardData = await Model.wizardData;
 		if(_.subSection === 'student') {
 			let
-				item,update= false;
+				item,update= true;
 			if(data){
 				item = data.item;
 				update = item.hasAttribute('rerender');
@@ -115,7 +115,7 @@ export class UsersModule extends AdminPage {
 		}
 		if(_.subSection == 'parent'){
 			let
-				item,update= false;
+				item,update= true;
 			if(data){
 				item = data.item;
 				update = item.hasAttribute('rerender');
@@ -125,7 +125,7 @@ export class UsersModule extends AdminPage {
 		}
 		if(_.subSection == 'admin'){
 			let
-				item,update = false;
+				item,update = true;
 			if(data){
 				item = data.item;
 				update = item.hasAttribute('rerender');
@@ -135,16 +135,9 @@ export class UsersModule extends AdminPage {
 		}
 	}
 	
-	clearData(){
-		const _ = this;
-		_.studentInfo = {};
-		_.parentInfo = {};
-		_.parents = {};
-		_.metaInfo = {};
-		_.parentSkipped = false;
-		_.coursePos = 0;
-	}
 	
+	
+	// Create methods
 	async createNewParent(){
 		const _ = this;
 		let response = await Model.createParent(_.parentInfo);
@@ -173,6 +166,9 @@ export class UsersModule extends AdminPage {
 		let users = await Model.getUsers({role:_.subSection,page: 1,update: true});
 		_.fillUserTable(users);
 	}
+	// Create methods
+	
+	// Update methods
 	async updateStudent({item}){
 		const _ = this;
 		let response = await Model.updateStudent({
@@ -209,6 +205,8 @@ export class UsersModule extends AdminPage {
 		G_Bus.trigger(_.componentName,'changeSection',{item})
 		_.showSuccessPopup('Admin profile updated')
 	}
+	// Update methods
+	
 	
 	// Fill methods
 	fillParentInfo({item}){
@@ -395,6 +393,15 @@ export class UsersModule extends AdminPage {
 		tbody.append(...tableData);
 		_.connectTableHead('#bodyAdmins');
 	}
+	clearData(){
+		const _ = this;
+		_.studentInfo = {};
+		_.parentInfo = {};
+		_.parents = {};
+		_.metaInfo = {};
+		_.parentSkipped = false;
+		_.coursePos = 0;
+	}
 	// Fill methods end
 
 	// Adding methods
@@ -568,10 +575,7 @@ export class UsersModule extends AdminPage {
 		if(pos == 1){
 			container.classList.remove('adding-center');
 			container.innerHTML = _.parentChildesInfoTpl();
-			//let tableData = await Model.getUsers({role:'parent',update: true});
-			//let tableData = Model.parentsData.response.filter( parent => parent['_id'] == parentId )[0];
 			let tableData = await  Model.getParentStudents(parentId);
-			console.log(tableData);
 			_.fillStudentsTable(tableData,'#parent-profile-popup');
 		}
 	}
@@ -607,8 +611,6 @@ export class UsersModule extends AdminPage {
 		_._$.assignStep = _._$.assignStep;
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#assignForm'});
 	}
-
-	
 	showRemovePopup({item}) {
 		const _ = this;
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#removeForm','closeBtn':'hide'});
@@ -654,7 +656,6 @@ export class UsersModule extends AdminPage {
 		});
 		
 	}
-
 	showHistoryDetails({item}){
 		const _ = this;
 		G_Bus.trigger('modaler','showModal',{target:'#historyDetails'})
@@ -722,7 +723,7 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		let
 			cont = _.f(`${selector ?? ''} .tbl`);
-		if (!cont) return
+		if (!cont) return void 0;
 		let
 			head = cont.querySelector('.tbl-head'),
 			ths = head.querySelectorAll('.tbl-item'),
@@ -746,6 +747,36 @@ export class UsersModule extends AdminPage {
 		cont.append(_.markup(_.skipParentTpl()));
 		_.parentSkipped=  true;
 	}
+	generatePassword(){
+		const _ = this;
+		let
+		len = Math.ceil((Math.random() * 8)) + 8,
+		inputs = _.f('G-INPUT[type="password"]'),
+		symbols = ['!','#', '$', '&', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
+		password = '',
+		input;
+		
+		for (let i = 0; i < len; i++) {
+			let number = Math.ceil(Math.random() * 66);
+			password += symbols[number];
+		}
+		
+		for (let i = 0; i < inputs.length; i++) {
+			inputs[i].value = password.toString();
+			G_Bus.trigger(_.componentName,inputs[i].getAttribute('data-input').split(':')[1],{item:inputs[i]})
+			if (!i) {
+				input = inputs[i].shadow.querySelector('INPUT');
+				input.type = 'text';
+				input.select();
+				document.execCommand("copy");
+			}
+		}
+		G_Bus.trigger(_.componentName,'showSuccessPopup','Password Generated and Copied')
+		
+		setTimeout(()=>{input.type = 'password'},2000)
+	}
+	
+	// Assign methods
 	async assignParent(clickData = null) {
 		const _ = this;
 		if (clickData) {
@@ -797,7 +828,21 @@ export class UsersModule extends AdminPage {
 		G_Bus.trigger('modaler','closeModal');
 		_.showSuccessPopup('Course has been successfully assigned');
 	}
-
+	async assignFirstParent({item}) {
+		const _ = this;
+		let parentId,studentId = _.studentInfo['studentId'];
+		if(!_.metaInfo.parentAddType || ( _.metaInfo.parentAddType == 'adding')){
+			let parent = await Model.createParent(_.parentInfo);
+			parentId = parent['_id'];
+		}else{
+			parentId = _.studentInfo['parentId'];
+		}
+		let response = await Model.assignStudentToParent(parentId,studentId);
+		G_Bus.trigger(_.componentName,'showSuccessPopup','')
+	}
+	// Assign methods
+	
+	// Remove methods
 	async removeCourse({item}) {
 		const _ = this;
 		let courseInfo = _.f('.student-profile-course-info');
@@ -859,35 +904,8 @@ export class UsersModule extends AdminPage {
 		_.metaInfo.parentAssigned = false;
 		_.f('.parent-adding-table').innerHTML = _.assignParentTpl(true);
 	}
+	// Remove methods
 
-	generatePassword(){
-		const _ = this;
-		let
-			len = Math.ceil((Math.random() * 8)) + 8,
-			inputs = _.f('G-INPUT[type="password"]'),
-			symbols = ['!','#', '$', '&', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
-			password = '',
-			input;
-
-		for (let i = 0; i < len; i++) {
-			let number = Math.ceil(Math.random() * 66);
-			password += symbols[number];
-		}
-
-		for (let i = 0; i < inputs.length; i++) {
-			inputs[i].value = password.toString();
-			G_Bus.trigger(_.componentName,inputs[i].getAttribute('data-input').split(':')[1],{item:inputs[i]})
-			if (!i) {
-				input = inputs[i].shadow.querySelector('INPUT');
-				input.type = 'text';
-				input.select();
-				document.execCommand("copy");
-			}
-		}
-		G_Bus.trigger(_.componentName,'showSuccessPopup','Password Generated and Copied')
-
-		setTimeout(()=>{input.type = 'password'},2000)
-	}
 
 	setCancelBtn(type = 'adding') {
 		const _ = this;

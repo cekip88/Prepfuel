@@ -59,7 +59,7 @@ export const view = {
 			if(from === 'users') {
 				tr.innerHTML = _.usersBodyRowTpl(item['currentPlan'], item['user'], item);
 			}else{
-				tr.innerHTML = _.studentsBodyRowTpl(item['currentPlan'], item['user'], item);
+				tr.innerHTML = _.studentsBodyRowTpl(item['plans'][0], item['user'], item);
 			}
 			trs.push(tr);
 		}
@@ -110,30 +110,30 @@ export const view = {
 		return tpl;
 	},
 	studentsBodyRowTpl(plan,rowData,user){
-		
 		const _ = this;
+		console.log(plan,rowData,user);
 		let course = plan && plan['course'] ? plan['course'].title + ' ' + plan['level']['title'] : '';
 		let avatar = rowData.avatar ? rowData.avatar.avatar.split('.')[0] : '';
 		let tpl = `
-				<td>
-					<div class="tbl-item">
-						<div class="users-photo-icon">
-							${avatar ? '<img src="/img/' + avatar + '.svg" alt="' + avatar + '">' : ''}
-						</div>
-						<div class="users-info">
-							<h6 class="users-info-name">${rowData.firstName} ${rowData.lastName}</h6>
-							<span class="users-info-email">${rowData.email}</span>
-						</div>
+			<td>
+				<div class="tbl-item">
+					<div class="users-photo-icon">
+						${avatar ? '<img src="/img/' + avatar + '.svg" alt="' + avatar + '">' : ''}
 					</div>
-				</td>
-				<td>
-					<div class="tbl-item">
-						<div class="users-course brown">${course}</div>
+					<div class="users-info">
+						<h6 class="users-info-name">${rowData.firstName} ${rowData.lastName}</h6>
+						<span class="users-info-email">${rowData.email}</span>
+					</div>
 				</div>
 			</td>
 			<td>
+				<div class="tbl-item">
+					<div class="users-course brown">${course}</div>
+			</div>
+		</td>
+			<td>
 				<div class="tbl-item right">
-					<div class="users-date">${_.createdAtFormat(rowData.createdAt)}</div>
+					<div class="users-date">${_.createdAtFormat(user.createdAt)}</div>
 				</div>
 			</td>
 		`
