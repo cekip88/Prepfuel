@@ -479,6 +479,7 @@ export default class GSelect extends GComponent {
 			}
 			.g-select-option {
 			  width: 100%;
+			  min-width: 150px;
 			  padding: 10px;
 			  text-align: left;
 			  display: flex;
@@ -489,7 +490,6 @@ export default class GSelect extends GComponent {
 			  font-size: 14px;
 			  font-family: "roboto-medium";
 			  font-weight: 500;
-			  white-space: nowrap;
 			}
 			.multiple .g-select-option {
 			  margin-bottom: 12px;

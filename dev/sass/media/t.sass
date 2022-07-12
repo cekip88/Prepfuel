@@ -537,3 +537,24 @@
 	&-header
 		&-block
 			width: 50%
+	.details
+		&-header
+			&-list
+				display: flex
+				flex-wrap: wrap
+			&-item
+				width: calc(50% - 5px)
+				&:nth-child(2n - 1)
+					margin-right: 10px
+		&-item
+			&-achieve
+				display: flex
+				align-items: flex-start
+				flex-wrap: wrap
+				&-info
+					margin-right: 16px
+					margin-bottom: 0
+				&-title
+					width: 100%
+				&-icon + div
+					width: 88px

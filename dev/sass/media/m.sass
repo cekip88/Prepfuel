@@ -2693,6 +2693,7 @@ div.tbl-head
 				transition: .35s ease
 			&:before
 				+wh(24px)
+				flex: 0 0 24px
 				margin-right: 12px
 				background-color: #F3F6F9
 				border: 1px solid #EBEDF3
@@ -2700,7 +2701,6 @@ div.tbl-head
 				+wh(16px)
 				position: absolute
 				left: 4px
-				top: 3.5px
 	&-buttons
 		@extend %dfa
 		margin-top: 12px
@@ -3616,21 +3616,16 @@ div.tbl-head
 				color: rgb($blue-text)
 
 
-.uploadFile
-	&-form
-		width: 90vw
-		height: calc(100vh - 100px)
-		.test-header
-			border-bottom: none
-		label
-			margin: 48px auto 0
-			width: initial
+.bigPop
+	.test-header
+		border-bottom: none
 	&-title
 		color: rgb($neutral-900)
 	&-subtitle
 		padding: 8px 0 16px
 		font: $fz16 $f_reg
 		color: $neutral-700
+.uploadFile
 	&-dragarea
 		@extend %dfc
 		+wh(100%,30vh)
@@ -3652,6 +3647,10 @@ div.tbl-head
 			color: rgb($neutral-800)
 		&-text
 			color: rgb($neutral-600)
+	&-form
+		label
+			margin: 48px auto 0
+			width: initial
 
 
 .activity
@@ -3689,6 +3688,148 @@ div.tbl-head
 		&-text
 			font: 1em $p_reg
 			color: rgb($neutral-500)
+	.details
+		&-header
+			&-item
+				width: 100%
+				margin-bottom: 10px
+				padding: 16px
+				border-radius: 12px
+				&:last-child
+					margin-bottom: 0
+				&-title
+					margin-bottom: 4px
+					font: $fz18 $p_bold
+					color: rgb($neutral-800)
+					line-height: 24px
+				&-desc
+					font-size: $fz12
+					font-family: $p_bold
+					line-height: 18px
+				&.turquoise
+					background-color: rgb($turquoise-light)
+					.details-header-item-desc
+						color: rgb($turquoise)
+				&.blue
+					background-color: rgb($blue-light)
+					.details-header-item-desc
+						color: rgb($blue)
+				&.green
+					background-color: rgb($green-light)
+					.details-header-item-desc
+						color: rgb($green)
+				&.orange
+					background-color: rgb($orange-light)
+					.details-header-item-desc
+						color: rgb($orange)
+				&.red
+					background-color: rgb($red-light)
+					.details-header-item-desc
+						color: rgb($red)
+		&-item
+			margin-top: 32px
+			padding-left: 52px
+			position: relative
+			&:before
+				+af
+				+wh(2px,calc(100% - 8px))
+				position: absolute
+				left: 17px
+				top: 38px
+				border-left: 2px dashed #EFF2F5
+			&:last-child
+				&:before
+					content: none
+			&-icon
+				+wh(36px)
+				padding: 8px
+				border-radius: 18px
+				background-color: #EFF2F5
+				position: absolute
+				left: 0
+				top: 0
+				svg
+					+wh(20px)
+					opacity: .5
+			&-title
+				font: $fz16 $f_medium
+				color: #3F4254
+				strong
+					color: #00A3FF
+			&-text
+				margin-top: 8px
+				font-family: $f_medium
+				color: rgb($neutral-400)
+			&-achieve
+				margin-top: 16px
+				&-title
+					margin-bottom: 8px
+					font-family: $f_medium
+					color: rgb($neutral-400)
+				&-info
+					@extend %dfa
+					margin-bottom: 10px
+					font-size: $fz12
+					font-family: $p_semi
+					&-title
+						color: rgb($neutral-800)
+						line-height: 18px
+				&-subtitle
+					color: rgb($neutral-400)
+					line-height: 18px
+				&.stars
+					.details-item-achieve-icon
+						+wh(36px)
+						border-radius: 12px
+						padding-bottom: 0
+					&.orange
+						.details-item-achieve-icon
+							background-color: rgb($orange-light)
+							svg
+								fill: rgb($orange)
+					&.blue
+						.details-item-achieve-icon
+							background-color: rgb($blue-light)
+							svg
+								fill: rgb($blue)
+				&-icon
+					@extend %dfc
+					+wh(48px)
+					margin-right: 8px
+					position: relative
+					padding-bottom: 16px
+					&.blue
+						background-color: rgb($blue-light)
+						svg
+							fill: rgb($blue)
+						span
+							background-color: rgb($blue)
+					&.red
+						background-color: rgb($red-light)
+						svg
+							fill: rgb($red)
+						span
+							background-color: rgb($red)
+					&.turquoise
+						background-color: rgb($turquoise-light)
+						svg
+							fill: rgb($turquoise)
+						span
+							background-color: rgb($turquoise)
+					&,span
+						border-radius: 4px
+					span
+						+w(100%)
+						text-align: center
+						font-family: $p_semi
+						color: rgb($white)
+						position: absolute
+						bottom: 0
+						left: 0
+					svg
+						+wh(21px)
+
+
 
 .button
 	color: rgb($neutral-600)
@@ -3824,6 +3965,11 @@ div.tbl-head
 			margin-right: 12.5px
 			fill: rgb($blue-text)
 #parent-profile-popup .section-header
-	padding: 0px 32px
+	padding: 0 32px
 #parent-profile-popup .adding-list
 	border-right: none
+.bigPop
+	width: 90vw
+	height: calc(100vh - 48px)
+	max-width: 1200px
+

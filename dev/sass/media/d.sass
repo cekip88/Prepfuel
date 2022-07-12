@@ -94,6 +94,9 @@
 				&-input,&-select
 					width: 100%
 					margin: 0
+		&-select
+			&[multiple]
+				width: 100%
 		.block
 			&-header
 				.button-blue
@@ -617,8 +620,6 @@ thead.tbl-head
 
 
 .uploadFile
-	&-form
-		width: calc(100vw - 240px)
 	&-title
 		font-size: $fz26
 		letter-spacing: -.02em
@@ -631,8 +632,22 @@ thead.tbl-head
 		&-block
 			width: initial
 			margin-bottom: 0
+	.details
+		&-header
+			&-list
+				flex-wrap: nowrap
+			&-item
+				width: 100%
+				margin-bottom: 0
+				&:nth-child(n)
+					margin-right: 24px
+				&:last-child
+					margin-right: 0
 
 
 .form
 	&-label
 		font-size: $fz15
+
+.bigPop
+	width: 90vh

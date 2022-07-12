@@ -45,6 +45,7 @@ export class UsersModule extends AdminPage {
 		_.parentInfo = {};
 		_.studentInfo = {};
 		_.metaInfo = {};
+		_.adminInfo = {};
 		_.subSection = 'student';
 		_.validationsSteps = [/*2,3,4,5*/];
 		_.parentSkipped =  false;
@@ -71,8 +72,24 @@ export class UsersModule extends AdminPage {
 				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab',
 				'showHistoryDetails','createNewParent'
 			]);
+
+		_.initialState = {
+			studentInfo: {},
+			parentInfo: {},
+			metaInfo: {},
+			adminInfo: {}
+		}
+
 	}
-	
+	garbageCollector(garbageList){
+		const _ = this;
+		if (!Array.isArray(garbageList)) return void 0;
+
+		for (let garbage of garbageList) {
+			if (_[garbage]) _[garbage] = _.initialState[garbage];
+		}
+	}
+
 	async domReady(data){
 		const _ = this;
 		_.wizardData = await Model.wizardData;
@@ -640,7 +657,7 @@ export class UsersModule extends AdminPage {
 
 	showHistoryDetails({item}){
 		const _ = this;
-
+		G_Bus.trigger('modaler','showModal',{target:'#historyDetails'})
 	}
 	// Show methods end
 	

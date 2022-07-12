@@ -53,7 +53,6 @@ class _Model {
 	uploadCSV(uploadData){
 		const _ = this;
 		let contentLength = _.getContentLength(uploadData);
-		console.log(contentLength)
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(_.endpoints['csv'], {
 				method: 'POST',

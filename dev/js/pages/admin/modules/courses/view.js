@@ -191,13 +191,13 @@ export const view = {
 	uploadFileTpl(){
 		const _ = this;
 		return `
-			<form id="uploadFileForm" class="block uploadFile-form">
+			<form id="uploadFileForm" class="block uploadFile-form bigPop">
 				<div class="test-header">
-					<h5 class="block-title test-title uploadFile-title">
+					<h5 class="block-title test-title bigPop-title">  
 						<span>Upload File</span>
 					</h5>
 				</div>
-				<h6 class="uploadFile-subtitle">Upload a question .csv file</h6>
+				<h6 class="bigPop-subtitle">Upload a question .csv file</h6>
 				<div class="uploadFile-body">
 					<div class="uploadFile-dragarea">
 						<div class="uploadFile-dragarea-inner">

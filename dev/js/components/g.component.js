@@ -159,8 +159,11 @@ export default class GComponent extends HTMLElement {
 	async initShadow(){
 		const _ = this;
 		if(_.shadow) return;
+		console.log(_)
 		await _.importTpl(`./${_.componentName}/template.js`);
+		console.log('here')
 		_.shadow = this.attachShadow({ mode: 'open' });
+		console.log(_.shadow)
 		_.container = _.shadow;
 	}
 	async importTpl(fileName='template', method = 'default') {

@@ -2094,7 +2094,112 @@ export const view = {
 		`
 	},
 
-	historyDetailsTpl(){},
+	historyDetailsTpl(){
+		const _ = this;
+		let tpl = `
+			<div class="block bigPop activity" id="historyDetails">
+				<div class="test-header">
+					<h5 class="block-title bigPop-title">
+						<span>Session Details</span>
+					</h5>
+				</div>
+				<ul class="details-header-list">
+					<li class="details-header-item blue">
+						<h6 class="details-header-item-title">March 17, 2022</h6>
+						<span class="details-header-item-desc">Date</span>
+					</li>
+					<li class="details-header-item green">
+						<h6 class="details-header-item-title">10:00 AM</h6>
+						<span class="details-header-item-desc">Time In</span>
+					</li>
+					<li class="details-header-item orange">
+						<h6 class="details-header-item-title">10:45 AM</h6>
+						<span class="details-header-item-desc">Time Out</span>
+					</li>
+					<li class="details-header-item red">
+						<h6 class="details-header-item-title">00:45:40</h6>
+						<span class="details-header-item-desc">Session Duration</span>
+					</li>
+				</ul>
+				<ul class="details-list">
+					<li class="details-item">
+						<div class="details-item-icon"><svg><use xlink:href="#graphic-3"></use></svg></div>
+						<h6 class="details-item-title">
+							Practice Mathematics Achievement completed. 
+							<strong>Algebra, Equations, and Inequalities</strong>
+						</h6>
+						<p class="details-item-text">Start time - 10:02 AM;  End time - 10:12 AM</p>
+						<p class="details-item-text">Total questions answered - 30</p>
+						<p class="details-item-text">Total questions correct - 20/30</p>
+						<div class="details-item-achieve stars orange">
+							<div class="details-item-achieve-title">Stars earned:</div>
+							<div class="details-item-achieve-info">
+								<div class="details-item-achieve-icon"><svg><use xlink:href="#stars"></use></svg></div>
+								<div>
+									<div class="details-item-achieve-info-title">+150</div>
+									<div class="details-item-achieve-subtitle">Skills Practice</div>
+								</div>
+							</div>
+						</div>
+						<div class="details-item-achieve">
+							<div class="details-item-achieve-title">Badge earned:</div>
+							<div class="details-item-achieve-info">
+								<div class="details-item-achieve-icon blue">
+									<span>15</span>
+									<svg><use xlink:href="#graphic-3"></use></svg>
+								</div>
+								<div>
+									<div class="details-item-achieve-subtitle">15 Skills Mastered</div>
+								</div>
+							</div>
+							<div class="details-item-achieve-info">
+								<div class="details-item-achieve-icon red">
+									<span>30</span>
+									<svg><use xlink:href="#calendar"></use></svg>
+								</div>
+								<div>
+									<div class="details-item-achieve-subtitle">30-Day Streak</div>
+								</div>
+							</div>
+						</div>
+					</li>
+					<li class="details-item">
+						<div class="details-item-icon"><svg><use xlink:href="#graphic-3"></use></svg></div>
+						<h6 class="details-item-title">
+							Test completed. 
+							<strong>Practice test 1</strong>
+						</h6>
+						<p class="details-item-text">Start time - 10:22 AM;  End time - 10:45 AM</p>
+						<p class="details-item-text">Total questions answered - 30</p>
+						<p class="details-item-text">Total questions correct - 30/30</p>
+						<div class="details-item-achieve stars blue">
+							<div class="details-item-achieve-title">Stars earned:</div>
+							<div class="details-item-achieve-info">
+								<div class="details-item-achieve-icon"><svg><use xlink:href="#stars"></use></svg></div>
+								<div>
+									<div class="details-item-achieve-info-title">+150</div>
+									<div class="details-item-achieve-subtitle">Skills Practice</div>
+								</div>
+							</div>
+						</div>
+						<div class="details-item-achieve">
+							<div class="details-item-achieve-title">Badge earned:</div>
+							<div class="details-item-achieve-info">
+								<div class="details-item-achieve-icon turquoise">
+									<span>First</span>
+									<svg><use xlink:href="#graphic-3"></use></svg>
+								</div>
+								<div>
+									<div class="details-item-achieve-subtitle">First Practice Test</div>
+								</div>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		`;
+		return tpl;
+	},
 	// Parents Page
 	parentsBody(){
 		const _ = this;

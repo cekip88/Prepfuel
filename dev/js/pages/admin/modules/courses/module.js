@@ -24,6 +24,7 @@ export class CoursesModule extends AdminPage {
 		G_Bus
 			.on(_,[
 				'domReady',
+				'handleErrors',
 				'moveToFolder',
 				'showUploadFile',
 				'uploadCSV',
@@ -32,15 +33,14 @@ export class CoursesModule extends AdminPage {
 	async domReady(data){
 		const _ = this;
 
-		_.moveToFolder({})
+		_.moveToFolder({item: undefined})
 	}
 
 	// get data methods
-	async getFolderData(id,rerequest = false){
+	async getFolderData(){
 		const _ = this;
-		if (!_.filesData || rerequest) _.filesData = await Model.getTests();
-		if (!id) return _.filesData;
-
+		_.filesData = await Model.getTests();
+		return _.filesData;
 	}
 	// end get data methods
 
@@ -88,8 +88,8 @@ export class CoursesModule extends AdminPage {
 	// Navigation methods
 	async moveToFolder({item}) {
 		const _ = this;
-		let id = item ? item.getAttribute('id') : null;
-		let itemsData = await _.getFolderData(id);
+		let itemsData = await _.getFolderData();
+		if (!itemsData) return;
 		console.log(itemsData)
 
 		_.fillFoldersTable(itemsData);
@@ -128,7 +128,13 @@ export class CoursesModule extends AdminPage {
 			_.showSuccessPopup(title  + '.csv uploaded')
 		}*/
 	}
-
+	handleErrors({method,data}){
+		const _ = this;
+		console.log(method,data);
+		if( method == 'getUsers'){
+			console.log('Users not found ',data);
+		}
+	}
 	connectTableHead(selector) {
 		const _ = this;
 		let
