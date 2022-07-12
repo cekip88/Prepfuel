@@ -130,15 +130,29 @@ export default class GInput extends GComponent {
 		let curDateDateSplitted = curDateData.outDate.split('-');
 		_.datePick({value:curDateDateSplitted[0] + '-' + curDateDateSplitted[1]})
 
-		let btn;
-		if (timeSkip !== 'yesterday' && timeSkip !== 'last_year' && timeSkip !== 'all_time') {
+		let btn,ext = ['yesterday','last_year','all_time','this_month','last_month'];
+		if (ext.indexOf(timeSkip) < 0) {
 			btn = _.shadow.querySelector(`.date-picker-body button[data-day="${currentDate}"]`);
 			_.changeDate({item:btn});
 		}
-
 		if (timeSkip == 'today') {
 			_.datePickerClose();
 			return;
+		}
+		if (timeSkip == 'last_month') {
+			let targetDate = _.getTargetDate(curDateData.outDate,timeSkip);
+			let targetDateSplitted = targetDate.split('-');
+			_.anotherMonth(targetDateSplitted[0] + '-' + targetDateSplitted[1]);
+			let targetBtn = _.shadow.querySelector(`.date-picker-body button[data-day="1"]`);
+			_.changeDate({item:targetBtn})
+			_.anotherMonth(targetDateSplitted[0] + '-' + targetDateSplitted[1]);
+			targetBtn = _.shadow.querySelector(`.date-picker-body button[data-day="${parseInt(targetDateSplitted[2])}"]`);
+			_.changeDate({item:targetBtn})
+			return
+		}
+		if (timeSkip == 'this_month') {
+			btn = _.shadow.querySelector(`.date-picker-body button[data-day="1"]`);
+			_.changeDate({item:btn})
 		}
 		if (timeSkip == 'all_time') {
 			_.shadow.querySelector('.inpt-value').value = 'All Time';
@@ -147,6 +161,11 @@ export default class GInput extends GComponent {
 			_.datePickerClose();
 			return;
 		}
+		if (timeSkip == 'last_year') {
+			let targetDate = curDateData.outDate.substr(0,4) + '-01-01';
+			_.anotherMonth(targetDate.substr(0,7));
+			_.changeDate({item:_.shadow.querySelector(`.date-picker-body button[data-day="1"]`)})
+		}
 
 		let targetDate = _.getTargetDate(curDateData.outDate,timeSkip);
 		let targetDateSplitted = targetDate.split('-');
@@ -154,11 +173,7 @@ export default class GInput extends GComponent {
 		let targetBtn = _.shadow.querySelector(`.date-picker-body button[data-day="${parseInt(targetDateSplitted[2])}"]`);
 		_.changeDate({item:targetBtn})
 
-		if (timeSkip == 'last_year') {
-			let targetDate = curDateData.outDate.substr(0,4) + '-01-01';
-			_.anotherMonth(targetDate.substr(0,7));
-			_.changeDate({item:_.shadow.querySelector(`.date-picker-body button[data-day="1"]`)})
-		}
+
 
 		if (_.shadow.querySelector('.date-picker-body')) _.datePickerClose()
 	}
@@ -177,8 +192,8 @@ export default class GInput extends GComponent {
 		if (timeSkip == 'this_week') day += 7;
 		if (timeSkip == 'last_week') day -= 7;
 		if (timeSkip == 'past_two_weeks') day -= 14;
-		if (timeSkip == 'this_month') month++;
-		if (timeSkip == 'last_month') month--;
+		if (timeSkip == 'this_month') day = lens;
+		if (timeSkip == 'last_month')month--;
 		if (timeSkip == 'this_year') {
 			return year + '-01-01';
 		}
@@ -202,6 +217,7 @@ export default class GInput extends GComponent {
 			month = month - 12;
 			year++;
 		}
+		if (timeSkip == 'last_month') day = _.getMonthLenth(month,year)
 
 		return year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
 	}

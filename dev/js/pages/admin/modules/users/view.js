@@ -165,11 +165,11 @@ export const view = {
 								items="[
 									{&quot;value&quot;:0,&quot;text&quot;:&quot;ISEE Middle&quot;},
 									{&quot;value&quot;:1,&quot;text&quot;:&quot;ISEE Lower&quot;},
-									{&quot;value&quot;:2,&quot;text&quot;:&quot;ISEE Upper&quot;,&quot;active&quot;:true},
-									{&quot;value&quot;:3,&quot;text&quot;:&quot;SSAT Middle&quot;,&quot;active&quot;:true},
+									{&quot;value&quot;:2,&quot;text&quot;:&quot;ISEE Upper&quot;},
+									{&quot;value&quot;:3,&quot;text&quot;:&quot;SSAT Middle&quot;},
 									{&quot;value&quot;:4,&quot;text&quot;:&quot;SSAT Upper&quot;},
-									{&quot;value&quot;:5,&quot;text&quot;:&quot;SHSAT 8th&quot;,&quot;active&quot;:true},
-									{&quot;value&quot;:6,&quot;text&quot;:&quot;SHSAT 9th&quot;,&quot;active&quot;:true}
+									{&quot;value&quot;:5,&quot;text&quot;:&quot;SHSAT 8th&quot;},
+									{&quot;value&quot;:6,&quot;text&quot;:&quot;SHSAT 9th&quot;}
 								]"></g-select>
 						</div>
 						<button class="block-header-item button-blue" data-click="${_.componentName}:addStudent"><span>Add Student</span>
@@ -2080,6 +2080,7 @@ export const view = {
 		const _ = this;
 		return `
 			<div hidden>
+				${_.historyDetailsTpl()}
 				${_.addingStudent()}
 				${_.assignStudent()}
 				${_.removeCourseTpl()}
@@ -2092,8 +2093,8 @@ export const view = {
 			</div>
 		`
 	},
-	
 
+	historyDetailsTpl(){},
 	// Parents Page
 	parentsBody(){
 		const _ = this;
