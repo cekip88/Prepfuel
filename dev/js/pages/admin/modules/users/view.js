@@ -2164,7 +2164,7 @@ export const view = {
 						</div>
 					</li>
 					<li class="details-item">
-						<div class="details-item-icon"><svg><use xlink:href="#graphic-3"></use></svg></div>
+						<div class="details-item-icon"><svg><use xlink:href="#badge"></use></svg></div>
 						<h6 class="details-item-title">
 							Test completed. 
 							<strong>Practice test 1</strong>
@@ -2185,9 +2185,9 @@ export const view = {
 						<div class="details-item-achieve">
 							<div class="details-item-achieve-title">Badge earned:</div>
 							<div class="details-item-achieve-info">
-								<div class="details-item-achieve-icon turquoise">
+								<div class="details-item-achieve-icon green">
 									<span>First</span>
-									<svg><use xlink:href="#graphic-3"></use></svg>
+									<svg><use xlink:href="#badge"></use></svg>
 								</div>
 								<div>
 									<div class="details-item-achieve-subtitle">First Practice Test</div>
