@@ -44,7 +44,7 @@ export default class GInput extends GComponent {
 		const _ = this;
 		if (_.isDate()) {
 			if (!_.isDateRange()) {
-				return _.shadow.querySelector('.inpt-date').value.trim()
+				return _.shadow.querySelector('.inpt-date').value;
 			}
 			let from = _.shadow.querySelector('.inpt-date[data-type="from"]').value,
 				to = _.shadow.querySelector('.inpt-date[data-type="to"]').value.trim();
@@ -121,30 +121,49 @@ export default class GInput extends GComponent {
 		_.datePickerClose();
 		let curDate = new Date();
 		let curDateData = _.fillDate(curDate,'date');
+
 		let currentDate = curDate.getDate();
 		if (currentDate < 10) currentDate = '0' + currentDate;
 
 		let timeSkip = item.getAttribute('data-range');
 
+		let curDateDateSplitted = curDateData.outDate.split('-');
+		_.datePick({value:curDateDateSplitted[0] + '-' + curDateDateSplitted[1]})
 
-		_.datePick({value:curDateData.outValue.substr(0,7)})
-		let btn = _.shadow.querySelector(`.date-picker-body button[data-day="${currentDate}"]`);
-		_.changeDate({item:btn});
+		let btn;
+		if (timeSkip !== 'yesterday' && timeSkip !== 'last_year' && timeSkip !== 'all_time') {
+			btn = _.shadow.querySelector(`.date-picker-body button[data-day="${currentDate}"]`);
+			_.changeDate({item:btn});
+		}
 
 		if (timeSkip == 'today') {
 			_.datePickerClose();
 			return;
 		}
+		if (timeSkip == 'all_time') {
+			_.shadow.querySelector('.inpt-value').value = 'All Time';
+			_.shadow.querySelector('.inpt-date[data-type="from"]').value = '2000-01-01';
+			_.shadow.querySelector('.inpt-date[data-type="to"]').value = '2999-01-01';
+			_.datePickerClose();
+			return;
+		}
 
 		let targetDate = _.getTargetDate(curDateData.outDate,timeSkip);
-		_.anotherMonth(targetDate.substr(0,7));
-		_.changeDate({item:_.shadow.querySelector(`.date-picker-body button[data-day="${targetDate.split('-')[2]}"]`)})
+		let targetDateSplitted = targetDate.split('-');
+		_.anotherMonth(targetDateSplitted[0] + '-' + targetDateSplitted[1]);
+		let targetBtn = _.shadow.querySelector(`.date-picker-body button[data-day="${parseInt(targetDateSplitted[2])}"]`);
+		_.changeDate({item:targetBtn})
+
+		if (timeSkip == 'last_year') {
+			let targetDate = curDateData.outDate.substr(0,4) + '-01-01';
+			_.anotherMonth(targetDate.substr(0,7));
+			_.changeDate({item:_.shadow.querySelector(`.date-picker-body button[data-day="1"]`)})
+		}
 
 		if (_.shadow.querySelector('.date-picker-body')) _.datePickerClose()
 	}
 	getTargetDate(currentDate,timeSkip){
 		const _ = this;
-		if (timeSkip == 'today') return currentDate;
 
 		let
 			curDateInfo = currentDate.split('-'),
@@ -157,6 +176,15 @@ export default class GInput extends GComponent {
 		if (timeSkip == 'yesterday') day -= 1;
 		if (timeSkip == 'this_week') day += 7;
 		if (timeSkip == 'last_week') day -= 7;
+		if (timeSkip == 'past_two_weeks') day -= 14;
+		if (timeSkip == 'this_month') month++;
+		if (timeSkip == 'last_month') month--;
+		if (timeSkip == 'this_year') {
+			return year + '-01-01';
+		}
+		if (timeSkip == 'last_year') {
+			return (year - 1) + '-01-01';
+		}
 
 		if (day > lens) {
 			day = day - lens;
@@ -207,11 +235,10 @@ export default class GInput extends GComponent {
 		if (day < 10) day = '0' + day;
 		_.setAttribute('data-current-date',`${year}-${month}-${day}`);
 
-		let checkValue = _.value ?? _.fillDate(new Date(),'date').outDate;
+		let checkValue = (_.value && _.value.length) ? _.value : _.fillDate('').outDate;
 		if (!_.isDateRange()) {
 			if (_.isThatMonth(checkValue, year + '-' + month)) _.markerPickedDay(tpl,checkValue.substring(checkValue.length - 2))
 		} else {
-			// Отрисовка активных дней начала и конца для input date range
 			let checkValues = checkValue.split('|');
 			if (checkValues.length > 1 && value) {
 				_.markerRangeDays(checkValues,value,tpl);
@@ -227,7 +254,6 @@ export default class GInput extends GComponent {
 			}
 		}
 
-		//console.log(tpl.cloneNode(true))
 		_.shadow.append(tpl);
 	}
 	markerRangeDays(checkValues,value,tpl){
@@ -436,13 +462,13 @@ export default class GInput extends GComponent {
 			_.setAttribute('toDate',from);
 			_.shadow.querySelector('.inpt-date[data-type="to"]').value = from;
 			_.shadow.querySelector('.inpt-date[data-type="from"]').value = to;
-			_.shadow.querySelector('.date-value').value = value[1] + ' - ' + value[0];
+			_.shadow.querySelector('.date-value').value = _.fillDate(value[1]).outValue + ' - ' + _.fillDate(value[0]).outValue;
 		}
 	}
 	fillDate(dateValue,type = 'value'){
 		const _ = this;
 		let
-			date = type === 'value' ? new Date(dateValue) : dateValue,
+			date = type === 'value' ? (dateValue ? new Date(dateValue) : new Date()) : dateValue,
 			format = _.attr('format') ?? 'MM-DD-YYYY',
 			outValue = format,
 			days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Sunday'],
@@ -452,7 +478,8 @@ export default class GInput extends GComponent {
 			MM = month >= 10 ? month : '0' + month,
 			YYYY = date.getFullYear();
 
-		if (DD < 10) DD = '0' + DD;
+		//if (DD < 10) DD = '0' + DD;
+		//console.log(date,DD,dateValue,type)
 
 		outValue = outValue.replace('DD',DD.toString());
 		outValue = outValue.replace('MM',MM.toString());
@@ -460,7 +487,7 @@ export default class GInput extends GComponent {
 		outValue = outValue.replace('month',months[month - 1]);
 		outValue = outValue.replace('weekDay',days[date.getDay()]);
 
-		let outDate = YYYY + '-' + MM + '-' + DD;
+		let outDate = YYYY + '-' + MM + '-' + (DD < 10 ? '0' + DD : DD);
 		return {outDate,outValue};
 	}
 	dateInputFocusOut({event}){
