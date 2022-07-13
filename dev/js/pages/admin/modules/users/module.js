@@ -62,13 +62,15 @@ export class UsersModule extends AdminPage {
 				'changeNextStep','changePrevStep','jumpToStep',
 				'showRemovePopup','removeCourse',
 				'domReady',
-				'assignParent','addNewParent','assignCourse','skipParent',
+				'assignParent','addNewParent','assignCourse','skipParent','updateParent',
 				'changeTestType','changeStudentLevel','changeSection',
+				'fillAdminInfo',
 				'fillStudentInfo','createStudent','skipTestDate',
 				'fillParentInfo','assignStudentToParent','removeAssignedParent',
 				'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
 				'showSuccessPopup','showErrorPopup','closePopup',
-				'generatePassword','changeProfileTab','updateStudent','updateAdmin',
+				'generatePassword','validatePassword','showChangePassword','saveChangePassword',
+				'changeProfileTab','updateStudent','updateAdmin',
 				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab',
 				'showHistoryDetails','createNewParent','assignFirstParent'
 			]);
@@ -112,6 +114,9 @@ export class UsersModule extends AdminPage {
 		if(_.subSection == 'adminProfile'){
 			_.fillAdminProfile(data);
 			_._$.assignStep = 1;
+		}
+		if(_.subSection == 'parentProfile'){
+			_.fillParentProfile(data);
 		}
 		if(_.subSection == 'parent'){
 			let
@@ -195,8 +200,7 @@ export class UsersModule extends AdminPage {
 			'firstName': _.adminInfo['firstName'],
 			"lastName": _.adminInfo['lastName'],
 			"email": _.adminInfo['email'],
-			"password": _.adminInfo['password'],
-			"role": _.adminInfo['role'],
+			"role": _.adminInfo['role'][0],
 		});
 		if(!response) return void 0;
 
@@ -204,6 +208,41 @@ export class UsersModule extends AdminPage {
 		item.setAttribute('section','admin');
 		G_Bus.trigger(_.componentName,'changeSection',{item})
 		_.showSuccessPopup('Admin profile updated')
+	}
+	async updateParent({item}){
+		const _ = this;
+		console.log(_.parentInfo)
+		let response = await Model.updateParent({
+			'_id': _.parentInfo['_id'],
+			'firstName': _.parentInfo['firstName'],
+			"lastName": _.parentInfo['lastName'],
+			"email": _.parentInfo['email'],
+			"role": _.parentInfo['role'][0],
+		});
+		if(!response) return void 0;
+
+		item.setAttribute('rerender',true);
+		item.setAttribute('section','parent');
+		G_Bus.trigger(_.componentName,'changeSection',{item})
+		_.showSuccessPopup('Parent profile updated')
+	}
+	async saveChangePassword({item}){
+		const _ = this;
+		let
+			form = item.closest('.password'),
+			inputs = form.querySelectorAll('G-INPUT[type="password"]'),
+			passwords = {};
+
+		for (let input of inputs) {
+			let name = input.getAttribute('name');
+			_.studentInfo[name] = input.value;
+			passwords[name] = input.value;
+		}
+
+		let response = await Model.updateAdminPassword(passwords);
+		if (response) {
+			_.showSuccessPopup('Password has bben changed');
+		}
 	}
 	// Update methods
 	
@@ -231,6 +270,10 @@ export class UsersModule extends AdminPage {
 			_.metaInfo[prop] = item.textContent;
 		}
 		_['studentInfo'][prop] = value;
+	}
+	fillAdminInfo({item}){
+		const _ = this;
+		_.adminInfo[item.getAttribute('name')] = item.value;
 	}
 	skipTestDate({item}){
 		const _ = this;
@@ -344,11 +387,34 @@ export class UsersModule extends AdminPage {
 		}
 		let
 			currentAdmin = Model.adminsData.response.filter( admin => admin['_id'] == adminId )[0];
+		console.log(currentAdmin)
 		_.adminInfo = Object.assign({},currentAdmin['user']);
 		_.adminInfo['_id'] = adminId
 
 		_.f('.admin-profile-inner').innerHTML = _.adminProfileInner();
 		_.f('.breadcrumbs').innerHTML = _.breadCrumbsTpl([{title:'Users'},{title:'Admins'},{title:`${_.adminInfo['firstName']} ${_.adminInfo['lastName']} Profile`}]);
+	}
+	async fillParentProfile(profileData) {
+		const _ = this;
+		let parentId;
+		if(profileData['item']){
+			parentId = profileData['item'].getAttribute('data-id');
+			_.subSection = profileData['item'].getAttribute('section');
+		} else {
+			parentId = profileData['_id'];
+		}
+		let
+			currentParent = Model.parentsData.response.filter( parent => parent['_id'] == parentId )[0];
+		console.log(currentParent)
+		_.parentInfo = Object.assign({},currentParent['user']);
+		_.parentInfo['_id'] = currentParent['_id'];
+
+		_.f('.parent-profile-inner').innerHTML = _.parentsProfileInner();
+		_.f('.breadcrumbs').innerHTML = _.breadCrumbsTpl([
+			{title:'Users'},
+			{title:'Parents'},
+			{title:`${_.parentInfo['firstName']} ${_.parentInfo['lastName']} Profile`}
+		]);
 	}
 	async fillParentsInfoTable(parentsData){
 		const _ = this;
@@ -526,6 +592,7 @@ export class UsersModule extends AdminPage {
 		item.classList.add('active');
 		let studentInner = _.f('.student-profile-inner');
 		let adminInner = _.f('.admin-profile-inner');
+		let parentInner = _.f('.parent-profile-inner');
 		if(pos == 0){
 			studentInner.classList.remove('short')
 			_.fillProfile({studentId:_.studentInfo['studentId']});
@@ -559,6 +626,18 @@ export class UsersModule extends AdminPage {
 			_.fillActivityTable();
 			_.connectTableHead('.activity-table')
 		}
+
+		if (pos == 9) {
+			parentInner.classList.remove('short')
+			parentInner.innerHTML = _.activityHistory();
+			_.fillActivityTable();
+			_.connectTableHead('.activity-table')
+		}
+		if (pos == 10) {
+			parentInner.classList.add('short');
+			let notifications = await Model.getAdminNotifications();
+			parentInner.innerHTML = _.notifications(notifications);
+		}
 	}
 	async changeParentPopupProfileTab({item}) {
 		const _ = this;
@@ -588,6 +667,10 @@ export class UsersModule extends AdminPage {
 		} else if(_.subSection === 'adminProfile') {
 			return {
 				'body': 'adminProfile'
+			};
+		} else if(_.subSection === 'parentProfile') {
+			return {
+				'body': 'parentProfile'
 			};
 		} else if(_.subSection === 'student') {
 			return {
@@ -660,6 +743,10 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		G_Bus.trigger('modaler','showModal',{target:'#historyDetails'})
 	}
+	showChangePassword({item}){
+		const _ = this;
+		G_Bus.trigger('modaler','showModal',{target:'#changePassword'})
+	}
 	// Show methods end
 	
 	// Validation methods
@@ -709,6 +796,12 @@ export class UsersModule extends AdminPage {
 		
 		}
 	}
+	validatePassword({item}){
+		const _ = this;
+		let
+			cont = item.closest('.passwords'),
+			inputs = cont.querySelectorAll('G-INPUT[type="password"]');
+	}
 	// Validation methods end
 
 	handleErrors({method,data}){
@@ -747,14 +840,14 @@ export class UsersModule extends AdminPage {
 		cont.append(_.markup(_.skipParentTpl()));
 		_.parentSkipped=  true;
 	}
-	generatePassword(){
+	generatePassword({item}){
 		const _ = this;
 		let
-		len = Math.ceil((Math.random() * 8)) + 8,
-		inputs = _.f('G-INPUT[type="password"]'),
-		symbols = ['!','#', '$', '&', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
-		password = '',
-		input;
+			len = Math.ceil((Math.random() * 8)) + 8,
+			inputs = item.closest('.passwords').querySelectorAll('G-INPUT[type="password"]'),
+			symbols = ['!','#', '$', '&', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
+			password = '',
+			input;
 		
 		for (let i = 0; i < len; i++) {
 			let number = Math.ceil(Math.random() * 66);
@@ -763,7 +856,11 @@ export class UsersModule extends AdminPage {
 		
 		for (let i = 0; i < inputs.length; i++) {
 			inputs[i].value = password.toString();
-			G_Bus.trigger(_.componentName,inputs[i].getAttribute('data-input').split(':')[1],{item:inputs[i]})
+			let callBack = inputs[i].getAttribute('data-input');
+			if (callBack) {
+				let callBackTitle = callBack.split(':')[1];
+				G_Bus.trigger(_.componentName,callBackTitle,{item:inputs[i]})
+			}
 			if (!i) {
 				input = inputs[i].shadow.querySelector('INPUT');
 				input.type = 'text';

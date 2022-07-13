@@ -19,6 +19,7 @@ class _Model {
 			removeCourse: `/user/remove-plan`,
 			wizardData: `/user/wizard-data`,
 			updateAdmin: `/admin/admins`,
+			updateParent: `/admin/parents`,
 			studentParents: `/admin/student`,
 			parentStudents: `/admin/parent`,
 			assignStudentToParent: `/admin/assign/student-to-parent`,
@@ -241,27 +242,6 @@ class _Model {
 			resolve(null);
 		});
 	}
-	updateAdmin(adminData) {
-		const _ = this;
-		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.getEndpoint('updateAdmin')}/${adminData['_id']}`, {
-				method: 'PUT',
-				headers: _.baseHeaders,
-				body: JSON.stringify(adminData)
-			});
-			if(rawResponse.status < 210) {
-				let response = await rawResponse.json();
-				if(response['status'] == 'success') {
-					resolve(response['response']);
-				} else {
-					_.wrongResponse('updateAdmin', response);
-				}
-			} else {
-				_.wrongRequest('updateAdmin', rawResponse)
-			}
-			resolve(null);
-		});
-	}
 
 	removeCourse(removeData){
 		const _ = this;
@@ -378,6 +358,52 @@ class _Model {
 		}
 		]
 	}
-	
+
+	updateAdmin(adminData) {
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('updateAdmin')}/${adminData['_id']}`, {
+				method: 'PUT',
+				headers: _.baseHeaders,
+				body: JSON.stringify(adminData)
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('updateAdmin', response);
+				}
+			} else {
+				_.wrongRequest('updateAdmin', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+	updateParent(parentData) {
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('updateParent')}/${parentData['_id']}`, {
+				method: 'PUT',
+				headers: _.baseHeaders,
+				body: JSON.stringify(parentData)
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('updateAdmin', response);
+				}
+			} else {
+				_.wrongRequest('updateAdmin', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+	updateAdminPassword(passwordData){
+		const _ = this;
+
+	}
 }
 export const Model = new _Model();

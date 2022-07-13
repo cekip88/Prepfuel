@@ -19,7 +19,7 @@ export const view = {
 						classname="form-input form-search"
 					></g-input>
 				</div>
-				<button class="button-lightblue">
+				<button class="button-lightblue" data-click="${_.componentName}:showNewFolderPopup">
 					<svg class="button-icon stroke hover"><use xlink:href="#newFolder"></use></svg>
 					<span>New Folder</span>
 				</button>
@@ -230,12 +230,42 @@ export const view = {
 		`;
 		return tpl;
 	},
+	newFolderTpl(){
+		const _ = this;
+		return `
+			<div class="block newFolder" id="newFolderForm">
+				<div class="test-header">
+					<h5 class="newFolder-title">
+						<span>New folder</span>
+					</h5>
+				</div>
+				<div class="adding-inpt">
+					<g-input 
+						type="text" 
+						name="title" 
+						class="g-form-item"
+						placeholder="Untitled folder"
+						className="form-input adding-inpt"
+					></g-input>
+				</div>
+				<div class="student-profile-actions sb">
+					<button class="test-footer-back" data-click="modaler:closeModal">
+						<span>Cancel</span>
+					</button>
+					<button class="button-blue" data-click="${_.componentName}:createFolder">
+						<span>Create</span>
+					</button>
+				</div>
+			</div>
+		`;
+	},
 
 	coursesFooter(){
 		const _ = this;
 		return `
 			<div hidden>
 				${_.uploadFileTpl()}
+				${_.newFolderTpl()}
 			</div>
 		`
 	},

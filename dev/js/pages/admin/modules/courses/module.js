@@ -25,9 +25,8 @@ export class CoursesModule extends AdminPage {
 			.on(_,[
 				'domReady',
 				'handleErrors',
-				'moveToFolder',
-				'showUploadFile',
-				'uploadCSV',
+				'moveToFolder','createFolder','showNewFolderPopup',
+				'showUploadFile','uploadCSV',
 			]);
 	}
 	async domReady(data){
@@ -44,13 +43,23 @@ export class CoursesModule extends AdminPage {
 	}
 	// end get data methods
 
+	// create methods
+	createFolder({item}){
+		const _ = this;
+	}
+	// end create methods
 
 	// Show methods
 	showUploadFile(){
 		const _ = this;
 		G_Bus.trigger('modaler','showModal',{type:'html',target:'#uploadFileForm'})
 	}
-
+	showNewFolderPopup(){
+		G_Bus.trigger('modaler','showModal',{
+			target:'#newFolderForm',
+			closeBtn: 'hide'
+		})
+	}
 	// End show methods
 
 	// Fill methods
@@ -114,19 +123,16 @@ export class CoursesModule extends AdminPage {
 			return;
 		}
 
-		console.log(file)
 		let uploadData = new FormData();
 		uploadData.append('file',file,title + '.'  + extension);
 
 		let response = await Model.uploadCSV(uploadData);
-		console.log(response)
-		/*if (response) {
-			let breadCrumbsStrong = _.f('.breadcrumbs strong');
-
-			_.moveToFolder({item:breadCrumbsStrong});
+		if (response) {
+			//let breadCrumbsStrong = _.f('.breadcrumbs strong');
+			//_.moveToFolder({item:breadCrumbsStrong});
 			G_Bus.trigger('modaler','closeModal');
 			_.showSuccessPopup(title  + '.csv uploaded')
-		}*/
+		}
 	}
 	handleErrors({method,data}){
 		const _ = this;

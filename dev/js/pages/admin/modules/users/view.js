@@ -295,7 +295,7 @@ export const view = {
 		const _ = this;
 		return `
 			<div class="admin-modal"	id="assignForm">
-					<div class="block test-block adding-block">
+					<div class="block adding-block">
 					<div class="test-header">
 						<h5 class="block-title test-title adding-header-title">
 							<span>Assign Course</span>
@@ -627,6 +627,59 @@ export const view = {
 		});
 		return tpl;
 	},
+	changePassword(){
+		const _ = this;
+		let tpl = `
+			<div class="block password passwords" id="changePassword">
+				<div class="test-header">
+					<h5 class="block-title bigPop-title">
+						<span>Change Password</span>
+					</h5>
+				</div>
+				<div class="password-inner">
+					<h6 class="password-title">Password</h6>
+					<span class="password-desc">Password will be sent to a user via email invitation to the platform</span>
+					<div class="adding-inpt">
+						<div class="form-label-row">
+							<label class="form-label">Password</label>
+						</div>
+						<g-input 
+							type="password" 
+							name="password" 
+							class="g-form-item" 
+							data-outfocus="${_.componentName}:validatePassword"
+							className="form-input adding-inpt"
+						></g-input>
+						<span class="form-label-desc">8+ characters, with min. one number, one uppercase letter and one special character</span>
+					</div>
+					<div class="adding-inpt">
+						<div class="form-label-row">
+							<label class="form-label">Repeat password</label>
+						</div>
+						<g-input 
+							type="password" 
+							name="confirm_password" 
+							class="g-form-item" 
+							data-outfocus="${_.componentName}:validatePassword" 
+							className="form-input adding-inpt"
+						></g-input>
+					</div>
+					<button class="adding-generate" data-click="${_.componentName}:generatePassword">Generate Password</button>
+				</div>
+				<div class="student-profile-footer">
+					<div class="student-profile-actions sb">
+						<button class="test-footer-back" data-click="modaler:closeModal">
+							<span>Back</span>
+						</button>
+						<button class="button-blue" data-click="${_.componentName}:saveChangePassword">
+							<span>Save</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
 	
 	// Adding steps
 	addingStepOne(stepData){
@@ -707,7 +760,7 @@ export const view = {
 	addingStepTwo() {
 		const _ = this;
 		return `
-			<div class="adding-center">
+			<div class="adding-center passwords">
 				<h3 class="adding-title">Account Settings</h3>
 				<div class="adding-section">
 					<h4 class="adding-subtitle">Student Personal Info</h4>
@@ -747,14 +800,29 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">Password</label>
 						</div>
-						<g-input type="password" name="password"  value="${_.studentInfo['password'] ?? ''}" data-input="${_.componentName}:fillStudentInfo" class="g-form-item" classname="form-input"></g-input>
+						<g-input 
+							type="password" 
+							name="password" 
+							value="${_.studentInfo['password'] ?? ''}" 
+							data-outfocus="${_.componentName}:validatePassword" 
+							data-callback="${_.componentName}:fillStudentInfo" 
+							class="g-form-item" 
+							classname="form-input"
+						></g-input>
 					</div>
 					<p class="adding-text">8+ characters, with min. one number, one uppercase letter and one special character</p>
 					<div class="adding-inpt small">
 						<div class="form-label-row">
 							<label class="form-label">Repeat password</label>
 						</div>
-						<g-input type="password" name="cpass"  value="${_.studentInfo['cpass'] ?? ''}" data-input="${_.componentName}:fillStudentInfo" class="g-form-item" classname="form-input"></g-input>
+						<g-input 
+							type="password" 
+							name="cpass"  
+							value="${_.studentInfo['cpass'] ?? ''}" 
+							data-outfocus="${_.componentName}:validatePassword" 
+							data-callback="${_.componentName}:fillStudentInfo" 
+							class="g-form-item" classname="form-input"
+						></g-input>
 					</div>
 				</div>
 				<button class="adding-generate" data-click="${_.componentName}:generatePassword">Generate Password</button>
@@ -1192,12 +1260,12 @@ export const view = {
 							<use xlink:href="#write"></use>
 						</svg>
 					</button>
-					<button class="users-btn button" data-click="${_.componentName}:showRemoveParentPopup"  data-id="${rowData._id}">
+					<button class="users-btn button" data-click="${_.componentName}:showRemoveParentPopup" data-id="${rowData._id}">
 						<svg class="button-icon">
 							<use xlink:href="#trash"></use>
 						</svg>
 					</button>
-					<button class="users-btn button profile">Profile</button>
+					<button class="users-btn button profile" data-click="${_.componentName}:changeSection" data-id="${rowData._id}" section="parentProfile">Profile</button>
 				</div>
 			</td>
 		`
@@ -1251,21 +1319,37 @@ export const view = {
 					<g-input type="email" name="phone" value="${_.parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 			</div>
-			<div class="adding-section">
+			<div class="adding-section passwords">
 				<h4 class="adding-subtitle">Password</h4>
 				<p class="adding-text">Password will be sent to a student via email invitation to the platform</p>
 				<div class="adding-inpt small">
 					<div class="form-label-row">
 						<label class="form-label">Password</label>
 					</div>
-					<g-input type="password" name="password" value="${_.parentInfo.password ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input"></g-input>
+					<g-input 
+						type="password" 
+						name="password" 
+						value="${_.parentInfo.password ?? ''}" 
+						data-outfocus="${_.componentName}:validatePassword" 
+						data-callback="${_.componentName}:fillParentInfo"
+						class="g-form-item" 
+						classname="form-input"
+					></g-input>
 				</div>
 				<p class="adding-text">8+ characters, with min. one number, one uppercase letter and one special character</p>
 				<div class="adding-inpt small">
 					<div class="form-label-row">
 						<label class="form-label">Repeat password</label>
 					</div>
-					<g-input type="password" name="cpass" value="${_.parentInfo.cpass ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input"></g-input>
+					<g-input 
+						type="password" 
+						name="cpass" 
+						value="${_.parentInfo.cpass ?? ''}" 
+						data-outfocus="${_.componentName}:validatePassword" 
+						data-callback="${_.componentName}:fillParentInfo"
+						class="g-form-item" 
+						classname="form-input"
+					></g-input>
 				</div>
 			</div>
 			<button class="adding-generate" data-click="${_.componentName}:generatePassword">Generate Password</button>
@@ -1571,7 +1655,7 @@ export const view = {
 						data-id="${rowData['_id']}"
 						data-click=${_.componentName}:deleteParent
 					>
-						<svg><use xlink:href="#close"></use></svg>
+						<svg class="button-icon"><use xlink:href="#close"></use></svg>
 					</button>
 				</div>
 			</td>
@@ -1865,7 +1949,7 @@ export const view = {
 						<h4 class="adding-subtitle">Password</h4>
 						<p class="adding-text">Students' password can be changed by a linked parent or by admin manually</p>
 						<button class="adding-generate student-profile-send">Send Link To A Parent To Reset Password</button>
-						<button class="student-profile-change">Change Manually</button>
+						<button class="student-profile-change" data-click="${_.componentName}:showChangePassword">Change Manually</button>
 					</div>
 					<div class="adding-section">
 						<h4 class="adding-subtitle withmar">Your current school</h4>
@@ -2082,6 +2166,7 @@ export const view = {
 			<div hidden>
 				${_.historyDetailsTpl()}
 				${_.addingStudent()}
+				${_.changePassword()}
 				${_.assignStudent()}
 				${_.removeCourseTpl()}
 				${_.removeUserTpl()}
@@ -2301,6 +2386,104 @@ export const view = {
 			</div>
 		`;
 	},
+	parentProfile(){
+		const _ = this;
+		return `
+			<div class="section">
+				<div class="breadcrumbs"></div>
+				<div class="block">
+					${_.sectionHeaderTpl({
+						title: 'Parent Personal Profile',
+						buttonsData:{
+							action:`data-click="${_.componentName}:changeProfileTab"`,
+							buttons:[
+								{title:'Personal Info',active:'active',pos:4},
+								{title:'Students',pos:6},
+								{title:'Billing',pos:7},
+								{title:'Billing History',pos:8},
+								{title:'Activity History',pos:9},
+								{title:'Notifications',pos:10},
+							]
+						}
+					})}
+					<div class="parent-profile-inner"><img src="/img/loader.gif"></div>
+				</div>
+			</div>
+		`;
+	},
+	parentsProfileInner(){
+		const _ = this;
+		let tpl = `
+			<div class="adding-center wide">
+				<div class="adding-section">
+					<h4 class="adding-subtitle">Admin Personal  Info</h4>
+					<div class="adding-avatar">
+						<div class="profile-img-row">
+							<div class="profile-img">
+								<div class="profile-img-letter">
+									${this.super_$.firstName[0].toUpperCase()}
+								</div>
+							</div>
+							<div class="profile-img-desc">
+								Allowed *.jpeg,*.jpg, *.png, *.gif<br>
+								Max size of 3.1 MB
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="adding-section">
+					<div class="profile-form-row">
+						<div class="form-label-row">
+							<label class="form-label">First name</label>
+						</div>
+						<g-input type="text" value="${_.parentInfo.firstName ?? ''}" name="firstName" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					</div>
+					<div class="profile-form-row">
+						<div class="form-label-row">
+							<label class="form-label">Last name</label>
+						</div>
+						<g-input type="text" name="lastName" value="${_.parentInfo.lastName ?? ''}" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					</div>
+					<div class="profile-form-row">
+						<div class="form-label-row">
+							<label class="form-label">Email</label>
+						</div>
+						<g-input type="email" name="email" value="${_.parentInfo.email ?? ''}" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					</div>
+					<div class="profile-form-row">
+						<div class="form-label-row">
+							<label class="form-label">Phone</label>
+						</div>
+						<g-input type="phone" name="phone" value="${_.parentInfo.phone ?? ''}" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					</div>
+					<div class="admin-profile-line"></div>
+					<div class="admin-profile-password">
+						<h3 class="admin-profile-password-title">Change Password</h3>
+						<button class="admin-profile-password-link">
+							<svg><use xlink:href="#mail"></use></svg>
+							<span>Send Link To Reset Password</span>
+						</button>
+						<button class="admin-profile-password-button" data-click="${_.componentName}:showChangePassword">
+							<svg><use xlink:href="#edit-transparent"></use></svg>
+							<span>Change Manually</span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="student-profile-footer">
+				<button class="student-profile-delete" data-click="${_.componentName}:showRemoveParentPopup" data-id="${_.parentInfo['_id']}">Delete User Profile</button>
+				<div class="student-profile-actions">
+					<button class="test-footer-back" data-click="${_.componentName}:changeSection" section="parent" rerender>
+						<span>Discard</span>
+					</button>
+					<button class="button-blue" data-click="${_.componentName}:updateParent">
+						<span>Save Changes</span>
+					</button>
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
 
 	//admins page
 	adminsBody(){
@@ -2502,14 +2685,14 @@ export const view = {
 						</div>
 						<g-select
 							class="select"
-							name="testField"
-							className="form-row-select"
-							classname="filter-select table-filter"
+							name="role"
+							className="form-row-select filter-select table-filter"
+							data-change="${_.componentName}:fillAdminInfo"
 							arrowsvg="/img/sprite.svg#select-arrow"
 							title="Role"
 							items="[
-								{&quot;value&quot;:0,&quot;text&quot;:&quot;Admin&quot;${_.adminInfo.role == 'admin' ? ',&quot;active&quot;:&quot;true&quot;' : ''}},
-								{&quot;value&quot;:1,&quot;text&quot;:&quot;Super Admin&quot;${_.adminInfo.role == 'superAdmin' ? ',&quot;active&quot;:&quot;true&quot;' : ''}}
+								{&quot;value&quot;:&quot;admin&quot;,&quot;text&quot;:&quot;Admin&quot;${_.adminInfo.role == 'admin' ? ',&quot;active&quot;:&quot;true&quot;' : ''}},
+								{&quot;value&quot;:&quot;super_admin&quot;,&quot;text&quot;:&quot;Super Admin&quot;${_.adminInfo.role == 'superAdmin' ? ',&quot;active&quot;:&quot;true&quot;' : ''}}
 						]"></g-select>
 					</div>
 					<div class="admin-profile-line"></div>
@@ -2519,7 +2702,7 @@ export const view = {
 							<svg><use xlink:href="#mail"></use></svg>
 							<span>Send Link To Reset Password</span>
 						</button>
-						<button class="admin-profile-password-button">
+						<button class="admin-profile-password-button" data-click="${_.componentName}:showChangePassword">
 							<svg><use xlink:href="#edit-transparent"></use></svg>
 							<span>Change Manually</span>
 						</button>

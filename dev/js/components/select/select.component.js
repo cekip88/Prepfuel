@@ -380,6 +380,8 @@ export default class GSelect extends GComponent {
 			}
 			.g-select-title {
 				margin-right: 23px;
+				font: 14px "Roboto-Medium";
+				color: #5E6278;
 			}	
 			.g-select-head-cont {
 				width: calc(100% - 70px);
