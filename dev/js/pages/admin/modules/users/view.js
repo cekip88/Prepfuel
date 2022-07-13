@@ -2397,10 +2397,10 @@ export const view = {
 						buttonsData:{
 							action:`data-click="${_.componentName}:changeProfileTab"`,
 							buttons:[
-								{title:'Personal Info',active:'active',pos:4},
-								{title:'Students',pos:6},
-								{title:'Billing',pos:7},
-								{title:'Billing History',pos:8},
+								{title:'Personal Info',active:'active',pos:6},
+								{title:'Students'},
+								{title:'Billing'},
+								{title:'Billing History'},
 								{title:'Activity History',pos:9},
 								{title:'Notifications',pos:10},
 							]

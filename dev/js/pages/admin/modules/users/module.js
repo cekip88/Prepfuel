@@ -624,7 +624,11 @@ export class UsersModule extends AdminPage {
 			adminInner.classList.remove('short')
 			adminInner.innerHTML = _.activityHistory();
 			_.fillActivityTable();
-			_.connectTableHead('.activity-table')
+			_.connectTableHead('.activity-table');
+		}
+		if(pos == 6){
+			parentInner.classList.remove('short')
+			_.fillParentProfile({_id:_.parentInfo['_id']});
 		}
 
 		if (pos == 9) {
