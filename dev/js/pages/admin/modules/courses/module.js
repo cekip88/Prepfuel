@@ -102,8 +102,7 @@ export class CoursesModule extends AdminPage {
 		console.log(itemsData)
 
 		_.fillFoldersTable(itemsData);
-		return
-		_.rebuildBreadCrumbs(item);
+		//_.rebuildBreadCrumbs(item);
 		_.fillTableRowsCount('.courses-rows-count');
 	}
 

@@ -646,6 +646,7 @@ export const view = {
 						<g-input 
 							type="password" 
 							name="password" 
+							match="changePassword"
 							class="g-form-item" 
 							data-outfocus="${_.componentName}:validatePassword"
 							className="form-input adding-inpt"
@@ -659,10 +660,12 @@ export const view = {
 						<g-input 
 							type="password" 
 							name="confirm_password" 
+							match="changePassword"
 							class="g-form-item" 
 							data-outfocus="${_.componentName}:validatePassword" 
 							className="form-input adding-inpt"
 						></g-input>
+					<span class="form-label-desc" style="display:none;">Password does not match</span>
 					</div>
 					<button class="adding-generate" data-click="${_.componentName}:generatePassword">Generate Password</button>
 				</div>
@@ -803,14 +806,15 @@ export const view = {
 						<g-input 
 							type="password" 
 							name="password" 
+							match="addingStepTwo"
 							value="${_.studentInfo['password'] ?? ''}" 
 							data-outfocus="${_.componentName}:validatePassword" 
 							data-callback="${_.componentName}:fillStudentInfo" 
 							class="g-form-item" 
 							classname="form-input"
 						></g-input>
+						<span class="form-label-desc">8+ characters, with min. one number, one uppercase letter and one special character</span>
 					</div>
-					<p class="adding-text">8+ characters, with min. one number, one uppercase letter and one special character</p>
 					<div class="adding-inpt small">
 						<div class="form-label-row">
 							<label class="form-label">Repeat password</label>
@@ -818,11 +822,13 @@ export const view = {
 						<g-input 
 							type="password" 
 							name="cpass"  
+							match="addingStepTwo"
 							value="${_.studentInfo['cpass'] ?? ''}" 
 							data-outfocus="${_.componentName}:validatePassword" 
 							data-callback="${_.componentName}:fillStudentInfo" 
 							class="g-form-item" classname="form-input"
 						></g-input>
+						<span class="form-label-desc" style="display:none;">Password does not match</span>
 					</div>
 				</div>
 				<button class="adding-generate" data-click="${_.componentName}:generatePassword">Generate Password</button>
@@ -1329,14 +1335,15 @@ export const view = {
 					<g-input 
 						type="password" 
 						name="password" 
+						match="assignNewParent"
 						value="${_.parentInfo.password ?? ''}" 
 						data-outfocus="${_.componentName}:validatePassword" 
 						data-callback="${_.componentName}:fillParentInfo"
 						class="g-form-item" 
 						classname="form-input"
 					></g-input>
+					<span class="form-label-desc">8+ characters, with min. one number, one uppercase letter and one special character</span>
 				</div>
-				<p class="adding-text">8+ characters, with min. one number, one uppercase letter and one special character</p>
 				<div class="adding-inpt small">
 					<div class="form-label-row">
 						<label class="form-label">Repeat password</label>
@@ -1344,15 +1351,17 @@ export const view = {
 					<g-input 
 						type="password" 
 						name="cpass" 
+						match="assignNewParent"
 						value="${_.parentInfo.cpass ?? ''}" 
 						data-outfocus="${_.componentName}:validatePassword" 
 						data-callback="${_.componentName}:fillParentInfo"
 						class="g-form-item" 
 						classname="form-input"
 					></g-input>
+					<span class="form-label-desc" style="display:none;">Password does not match</span>
 				</div>
+				<button class="adding-generate" data-click="${_.componentName}:generatePassword">Generate Password</button>
 			</div>
-			<button class="adding-generate" data-click="${_.componentName}:generatePassword">Generate Password</button>
 		`;
 	},
 	
@@ -1456,25 +1465,42 @@ export const view = {
 		`;
 	},
 	
-	notifications(notifications){
+	notifications(notifications,title,types,subtitle){
 		const _ = this;
 		let tpl = `
-			<h1 class="title">Notifications</h1>
-			<ul class="student-notifications-list">`;
+			<h1 class="title">${title}</h1>
+			${subtitle ? '<h3 class="notifications-list-subtitle">' + subtitle + '</h3>' : ''}
+			<ul class="notifications-list">`;
 			for(let notification of notifications){
 				let id = Math.random().toString(36).substr(2, 9);
-				tpl+=`<li class="student-notifications-list-item">
-					<label for="${id}" class="student-notifications-list-item-label">
-						<div class="student-notifications-list-item-content">
-							<h5 class="student-notifications-list-item-title">${notification['title']}</h5>
-							<h6 class="student-notifications-list-item-subtitle">${notification['subtitle']}</h6>
-						</div>
-						<div class="student-notifications-list-item-action">
-							<input id="${id}" type="checkbox">
-							<span class="student-notifications-list-item-action-btn"></span>
-						</div>
-					</label>
-				</li>`
+				tpl+=`<li class="notifications-list-item">
+					<div class="notifications-list-item-content">
+						<h5 class="notifications-list-item-title">${notification['title']}</h5>
+						<h6 class="notifications-list-item-subtitle">${notification['subtitle']}</h6>
+					</div>`;
+				if (Array.isArray(types) && types.length) {
+					for (let type of types) {
+						tpl += `
+						<label for="${type + id}" class="notifications-list-item-label">
+							<h6 class="notifications-list-item-label-title">${type}</h6>
+							<div class="notifications-list-item-action">
+								<input id="${type + id}" type="checkbox">
+								<span class="notifications-list-item-action-btn"></span>
+							</div>
+						</label>
+					`;
+					}
+				} else {
+					tpl += `
+						<label for="${id}" class="notifications-list-item-label">
+							<div class="notifications-list-item-action">
+								<input id="${id}" type="checkbox">
+								<span class="notifications-list-item-action-btn"></span>
+							</div>
+						</label>
+					`;
+				}
+				tpl += `</li>`
 			}
 			`</ul>
 		`;

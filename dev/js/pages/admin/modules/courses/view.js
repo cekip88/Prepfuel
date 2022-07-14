@@ -128,7 +128,7 @@ export const view = {
 				</td>
 				<td>
 					<div class="tbl-item courses-table-date">
-						${_.createdAtFormat(rowData.modified)}
+						${_.createdAtFormat(rowData.updatedAt)}
 				</div>
 			</td>
 			<td>
@@ -183,7 +183,7 @@ export const view = {
 				<div class="courses-table-icon">
 					<svg><use xlink:href="#uploadedFile"></use></svg>
 				</div>
-				<span class="courses-table-name">${rowData.title}</span>
+				<span class="courses-table-name">${rowData.sections[0].sectionName}</span>
 			</div>
 		`
 	},

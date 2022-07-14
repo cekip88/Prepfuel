@@ -355,8 +355,134 @@ class _Model {
 		},{
 			title: 'Promotional discounts',
 			subtitle: 'Promotional discounts & new courses oferings'
-		}
+		}]
+	}
+	getParentNotificationsSections(){
+		return [
+			{title:'General',value:'general',types: ['System','Email','SMS']},
+			{title:'Student General',value:'student_general',types: ['System','Email','SMS']},
+			{title:'Student Practice',value:'student_practice',types: ['System','Email','SMS']},
+			{title:'Billing & Membership',value:'billing_and_membership',types: ['System','Email','SMS']},
 		]
+	}
+	getParentNotifications(subsection){
+		let notifications = {
+			general: [
+				{
+					title: 'Registered on a platform',
+					subtitle: 'User registered on the platform'
+				},{
+					title: 'Added on a platform',
+					subtitle: 'User added on the platform by admin'
+				},{
+					title: 'Password Changed',
+					subtitle: 'User added on the platform by admin'
+				},{
+					title: 'Password Changed',
+					subtitle: 'User changed the password'
+				},{
+					title: 'Personal Info Edited',
+					subtitle: 'User or Admin edited personal info'
+				},{
+					title: 'Promotional discounts',
+					subtitle: 'Promotional discounts & new courses oferings'
+				},
+			],
+			student_general: [
+				{
+					title: 'Student Added',
+					subtitle: 'User or admin added a student'
+				},{
+					title: 'Student Removed',
+					subtitle: 'User or admin removed a student'
+				},{
+					title: 'Student Forget Password',
+					subtitle: 'Student forget password and asking to reset'
+				},{
+					title: 'Student Password Changed',
+					subtitle: 'User or admin changed student password'
+				},{
+					title: 'Student Personal Info Edited',
+					subtitle: 'User or admin edited student personal info'
+				},
+			],
+			student_practice: [
+				{
+					title: 'Student Created Practice Schedule',
+					subtitle: 'User changed the password'
+				},{
+					title: 'Student Completed Diagnostic Quiz',
+					subtitle: 'User changed the password'
+				},{
+					title: 'Student Completed Skill Practice',
+					subtitle: 'User changed the password'
+				},{
+					title: 'Student Completed Practice Test',
+					subtitle: 'User changed the password'
+				},{
+					title: 'Student Gets Badge',
+					subtitle: 'User changed the password'
+				},{
+					title: 'Student Submitted Essay',
+					subtitle: 'User changed the password'
+				},{
+					title: 'Practice test reminder ',
+					subtitle: 'User changed the password'
+				},{
+					title: 'Daily study reminders',
+					subtitle: "Remind about students' scheduled skill practice"
+				},{
+					title: 'Weekly study reminders',
+					subtitle: "Remind about students' scheduled skill practice"
+				},{
+					title: 'Monthly study reminders',
+					subtitle: "Remind about students' scheduled skill practice"
+				},{
+					title: 'Session activity emails',
+					subtitle: "Activity summary each time student logs in and completes work"
+				},{
+					title: 'Weekly progress emails',
+					subtitle: "Weekly updates to gauge perfomance and progress"
+				}
+			],
+			billing_and_membership: [
+				{
+					title: 'Membership Payed',
+					subtitle: "User gets invoice"
+				},{
+					title: 'Membership Plan Edited',
+					subtitle: "Membership plan edited by user or admin"
+				},{
+					title: 'Membership Canceled',
+					subtitle: "Membership plan canceled by user or admin"
+				},{
+					title: 'Membership Stopped',
+					subtitle: "Due to non-payment"
+				},{
+					title: 'New card added',
+					subtitle: "User or admin added new card for payment"
+				},{
+					title: 'card Info Edited',
+					subtitle: "User or admin edited card info"
+				},{
+					title: 'card Deleted',
+					subtitle: "User or admin deleted a card"
+				},{
+					title: 'card Expired',
+					subtitle: "The expiration date determined by the credit card provider passed"
+				},{
+					title: 'New Billing address added',
+					subtitle: "User or admin added new billing address"
+				},{
+					title: 'Billing address edited',
+					subtitle: "User or admin edited billing address"
+				},{
+					title: 'Billing address deleted',
+					subtitle: "User or admin deleted billing address"
+				},
+			]
+		}
+		return notifications[subsection];
 	}
 
 	updateAdmin(adminData) {

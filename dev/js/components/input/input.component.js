@@ -16,7 +16,7 @@ export default class GInput extends GComponent {
 			'required': 'This field is required',
 			'email': 'Wrong email address',
 			'phone': 'Wrong phone format need: '+_.attr('pattern'),
-			'match': 'Password not matched',
+			'match': 'Password does not match',
 		};
 		_
 		//	.on('appended',_.doInput.bind(_))
@@ -96,7 +96,7 @@ export default class GInput extends GComponent {
 		let isValidate = true;
 		if(!_.checkMatch()){
 			_.setError('match',true);
-			_.matchedElement.setError('match',true);
+			_.matchedElements.setError('match',true);
 		}else	if(_.hasAttribute('required') && (!_.value)){
 			_.setError('required',true);
 			isValidate = false;
@@ -111,7 +111,14 @@ export default class GInput extends GComponent {
 			}
 			isValidate = _.checkPhone();
 		}
+		console.log(isValidate)
 		return isValidate;
+	}
+	setMarker(color = null){
+		const _ = this;
+		let label = _.shadow.querySelector('.form-input');
+		if (!color) label.removeAttribute('style');
+		else label.style = `border: 1px solid ${color}`
 	}
 	
 	/* Outside methods*/
@@ -119,107 +126,110 @@ export default class GInput extends GComponent {
 	inputRange({item}){
 		const _ = this;
 		_.datePickerClose();
+
 		let curDate = new Date();
-		let curDateData = _.fillDate(curDate,'date');
-
-		let currentDate = curDate.getDate();
-		if (currentDate < 10) currentDate = '0' + currentDate;
-
 		let timeSkip = item.getAttribute('data-range');
 
-		let curDateDateSplitted = curDateData.outDate.split('-');
-		_.datePick({value:curDateDateSplitted[0] + '-' + curDateDateSplitted[1]})
 
-		let btn,ext = ['yesterday','last_year','all_time','this_month','last_month'];
-		if (ext.indexOf(timeSkip) < 0) {
-			btn = _.shadow.querySelector(`.date-picker-body button[data-day="${currentDate}"]`);
-			_.changeDate({item:btn});
-		}
-		if (timeSkip == 'today') {
-			_.datePickerClose();
-			return;
-		}
-		if (timeSkip == 'last_month') {
-			let targetDate = _.getTargetDate(curDateData.outDate,timeSkip);
-			let targetDateSplitted = targetDate.split('-');
-			_.anotherMonth(targetDateSplitted[0] + '-' + targetDateSplitted[1]);
-			let targetBtn = _.shadow.querySelector(`.date-picker-body button[data-day="1"]`);
-			_.changeDate({item:targetBtn})
-			_.anotherMonth(targetDateSplitted[0] + '-' + targetDateSplitted[1]);
-			targetBtn = _.shadow.querySelector(`.date-picker-body button[data-day="${parseInt(targetDateSplitted[2])}"]`);
-			_.changeDate({item:targetBtn})
-			return
-		}
-		if (timeSkip == 'this_month') {
-			btn = _.shadow.querySelector(`.date-picker-body button[data-day="1"]`);
+		let startEndInfo = _.getTargetDate(curDate,timeSkip);
+		let start = startEndInfo.start;
+		let end = startEndInfo.end;
+
+		_.datePick({value:start['year'] + '-' + start['month']})
+		let btn = _.shadow.querySelector(`.date-picker-body button[data-day="${start['day']}"]`);
+		_.changeDate({item:btn});
+
+		if (end) {
+			_.anotherMonth(end['year'] + '-' + end['month']);
+			btn = _.shadow.querySelector(`.date-picker-body button[data-day="${parseInt(end['day'])}"]`);
 			_.changeDate({item:btn})
 		}
-		if (timeSkip == 'all_time') {
-			_.shadow.querySelector('.inpt-value').value = 'All Time';
-			_.shadow.querySelector('.inpt-date[data-type="from"]').value = '2000-01-01';
-			_.shadow.querySelector('.inpt-date[data-type="to"]').value = '2999-01-01';
-			_.datePickerClose();
-			return;
+
+		if (timeSkip === 'all_time') {
+			_.shadow.querySelector('.inpt-value').value = 'All Time'
 		}
-		if (timeSkip == 'last_year') {
-			let targetDate = curDateData.outDate.substr(0,4) + '-01-01';
-			_.anotherMonth(targetDate.substr(0,7));
-			_.changeDate({item:_.shadow.querySelector(`.date-picker-body button[data-day="1"]`)})
-		}
-
-		let targetDate = _.getTargetDate(curDateData.outDate,timeSkip);
-		let targetDateSplitted = targetDate.split('-');
-		_.anotherMonth(targetDateSplitted[0] + '-' + targetDateSplitted[1]);
-		let targetBtn = _.shadow.querySelector(`.date-picker-body button[data-day="${parseInt(targetDateSplitted[2])}"]`);
-		_.changeDate({item:targetBtn})
-
-
-
 		if (_.shadow.querySelector('.date-picker-body')) _.datePickerClose()
 	}
-	getTargetDate(currentDate,timeSkip){
+	
+	getTargetDate(curDate,timeSkip){
 		const _ = this;
 
 		let
-			curDateInfo = currentDate.split('-'),
-			year = parseInt(curDateInfo[0]),
-			month = parseInt(curDateInfo[1]),
-			day = parseInt(curDateInfo[2]);
+			year = curDate.getFullYear(),
+			month = curDate.getMonth() + 1,
+			day = curDate.getDate();
 
+		let startDate,endDate;
+
+		if (timeSkip == 'today') return {start:{year,month,day}};
+		else if (timeSkip == 'yesterday') {
+			day--;
+			startDate = _.dateCorrect({day,month,year})
+		}
+		else if (timeSkip == 'this_week') {
+			startDate = _.dateCorrect({day: day - curDate.getDay(),month,year});
+			endDate = _.dateCorrect({day: day + (6 - curDate.getDay()),month,year})
+		}
+		else if (timeSkip == 'last_week') {
+			startDate = _.dateCorrect({day: day - curDate.getDay() - 7,month,year});
+			endDate = _.dateCorrect({day: day + (6 - curDate.getDay()) - 7,month,year})
+		}
+		else if (timeSkip == 'past_two_weeks') {
+			startDate = _.dateCorrect({day: day - curDate.getDay() - 14,month,year});
+			endDate = _.dateCorrect({day: day + (6 - curDate.getDay()) - 7,month,year})
+		}
+		else if (timeSkip == 'this_month') {
+			startDate = {day:1,month,year};
+			endDate = {day:_.getMonthLenth(month,year),month,year};
+		}
+		else if (timeSkip == 'last_month') {
+			startDate = _.dateCorrect({day:1,month: month - 1, year});
+			endDate = _.dateCorrect({day: 999,month: month - 1, year})
+		}
+		else if (timeSkip == 'this_year') {
+			startDate = {day:1,month:1,year};
+			endDate = {day:31,month:12,year}
+		}
+		else if (timeSkip == 'last_year') {
+			startDate = {day:1,month:1,year: year - 1};
+			endDate = {day:31,month:12,year: year - 1}
+		}
+		else if (timeSkip == 'all_time') {
+			startDate = {day:1,month:1,year: 2000};
+			endDate = {day:31,month:12,year: 2999}
+		}
+
+		return {start:startDate,end:endDate}
+	}
+	dateCorrect({day,month,year}){
+		const _ = this;
 		let lens = _.getMonthLenth(month,year);
-
-		if (timeSkip == 'yesterday') day -= 1;
-		if (timeSkip == 'this_week') day += 7;
-		if (timeSkip == 'last_week') day -= 7;
-		if (timeSkip == 'past_two_weeks') day -= 14;
-		if (timeSkip == 'this_month') day = lens;
-		if (timeSkip == 'last_month')month--;
-		if (timeSkip == 'this_year') {
-			return year + '-01-01';
-		}
-		if (timeSkip == 'last_year') {
-			return (year - 1) + '-01-01';
-		}
-
-		if (day > lens) {
-			day = day - lens;
-			month++;
-		} else if (day < 0) {
-			month--;
-			if (month == 0) {
-				month = 12;
-				year--;
+		let lastDay = day === 999 ? true : false;
+		if (!lastDay) {
+			if (day > lens) {
+				day = day - lens;
+				month++;
+			} else if (day < 0) {
+				month--;
+				if (month == 0) {
+					month = 12;
+					year--;
+				}
+				lens = _.getMonthLenth(month,year);
+				day = lens + day;
 			}
-			lens = _.getMonthLenth(month,year);
-			day = lens + day;
 		}
 		if (month > 12) {
 			month = month - 12;
 			year++;
 		}
-		if (timeSkip == 'last_month') day = _.getMonthLenth(month,year)
-
-		return year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
+		if (month == 0) {
+			month = 12;
+			year--;
+		}
+		lens = _.getMonthLenth(month,year);
+		if (lastDay) day = lens;
+		return {day,month,year}
 	}
 	getMonthLenth (month,year){
 		let lens = 31;
@@ -579,9 +589,10 @@ export default class GInput extends GComponent {
 		let
 			match = _.attr('match');
 		if(!match) return true;
-		_.matchedElement = document.querySelector(match);
-		
-		return _.matchedElement.value == _.value;
+		_.matchedElements = document.querySelectorAll(match);
+		for (let input of _.matchedElements) {
+			if (input !== _) return input === _.value;
+		}
 	}
 	checkEmail(){
 		let pattern = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;

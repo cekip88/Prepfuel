@@ -614,7 +614,7 @@ export class UsersModule extends AdminPage {
 		if(pos == 3){
 			studentInner.classList.add('short');
 			let notifications = await Model.getAdminNotifications();
-			studentInner.innerHTML = _.notifications(notifications);
+			studentInner.innerHTML = _.notifications(notifications,'Notifications');
 		}
 		if(pos == 4){
 			adminInner.classList.remove('short')
@@ -630,7 +630,6 @@ export class UsersModule extends AdminPage {
 			parentInner.classList.remove('short')
 			_.fillParentProfile({_id:_.parentInfo['_id']});
 		}
-
 		if (pos == 9) {
 			parentInner.classList.remove('short')
 			parentInner.innerHTML = _.activityHistory();
@@ -639,8 +638,11 @@ export class UsersModule extends AdminPage {
 		}
 		if (pos == 10) {
 			parentInner.classList.add('short');
-			let notifications = await Model.getAdminNotifications();
-			parentInner.innerHTML = _.notifications(notifications);
+			let notifSubsections = await Model.getParentNotificationsSections();
+			let notifications = await Model.getParentNotifications(notifSubsections[0].value);
+			//let layout = _.notificationsNavigation(notifSubsections);
+			let layout = _.notifications(notifications,'General Notifications',notifSubsections[0].types,'User gets notification when');
+			parentInner.innerHTML = layout;
 		}
 	}
 	async changeParentPopupProfileTab({item}) {
@@ -804,7 +806,31 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		let
 			cont = item.closest('.passwords'),
-			inputs = cont.querySelectorAll('G-INPUT[type="password"]');
+			inputs = cont.querySelectorAll('G-INPUT[type="password"]'),
+			text = item.nextElementSibling;
+		if (item == inputs[0]) {
+			if (item.value.length < 8) {
+				item.setMarker('red');
+				text.style = 'color: red;'
+			} else {
+				item.setMarker();
+				text.removeAttribute('style')
+			}
+		} else {
+			if (item.value !== inputs[0].value) {
+				item.setMarker('red');
+				text.style = 'color: red;'
+			} else {
+				item.setMarker();
+				text.style = 'display:none;'
+			}
+		}
+
+		let callback = item.getAttribute('data-callback');
+		if (callback) {
+			let callBackDetails = callback.split(':');
+			G_Bus.trigger(callBackDetails[0],callBackDetails[1],{item});
+		}
 	}
 	// Validation methods end
 
