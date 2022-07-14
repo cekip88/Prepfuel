@@ -72,7 +72,8 @@ export class UsersModule extends AdminPage {
 				'generatePassword','validatePassword','showChangePassword','saveChangePassword',
 				'changeProfileTab','updateStudent','updateAdmin',
 				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab',
-				'showHistoryDetails','createNewParent','assignFirstParent'
+				'showHistoryDetails','createNewParent','assignFirstParent',
+				'notificationNavigate',
 			]);
 
 		_.initialState = {
@@ -613,8 +614,8 @@ export class UsersModule extends AdminPage {
 		}
 		if(pos == 3){
 			studentInner.classList.add('short');
-			let notifications = await Model.getAdminNotifications();
-			studentInner.innerHTML = _.notifications(notifications,'Notifications');
+			_.notificationsData = await Model.getAdminNotifications();
+			studentInner.innerHTML = _.notifications(_.notificationsData,{title:'Notifications'});
 		}
 		if(pos == 4){
 			adminInner.classList.remove('short')
@@ -637,11 +638,19 @@ export class UsersModule extends AdminPage {
 			_.connectTableHead('.activity-table')
 		}
 		if (pos == 10) {
-			parentInner.classList.add('short');
-			let notifSubsections = await Model.getParentNotificationsSections();
-			let notifications = await Model.getParentNotifications(notifSubsections[0].value);
-			//let layout = _.notificationsNavigation(notifSubsections);
-			let layout = _.notifications(notifications,'General Notifications',notifSubsections[0].types,'User gets notification when');
+			_.notifSubsections = await Model.getParentNotificationsSections();
+			_.notificationsData = await Model.getParentNotifications(_.notifSubsections[0].value);
+			let layout = `
+				<div class="notifications-cont">
+					${_.notificationsNavigation(_.notifSubsections)}
+					<div class="notifications-list-cont">
+						${_.notifications(_.notificationsData,{
+							title:'General Notifications',
+							subtitle:'User gets notification when',
+							types:_.notifSubsections[0].types})}
+					</div>
+				</div>
+			`;
 			parentInner.innerHTML = layout;
 		}
 	}
@@ -752,6 +761,20 @@ export class UsersModule extends AdminPage {
 	showChangePassword({item}){
 		const _ = this;
 		G_Bus.trigger('modaler','showModal',{target:'#changePassword'})
+	}
+	async notificationNavigate({item}){
+		const _ = this;
+		let cont = _.f('.notifications-list-cont'),
+			index = parseInt(item.getAttribute('data-pos'));
+		item.closest('.notifications-navigate-list').querySelector('.active').classList.remove('active');
+		item.classList.add('active');
+		_.notifSubsections = await Model.getParentNotificationsSections();
+		_.notificationsData = await Model.getParentNotifications(_.notifSubsections[index].value);
+		cont.innerHTML = _.notifications(_.notificationsData,{
+			title:'General Notifications',
+			subtitle:'User gets notification when',
+			types:_.notifSubsections[index].types
+		});
 	}
 	// Show methods end
 	

@@ -472,9 +472,15 @@ g-modaler
 				margin: auto
 
 
-
 .notifications
 	&-list
+		&-subtitle
+			margin-top: 32px
+			color: rgb($neutral-800)
+			letter-spacing: -.02em
+			font-size: $fz16
+		&-titles
+			display: none
 		&-item
 			@extend %dfi
 			flex-wrap: wrap
@@ -520,6 +526,28 @@ g-modaler
 					position: absolute
 					top: 3px
 					left: 17px
+	&-navigate
+		&-list
+			padding: 24px
+			margin-bottom: 24px
+			background: #FFF
+			box-shadow: 0 0 30px rgba(56, 71, 109, 0.09)
+			border-radius: 12px
+		&-item
+			margin-bottom: 16px
+			&:last-child
+				margin-bottom: 0
+		&-button
+			padding: 10px 16px
+			border-radius: 8px
+			text-align: left
+			font: 1em $p_semi
+			color: #80808F
+			&.active
+				background-color: #F5F8FA
+				color: #009EF6
+
+
 
 .subnavigate
 	padding: 18px 0

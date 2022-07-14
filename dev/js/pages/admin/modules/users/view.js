@@ -1465,11 +1465,22 @@ export const view = {
 		`;
 	},
 	
-	notifications(notifications,title,types,subtitle){
+	notifications(notifications,{title,types,subtitle}){
 		const _ = this;
 		let tpl = `
-			<h1 class="title">${title}</h1>
-			${subtitle ? '<h3 class="notifications-list-subtitle">' + subtitle + '</h3>' : ''}
+			<div class="notifications-list-title-row">
+				<div>
+					<h1 class="title">${title}</h1>
+					${subtitle ? '<h3 class="notifications-list-subtitle">' + subtitle + '</h3>' : ''}
+				</div>`
+		if (types && types.length) {
+			tpl += `<div class="notifications-list-titles">`;
+			for (let type of types) {
+				tpl += `<span class="notifications-list-titles-item">${type}</span>`
+			}
+			tpl += '</div>';
+		}
+		tpl += `</div>
 			<ul class="notifications-list">`;
 			for(let notification of notifications){
 				let id = Math.random().toString(36).substr(2, 9);
@@ -1505,6 +1516,27 @@ export const view = {
 			`</ul>
 		`;
 			return tpl;
+	},
+	notificationsNavigation(navData){
+		const _ = this;
+		console.log(navData)
+		let tpl = `<ul class="notifications-navigate-list">`;
+		let i = 0;
+		for (let type of navData) {
+			tpl += `
+				<li class="notifications-navigate-item">
+					<button 
+						class="notifications-navigate-button ${!i ? 'active' : ''}" 
+						data-pos="${i}"
+						data-click="${_.componentName}:notificationNavigate">
+						${type.title}
+					</button>
+				</li>
+			`;
+			i++;
+		}
+		tpl += `</ul>`;
+		return tpl;
 	},
 	activityHistory(){
 		const _ = this;

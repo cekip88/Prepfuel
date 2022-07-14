@@ -154,15 +154,41 @@
 
 .notifications
 	&-list
+		&-title
+			&-row
+				display: flex
+				align-items: flex-start
+				justify-content: space-between
+		&-titles
+			margin-top: 6px
+			display: flex
+			align-items: center
+			&-item
+				width: 106px
+				flex: 0 0 106px
+				text-align: center
+				font: 15px $f_medium
+				color: #7E8299
+				&:last-child
+					margin-right: -30px
 		&-item
 			flex-wrap: nowrap
 			&-label
 				width: 106px
 				flex: 0 0 106px
 				flex-direction: row
-				justify-content: flex-end
+				justify-content: center
+				&:last-child
+					margin-right: -30px
 				&-title
 					display: none
+	&-navigate
+		&-list
+			display: flex
+			align-items: center
+			justify-content: space-between
+		&-item
+			margin-bottom: 0
 
 
 .upcoming
