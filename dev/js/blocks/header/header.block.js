@@ -2,18 +2,17 @@ import { G_Bus } from "../../libs/G_Control.js";
 import { G } from "../../libs/G.js";
 
 class HeaderBlock extends G{
-		define(){
-			const _ = this;
-			_.componentName = 'header';
-			_.set({
-				firstName: localStorage.getItem('firstName'),
-				lastName: localStorage.getItem('lastName'),
-				role: localStorage.getItem('role'),
-			});
-			G_Bus
-				.on(_,['showUserList'])
+	define(){
+		const _ = this;
+		_.componentName = 'header';
+		_.set({
+			firstName: localStorage.getItem('firstName'),
+			lastName: localStorage.getItem('lastName'),
+			role: localStorage.getItem('role'),
+		});
+		G_Bus
+			.on(_,['showUserList'])
 	}
-	
 	showUserList({item}) {
 		const _ = this;
 		item.classList.toggle('show');
@@ -47,7 +46,6 @@ class HeaderBlock extends G{
 							<span class="head-name">${this._$.firstName}</span>
 							<span class="head-position">${this._$.role}</span>
 						</div>
-						
 						<button class="head-user" data-click="${_.componentName}:showUserList">
 							<span>${this._$.firstName[0].toUpperCase()}</span>
 							<span class="head-user-list">
@@ -62,14 +60,14 @@ class HeaderBlock extends G{
 	}
 	simpleHeader(){
 		return `<header class="head">
-				<div class="section">
-					<div class="head-row">
-						<a class="head-logo" href="/" style="margin: auto">
-							<img src="/img/logo.svg" alt="">
-						</a>
-					</div>
+			<div class="section">
+				<div class="head-row">
+					<a class="head-logo" href="/" style="margin: auto">
+						<img src="/img/logo.svg" alt="">
+					</a>
 				</div>
-			</header>`;
+			</div>
+		</header>`;
 	}
 	
 	render(type = 'full'){

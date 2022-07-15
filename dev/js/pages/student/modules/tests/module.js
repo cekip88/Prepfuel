@@ -24,9 +24,6 @@ export class TestsModule extends StudentPage{
 		});
 		*/
 	}
-	
-	
-	
 	async define(){
 		const _ = this;
 		_.componentName = 'TestPage';
@@ -58,7 +55,6 @@ export class TestsModule extends StudentPage{
 			currentSection: 'welcome'
 		});
 	}
-	
 	async domReady(){
 		const _ = this;
 		await Model.getTests(); // requests all user tests
@@ -370,9 +366,6 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		_.innerQuestionId = item.getAttribute('data-question-id');
 	}
-	
-
-	
 
 	async saveAnswerToDB(){
 		const _ = this;

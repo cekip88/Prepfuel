@@ -43,7 +43,6 @@ class _Model{
 		const _ = this;
 		// get all tests from Database
 		return new Promise(async resolve =>{
-			//?testStandart=SHSAT&testType=test
 			let rawResponse = await fetch(`${_.endpoints['tests']}/`,{
 				method: 'GET',
 				headers:_.baseHeaders,
@@ -52,7 +51,8 @@ class _Model{
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					_.tests = response['response'];
-					await Model.getTest();
+					console.log(_.tests);
+					//await Model.getTest();
 					resolve(_.tests);
 				}
 			}else{

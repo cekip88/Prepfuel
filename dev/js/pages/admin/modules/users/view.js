@@ -148,7 +148,7 @@ export const view = {
 						<h2 class="block-title">Students (<span class="users-count gusers-count"><img src='/img/loader.gif' class='loader'></span>)</h2>
 						<div class="block-header-item block-header-search">
 							<svg><use xlink:href="#search"></use></svg>
-							<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input>
+							<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search" data-input="${_.componentName}:searchStudent" ></g-input>
 						</div>
 						<div class="block-header-item block-header-date">
 							<svg><use xlink:href="#calendar"></use></svg>

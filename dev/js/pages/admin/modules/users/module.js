@@ -73,7 +73,7 @@ export class UsersModule extends AdminPage {
 				'changeProfileTab','updateStudent','updateAdmin',
 				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab',
 				'showHistoryDetails','createNewParent','assignFirstParent',
-				'notificationNavigate',
+				'notificationNavigate','searchStudent'
 			]);
 
 		_.initialState = {
@@ -468,6 +468,13 @@ export class UsersModule extends AdminPage {
 		_.metaInfo = {};
 		_.parentSkipped = false;
 		_.coursePos = 0;
+	}
+	async searchStudent({item}){
+		const _ = this;
+		let tableData = await Model.getUsers({role:'student',update: true,search: item.value});
+		_.fillUserTable(tableData);
+		
+		_.studentInfo = {};
 	}
 	// Fill methods end
 
