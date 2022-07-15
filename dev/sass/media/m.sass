@@ -3907,6 +3907,7 @@ div.tbl-head
 				fill: rgb($white)
 	&,&-blue,&-lightblue,&-transparent,&-icon,&-red,&-white-blue
 		@extend %transition
+		white-space: nowrap
 	&,&-blue,&-lightblue,&-transparent,&-red
 		@extend %dfc
 		font-family: $f_semi
@@ -4032,11 +4033,14 @@ div.tbl-head
 			margin-right: 12.5px
 			fill: rgb($blue-text)
 	&-white-blue
+		@extend %dfc
 		padding: 11px 12px
 		color: rgb($blue)
 		font: $fz16 $f_semi
 		.button-icon
 			fill: rgb($blue)
+		&.wide
+			width: 100%
 #parent-profile-popup .section-header
 	padding: 0 32px
 #parent-profile-popup .adding-list
@@ -4073,7 +4077,7 @@ div.tbl-head
 		font: 20px $f_bold
 
 .addCard
-	width: 90vh!important
+	width: 90vw!important
 	max-width: 792px
 	.test-header
 		border-bottom: none
@@ -4084,6 +4088,7 @@ div.tbl-head
 		width: 100%
 		flex: 0 0 100%
 		justify-content: flex-start
+		flex-direction: row
 	&-inner
 		width: 100%
 		padding-top: 40px
@@ -4105,9 +4110,67 @@ div.tbl-head
 			color: rgb($neutral-700)
 	&-footer
 		margin-top: 32px
+		flex-wrap: wrap
+		button
+			width: 100%
 
 
 .billing
+	&-inner
+		max-width: 587px
+		margin: auto
+	&-block
+		padding: 32px 0
+		border-top: 1px solid #EBEDF3
+		&:first-child
+			border-top: none
+		&-inner
+			margin-bottom: 24px
 	&-title
+		margin-bottom: 24px
 		font: 1em $p_semi
 		color: rgb($neutral-400)
+	&-item
+		margin-bottom: 24px
+		padding: 26px 32px
+		border-radius: 6px
+		border: 1px dashed rgb($neutral-400)
+		&-row
+			@extend %df
+			&.alc
+				align-items: center
+		&-title
+			font: $fz18 $f_semi
+			color: #3F4254
+		&-name
+			text-transform: uppercase
+		&-primary
+			margin-left: 12px
+			padding: 6px 11px
+			font: $fz12 $f_semi
+			color: rgb($green)
+			background-color: rgb($green-light)
+		&-body
+			padding-top: 14px
+			flex-wrap: wrap
+		&-info
+			@extend %df
+			margin-bottom: 10px
+			flex-direction: column
+			align-items: flex-start
+			text-align: left
+			font: $fz16 $f_medium
+			color: rgb($neutral-600)
+			line-height: 22px
+		&-actions
+			width: 100%
+			flex-wrap: wrap
+			button
+				width: 100%
+		&-card
+			&-img
+				@extend %dfc
+				+wh(80px,48px)
+				padding: 9px 16px
+				background-color: #F6F8FA
+				border-radius: 6px

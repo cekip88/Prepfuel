@@ -67,6 +67,12 @@
 	&-icon
 		&.large
 			+wh(15px)
+	&-white-blue
+		.button-icon
+			transition: .35s ease
+		&:hover
+			.button-icon
+				transform: rotate(180deg)
 
 
 .block
@@ -673,3 +679,10 @@ thead.tbl-head
 	width: 486px
 	&-title
 		font-size: 26px
+
+
+.parent
+	&-profile
+		&-inner
+			max-height: calc(100vh - 430px)
+			overflow-y: scroll

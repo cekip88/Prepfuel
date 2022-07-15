@@ -2550,17 +2550,76 @@ export const view = {
 			<div class="billing-inner">
 				<div class="billing-block">
 					<h3 class="billing-title">Payment Methods</h3>
-					<div class="billing-block-inner">
+					<div class="billing-block-inner loader-parent" id="cards">
 						<img src='/img/loader.gif' class='loader'>
 					</div>
-					<button class="button-white-blue wide">
+					<button class="button-white-blue wide" data-click="${_.componentName}:showAddCard">
 						<svg class="button-icon big"><use xlink:href="#plus2"></use></svg>
 						<span>Add New Card</span>
 					</button>
 				</div>
+				<div class="billing-block">
+					<h3 class="billing-title">Billing Addresses</h3>
+					<div class="billing-block-inner loader-parent" id="billing-addresses">
+						<img src='/img/loader.gif' class='loader'>
+					</div>
+					<button class="button-white-blue wide" data-click="${_.componentName}:showAddBillingAddress">
+						<svg class="button-icon big"><use xlink:href="#plus2"></use></svg>
+						<span>Add New Address</span>
+					</button>
+				</div>
 			</div>
-			
 		`;
+		return tpl;
+	},
+	fillParentCardsTpl(cardsInfo){
+		const _ = this;
+		let tpl = '';
+		for (let item of cardsInfo) {
+			tpl += `
+			<div class="billing-item">
+				<div class="billing-item-row alc">
+					<h6 class="billing-item-title billing-item-name">${item.name}</h6>
+					${item.primary ? '<div class="billing-item-primary">Primary</div>' : ''}
+				</div>
+				<div class="billing-item-row billing-item-body">
+					<div class="billing-item-card">
+						<div class="billing-item-card-img"><img src="/img/${item.type}.png"></div>
+					</div>
+					<div class="billing-item-row billing-item-actions">
+						<button class="test-footer-back">Delete</button>
+						<button class="button">Edit</button>
+					</div>
+				</div>
+			</div>
+		`;
+		}
+		return tpl;
+	},
+	fillParentAddressTpl(addressesInfo){
+		const _ = this;
+		let tpl = '';
+		for (let item of addressesInfo) {
+			tpl += `
+			<div class="billing-item">
+				<div class="billing-item-row alc">
+					<h6 class="billing-item-title">${item.title}</h6>
+					${item.primary ? '<div class="billing-item-primary">Primary</div>' : ''}
+				</div>
+				<div class="billing-item-row billing-item-body">
+					<div class="billing-item-info">
+						<span>${item.line1} ${item.line2}</span>
+						<span>${item.state} ${item.postcode}</span>
+						<span>${item.country}</span>
+					</div>
+					<div class="billing-item-row billing-item-actions">
+						<button class="test-footer-back">Delete</button>
+						<button class="button">Edit</button>
+					</div>
+				</div>
+			</div>
+		`;
+		}
 		return tpl;
 	},
 	addCardForm(){

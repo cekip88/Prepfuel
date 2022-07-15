@@ -39,6 +39,7 @@ export class CoursesModule extends AdminPage {
 	async getFolderData(){
 		const _ = this;
 		_.filesData = await Model.getTests();
+		console.log(_.filesData)
 		return _.filesData;
 	}
 	// end get data methods

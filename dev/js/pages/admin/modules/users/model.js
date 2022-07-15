@@ -487,8 +487,14 @@ class _Model {
 
 	getCardsInfo(){
 		return [
-			{name:'Marvin Simmons',type:'visa',number:'8888-8888-8888-1679',date:'09/24'},
-			{name:'Marvin Simmons',type:'mastercard',number:'8888-8888-8888-2704',date:'02/26'},
+			{name:'Marvin Simmons',type:'visa',number:'8888-8888-8888-1679',date:'09/24',primary: true},
+			{name:'Marvin Simmons',type:'mastercard',number:'8888-8888-8888-2704',date:'02/26',primary: false},
+		]
+	}
+	getBillingAddressInfo(){
+		return [
+			{title:'Address 1',line1:'Ap #285-7193',line2:'Ullamcorper Avenue',state:'Amesbury HI',postcode:' 93373',country:'United States',primary: true},
+			{title:'Address 2',line1:'Ap #285-7193',line2:'Ullamcorper Avenue',state:'Amesbury HI',postcode:' 93373',country:'United States',primary: false},
 		]
 	}
 

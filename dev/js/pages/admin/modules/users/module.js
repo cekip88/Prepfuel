@@ -73,7 +73,8 @@ export class UsersModule extends AdminPage {
 				'changeProfileTab','updateStudent','updateAdmin',
 				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab',
 				'showHistoryDetails','createNewParent','assignFirstParent',
-				'notificationNavigate','searchStudent'
+				'notificationNavigate','searchStudent',
+				'showAddCard','showAddBillingAddress',
 			]);
 
 		_.initialState = {
@@ -666,15 +667,39 @@ export class UsersModule extends AdminPage {
 			parentInner.innerHTML = layout;
 		}
 		if (pos == 11) {
-			let cards = Model.getCardsInfo();
+			let
+				cards = await Model.getCardsInfo(),
+				addresses = await Model.getBillingAddressInfo();
 			let layout = _.billingsTpl();
-			_.fillParentCardsInfo(cards);
 			parentInner.innerHTML = layout;
-			//G_Bus.trigger('modaler','showModal',{type:'html',target:'#addBillingAddress'})
+			_.fillParentCardsInfo(cards);
+			_.fillParentAddressesInfo(addresses);
+			//
 		}
+	}
+	showAddCard({item}){
+		const _ = this;
+		G_Bus.trigger('modaler','showModal',{type:'html',target:'#addCard'})
+	}
+	showAddBillingAddress({item}){
+		const _ = this;
+		G_Bus.trigger('modaler','showModal',{type:'html',target:'#addBillingAddress'})
 	}
 	fillParentCardsInfo(cardsInfo){
 		const _ = this;
+		let cardsCont = _.f('#cards');
+		_.clear(cardsCont)
+		if (cardsInfo.length) {
+			cardsCont.append(_.markup(_.fillParentCardsTpl(cardsInfo)));
+		}
+	}
+	fillParentAddressesInfo(addressesInfo){
+		const _ = this;
+		let addressesCont = _.f('#billing-addresses');
+		_.clear(addressesCont)
+		if (addressesInfo.length) {
+			addressesCont.append(_.markup(_.fillParentAddressTpl(addressesInfo)));
+		}
 	}
 	async changeParentPopupProfileTab({item}) {
 		const _ = this;
