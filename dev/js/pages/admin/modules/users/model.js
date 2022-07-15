@@ -485,6 +485,13 @@ class _Model {
 		return notifications[subsection];
 	}
 
+	getCardsInfo(){
+		return [
+			{name:'Marvin Simmons',type:'visa',number:'8888-8888-8888-1679',date:'09/24'},
+			{name:'Marvin Simmons',type:'mastercard',number:'8888-8888-8888-2704',date:'02/26'},
+		]
+	}
+
 	updateAdmin(adminData) {
 		const _ = this;
 		return new Promise(async resolve => {

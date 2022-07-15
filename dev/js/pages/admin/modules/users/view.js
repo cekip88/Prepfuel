@@ -1468,7 +1468,7 @@ export const view = {
 	notifications(notifications,{title,types,subtitle}){
 		const _ = this;
 		let tpl = `
-			<div class="notifications-list-title-row">
+			<div class="parentsBodyRowsTplnotifications-list-title-row">
 				<div>
 					<h1 class="title">${title}</h1>
 					${subtitle ? '<h3 class="notifications-list-subtitle">' + subtitle + '</h3>' : ''}
@@ -2233,6 +2233,8 @@ export const view = {
 				${_.selectAvatarTpl()}
 				${_.addParentPopup()}
 				${_.parentProfileFromAddStudent()}
+				${_.addCardForm()}
+				${_.addBillingAddress()}
 			</div>
 		`
 	},
@@ -2457,7 +2459,7 @@ export const view = {
 							buttons:[
 								{title:'Personal Info',active:'active',pos:6},
 								{title:'Students'},
-								{title:'Billing'},
+								{title:'Billing',pos:11},
 								{title:'Billing History'},
 								{title:'Activity History',pos:9},
 								{title:'Notifications',pos:10},
@@ -2539,6 +2541,191 @@ export const view = {
 					</button>
 				</div>
 			</div>
+		`;
+		return tpl;
+	},
+	billingsTpl(){
+		const _ = this;
+		let tpl = `
+			<div class="billing-inner">
+				<div class="billing-block">
+					<h3 class="billing-title">Payment Methods</h3>
+					<div class="billing-block-inner">
+						<img src='/img/loader.gif' class='loader'>
+					</div>
+					<button class="button-white-blue wide">
+						<svg class="button-icon big"><use xlink:href="#plus2"></use></svg>
+						<span>Add New Card</span>
+					</button>
+				</div>
+			</div>
+			
+		`;
+		return tpl;
+	},
+	addCardForm(){
+		const _ = this;
+		let tpl = `
+		<div class="block addCard" id="addCard">
+			<div class="test-header"></div>
+			<div class="addCard-inner">
+				<h5 class="title">Add New Card</h5>
+				<div class="adding-inpt">
+					<div class="form-label-row">
+						<label class="addCard-label">Name on Card</label>
+					</div>
+					<g-input 
+						type="text" 
+						name="card-name" 
+						class="g-form-item" 
+						data-input="${_.componentName}:fillCardInfo"
+						className="form-input adding-inpt"
+					></g-input>
+				</div>
+				<div class="adding-inpt">
+					<div class="form-label-row">
+						<label class="addCard-label">Card Number</label>
+					</div>
+					<g-input 
+						type="text" 
+						name="card-number" 
+						class="g-form-item" 
+						data-input="${_.componentName}:fillCardInfo"
+						className="form-input adding-inpt"
+					></g-input>
+				</div>
+					<div class="addCard-row">
+						<div class="adding-inpt">
+						<div class="form-label-row">
+							<label class="addCard-label">Expiration Date</label>
+						</div>
+						<g-input 
+							type="text" 
+							name="card-date" 
+							class="g-form-item" 
+							data-input="${_.componentName}:fillCardInfo"
+							className="form-input adding-inpt"
+						></g-input>
+					</div>
+					<div class="adding-inpt">
+						<div class="form-label-row">
+							<label class="addCard-label">CVV Code</label>
+						</div>
+						<g-input 
+							type="text" 
+							name="card-cvv" 
+							class="g-form-item" 
+							data-input="${_.componentName}:fillCardInfo"
+							className="form-input adding-inpt"
+						></g-input>
+					</div>
+				</div>
+				<label for="card-primary" class="notifications-list-item-label addCard-row adding-inpt">
+					<div class="notifications-list-item-action">
+						<input id="card-primary" type="checkbox">
+						<span class="notifications-list-item-action-btn"></span>
+					</div>
+					<span class="addCard-checkbox-text">Make Card Primary</span>
+				</label>
+				<div class="addCard-row jcfe addCard-footer">
+					<button class="test-footer-back" data-click="modaler:closeModal">Cancel</button>
+					<button class="button-blue">Save Card</button>
+				</div>
+			</div>
+		</div>
+		`;
+		return tpl;
+	},
+	addBillingAddress(){
+		const _ = this;
+		let tpl = `
+		<div class="block addCard" id="addBillingAddress">
+			<div class="test-header"></div>
+			<div class="addCard-inner">
+				<h5 class="title">Add New Billing Address</h5>
+				<div class="adding-inpt">
+					<div class="form-label-row">
+						<label class="addCard-label">Address Line 1</label>
+					</div>
+					<g-input 
+						type="text" 
+						name="billing-address-line-1" 
+						class="g-form-item" 
+						data-input="${_.componentName}:fillBillingAddressInfo"
+						className="form-input adding-inpt"
+					></g-input>
+				</div>
+				<div class="adding-inpt">
+					<div class="form-label-row">
+						<label class="addCard-label">Address Line 2</label>
+					</div>
+					<g-input 
+						type="text" 
+						name="billing-address-line-2" 
+						class="g-form-item" 
+						data-input="${_.componentName}:fillBillingAddressInfo"
+						className="form-input adding-inpt"
+					></g-input>
+				</div>
+				<div class="adding-inpt">
+					<div class="form-label-row">
+						<label class="addCard-label">City</label>
+					</div>
+					<g-input 
+						type="text" 
+						name="billing-address-city" 
+						class="g-form-item" 
+						data-input="${_.componentName}:fillBillingAddressInfo"
+						className="form-input adding-inpt"
+					></g-input>
+				</div>
+					<div class="addCard-row">
+						<div class="adding-inpt">
+						<div class="form-label-row">
+							<label class="addCard-label">State</label>
+						</div>
+						<g-select 
+							type="text" 
+							name="billing-address-state" 
+							class="g-form-item" 
+							title
+							arrowsvg="/img/sprite.svg#select-arrow-bottom"
+							data-change="${_.componentName}:fillBillingAddressInfo"
+							className="adding-select"
+							items='[
+								{"value":"alabama","text":"Alabama"},
+								{"value":"alaska","text":"Alaska"},
+								{"value":"california","text":"California"},
+								{"value":"delaware","text":"Delaware"}
+							]'
+						></g-select>
+					</div>
+					<div class="adding-inpt">
+						<div class="form-label-row">
+							<label class="addCard-label">Postcode</label>
+						</div>
+						<g-input 
+							type="text" 
+							name="billing-address-postcode" 
+							class="g-form-item" 
+							data-input="${_.componentName}:fillBillingAddressInfo"
+							className="form-input adding-inpt"
+						></g-input>
+					</div>
+				</div>
+				<label for="billing-address-primary" class="notifications-list-item-label addCard-row adding-inpt">
+					<div class="notifications-list-item-action">
+						<input id="billing-address-primary" type="checkbox">
+						<span class="notifications-list-item-action-btn"></span>
+					</div>
+					<span class="addCard-checkbox-text">Make Address Primary</span>
+				</label>
+				<div class="addCard-row jcfe addCard-footer">
+					<button class="test-footer-back" data-click="modaler:closeModal">Cancel</button>
+					<button class="button-blue">Save Address</button>
+				</div>
+			</div>
+		</div>
 		`;
 		return tpl;
 	},

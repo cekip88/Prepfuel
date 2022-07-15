@@ -163,7 +163,6 @@ g-modaler
 	strong
 		font-family: $p_semi
 
-
 			
 .pagination
 	@extend %dfa
@@ -546,7 +545,6 @@ g-modaler
 			&.active
 				background-color: #F5F8FA
 				color: #009EF6
-
 
 
 .subnavigate
@@ -1051,6 +1049,7 @@ g-modaler
 			padding: 13px 12px
 			color: rgb($neutral-400)
 			font-family: $f_medium
+			border-radius: 6px
 		&-button
 			color: rgb($blue-text)
 			font-size: $fz15
@@ -3906,7 +3905,7 @@ div.tbl-head
 			background-color: rgb($neutral-800)
 			.button-icon
 				fill: rgb($white)
-	&,&-blue,&-lightblue,&-transparent,&-icon,&-red
+	&,&-blue,&-lightblue,&-transparent,&-icon,&-red,&-white-blue
 		@extend %transition
 	&,&-blue,&-lightblue,&-transparent,&-red
 		@extend %dfc
@@ -3926,11 +3925,13 @@ div.tbl-head
 	&-icon
 		+wh(10px)
 		margin-left: 11px
-		&:not(.hover)
-			&:not(.stroke)
-				fill: rgb($neutral-600)
-			&.stroke
-				stroke: rgb($neutral-600)
+		fill: rgb($neutral-600)
+		&.stroke
+			fill: none
+			stroke: rgb($neutral-600)
+		&.hover
+			fill: none
+			stroke: none
 		&.big
 			+wh(16px)
 		&:first-child
@@ -4030,6 +4031,12 @@ div.tbl-head
 			+wh(15px)
 			margin-right: 12.5px
 			fill: rgb($blue-text)
+	&-white-blue
+		padding: 11px 12px
+		color: rgb($blue)
+		font: $fz16 $f_semi
+		.button-icon
+			fill: rgb($blue)
 #parent-profile-popup .section-header
 	padding: 0 32px
 #parent-profile-popup .adding-list
@@ -4064,3 +4071,43 @@ div.tbl-head
 	max-width: 486px
 	&-title
 		font: 20px $f_bold
+
+.addCard
+	width: 90vh!important
+	max-width: 792px
+	.test-header
+		border-bottom: none
+	.adding-inpt
+		margin-bottom: 0
+		margin-top: 32px
+	.notifications-list-item-label
+		width: 100%
+		flex: 0 0 100%
+		justify-content: flex-start
+	&-inner
+		width: 100%
+		padding-top: 40px
+	&-label
+		font: $fz12 $p_medium
+		color: rgb($neutral-700)
+	&-row
+		@extend %dfa
+		.adding-inpt
+			margin-left: 20px
+			&:first-child
+				margin-left: 0
+		&.jcfe
+			justify-content: flex-end
+	&-checkbox
+		&-text
+			margin-left: 12px
+			font: 1em $f_medium
+			color: rgb($neutral-700)
+	&-footer
+		margin-top: 32px
+
+
+.billing
+	&-title
+		font: 1em $p_semi
+		color: rgb($neutral-400)

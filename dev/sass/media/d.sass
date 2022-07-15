@@ -242,8 +242,12 @@
 						width: 100%
 						left: 0
 		&-back
+			transition: .35s ease
 			span:after
 				background-color: rgb($neutral-400)
+			&:hover
+				background-color: rgb($neutral-400)
+				color: rgb($white)
 	&-pick
 		&-cont
 			min-height: calc(100vh - 190px)
@@ -458,7 +462,7 @@
 		
 .adding
 	&-body
-		max-height: calc(100vh - 250px)
+		max-height: calc(100vh - 350px)
 		overflow-y: scroll
 	&-inner
 		+w(1200px)

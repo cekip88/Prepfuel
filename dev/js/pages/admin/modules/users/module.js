@@ -151,6 +151,7 @@ export class UsersModule extends AdminPage {
 		G_Bus.trigger('modaler','closeModal');
 		G_Bus.trigger(_.componentName,'showSuccessPopup','Parent has been successfully added');
 		let users = await Model.getUsers({role:_.subSection,page: 1,update: true});
+		console.log(users)
 		_.fillParentsTable(users);
 	}
 	async createStudent(){
@@ -311,7 +312,7 @@ export class UsersModule extends AdminPage {
 		let
 			tableData = _.usersBodyRowsTpl(usersData);
 		tbody.append(...tableData);
-		_.connectTableHead(selector);
+		if (usersData.response.length)_.connectTableHead(selector);
 	}
 	async fillParentBlock(usersData){
 		const _ = this;
@@ -330,10 +331,14 @@ export class UsersModule extends AdminPage {
 	async fillParentsTable(parentsData){
 		const _ = this;
 		let tbody = _.f(`#assignParent .tbl-body`);
+		if (!tbody) {
+			_.fillBodyParentsTable(parentsData);
+			return;
+		}
 		let tableData = _.parentsBodyRowsTpl(parentsData);
 		_.clear(tbody)
 		tbody.append(...tableData);
-		_.connectTableHead('#assignParent');
+		if (parentsData.response.length) _.connectTableHead('#assignParent');
 	}
 	async fillBodyParentsTable(parentsData){
 		const _ = this;
@@ -347,7 +352,7 @@ export class UsersModule extends AdminPage {
 		_.fillDataByClass({className:`.gusers-limit`,data:`${parentsData ? (limit <= total ? limit : total) : 0}`});
 		_.clear(tbody)
 		tbody.append(...tableData);
-		_.connectTableHead('#bodyParents');
+		if (parentsData.response.length)_.connectTableHead('#bodyParents');
 	}
 	async fillProfile(profileData) {
 		const _ = this;
@@ -653,6 +658,16 @@ export class UsersModule extends AdminPage {
 			`;
 			parentInner.innerHTML = layout;
 		}
+		if (pos == 11) {
+			let cards = Model.getCardsInfo();
+			let layout = _.billingsTpl();
+			_.fillParentCardsInfo(cards);
+			parentInner.innerHTML = layout;
+			//G_Bus.trigger('modaler','showModal',{type:'html',target:'#addBillingAddress'})
+		}
+	}
+	fillParentCardsInfo(cardsInfo){
+		const _ = this;
 	}
 	async changeParentPopupProfileTab({item}) {
 		const _ = this;
@@ -764,7 +779,8 @@ export class UsersModule extends AdminPage {
 	}
 	async notificationNavigate({item}){
 		const _ = this;
-		let cont = _.f('.notifications-list-cont'),
+		let
+			cont = _.f('.notifications-list-cont'),
 			index = parseInt(item.getAttribute('data-pos'));
 		item.closest('.notifications-navigate-list').querySelector('.active').classList.remove('active');
 		item.classList.add('active');
