@@ -2585,6 +2585,10 @@ export const view = {
 				<div class="billing-item-row billing-item-body">
 					<div class="billing-item-card">
 						<div class="billing-item-card-img"><img src="/img/${item.type}.png"></div>
+						<div class="billing-item-info">
+							<strong>${item.type} **** ${item.number.substr(item.number.length - 4)}</strong>
+							<em>Card expires at ${item.date}</em>
+						</div>
 					</div>
 					<div class="billing-item-row billing-item-actions">
 						<button class="test-footer-back">Delete</button>

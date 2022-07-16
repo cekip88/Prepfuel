@@ -4162,6 +4162,14 @@ div.tbl-head
 			font: $fz16 $f_medium
 			color: rgb($neutral-600)
 			line-height: 22px
+			strong
+				font: $fz16 $f_bold
+				color: #3F4254
+				text-transform: capitalize
+			strong, em, span
+				line-height: calc(22em / 16)
+			strong, em
+				white-space: nowrap
 		&-actions
 			width: 100%
 			flex-wrap: wrap
@@ -4171,6 +4179,7 @@ div.tbl-head
 			&-img
 				@extend %dfc
 				+wh(80px,48px)
+				margin-bottom: 10px
 				padding: 9px 16px
 				background-color: #F6F8FA
 				border-radius: 6px
