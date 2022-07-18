@@ -71,7 +71,7 @@ export class UsersModule extends AdminPage {
 				'showSuccessPopup','showErrorPopup','closePopup',
 				'generatePassword','validatePassword','showChangePassword','saveChangePassword',
 				'changeProfileTab','updateStudent','updateAdmin',
-				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab',
+				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab','cancelParentProfile',
 				'showHistoryDetails','createNewParent','assignFirstParent',
 				'notificationNavigate','searchStudent',
 				'showAddCard','showAddBillingAddress',
@@ -280,7 +280,16 @@ export class UsersModule extends AdminPage {
 	}
 	skipTestDate({item}){
 		const _ = this;
-		_.studentInfo.testDatePicked = (item.id === 'have_registered');
+		let
+			cont = item.closest('.adding-section'),
+			inputDate = cont.querySelector('g-input');
+		if (item.id == "have_yet") {
+			_.studentInfo.testDate = null;
+			inputDate.setAttribute('disabled',true);
+			inputDate.value = '';
+		} else {
+			inputDate.removeAttribute('disabled')
+		}
 	}
 	fillDataByClass({className,data}){
 		const _ = this;
@@ -489,7 +498,7 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		
 		_._$.addingStep = _._$.addingStep;
-	
+
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#addingForm'});
 	
 	}
@@ -824,6 +833,13 @@ export class UsersModule extends AdminPage {
 			types:_.notifSubsections[index].types
 		});
 	}
+
+	cancelParentProfile({item}){
+		const _ = this;
+		G_Bus.trigger('modaler','closeModal');
+		G_Bus.trigger(_.componentName,'addStudent',{item});
+		G_Bus.trigger(_.componentName,'assignParent');
+	}
 	// Show methods end
 	
 	// Validation methods
@@ -1014,6 +1030,7 @@ export class UsersModule extends AdminPage {
 		_.currentParent = currentParent;
 		_.f('.parent-adding-table').innerHTML = _.assignedParent(currentParent);
 		_.parentInfo = currentParent['user'];
+		_.parentInfo.type = 'assigned';
 		_.metaInfo.parentAssigned = true;
 	}
 	async assignCourse({item}) {
@@ -1141,6 +1158,7 @@ export class UsersModule extends AdminPage {
 	changeNextStep({item}) {
 		const _ = this;
 		let type = item.getAttribute('type');
+		console.log(_.studentInfo)
 		if( type == 'adding' ) {
 			if(_.maxStep > _._$.addingStep) _._$.addingStep++;
 			_.nextStepBtnValidation();
@@ -1154,6 +1172,7 @@ export class UsersModule extends AdminPage {
 		if( type == 'adding' ) {
 			if(_._$.addingStep > _.minStep) _._$.addingStep--;
 			_.nextStepBtnValidation();
+			console.log('test')
 		}else{
 			if(_._$.assignStep > _.minStep) _._$.assignStep--;
 		}

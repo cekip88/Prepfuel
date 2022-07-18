@@ -62,6 +62,7 @@ export class AdminPage extends G {
 			btn = _.ascent(target,'.navigate-item','navigate-list');
 		_.showActiveNavItem(btn,list);
 		_.changeActiveNavItem(btn);
+		console.log(clickData.item)
 	}
 	changeSection({item,event}){
 		const _ = this;
