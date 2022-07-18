@@ -1074,6 +1074,7 @@ export class UsersModule extends AdminPage {
 		_.studentInfo.testDate = null;
 		_.studentInfo.testDatePicked = false;
 		_._$.assignStep = 1;
+		_.showSuccessPopup('Course has been successfully removed')
 	}
 	async removeUser({item}){
 		const _ = this;
@@ -1158,7 +1159,6 @@ export class UsersModule extends AdminPage {
 	changeNextStep({item}) {
 		const _ = this;
 		let type = item.getAttribute('type');
-		console.log(_.studentInfo)
 		if( type == 'adding' ) {
 			if(_.maxStep > _._$.addingStep) _._$.addingStep++;
 			_.nextStepBtnValidation();
