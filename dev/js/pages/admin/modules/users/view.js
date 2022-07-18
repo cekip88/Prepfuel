@@ -148,7 +148,7 @@ export const view = {
 						<h2 class="block-title">Students (<span class="users-count gusers-count"><img src='/img/loader.gif' class='loader'></span>)</h2>
 						<div class="block-header-item block-header-search">
 							<svg><use xlink:href="#search"></use></svg>
-							<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search" data-input="${_.componentName}:searchStudent" ></g-input>
+							<g-input class="block-header-input search-user" type="text" placeholder="Search" classname="form-input form-search" data-input="${_.componentName}:searchUsers" role="student"></g-input>
 						</div>
 						<div class="block-header-item block-header-date">
 							<svg><use xlink:href="#calendar"></use></svg>
@@ -1519,7 +1519,6 @@ export const view = {
 	},
 	notificationsNavigation(navData){
 		const _ = this;
-		console.log(navData)
 		let tpl = `<ul class="notifications-navigate-list">`;
 		let i = 0;
 		for (let type of navData) {
@@ -2364,7 +2363,7 @@ export const view = {
 						<h2 class="block-title">Parents (<span class="users-count gusers-count"><img src='/img/loader.gif' class='loader'></span>)</h2>
 						<div class="block-header-item block-header-search">
 							<svg><use xlink:href="#search"></use></svg>
-							<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input>
+							<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search" data-input="${_.componentName}:searchUsers"></g-input>
 						</div>
 						<div class="block-header-item block-header-date">
 							<svg><use xlink:href="#calendar"></use></svg>
@@ -2812,7 +2811,7 @@ export const view = {
 						<h2 class="block-title">Admins (<span class="users-count gusers-count"><img src='/img/loader.gif' class='loader'></span>)</h2>
 						<div class="block-header-item block-header-search">
 							<svg><use xlink:href="#search"></use></svg>
-							<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input>
+							<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search" data-input="${_.componentName}:searchUsers"></g-input>
 						</div>
 						<div class="block-header-item block-header-date">
 							<svg><use xlink:href="#calendar"></use></svg>

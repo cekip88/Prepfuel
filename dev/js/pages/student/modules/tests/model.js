@@ -8,6 +8,7 @@ class _Model{
 		}
 		_.endpoints = {
 			tests: `${env.backendUrl}/tests`,
+			studentTests: `${env.backendUrl}/student/current-course/tests`,
 			create: `${env.backendUrl}/tests-results/create`,
 			results: `${env.backendUrl}/tests-results`,
 			resultsBy: `${env.backendUrl}/tests/test-by-result`,
@@ -25,7 +26,7 @@ class _Model{
 		const _ = this;
 		let questions = [];
 		for(let subSection of _.currentSection['subSections']){
-			subSection['questionDatas'].forEach((page,i) => {
+			subSection['questionData'].forEach((page,i) => {
 				page['questions'].forEach(quest =>{
 					//questions[quest['_id']] = quest;
 					questions.push(quest);
@@ -36,7 +37,7 @@ class _Model{
 	}
 	get questionsDatas(){
 		const _ = this;
-		return _.currentSection['subSections']['questionsDatas'][_.currentSubSectionPos];
+		return _.currentSection['subSections']['questionsData'][_.currentSubSectionPos];
 	}
 	
 	async getTests(){
@@ -51,8 +52,28 @@ class _Model{
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					_.tests = response['response'];
+					await Model.getTest();
+					resolve(_.tests);
+				}
+			}else{
+				G_Bus.trigger('TestPage','showResults',rawResponse);
+			}
+		});
+	}
+	async getStudentTests(type='practice'){
+		const _ = this;
+		// get all tests from Database
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['studentTests']}/${type}`,{
+				method: 'GET',
+				headers:_.baseHeaders,
+			});
+			if(rawResponse.status < 210){
+				let response = await rawResponse.json();
+				if(response['status'] == 'success'){
+					_.tests = response['response']['tests'];
 					console.log(_.tests);
-					//await Model.getTest();
+					await Model.getTest();
 					resolve(_.tests);
 				}
 			}else{
@@ -245,7 +266,7 @@ class _Model{
 	}
 	currentQuestionData(pos){
 		const _ = this;
-		return _.currentSection['subSections'][_.currentSubSectionPos]['questionDatas'][pos];
+		return _.currentSection['subSections'][_.currentSubSectionPos]['questionData'][pos];
 	}
 	innerQuestion(pos){
 		const _ = this;

@@ -498,7 +498,6 @@ export const view = {
 			<div class="subnavigate">
 				<div class="section">
 					<button class="subnavigate-button active"><span>Overview</span></button>
-					<button class="subnavigate-button"><span>Tutoring Sessions</span></button>
 					<button class="subnavigate-button"><span>Recent Activity</span></button>
 					<button class="subnavigate-button"><span>Achievements</span></button>
 				</div>

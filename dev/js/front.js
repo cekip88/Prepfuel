@@ -115,6 +115,7 @@ new router().init({
 				'/student/dashboard': 'student',
 				'/student/tests': 'student',
 				'/student/practice': 'student',
+				'/student/schedule': 'student'
 			}
 		},
 		'student|admin':{

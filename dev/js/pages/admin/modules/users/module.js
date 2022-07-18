@@ -73,8 +73,7 @@ export class UsersModule extends AdminPage {
 				'changeProfileTab','updateStudent','updateAdmin',
 				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab',
 				'showHistoryDetails','createNewParent','assignFirstParent',
-				'notificationNavigate','searchStudent',
-				'showAddCard','showAddBillingAddress',
+				'notificationNavigate','showAddCard','showAddBillingAddress','searchUsers'
 			]);
 
 		_.initialState = {
@@ -97,7 +96,7 @@ export class UsersModule extends AdminPage {
 	async domReady(data){
 		const _ = this;
 		_.wizardData = await Model.wizardData;
-		if(_.subSection === 'student') {
+		if( _.subSection === 'student'){
 			let
 				item,update= true;
 			if(data){
@@ -109,18 +108,18 @@ export class UsersModule extends AdminPage {
 
 			_.studentInfo = {};
 		}
-		if(_.subSection == 'profile'){
+		if( _.subSection === 'profile'){
 			_.fillProfile(data);
 			_._$.assignStep = 1;
 		}
-		if(_.subSection == 'adminProfile'){
+		if( _.subSection === 'adminProfile'){
 			_.fillAdminProfile(data);
 			_._$.assignStep = 1;
 		}
-		if(_.subSection == 'parentProfile'){
+		if( _.subSection === 'parentProfile'){
 			_.fillParentProfile(data);
 		}
-		if(_.subSection == 'parent'){
+		if( _.subSection === 'parent'){
 			let
 				item,update= true;
 			if(data){
@@ -130,7 +129,7 @@ export class UsersModule extends AdminPage {
 			let tableData = await Model.getUsers({role:_.subSection,update: update});
 			_.fillBodyParentsTable(tableData);
 		}
-		if(_.subSection == 'admin'){
+		if( _.subSection === 'admin'){
 			let
 				item,update = true;
 			if(data){
@@ -214,7 +213,6 @@ export class UsersModule extends AdminPage {
 	}
 	async updateParent({item}){
 		const _ = this;
-		console.log(_.parentInfo)
 		let response = await Model.updateParent({
 			'_id': _.parentInfo['_id'],
 			'firstName': _.parentInfo['firstName'],
@@ -475,11 +473,19 @@ export class UsersModule extends AdminPage {
 		_.parentSkipped = false;
 		_.coursePos = 0;
 	}
-	async searchStudent({item}){
+	async searchUsers({item}){
 		const _ = this;
-		let tableData = await Model.getUsers({role:'student',update: true,search: item.value});
-		_.fillUserTable(tableData);
-		
+		let tableData = await Model.getUsers({role: _.subSection,update: true,search: item.value});
+
+		if(_.subSection == 'student') {
+			_.fillUserTable(tableData);
+		}
+		if(_.subSection == 'parent') {
+			_.fillBodyParentsTable(tableData);
+		}
+		if(_.subSection == 'admin') {
+			_.fillBodyAdminsTable(tableData)
+		}
 		_.studentInfo = {};
 	}
 	// Fill methods end

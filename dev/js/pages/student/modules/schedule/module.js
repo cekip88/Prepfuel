@@ -1,5 +1,4 @@
 import { G_Bus }    from "../../../../libs/G_Control.js";
-import { G }        from "../../../../libs/G.js";
 import { Model }    from "./model.js";
 import {StudentPage} from "../../student.page.js";
 
@@ -7,10 +6,10 @@ export class ScheduleModule extends StudentPage{
 	constructor() {
 		super();
 		this.moduleStructure = {
-			'header':'simple-header',
+			'header':'simpleHeader',
 			'header-tabs': null,
 			//'body-tabs':'dashboard-tabs',
-			'body':'schedule-body',
+			'body':'body',
 		};
 	}
 	define(){
@@ -43,9 +42,14 @@ export class ScheduleModule extends StudentPage{
 			'removePracticeRow',
 			'changeDay',
 			'changeNumberOfQuestions',
-			'finishSchedule'
+			'finishSchedule','domReady'
 		]);
 	}
+	
+	domReady(){
+		const _ = this;
+	}
+	
 	
 	finishSchedule({item}) {
 		const _ = this;
@@ -115,27 +119,27 @@ export class ScheduleModule extends StudentPage{
 	
 	init(){
 		const _ = this;
-		_._( ()=>{
+		_._( ({currentStep})=>{
 			if(!_.initedUpdate){
-				_.innerCont = _.f('.test-inner');
+			//	_.innerCont = _.f('.test-inner');
 				return void 0;
 			}
-			//
-			_.f('#step-item').textContent = _._$.currentStep;
-			if(_._$.currentStep  === 1 ){
+			_.innerCont = _.f('.test-inner');
+			_.f('#step-item').textContent = currentStep;
+			if(currentStep  === 1 ){
 				_.innerCont.innerHTML = _.stepOneTpl();
 			}
-			if(_._$.currentStep  === 2 ){
+			if(currentStep  === 2 ){
 				let
 					scheduleDate = _.f('#schedule-date');
 				if(!_.testDate){
 					scheduleDate.doValidate();
-					_._$.currentStep--;
+					currentStep--;
 				}else{
 					_.innerCont.innerHTML = _.stepTwoTpl();
 				}
 			}
-			if(_._$.currentStep  === 3 ){
+			if(currentStep  === 3 ){
 				let practiceRows = _.f('#shedule-rows .practice-schedule-row');
 				_.practiceRows = [];
 				_.practiceTests = [];
@@ -152,17 +156,17 @@ export class ScheduleModule extends StudentPage{
 			}
 			
 			_.f('.pagination-links .active').classList.remove('active');
-			_.f(`.pagination-links .pagination-link:nth-child(${_._$.currentStep-1})`).classList.add('done');
-			_.f(`.pagination-links .pagination-link:nth-child(${_._$.currentStep})`).classList.add('active');
+			_.f(`.pagination-links .pagination-link:nth-child(${currentStep-1})`).classList.add('done');
+			_.f(`.pagination-links .pagination-link:nth-child(${currentStep})`).classList.add('active');
 			
 			
 		},['currentStep']);
-		_._(() => {
+		_._(({daysPerWeek,numberOfQuestions}) => {
 			if(!_.initedUpdate) {
 				return void 0;
 			}
-			_.f('#daysPerWeek').textContent = _._$.daysPerWeek.length;
-			_.f('#totalQuestionsCnt').textContent = _._$.daysPerWeek.length * _._$.numberOfQuestions;
+			_.f('#daysPerWeek').textContent = daysPerWeek.length;
+			_.f('#totalQuestionsCnt').textContent = daysPerWeek.length * numberOfQuestions;
 		}, ["daysPerWeek",'numberOfQuestions']);
 	}
 }

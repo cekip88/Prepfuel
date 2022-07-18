@@ -699,38 +699,44 @@ export const view = {
 			</div>
 		`;
 	},
+	
+	
+	testPickTpl(test){
+		const _ = this;
+		return `
+			<li class="test-pick-item green">
+				<div class="test-pick-time"><span id="testTime">180</span><span>min</span></div>
+				<ul class="test-pick-desc">
+					<li class="test-pick-desc-item">
+						<h6 class="test-pick-title">${Model.test.sections[0]['sectionName']}</h6>
+						<p class="text">${Model.test.sections[0]['subSections'][0]['questionData'].length} questions</p>
+					</li>
+				</ul>
+				<button class="button" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="welcome"><span>Start this test</span></button>
+			</li>
+		`;
+	},
 	tempTestListTpl(){
 		const _ = this;
-		//console.log(Model.test);
 		return `
 			<div class="section">
 				<div class="block test-row">
 					${_.testListAsideTpl()}
 					<div class="test-tabs">
 						<div class="test-tabs-body">
-							<h5 class="block-title test-title"><span>Start ${Model.test['title']}</span></h5>
-							<p class="test-text"><span>After completing a section, you can stop or review</span></p>
-							<ul class="test-pick-list shsat">
-								<li class="test-pick-item green">
-									<div class="test-pick-time"><span>${Model.test['testTime']}</span><span>min</span></div>
-									<ul class="test-pick-desc">
-										<li class="test-pick-desc-item">
-											<h6 class="test-pick-title">${Model.test.sections[0]['sectionName']}</h6>
-											<p class="text">${Model.test.sections[0]['subSections'][0]['questionDatas'].length} questions</p>
-										</li>
-										<li class="test-pick-desc-item">
-											<h6 class="test-pick-title">${Model.test.sections[1]['sectionName']}</h6>
-											<p class="text">${Model.test.sections[1]['subSections'][0]['questionDatas'].length} questions</p>
-										</li>
-									</ul>
-							
-									<button class="button" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="welcome"><span>Start this test</span></button>
-								</li>
+							<h5 class="block-title test-title">
+								<span>Start Practice Test </span>
+							</h5>
+							<p class="test-text">
+								<span>After completing a section, you can stop or review</span>
+							</p>
+							<ul class="test-pick-list shsat loader-parent" id="testPickList">
+								<img src="/img/loader.gif" alt="">
 							</ul>
 							<div class="test-pick-result">
-								<h5 class="title"><span>Reset ${Model.test['title']}</span></h5>
+								<h5 class="title"><span>Reset Practice Test </span></h5>
 								<p class="text">You can discard your current progress and re-take this test from the beginning</p>
-								<button class="button" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:resetTest"><span>Reset this test</span></button>
+								<button class="button" id="testResetBtn"  data-click="${_.componentName}:resetTest"><span>Reset this test</span></button>
 							</div>
 						</div>
 					</div>
@@ -815,52 +821,31 @@ export const view = {
 			</div>
 		`;
 	},
+	
+	
+	testListAsideItemTpl(test,i){
+		const _ = this;
+		return `
+			<li class="test-aside-item">
+				<button class="test-aside-btn ${i == 1 ? 'active' : ''}" data-id="${test['_id']}">
+					<h6 class="test-aside-btn-title">Practice test ${i}</h6><span class="test-aside-btn-desc">0 of 4 sections complete</span>
+					<div class="test-aside-btn-date">
+						<svg>
+							<use xlink:href="#calendar"></use>
+						</svg><span>${_.createdAtFormat(test['createdAt'])}</span>
+					</div>
+				</button>
+			</li>
+		`;
+	},
+	
 	testListAsideTpl(){
 		const _ = this;
 		return `
 			<div class="test-aside">
 				<h5 class="test-aside-title">Tests</h5>
-				<ul class="test-aside-list">
-					<!--<li class="test-aside-item">
-						<button class="test-aside-btn active">
-							<h6 class="test-aside-btn-title">Practice test 1</h6><span class="test-aside-btn-desc">0 of 4 sections complete</span>
-							<div class="test-aside-btn-date">
-								<svg>
-									<use xlink:href="#calendar"></use>
-								</svg><span>Friday, March 18</span>
-							</div>
-						</button>
-					</li>
-					<li class="test-aside-item">
-						<button class="test-aside-btn">
-							<h6 class="test-aside-btn-title">Practice test 2</h6><span class="test-aside-btn-desc">0 of 4 sections complete</span>
-							<div class="test-aside-btn-date">
-								<svg>
-									<use xlink:href="#calendar"></use>
-								</svg><span>Monday, March 28</span>
-							</div>
-						</button>
-					</li>
-					<li class="test-aside-item">
-						<button class="test-aside-btn">
-							<h6 class="test-aside-btn-title">Practice test 3</h6><span class="test-aside-btn-desc">0 of 4 sections complete</span>
-							<div class="test-aside-btn-date">
-								<svg>
-									<use xlink:href="#calendar"></use>
-								</svg><span>Monday, March 28</span>
-							</div>
-						</button>
-					</li>
-					<li class="test-aside-item">
-						<button class="test-aside-btn">
-							<h6 class="test-aside-btn-title">Practice test 4</h6><span class="test-aside-btn-desc">0 of 4 sections complete</span>
-							<div class="test-aside-btn-date">
-								<svg>
-									<use xlink:href="#calendar"></use>
-								</svg><span>Monday, March 28</span>
-							</div>
-						</button>
-					</li>-->
+				<ul class="test-aside-list" id="testAsideList">
+					<img src="/img/loader.gif" alt="">
 				</ul>
 			</div>
 		`;
@@ -873,7 +858,7 @@ export const view = {
 		//${/*_.tempTestListTpl()*/}
 		return `
 			${_.testScoreHeaderTpl()}
-			
+			${_.tempTestListTpl()}
 		`;
 	}
 	

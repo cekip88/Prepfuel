@@ -11,6 +11,33 @@ export class G extends G_G{
 		super();
 		const _ = this;
 	}
+	el(tag,params = {}){
+		const _ = this;
+		if (!tag) return null;
+		let
+			childes =  params['childes'] ?  params['childes']: null;
+		delete params['childes'];
+		let temp = document.createElement(tag);
+		if (tag == 'temp'){
+			temp = document.createDocumentFragment();
+		}
+		if(params){
+			for(let key in params){
+				if(key === 'text') {
+					if( (tag === 'INPUT') || (tag === 'TEXTAREA') ) temp.value = params[key];
+					else temp.textContent = params[key];
+				} else if(key === 'prop')  _[params[key]] = temp;
+				else if(key === 'html') temp.innerHTML = params[key];
+				else temp.setAttribute(`${key}`,`${params[key]}`);
+			}
+		}
+		if(  (childes instanceof  Array) && (childes.length) ) {
+			childes.forEach(function (el) {
+				temp.append(el);
+			});
+		}
+		return temp;
+	}
 	createPageStructure(pageStructure){
 		const _ = this;
 		let struct = pageStructure;
@@ -70,7 +97,7 @@ export class G extends G_G{
 					rawParams = blockData.name.split('/'),
 					pageName = blockData.pageName,
 					moduleInc = 'Module',
-					fileType ='',
+					fileType = '',
 					name = rawParams[0] ?? rawParams[1],
 					params = blockData.params ?? {},
 					moduleStr = name.charAt(0).toUpperCase() + name.substr(1)+ moduleInc,

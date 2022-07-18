@@ -111,7 +111,6 @@ export default class GInput extends GComponent {
 			}
 			isValidate = _.checkPhone();
 		}
-		console.log(isValidate)
 		return isValidate;
 	}
 	setMarker(color = null){

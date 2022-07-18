@@ -37,17 +37,18 @@ export class TestsModule extends StudentPage{
 		_.isLastQuestion = false;
 		_.storageTest = Model.getTestFromStorage();
 		_.types = {
-			'text only':'standart',
+			'Multiple Choice':'standart',
 			'text and images':'graphic',
-			'passage':'passage',
+			'passage':' Full Passage and Questions (450 words)',
 			4:'compare',
-			'grid in':'grid'
+			'Grid-In':'grid'
 		};
 		
 		_.questionPos = 0;
 		_.currentPos = 0;
 		_.currentQuestionPos = 0;
 		_.innerQuestionId = 1;
+		_.subSection = 'tests-list';
 		
 		_.datasPos = 0;
 		
@@ -57,18 +58,40 @@ export class TestsModule extends StudentPage{
 	}
 	async domReady(){
 		const _ = this;
-		await Model.getTests(); // requests all user tests
-		/*_.currentQuestion = Model.firstQuestion;
+		await Model.getStudentTests(); // requests all user tests
+		_.currentQuestion = Model.firstQuestion;
 		console.log('Current Question: ',_.currentQuestion);
 		_.set({
 			currentQuestion: Model.firstQuestion,
-		});*/
+		});
+		if(_.subSection == 'tests-list'){
+			//_.f('#testBody').innerHTML = _.tempTestListTpl();
+			_.fillTestsList();
+		}
 	}
 	
-	get questionsPages(){return Model.currentSection['subSections'][0]['questionDatas']}
+	async fillTestsList(){
+		const _ = this;
+		let tests = await Model.getStudentTests();
+		console.log(tests);
+		if(!tests) return void 0;
+		let container = _.f('#testAsideList');
+		_.clear(container);
+		tests.forEach( (test,i)=>{
+			container.append(_.markup(_.testListAsideItemTpl(test,i+1)));
+		});
+		
+		let pickList = _.f('#testPickList');
+		_.clear(pickList);
+		pickList.append(_.markup(_.testPickTpl(tests[0])));
+	}
+	
+	
+	
+	get questionsPages(){return Model.currentSection['subSections'][0]['questionData']}
 	get questionsLength(){
 		const _ = this;
-		return Model.currentSection['subSections'][0]['questionDatas'].length;
+		return Model.currentSection['subSections'][0]['questionData'].length;
 		return Model.questions.length;
 	}
 	
@@ -577,7 +600,7 @@ export class TestsModule extends StudentPage{
 	
 	async getQuestionTpl(){
 		const _ = this;
-		return await _[`${_.types[_._$.currentQuestion['type']]}Question`]();
+		return await _[`${_.types[_._$.currentQuestion['questionType']]}Question`]();
 	}
 	flexible(section){
 		const _ = this;
@@ -591,6 +614,7 @@ export class TestsModule extends StudentPage{
 			if(!cont) return;
 			_.clear(cont);
 			//_.questionPos = Model.questionPos(_.currentPos);
+			
 			cont.append(
 				_.markup(await _.getQuestionTpl()),
 				_.markup(_.questionFooter())
@@ -660,5 +684,4 @@ export class TestsModule extends StudentPage{
 			
 		},['currentQuestion']);
 	}
-	
 }
