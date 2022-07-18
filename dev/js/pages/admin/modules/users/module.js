@@ -97,6 +97,8 @@ export class UsersModule extends AdminPage {
 	async domReady(data){
 		const _ = this;
 		_.wizardData = await Model.wizardData;
+		_.parentInfo = {};
+		_.studentInfo = {};
 		if(_.subSection === 'student') {
 			let
 				item,update= true;
@@ -109,18 +111,18 @@ export class UsersModule extends AdminPage {
 
 			_.studentInfo = {};
 		}
-		if(_.subSection == 'profile'){
+		if(_.subSection === 'profile'){
 			_.fillProfile(data);
 			_._$.assignStep = 1;
 		}
-		if(_.subSection == 'adminProfile'){
+		if(_.subSection === 'adminProfile'){
 			_.fillAdminProfile(data);
 			_._$.assignStep = 1;
 		}
-		if(_.subSection == 'parentProfile'){
+		if(_.subSection === 'parentProfile'){
 			_.fillParentProfile(data);
 		}
-		if(_.subSection == 'parent'){
+		if(_.subSection === 'parent'){
 			let
 				item,update= true;
 			if(data){
@@ -130,7 +132,7 @@ export class UsersModule extends AdminPage {
 			let tableData = await Model.getUsers({role:_.subSection,update: update});
 			_.fillBodyParentsTable(tableData);
 		}
-		if(_.subSection == 'admin'){
+		if(_.subSection === 'admin'){
 			let
 				item,update = true;
 			if(data){
@@ -141,9 +143,7 @@ export class UsersModule extends AdminPage {
 			_.fillBodyAdminsTable(tableData);
 		}
 	}
-	
-	
-	
+
 	// Create methods
 	async createNewParent(){
 		const _ = this;
@@ -502,14 +502,19 @@ export class UsersModule extends AdminPage {
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#addingForm'});
 	
 	}
-	addNewParent({item}) {
+	addNewParent(clickData) {
 		const _ = this;
-		item.parentElement.querySelector('.active').classList.remove('active');
-		item.classList.add('active')
-		let cont = _.f('.adding-assign-body');
-		_.clear(cont);
-		cont.classList.remove('full');
-		cont.append(_.markup(_.assignNewParent()))
+		if (clickData) {
+			let item = clickData.item;
+			item.parentElement.querySelector('.active').classList.remove('active');
+			item.classList.add('active')
+		}
+		let cont = _.f('#addingForm .adding-assign-body');
+		if (cont) {
+			_.clear(cont);
+			cont.classList.remove('full');
+			cont.append(_.markup(_.assignNewParent()))
+		}
 		_.parentSkipped =  false;
 		_.metaInfo.parentAddType = 'adding';
 	}
@@ -786,7 +791,9 @@ export class UsersModule extends AdminPage {
 	}
 	showAddParentPopup({item}){
 		const _ = this;
+		_.addNewParent();
 		let from = item.getAttribute('from');
+		if (!_.parentInfo || !_.parentInfo.type || _.parentInfo.type !== 'adding') _.parentInfo = {type:'adding'}
 		_.f('.parent-popup-body').innerHTML = _.parentAddingFromProfile(from);
 		
 		G_Bus.trigger('modaler','showModal',{
@@ -967,7 +974,7 @@ export class UsersModule extends AdminPage {
 			input;
 		
 		for (let i = 0; i < len; i++) {
-			let number = Math.ceil(Math.random() * 66);
+			let number = Math.ceil(Math.random() * 65);
 			password += symbols[number];
 		}
 		
@@ -999,7 +1006,7 @@ export class UsersModule extends AdminPage {
 			item.classList.add('active')
 		}
 
-		let cont = _.f('.adding-assign-body');
+		let cont = _.f('#addingForm .adding-assign-body');
 		_.clear(cont);
 		cont.classList.add('full');
 		if(_.metaInfo.parentAssigned){
@@ -1008,7 +1015,6 @@ export class UsersModule extends AdminPage {
 		}else{
 			cont.append(_.markup(_.assignParentTpl()));
 		}
-		
 
 		let usersData = await Model.getUsers({role: 'parent'});
 		_.parents = usersData;
