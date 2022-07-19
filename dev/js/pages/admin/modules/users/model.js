@@ -201,7 +201,6 @@ class _Model {
 	}
 	createStudent(studentData) {
 		const _ = this;
-		console.log(studentData)
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.getEndpoint('createStudent')}`, {
 				method: 'POST',
@@ -210,7 +209,6 @@ class _Model {
 			});
 			if(rawResponse.status < 210) {
 				let response = await rawResponse.json();
-				console.log(response)
 				if(response['status'] == 'success') {
 					_.newStudent = response['response'];
 					resolve(response['response']);

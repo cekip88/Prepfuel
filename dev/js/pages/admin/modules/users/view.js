@@ -58,7 +58,7 @@ export const view = {
 			tr.setAttribute('user-id',item['_id']);
 			if(from === 'users') {
 				tr.innerHTML = _.usersBodyRowTpl(item['currentPlan'], item['user'], item);
-			}else{
+			} else {
 				tr.innerHTML = _.studentsBodyRowTpl(item['plans'][0], item['user'], item);
 			}
 			trs.push(tr);
@@ -902,7 +902,7 @@ export const view = {
 							<input type="radio" id="have_registered" class="adding-radio" name="registered" data-change="${_.componentName}:skipTestDate" ${_.studentInfo.testDatePicked ? 'checked' : ''}>
 							<label class="form-label adding-label-have" for="have_registered">Have registered</label>
 						</div>
-						<g-input type='date' format="month DD, YYYY" value="${_.studentInfo.testDate ?? ''}" data-change="${_.componentName}:fillStudentInfo" class="select adding-select" name="testDate" classname="adding-select" icon="false" xlink="select-arrow-bottom" placeholder="Press to choose your official test date"></g-input>
+						<g-input disabled type='date' format="month DD, YYYY" value="${_.studentInfo.testDate ?? ''}" data-change="${_.componentName}:fillStudentInfo" class="select adding-select" name="testDate" classname="adding-select" icon="false" xlink="select-arrow-bottom" placeholder="Press to choose your official test date"></g-input>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
@@ -1282,6 +1282,7 @@ export const view = {
 	},
 	assignNewParent(){
 		const _ = this;
+		let parentInfo = !_.parentInfo.type || _.parentInfo.type !== 'assigned' ? _.parentInfo : {};
 		return `
 			<div class="adding-section">
 				<h4 class="adding-subtitle">Parent Personal Info</h4>
@@ -1304,25 +1305,25 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">First name</label>
 					</div>
-					<g-input type="text" name="firstName" value="${_.parentInfo.firstName ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input type="text" name="firstName" value="${parentInfo.firstName ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 				<div class="profile-form-row">
 					<div class="form-label-row">
 						<label class="form-label">Last name</label>
 					</div>
-					<g-input type="text" name="lastName" value="${_.parentInfo.lastName ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input type="text" name="lastName" value="${parentInfo.lastName ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 				<div class="profile-form-row">
 					<div class="form-label-row">
 						<label class="form-label">Email</label>
 					</div>
-					<g-input type="email" name="email" value="${_.parentInfo.email ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input type="email" name="email" value="${parentInfo.email ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 				<div class="profile-form-row">
 					<div class="form-label-row">
 						<label class="form-label">Phone Number</label>
 					</div>
-					<g-input type="email" name="phone" value="${_.parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input type="email" name="phone" value="${parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 			</div>
 			<div class="adding-section passwords">
@@ -1336,7 +1337,7 @@ export const view = {
 						type="password" 
 						name="password" 
 						match="assignNewParent"
-						value="${_.parentInfo.password ?? ''}" 
+						value="${parentInfo.password ?? ''}" 
 						data-outfocus="${_.componentName}:validatePassword" 
 						data-callback="${_.componentName}:fillParentInfo"
 						class="g-form-item" 
@@ -1352,7 +1353,7 @@ export const view = {
 						type="password" 
 						name="cpass" 
 						match="assignNewParent"
-						value="${_.parentInfo.cpass ?? ''}" 
+						value="${parentInfo.cpass ?? ''}" 
 						data-outfocus="${_.componentName}:validatePassword" 
 						data-callback="${_.componentName}:fillParentInfo"
 						class="g-form-item" 
@@ -1886,7 +1887,7 @@ export const view = {
 									</td>
 									<td>
 										<div class="tbl-item right actions">
-											<button class="users-btn button profile" data-click="${_.componentName}:showParentProfile">Profile</button>
+											<button class="users-btn button profile" data-id="${parentInfo._id}" data-click="${_.componentName}:showPopupParentProfile">Profile</button>
 											<button
 												class="users-btn button-red"
 												data-id="${parentInfo['_id']}"
@@ -2108,7 +2109,7 @@ export const view = {
 						</div>
 					</div>
 					<div class="test-footer">
-						<button class="test-footer-back step-prev-btn">
+						<button class="test-footer-back step-prev-btn" data-click="${_.componentName}:cancelParentProfile" type="adding" ste="2">
 							<span>Back</span>
 						</button>
 					</div>

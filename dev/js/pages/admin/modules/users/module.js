@@ -71,7 +71,7 @@ export class UsersModule extends AdminPage {
 				'showSuccessPopup','showErrorPopup','closePopup',
 				'generatePassword','validatePassword','showChangePassword','saveChangePassword',
 				'changeProfileTab','updateStudent','updateAdmin',
-				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab',
+				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab','cancelParentProfile',
 				'showHistoryDetails','createNewParent','assignFirstParent',
 				'notificationNavigate','showAddCard','showAddBillingAddress','searchUsers'
 			]);
@@ -96,7 +96,9 @@ export class UsersModule extends AdminPage {
 	async domReady(data){
 		const _ = this;
 		_.wizardData = await Model.wizardData;
-		if( _.subSection === 'student'){
+		_.parentInfo = {};
+		_.studentInfo = {};
+		if(_.subSection === 'student') {
 			let
 				item,update= true;
 			if(data){
@@ -140,9 +142,7 @@ export class UsersModule extends AdminPage {
 			_.fillBodyAdminsTable(tableData);
 		}
 	}
-	
-	
-	
+
 	// Create methods
 	async createNewParent(){
 		const _ = this;
@@ -278,7 +278,16 @@ export class UsersModule extends AdminPage {
 	}
 	skipTestDate({item}){
 		const _ = this;
-		_.studentInfo.testDatePicked = (item.id === 'have_registered');
+		let
+			cont = item.closest('.adding-section'),
+			inputDate = cont.querySelector('g-input');
+		if (item.id == "have_yet") {
+			_.studentInfo.testDate = null;
+			inputDate.setAttribute('disabled',true);
+			inputDate.value = '';
+		} else {
+			inputDate.removeAttribute('disabled')
+		}
 	}
 	fillDataByClass({className,data}){
 		const _ = this;
@@ -495,18 +504,23 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		
 		_._$.addingStep = _._$.addingStep;
-	
+
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#addingForm'});
 	
 	}
-	addNewParent({item}) {
+	addNewParent(clickData) {
 		const _ = this;
-		item.parentElement.querySelector('.active').classList.remove('active');
-		item.classList.add('active')
-		let cont = _.f('.adding-assign-body');
-		_.clear(cont);
-		cont.classList.remove('full');
-		cont.append(_.markup(_.assignNewParent()))
+		if (clickData) {
+			let item = clickData.item;
+			item.parentElement.querySelector('.active').classList.remove('active');
+			item.classList.add('active')
+		}
+		let cont = _.f('#addingForm .adding-assign-body');
+		if (cont) {
+			_.clear(cont);
+			cont.classList.remove('full');
+			cont.append(_.markup(_.assignNewParent()))
+		}
 		_.parentSkipped =  false;
 		_.metaInfo.parentAddType = 'adding';
 	}
@@ -783,7 +797,9 @@ export class UsersModule extends AdminPage {
 	}
 	showAddParentPopup({item}){
 		const _ = this;
+		_.addNewParent();
 		let from = item.getAttribute('from');
+		if (!_.parentInfo || !_.parentInfo.type || _.parentInfo.type !== 'adding') _.parentInfo = {type:'adding'}
 		_.f('.parent-popup-body').innerHTML = _.parentAddingFromProfile(from);
 		
 		G_Bus.trigger('modaler','showModal',{
@@ -829,6 +845,13 @@ export class UsersModule extends AdminPage {
 			subtitle:'User gets notification when',
 			types:_.notifSubsections[index].types
 		});
+	}
+
+	cancelParentProfile({item}){
+		const _ = this;
+		G_Bus.trigger('modaler','closeModal');
+		G_Bus.trigger(_.componentName,'addStudent',{item});
+		G_Bus.trigger(_.componentName,'assignParent');
 	}
 	// Show methods end
 	
@@ -957,7 +980,7 @@ export class UsersModule extends AdminPage {
 			input;
 		
 		for (let i = 0; i < len; i++) {
-			let number = Math.ceil(Math.random() * 66);
+			let number = Math.ceil(Math.random() * 65);
 			password += symbols[number];
 		}
 		
@@ -989,7 +1012,7 @@ export class UsersModule extends AdminPage {
 			item.classList.add('active')
 		}
 
-		let cont = _.f('.adding-assign-body');
+		let cont = _.f('#addingForm .adding-assign-body');
 		_.clear(cont);
 		cont.classList.add('full');
 		if(_.metaInfo.parentAssigned){
@@ -998,7 +1021,6 @@ export class UsersModule extends AdminPage {
 		}else{
 			cont.append(_.markup(_.assignParentTpl()));
 		}
-		
 
 		let usersData = await Model.getUsers({role: 'parent'});
 		_.parents = usersData;
@@ -1020,6 +1042,7 @@ export class UsersModule extends AdminPage {
 		_.currentParent = currentParent;
 		_.f('.parent-adding-table').innerHTML = _.assignedParent(currentParent);
 		_.parentInfo = currentParent['user'];
+		_.parentInfo.type = 'assigned';
 		_.metaInfo.parentAssigned = true;
 	}
 	async assignCourse({item}) {
@@ -1063,6 +1086,7 @@ export class UsersModule extends AdminPage {
 		_.studentInfo.testDate = null;
 		_.studentInfo.testDatePicked = false;
 		_._$.assignStep = 1;
+		_.showSuccessPopup('Course has been successfully removed')
 	}
 	async removeUser({item}){
 		const _ = this;
@@ -1160,6 +1184,7 @@ export class UsersModule extends AdminPage {
 		if( type == 'adding' ) {
 			if(_._$.addingStep > _.minStep) _._$.addingStep--;
 			_.nextStepBtnValidation();
+			console.log('test')
 		}else{
 			if(_._$.assignStep > _.minStep) _._$.assignStep--;
 		}

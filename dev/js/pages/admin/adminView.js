@@ -1,13 +1,15 @@
 export const adminView = {
 	navigationInit() {
 		const _ = this;
-		let list = _.f('.navigate-list');
+		let list = _.f('.navigate-list'),
+			label = _.f('.navigate-label');
 		if (!list) return;
 		_.setActiveNavItem(list);
 		window.addEventListener('resize',()=>{
 			let activeBtn = list.querySelector('.active');
 			if (activeBtn) _.showActiveNavItem(activeBtn,list);
 		})
+		label.classList.add('active');
 	},
 	subnavigate(clickData){
 		const _ = this;
@@ -53,7 +55,7 @@ export const adminView = {
 			label = this.f('.navigate-label');
 
 		if(!label) return void 'Navigate label not found';
-		label.style = `opacity:1;width: ${width}px;left: ${x}px;transition: .35s ease`;
+		label.style = `width: ${width}px;left: ${x}px;`
 	},
 	changeTab(btn,parentCls){
 		const _ = this;

@@ -243,7 +243,13 @@ export default class GInput extends GComponent {
 
 	datePick({value}) {
 		const _ = this;
-
+		let input = _.shadow.querySelector('.inpt-value');
+		if (_.hasAttribute('disabled')) {
+			input.setAttribute('disabled',true);
+			return;
+		} else {
+			input.removeAttribute('disabled')
+		}
 		if (_.hasAttribute('active')) return;
 		_.setAttribute('active',true);
 
@@ -934,6 +940,8 @@ export default class GInput extends GComponent {
 		  display: block;
 		  content: "";
 		}
+		input.inpt-value:before{
+		content: none;}
 		.inpt-value.focused, .inpt-value:focus {
 		  border-color: #f79141;
 		}
