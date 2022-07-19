@@ -19,6 +19,25 @@ export const view = {
 			</div>
 		`;
 	},
+	dashboardBodyFilled(params){
+		const _ = this;
+		return `
+			<div class="section">
+				<div class="block student-main">
+					<h1 class="main-title">
+						<span>Today's practice complete</span>
+						<strong>10 questions answered!</strong>
+					</h1>
+					<p class="student-main-text">
+						Nice job completing today's practice.
+						We'll see you again <strong>Monday at 5:00 PM.</strong>
+					</p>
+					<button class="button-blue" data-click="StudentPage:changeSection;" section="/student/schedule" ><span>Or continue practicing</span></button>
+				</div>
+			</div>
+			<br><br>
+		`;
+	},
 	scheduleBlock(dashSchedule){
 		const _ = this;
 		let

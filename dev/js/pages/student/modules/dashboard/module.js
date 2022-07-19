@@ -56,10 +56,9 @@ export class DashboardModule extends StudentPage{
 	}
 	async domReady() {
 		const _ = this;
-		if(_.subSection == 'overview'){
+		if( _.subSection === 'overview' ){
 			_.fillScheduleBlock();
 		}
-		
 	}
 	async init() {
 		const _ = this;

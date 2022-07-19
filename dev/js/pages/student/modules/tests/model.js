@@ -72,7 +72,6 @@ class _Model{
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					_.tests = response['response']['tests'];
-					console.log(_.tests);
 					await Model.getTest();
 					resolve(_.tests);
 				}
@@ -149,6 +148,7 @@ class _Model{
 		if(answer){
 			answer['status'] = 'in progress';
 		}
+		console.log(_.test);
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['results']}/${_.test['resultId']}`,{
 				method: 'PUT',
@@ -184,7 +184,7 @@ class _Model{
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['results']}/${_.test['resultId']}`,{
 				method: 'GET',
-				headers:_.baseHeaders,
+				headers: _.baseHeaders,
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();

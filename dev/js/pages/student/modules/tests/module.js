@@ -58,14 +58,16 @@ export class TestsModule extends StudentPage{
 	}
 	async domReady(){
 		const _ = this;
-		await Model.getStudentTests(); // requests all user tests
-		_.currentQuestion = Model.firstQuestion;
-		console.log('Current Question: ',_.currentQuestion);
-		_.set({
-			currentQuestion: Model.firstQuestion,
-		});
+		
+	
 		if(_.subSection == 'tests-list'){
-			//_.f('#testBody').innerHTML = _.tempTestListTpl();
+		
+			await Model.getStudentTests(); // requests all user tests
+			_.set({
+				currentQuestion: Model.firstQuestion,
+			});
+			_.currentQuestion = Model.firstQuestion;
+			console.log('Current Question: ',_.currentQuestion);
 			_.fillTestsList();
 		}
 	}
@@ -73,7 +75,6 @@ export class TestsModule extends StudentPage{
 	async fillTestsList(){
 		const _ = this;
 		let tests = await Model.getStudentTests();
-		console.log(tests);
 		if(!tests) return void 0;
 		let container = _.f('#testAsideList');
 		_.clear(container);
@@ -104,7 +105,7 @@ export class TestsModule extends StudentPage{
 			'header':'simpleHeader',
 			'body': _.flexible(section),
 		};
-		
+		_.subSection = section;
 		if(section == 'score') {
 			if(!Model.isFinished()){
 				console.log('Last answer saved',await _.saveAnswerToDB());

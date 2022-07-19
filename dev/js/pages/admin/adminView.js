@@ -153,7 +153,6 @@ export const adminView = {
 		tpl += buttonsData ? '</div>' : '';
 		return tpl
 	},
-
 	successPopupTpl(text,color){
 		const _ = this;
 		return `
