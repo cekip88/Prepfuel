@@ -92,15 +92,18 @@ class StudentPage extends G{
 	async init(blockData){
 		const _ = this;
 		let params;
-		if(blockData['params']){
+		if(blockData && blockData['params']){
 			params = blockData['params'];
 		}
 		_.header = await _.getBlock({name:'header'},'blocks');
-		if(params.length > 0){
+		if(params && params.length > 0){
 			await _.moduleRender(params);
 			_.currentSection = '/student/' + params[0];
 		}
-		_.navigationInit(_.f('.navigate-list'))
+		console.log(_.f('.navigate-list'))
+		setTimeout(()=>{
+			_.navigationInit();
+		},350)
 	}
 	
 }

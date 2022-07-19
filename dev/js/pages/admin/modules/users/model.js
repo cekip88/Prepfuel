@@ -266,6 +266,7 @@ class _Model {
 	}
 	removeStudent(studentId){
 		const _ = this;
+		console.log(studentId)
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.getEndpoint('removeStudent')}/${studentId}`, {
 				method: 'DELETE',
@@ -532,17 +533,44 @@ class _Model {
 				if(response['status'] == 'success') {
 					resolve(response['response']);
 				} else {
-					_.wrongResponse('updateAdmin', response);
+					_.wrongResponse('updateParent', response);
 				}
 			} else {
-				_.wrongRequest('updateAdmin', rawResponse)
+				_.wrongRequest('updateParent', rawResponse)
 			}
 			resolve(null);
 		});
 	}
-	updateAdminPassword(passwordData){
+	updateStudentPassword(passwordData){
 		const _ = this;
-
+		let data = {
+			firstName: passwordData.firstName,
+			lastName: passwordData.lastName,
+			email: passwordData.email,
+			password: passwordData.password,
+			avatar: passwordData.avatar,
+			grade: passwordData.grade,
+			currentSchool: passwordData.currentSchool
+		};
+		console.log(data)
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('updateStudent')}/${passwordData['studentId']}`, {
+				method: 'PUT',
+				headers: _.baseHeaders,
+				body: JSON.stringify(data)
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('updateStudentPassword', response);
+				}
+			} else {
+				_.wrongRequest('updateStudentPassword', rawResponse)
+			}
+			resolve(null);
+		});
 	}
 }
 export const Model = new _Model();

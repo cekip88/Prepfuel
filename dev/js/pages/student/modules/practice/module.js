@@ -9,8 +9,9 @@ export class PracticeModule extends StudentPage{
 		this.moduleStructure = {
 			'header':'fullHeader',
 			'header-tabs':'studentTabs',
-		//	'body-tabs':'dashboard-tabs',
+			'body-tabs':'practiceTabs',
 			'body':'practiceBody',
+			'footer':'studentFooter'
 		};
 	}
 	define() {

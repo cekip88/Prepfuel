@@ -668,7 +668,7 @@ g-modaler
 		.icon
 			@extend %dfc
 			@extend %fdc
-			+wh(90px)
+			+wh(154px)
 			padding: 5px
 			position: relative
 			svg
@@ -677,9 +677,10 @@ g-modaler
 				top: 0
 				left: 0
 				stroke: rgb($orange)
+				transform: rotate(220deg)
 				circle
-					stroke-width: 5px
-					r: 40
+					stroke-width: 10px
+					r: 67
 					fill: none
 					stroke-dashoffset: -167
 			&.blue
@@ -688,12 +689,19 @@ g-modaler
 			&.green
 				svg
 					stroke: rgb($green)
+		.count
+			font: $fz30 $p_medium
+			color: rgb($neutral-800)
 		.info
+			width: 101px
 			text-align: center
+			letter-spacing: -.01em
+			font-family: $p_reg
+			text-transform: uppercase
 	&-title
 		text-align: center
-		font-size: $fz16
 		font-family: $p_semi
+		line-height: 20px
 
 
 .calendar

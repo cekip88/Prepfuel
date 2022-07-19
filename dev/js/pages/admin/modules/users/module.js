@@ -240,8 +240,9 @@ export class UsersModule extends AdminPage {
 			passwords[name] = input.value;
 		}
 
-		let response = await Model.updateAdminPassword(passwords);
+		let response = await Model.updateStudentPassword(_.studentInfo);
 		if (response) {
+			G_Bus.trigger('modaler','closeModal')
 			_.showSuccessPopup('Password has bben changed');
 		}
 	}

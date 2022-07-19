@@ -1,15 +1,16 @@
 export const studentView = {
 	// methods to navigate blocks from main nav and sub main nav
-	navigationInit(list) {
+	navigationInit() {
 		const _ = this;
+		let list = _.f('.navigate-list'),
+			label = _.f('.navigate-label');
 		if (!list) return;
-		setTimeout( ()=>{
-			_.setActiveNavItem(list);
-		},100)
+		_.setActiveNavItem(list);
 		window.addEventListener('resize',()=>{
 			let activeBtn = list.querySelector('.active');
 			if (activeBtn) _.showActiveNavItem(activeBtn,list);
 		})
+		label.classList.add('active');
 	},
 	subnavigate(clickData){
 		const _ = this;
@@ -97,5 +98,37 @@ export const studentView = {
 					</div>
 			</section>
 			`;
+	},
+	sectionHeaderTpl({title,subtitle,buttonsData,gap = true}){
+		let tpl = buttonsData ? `<div class="section-header ${gap ? 'block-gap' : ''}">` : '';
+
+		if (!title && subtitle) {
+			tpl += `<h6 class="admin-subtitle ${!buttonsData && gap ? "block-gap" : ''}"><span>${subtitle}</span></h6>`
+		} else if (!subtitle && title) {
+			tpl += `<h5 class="admin-title ${!buttonsData && gap ? "block-gap" : ''}"><span>${title}</span></h5>`
+		} else if (title && subtitle) {
+			tpl += `
+				<div ${!buttonsData && gap ? 'class="block-gap"' : ''}>
+					<h5 class="admin-title"><span>${title}</span></h5>
+					<h6 class="admin-subtitle"><span>${subtitle}</span></h6>
+				</div>
+			`
+		}
+
+		if (buttonsData) {
+			tpl += `<div class="section-buttons">`;
+			let buttonAction = buttonsData.action, pos = 0;
+			for(let button of buttonsData['buttons']){
+				tpl += `<button ${buttonAction} class="section-button ${button['active'] ?? ''}" data-pos="${button['pos'] ?? pos}"><span>${button['title']}</span></button>`;
+				pos++;
+			}
+			/*	for (let key in buttons) {
+					tpl += `<button class="section-button ${buttons[key]}"><span>${key}</span></button>`
+				}*/
+			tpl += '</div>';
+		}
+
+		tpl += buttonsData ? '</div>' : '';
+		return tpl
 	},
 }
