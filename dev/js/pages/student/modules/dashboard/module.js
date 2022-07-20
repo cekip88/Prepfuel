@@ -21,6 +21,27 @@ export class DashboardModule extends StudentPage{
 		});*/
 	}
 
+	define() {
+		const _ = this;
+		_.componentName = 'Dashboard';
+		_.subSection = 'overview';
+		_.scheduleColors = {
+			'practiceTest':'#FFA621',
+			'test':'#009EF6',
+			'ISEE':'#4AB58E',
+			'skillTest':'#4AB58E',
+		};
+		G_Bus
+			.on(_,['domReady']);
+	}
+	async domReady() {
+		const _ = this;
+		if( _.subSection === 'overview' ){
+			_.fillScheduleBlock();
+		}
+	}
+
+
 	// Show methods
 	async fillScheduleBlock(){
 		const _ = this;
@@ -47,26 +68,7 @@ export class DashboardModule extends StudentPage{
 		return svg;
 	}
 	// end show methods
-	
-	define() {
-		const _ = this;
-		_.componentName = 'Dashboard';
-		_.subSection = 'overview';
-		_.scheduleColors = {
-			'practiceTest':'#FFA621',
-			'test':'#009EF6',
-			'ISEE':'#4AB58E',
-			'skillTest':'#4AB58E',
-		};
-		G_Bus
-			.on(_,['domReady']);
-	}
-	async domReady() {
-		const _ = this;
-		if( _.subSection === 'overview' ){
-			_.fillScheduleBlock();
-		}
-	}
+
 	async init() {
 		const _ = this;
 		
