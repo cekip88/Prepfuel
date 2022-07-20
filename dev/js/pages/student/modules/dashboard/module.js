@@ -20,7 +20,6 @@ export class DashboardModule extends StudentPage{
 			dashSchedule: await Model.getDashSchedule()
 		});*/
 	}
-
 	define() {
 		const _ = this;
 		_.componentName = 'Dashboard';
@@ -32,20 +31,28 @@ export class DashboardModule extends StudentPage{
 			'skillTest':'#4AB58E',
 		};
 		G_Bus
-			.on(_,['domReady']);
+		.on(_,['domReady','deleteSchedule']);
 	}
+	async deleteSchedule({item}){
+		const _ = this;
+		let response = await Model.deleteSchedule();
+		console.log(response);
+	}
+	
+	
 	async domReady() {
 		const _ = this;
 		if( _.subSection === 'overview' ){
 			_.fillScheduleBlock();
 		}
 	}
-
+	
 
 	// Show methods
 	async fillScheduleBlock(){
 		const _ = this;
 		let schedule =  await Model.getDashSchedule();
+		console.log(schedule);
 		let
 			scheduleTpl = _.scheduleBlock(schedule),
 			scheduleCont = document.querySelector('#scheduleCont');
@@ -68,6 +75,7 @@ export class DashboardModule extends StudentPage{
 		return svg;
 	}
 	// end show methods
+	
 
 	async init() {
 		const _ = this;

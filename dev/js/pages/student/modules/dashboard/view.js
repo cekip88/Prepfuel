@@ -51,7 +51,6 @@ export const view = {
 				<button class="button" data-click="${_.componentName}:editSchedule"><span>Edit</span></button>
 			</div>
 			<ul class="schedule-list">`;
-		console.log(dashSchedule)
 		//dashSchedule = {'practice': {'daysLeft':2},'ISEE': {'daysLeft':14}}
 		for (let key in dashSchedule) {
 			let item = dashSchedule[key];

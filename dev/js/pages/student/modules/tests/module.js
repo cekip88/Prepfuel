@@ -63,6 +63,7 @@ export class TestsModule extends StudentPage{
 		if(_.subSection == 'tests-list'){
 		
 			await Model.getStudentTests(); // requests all user tests
+			
 			_.set({
 				currentQuestion: Model.firstQuestion,
 			});
