@@ -119,7 +119,7 @@ export const studentView = {
 			tpl += `<div class="section-buttons">`;
 			let buttonAction = buttonsData.action, pos = 0;
 			for(let button of buttonsData['buttons']){
-				tpl += `<button ${buttonAction} class="section-button ${button['active'] ?? ''}" data-pos="${button['pos'] ?? pos}"><span>${button['title']}</span></button>`;
+				tpl += `<button ${button['action'] ?? buttonAction ?? ''} class="section-button ${button['active'] ?? ''}" data-pos="${button['pos'] ?? pos}"><span>${button['title']}</span></button>`;
 				pos++;
 			}
 			/*	for (let key in buttons) {

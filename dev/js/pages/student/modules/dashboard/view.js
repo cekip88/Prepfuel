@@ -42,46 +42,45 @@ export const view = {
 		const _ = this;
 		let
 			practiceDate = dashSchedule['practiceTest'] ? new Date(dashSchedule['practiceTest']['date']) : undefined,
-			testDate = new Date(dashSchedule['test']['date']),
+			testDate = dashSchedule['test'] ? new Date(dashSchedule['test']['date']) : undefined,
 			months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 		let tpl = `
-			${_.sectionHeaderTpl({
-				title: '',
-				buttons: [{'title':"delete"},{'title':'edit'}]
-			})}
+			<div class="block-title-control">
+				<h5 class="block-title"><span>Practice Schedule</span></h5>
+				<button class="button" data-click="${_.componentName}:deleteSchedule"><span>Delete</span></button>
+				<button class="button" data-click="${_.componentName}:editSchedule"><span>Edit</span></button>
+			</div>
 			<ul class="schedule-list">`;
+		console.log(dashSchedule)
+		//dashSchedule = {'practice': {'daysLeft':2},'ISEE': {'daysLeft':14}}
 		for (let key in dashSchedule) {
 			let item = dashSchedule[key];
+			let title = `Next ${dashSchedule.title}`;
+			if (key == 'practice') title += ' practice';
+			if (key == 'ISEE') title = 'Your ISEE Date';
 			tpl += `
 				<li class="schedule-item">
-					<h5 class="schedule-title"><span>Next Practice</span></h5>
+					<h5 class="schedule-title"><span>${title}</span></h5>
 					<div class="icon ${key}">
-						${_.drawCircleGraphic(item,'yellow')}
+						${_.drawCircleGraphic(item,_.scheduleColors[key])}
 						<span class="count">${item['daysLeft']}</span>
 						<div class="info">
-							<i>Day${item['daysLeft'] > 1 ? 's' : ''}</i>
+							<i>Day${item['daysLeft'] == 1 ? '' : 's'}</i>
 							<span>until next practice</span>
 						</div>
 					</div>
 				</li>`;
 		}
-		let testData = {'test1':{'daysLeft':1},'test2':{'daysLeft':2}};
-		for (let key in testData) {
-			let item = testData[key];
-			tpl += `
-				<li class="schedule-item">
-					<h5 class="schedule-title"><span>Next Practice</span></h5>
-					<div class="icon ${key}">
-						${_.drawCircleGraphic(item,'yellow')}
-						<span class="count">${item['daysLeft']}</span>
-						<div class="info">
-							<i>Day${item['daysLeft'] > 1 ? 's' : ''}</i>
-							<span>until next practice</span>
-						</div>
-					</div>
-				</li>`;
-		}
-		tpl += '</ul>';
+		tpl += `
+			</ul>
+			<div class="schedule-footer">
+				<button class="schedule-footer-button">
+					<span class="icon"><svg><use xlink:href="#calendar-transparent"></use></svg></span>
+					<span class="text">Calendar</span>
+					<span class="arrow"></span>
+				</button>
+			</div>
+		`;
 		return tpl;
 	},
 	dashboardTabs(){

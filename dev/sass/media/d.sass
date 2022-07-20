@@ -7,6 +7,8 @@
 		justify-content: space-between
 	&-header
 		flex-wrap: nowrap
+		&-gap
+			margin-bottom: 32px
 		.title
 			margin-bottom: 0
 	&-buttons
@@ -31,6 +33,60 @@
 			color: rgb($neutral-800)
 		&.active:hover
 			color: rgb($white)
+.block
+	width: 100%
+	&-filter
+		margin-bottom: 32px
+		&-button
+			&:hover
+				color: rgb($neutral-800)
+	&-header
+		flex-wrap: nowrap
+		justify-content: flex-start
+		.button-blue
+			margin-left: auto
+		.block-title
+			min-width: 160px
+			width: initial
+		&-input,&-select,&-item,.button-blue
+			margin-top: 0
+		&-input,&-select,&-item
+			margin-left: 16px
+		&-item
+			width: initial
+			.block-header
+				&-input,&-select
+					width: 100%
+					margin: 0
+		&-select
+			&[multiple]
+				width: 100%
+		.block
+			&-header
+				.button-blue
+				margin-left: auto
+				width: initial
+				&-select
+					min-width: 150px
+					max-width: 340px
+				&-input
+					width: 240px
+					flex: 0 0 240px
+				&-search
+					width: 240px
+					flex: 0 0 240px
+				&-date
+					width: 200px
+					flex-basis: 200px
+	&-main
+		&-title
+			font-size: $fz34
+			letter-spacing: -.02em
+			line-height: 40px
+		&-subtitle
+			line-height: $fz30
+			letter-spacing: -.02em
+
 .col
 	width: 588px
 	&.wide
@@ -74,60 +130,6 @@
 			.button-icon
 				transform: rotate(180deg)
 
-
-.block
-	width: 100%
-	&-filter
-		margin-bottom: 32px
-		&-button
-			&:hover
-				color: rgb($neutral-800)
-	&-header
-		flex-wrap: nowrap
-		justify-content: flex-start
-		.button-blue
-			margin-left: auto
-		.block-title
-			min-width: 160px
-			width: initial
-		&-input,&-select,&-item,.button-blue
-			margin-top: 0
-		&-input,&-select,&-item
-			margin-left: 16px
-		&-item
-			width: initial
-			.block-header
-				&-input,&-select
-					width: 100%
-					margin: 0
-		&-select
-			&[multiple]
-				width: 100%
-		.block
-			&-header
-				.button-blue
-					margin-left: auto
-					width: initial
-				&-select
-					min-width: 150px
-					max-width: 340px
-				&-input
-					width: 240px
-					flex: 0 0 240px
-				&-search
-					width: 240px
-					flex: 0 0 240px
-				&-date
-					width: 200px
-					flex-basis: 200px
-	&-main
-		&-title
-			font-size: $fz34
-			letter-spacing: -.02em
-			line-height: 40px
-		&-subtitle
-			line-height: $fz30
-			letter-spacing: -.02em
 
 
 .title
@@ -688,9 +690,10 @@ thead.tbl-head
 			overflow-y: scroll
 
 .schedule
-	&-item
+	&-list
 		display: flex
-		flex-direction: column
-		align-items: center
-	&-title
-		margin-bottom: 15px
+		margin: 32px 0
+	&-item
+		margin-right: 31px
+		&:last-child
+			margin-right: 0

@@ -663,8 +663,13 @@ g-modaler
 
 .schedule
 	&-list
-		display: flex
+		margin: 10px 0
 	&-item
+		@extend %dfa
+		margin-bottom: 20px
+		flex-direction: column
+		&:last-child
+			margin-bottom: 0
 		.icon
 			@extend %dfc
 			@extend %fdc
@@ -683,12 +688,6 @@ g-modaler
 					r: 67
 					fill: none
 					stroke-dashoffset: -167
-			&.blue
-				svg
-					stroke: rgb($blue)
-			&.green
-				svg
-					stroke: rgb($green)
 		.count
 			font: $fz30 $p_medium
 			color: rgb($neutral-800)
@@ -699,9 +698,29 @@ g-modaler
 			font-family: $p_reg
 			text-transform: uppercase
 	&-title
+		margin-bottom: 15px
 		text-align: center
 		font-family: $p_semi
 		line-height: 20px
+	&-footer
+		&-button
+			@extend %dfa
+			padding: 10px
+			border: 2px dashed rgb($neutral-300)
+			border-radius: 8px
+			.icon
+				+wh(14px)
+				svg
+					+wh(100%)
+			.text
+				margin: 0 12px
+				color: rgb($neutral-600)
+				font: 12px $f_medium
+			.arrow
+				+wh(9px)
+				border-top: 2px solid rgb($neutral-600)
+				border-right: 2px solid rgb($neutral-600)
+				transform: rotate(135deg) translate(-2px,2px)
 
 
 .calendar

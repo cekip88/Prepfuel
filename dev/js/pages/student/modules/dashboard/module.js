@@ -35,13 +35,14 @@ export class DashboardModule extends StudentPage{
 		const _ = this;
 		let
 			svg = `</svg>`,
-			radius = 67;
+			radius = 67,
+			daysLeft = item['daysLeft'] <= 0 ? 0 : item['daysLeft'],
+			circleWidth = 2 * Math.PI * radius,
+			width = daysLeft > 10 ? 0 : circleWidth - (daysLeft / 10 * circleWidth),
+			strokeDasharray = `${width} ${circleWidth - width}`;
 
-		let circleWidth = 2 * Math.PI * radius;
-		let width = circleWidth - (item['daysLeft'] / 10 * circleWidth);
-		let strokeDasharray = `${width} ${circleWidth - width}`;
-		svg = `<circle class="${color}" stroke-dasharray="${strokeDasharray}" stroke-linecap="round" cx="50%" cy="50%"></circle>` + svg;
-		svg = `<circle style="opacity: .2;" class="${color}" stroke-dasharray="${circleWidth} 0" stroke-linecap="round" cx="50%" cy="50%"></circle>` + svg;
+		svg = `<circle style="stroke:${color}" stroke-dasharray="${strokeDasharray}" stroke-linecap="round" cx="50%" cy="50%"></circle>` + svg;
+		svg = `<circle style="opacity: .2;stroke:${color}" stroke-dasharray="${circleWidth} 0" stroke-linecap="round" cx="50%" cy="50%"></circle>` + svg;
 		svg = '<svg xmlns="http://www.w3.org/2000/svg">' + svg;
 		return svg;
 	}
@@ -51,6 +52,12 @@ export class DashboardModule extends StudentPage{
 		const _ = this;
 		_.componentName = 'Dashboard';
 		_.subSection = 'overview';
+		_.scheduleColors = {
+			'practiceTest':'#FFA621',
+			'test':'#009EF6',
+			'ISEE':'#4AB58E',
+			'skillTest':'#4AB58E',
+		};
 		G_Bus
 			.on(_,['domReady']);
 	}
