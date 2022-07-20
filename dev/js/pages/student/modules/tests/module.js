@@ -602,6 +602,7 @@ export class TestsModule extends StudentPage{
 	
 	async getQuestionTpl(){
 		const _ = this;
+		console.log(_._$.currentQuestion['questionType']);
 		return await _[`${_.types[_._$.currentQuestion['questionType']]}Question`]();
 	}
 	flexible(section){
