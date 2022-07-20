@@ -23,6 +23,8 @@ class _Model {
 			studentParents: `/admin/student`,
 			parentStudents: `/admin/parent`,
 			assignStudentToParent: `/admin/assign/student-to-parent`,
+			changePassword: `/user/update-student-password/`,
+			checkEmail: `/user/check-email/`,
 		};
 	}
 	
@@ -544,17 +546,11 @@ class _Model {
 	updateStudentPassword(passwordData){
 		const _ = this;
 		let data = {
-			firstName: passwordData.firstName,
-			lastName: passwordData.lastName,
-			email: passwordData.email,
 			password: passwordData.password,
-			avatar: passwordData.avatar,
-			grade: passwordData.grade,
-			currentSchool: passwordData.currentSchool
+			repeatPassword: passwordData['confirm_password'],
 		};
-		console.log(data)
 		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.getEndpoint('updateStudent')}/${passwordData['studentId']}`, {
+			let rawResponse = await fetch(`${_.getEndpoint('changePassword')}/${passwordData['studentId']}`, {
 				method: 'PUT',
 				headers: _.baseHeaders,
 				body: JSON.stringify(data)
@@ -568,6 +564,27 @@ class _Model {
 				}
 			} else {
 				_.wrongRequest('updateStudentPassword', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+
+	checkEmail(email){
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('checkEmail')}/${email}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('updateAdmin', response);
+				}
+			} else {
+				_.wrongRequest('updateAdmin', rawResponse)
 			}
 			resolve(null);
 		});

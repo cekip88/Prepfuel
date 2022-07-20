@@ -114,7 +114,7 @@ export class AdminPage extends G {
 
 		setTimeout(()=>{
 			_.navigationInit();
-		},350)
+		},1500)
 	}
 
 	showSuccessPopup(text) {

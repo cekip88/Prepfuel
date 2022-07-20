@@ -103,7 +103,7 @@ class StudentPage extends G{
 		console.log(_.f('.navigate-list'))
 		setTimeout(()=>{
 			_.navigationInit();
-		},350)
+		},1500)
 	}
 	
 }

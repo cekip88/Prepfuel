@@ -663,14 +663,17 @@ g-modaler
 
 .schedule
 	&-list
-		margin: 10px 0
+		margin: 20px 0
 	&-item
 		@extend %dfa
 		margin-bottom: 20px
 		flex-direction: column
+		&:first-child
+			.info
+				width: 101px
 		&:last-child
 			margin-bottom: 0
-		.icon
+		.inner
 			@extend %dfc
 			@extend %fdc
 			+wh(154px)
@@ -689,10 +692,10 @@ g-modaler
 					fill: none
 					stroke-dashoffset: -167
 		.count
-			font: $fz30 $p_medium
+			font: $fz30 $p_bold
 			color: rgb($neutral-800)
 		.info
-			width: 101px
+			width: 102px
 			text-align: center
 			letter-spacing: -.01em
 			font-family: $p_reg
@@ -704,11 +707,19 @@ g-modaler
 		line-height: 20px
 		text-transform: capitalize
 	&-footer
+		@extend %dfa
+		flex-wrap: wrap
 		&-button
 			@extend %dfa
+			margin-right: 12px
 			padding: 10px
-			border: 2px dashed rgb($neutral-300)
 			border-radius: 8px
+			border: 2px dashed transparent
+			transition: .35s ease
+			&.active
+				border-color: rgb($neutral-300)
+				.arrow
+					transform: rotate(-45deg) translate(-1px,1px)
 			.icon
 				+wh(14px)
 				svg
@@ -722,6 +733,7 @@ g-modaler
 				border-top: 2px solid rgb($neutral-600)
 				border-right: 2px solid rgb($neutral-600)
 				transform: rotate(135deg) translate(-2px,2px)
+				transition: .35s ease
 
 
 .calendar

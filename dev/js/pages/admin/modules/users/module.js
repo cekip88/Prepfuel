@@ -73,7 +73,8 @@ export class UsersModule extends AdminPage {
 				'changeProfileTab','updateStudent','updateAdmin',
 				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab','cancelParentProfile',
 				'showHistoryDetails','createNewParent','assignFirstParent',
-				'notificationNavigate','showAddCard','showAddBillingAddress','searchUsers'
+				'notificationNavigate','showAddCard','showAddBillingAddress','searchUsers',
+				'checkEmail',
 			]);
 
 		_.initialState = {
@@ -931,6 +932,20 @@ export class UsersModule extends AdminPage {
 		if (callback) {
 			let callBackDetails = callback.split(':');
 			G_Bus.trigger(callBackDetails[0],callBackDetails[1],{item});
+		}
+	}
+	async checkEmail({item}){
+		const _ = this;
+		let
+			value = item.value,
+			text = item.nextElementSibling;
+		let response = await Model.checkEmail(value);
+		if (response.substr(response.length - 4) !== 'free') {
+			item.setMarker('red');
+			text.style = 'color: red;'
+		} else {
+			item.setMarker();
+			text.style = 'display:none;'
 		}
 	}
 	// Validation methods end

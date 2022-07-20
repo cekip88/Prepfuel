@@ -793,7 +793,8 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">Email</label>
 						</div>
-						<g-input type="text" name="email"  value="${_.studentInfo['email'] ?? ''}" class="g-form-item" data-input="${_.componentName}:fillStudentInfo" classname="form-input adding-inpt"></g-input>
+							<g-input type="text" name="email" value="${_.studentInfo['email'] ?? ''}" class="g-form-item" data-outfocus="${_.componentName}:checkEmail" data-input="${_.componentName}:fillStudentInfo" classname="form-input adding-inpt"></g-input>
+							<span class="form-label-desc" style="display:none;">Email is not free</span>
 						</div>
 				</div>
 				<div class="adding-section">
