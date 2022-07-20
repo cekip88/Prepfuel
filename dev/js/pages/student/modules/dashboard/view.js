@@ -55,9 +55,9 @@ export const view = {
 		//dashSchedule = {'practice': {'daysLeft':2},'ISEE': {'daysLeft':14}}
 		for (let key in dashSchedule) {
 			let item = dashSchedule[key];
-			let title = `Next ${dashSchedule.title}`;
+			let title = `Next ${dashSchedule[key].title}`;
 			if (key == 'practice') title += ' practice';
-			if (key == 'ISEE') title = 'Your ISEE Date';
+			if (key == 'test') title = 'Your ISEE Date';
 			tpl += `
 				<li class="schedule-item">
 					<h5 class="schedule-title"><span>${title}</span></h5>
