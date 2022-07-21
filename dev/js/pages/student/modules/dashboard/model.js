@@ -34,7 +34,22 @@ export class _Model{
 				let response = await rawResponse.json();
 				resolve(response['response']);
 			}else{
-				resolve({});
+				resolve(null);
+			}
+		});
+	}
+	deleteSchedule(){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['schedule']}`,{
+				method: 'DELETE',
+				headers:_.baseHeaders
+			});
+			if(rawResponse.status <= 210){
+				let response = await rawResponse.json();
+				resolve(response['response']);
+			}else{
+				resolve(null);
 			}
 		});
 	}
