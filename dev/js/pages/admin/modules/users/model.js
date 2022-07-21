@@ -572,7 +572,7 @@ class _Model {
 	checkEmail(email){
 		const _ = this;
 		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.getEndpoint('checkEmail')}/${email}`, {
+			let rawResponse = await fetch(`${_.getEndpoint('checkEmail')}${email}`, {
 				method: 'GET',
 				headers: _.baseHeaders,
 			});
@@ -581,10 +581,10 @@ class _Model {
 				if(response['status'] == 'success') {
 					resolve(response['response']);
 				} else {
-					_.wrongResponse('updateAdmin', response);
+					_.wrongResponse('checkEmail', response);
 				}
 			} else {
-				_.wrongRequest('updateAdmin', rawResponse)
+				_.wrongRequest('checkEmail', rawResponse)
 			}
 			resolve(null);
 		});

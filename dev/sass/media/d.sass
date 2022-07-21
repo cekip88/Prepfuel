@@ -22,6 +22,8 @@
 		white-space: nowrap
 		&:last-child
 			margin-right: 0
+		&.small
+			font-size: $fz12
 		&.active
 			padding: 8px 16px
 			border-radius: 12px
@@ -88,21 +90,22 @@
 			letter-spacing: -.02em
 
 .col
-	width: 588px
+	max-width: 588px
+	margin-left: 24px
 	&.wide
-		width: 894px
+		max-width: 894px
 	&.narrow
-		width: 282px
+		max-width: 282px
 		.block
 			padding: 24px 16px
 	&.d384
-		width: 384px
+		max-width: 384px
 	&.d486
-		width: 486px
+		max-width: 486px
 	&.d690
-		width: 690px
+		max-width: 690px
 	&.d792
-		width: 792px
+		max-width: 792px
 .modal
 	+w(calc($desk - 64px))
 	&-title
@@ -125,10 +128,11 @@
 			+wh(15px)
 	&-white-blue
 		.button-icon
-			transition: .35s ease
+			@extend %transition-d
 		&:hover
 			.button-icon
 				transform: rotate(180deg)
+
 
 
 
@@ -253,7 +257,7 @@
 						width: 100%
 						left: 0
 		&-back
-			transition: .35s ease
+			@extend %transition-d
 			span:after
 				background-color: rgb($neutral-400)
 			&:hover
@@ -601,7 +605,7 @@ thead.tbl-head
 .success-label
 	top: 240px
 	button
-		transition: .35s ease
+		@extend %transition-d
 		&:hover
 			transform: rotate(180deg)
 
@@ -700,3 +704,29 @@ thead.tbl-head
 		margin-right: 31px
 		&:last-child
 			margin-right: 0
+	&-footer
+		&-button
+			&,.text,.arrow,.icon svg
+				@extend %transition-d
+			&:hover
+				background-color: rgb($neutral-800)
+				border: 2px solid rgb($neutral-800)
+				.text
+					color: rgb($white)
+				.arrow
+					border-color: rgb($white)
+				.icon svg
+					fill: rgb($white)
+
+
+.practice
+	&-title
+		font-size: $fz20
+		line-height: 30px
+	&-block
+		&-title
+			line-height: 21px
+		&-subtitle
+			span
+				display: block
+				margin-top: 8px

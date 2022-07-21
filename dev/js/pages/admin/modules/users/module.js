@@ -942,6 +942,7 @@ export class UsersModule extends AdminPage {
 		let response = await Model.checkEmail(value);
 		if (response.substr(response.length - 4) !== 'free') {
 			item.setMarker('red');
+			text.textContent = 'User with this email is already exists';
 			text.style = 'color: red;'
 		} else {
 			item.setMarker();

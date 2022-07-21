@@ -42,6 +42,10 @@ export class DashboardModule extends StudentPage{
 	
 	async domReady() {
 		const _ = this;
+		_.navigate({
+			item:document.querySelector('.navigate-list '),
+			event:{target:document.querySelector('.dashboard')}
+		})
 		if( _.subSection === 'overview' ){
 			_.fillScheduleBlock();
 		}
@@ -55,9 +59,9 @@ export class DashboardModule extends StudentPage{
 		console.log(schedule);
 		let
 			scheduleTpl = _.scheduleBlock(schedule),
-			scheduleCont = document.querySelector('#scheduleCont');
-		_.clear(scheduleCont)
-		scheduleCont.append(_.markup(scheduleTpl))
+			scheduleList = document.querySelector('#scheduleList');
+		_.clear(scheduleList)
+		scheduleList.append(_.markup(scheduleTpl))
 	}
 	drawCircleGraphic(item,color){
 		const _ = this;

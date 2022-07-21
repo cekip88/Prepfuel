@@ -332,6 +332,14 @@ export default class GInput extends GComponent {
 
 		return {lessValue,isThatMonth};
 	}
+	setDisabled(){
+		const _ = this;
+		_.querySelector('.inpt-value').setAttribute('disabled','')
+	}
+	removeDisabled(){
+		const _ = this;
+		_.querySelector('.inpt-value').removeAttribute('disabled')
+	}
 
 	getDate(value){
 		const _ = this;
@@ -862,7 +870,8 @@ export default class GInput extends GComponent {
 			svg: _.attr('svg'),
 			xlink: _.attr('xlink'),
 			value: _.attr('value'),
-			range: _.attr('range')
+			range: _.attr('range'),
+			disabled: _.attr('disabled'),
 		});
 		if (_.isDate()) {
 			_.setAttribute('style','position:relative;')

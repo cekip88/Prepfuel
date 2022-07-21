@@ -14,7 +14,15 @@ export const view = {
 			</div>
 			<div class="section row">
 				<div class="block col" id="scheduleCont">
-					<img src="/img/loader.gif">
+					<div class="block-title-control">
+						<h5 class="block-title"><span>Practice Schedule</span></h5>
+						<button class="button" data-click="${_.componentName}:deleteSchedule"><span>Delete</span></button>
+						<button class="button" data-click="${_.componentName}:editSchedule"><span>Edit</span></button>
+					</div>
+					<ul class="schedule-list loader-parent" id="scheduleList">
+						<img src="/img/loader.gif">
+					</ul>
+					${_.scheduleFooterTpl()}
 				</div>
 			</div>
 		`;
@@ -43,22 +51,11 @@ export const view = {
 		let
 			practiceDate = dashSchedule['practiceTest'] ? new Date(dashSchedule['practiceTest']['date']) : undefined,
 			testDate = dashSchedule['test'] ? new Date(dashSchedule['test']['date']) : undefined;
-		let tpl = `
-			<div class="block-title-control">
-				<h5 class="block-title"><span>Practice Schedule</span></h5>
-				<button class="button" data-click="${_.componentName}:deleteSchedule"><span>Delete</span></button>
-				<button class="button" data-click="${_.componentName}:editSchedule"><span>Edit</span></button>
-			</div>
-			<ul class="schedule-list">`;
+		let tpl = ``;
 		let itemsData = _.fillScheduleItemsTpl(dashSchedule);
 		for (let item of itemsData) {
 			tpl += _.scheduleItemTpl(item);
 		}
-		console.log(dashSchedule)
-		tpl += `
-			</ul>
-			${_.scheduleFooterTpl()}
-		`;
 		return tpl;
 	},
 	scheduleItemTpl({title,count,info,item}){
@@ -87,6 +84,10 @@ export const view = {
 					<span class="icon"><svg><use xlink:href="#list"></use></svg></span>
 					<span class="text">Schedule</span>
 					<span class="arrow"></span>
+				</button>
+				<button class="schedule-footer-button last">
+					<span class="icon"><svg><use xlink:href="#question"></use></svg></span>
+					<span class="text">Practice Schedule FAQ</span>
 				</button>
 			</div>
 		`

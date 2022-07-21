@@ -14,7 +14,7 @@ export const view = {
 						</button>
 					</div>
 				</div>
-				<div class="section row">
+				<div class="section">
 					<div class="block test-block">
 						<div class="test-header">
 							<h3 class="block-title test-title"><span>Step <i id="step-item">1</i> of 3 - Choose your test date</span></h3>

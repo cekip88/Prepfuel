@@ -93,11 +93,11 @@ export const view = {
 			</td>
 			<td>
 				<div class="tbl-item right">
-					<button class="users-btn button">
+					<!--<button class="users-btn button">
 						<svg class="button-icon">
 							<use xlink:href="#write"></use> 
 						</svg>
-					</button>
+					</button>-->
 					<button class="users-btn button" data-click="${_.componentName}:showRemoveUserPopup"  data-id="${user._id}">
 						<svg class="button-icon">
 							<use xlink:href="#trash"></use>
@@ -111,7 +111,6 @@ export const view = {
 	},
 	studentsBodyRowTpl(plan,rowData,user){
 		const _ = this;
-		console.log(plan,rowData,user);
 		let course = plan && plan['course'] ? plan['course'].title + ' ' + plan['level']['title'] : '';
 		let avatar = rowData.avatar ? rowData.avatar.avatar.split('.')[0] : '';
 		let tpl = `
@@ -1262,11 +1261,11 @@ export const view = {
 			</td>
 			<td>
 				<div class="tbl-item right actions">
-					<button class="users-btn button">
+					<!--<button class="users-btn button">
 						<svg class="button-icon">
 							<use xlink:href="#write"></use>
 						</svg>
-					</button>
+					</button>-->
 					<button class="users-btn button" data-click="${_.componentName}:showRemoveParentPopup" data-id="${rowData._id}">
 						<svg class="button-icon">
 							<use xlink:href="#trash"></use>
@@ -1451,7 +1450,7 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Official test date</label>
 					</div>
-					<g-input type="date" name="testDate" format="month DD, YYYY" icon="false" value="${testDate}" class="g-form-item" classname="form-input adding-inpt"></g-input>
+					<g-input type="date" name="testDate" format="month DD, YYYY" icon="false" value="${testDate}" class="g-form-item" classname="form-input adding-inpt" disabled></g-input>
 					</div>
 			</div>
 			${_.choiseSelectStudent(choiceData,'Application School List')}
@@ -2001,7 +2000,7 @@ export const view = {
 							<div class="form-label-row">
 								<label class="form-label">Date registered</label>
 							</div>
-							<g-input type="text" name="testDate"  data-input="${_.componentName}:fillStudentInfo"  value='${_.createdAtFormat(_.studentInfo["createdAt"])}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+							<g-input type="text" name="testDate"  data-input="${_.componentName}:fillStudentInfo"  value='${_.createdAtFormat(_.studentInfo["createdAt"])}' class="g-form-item" classname="form-input adding-inpt" disabled></g-input>
 							</div>
 					</div>
 					<div class="adding-section">
@@ -2912,11 +2911,11 @@ export const view = {
 			</td>
 			<td>
 				<div class="tbl-item right actions">
-					<button class="users-btn button">
+					<!--<button class="users-btn button">
 						<svg class="button-icon">
 							<use xlink:href="#write"></use>
 						</svg>
-					</button>
+					</button>-->
 					<button class="users-btn button" data-click="${_.componentName}:showRemoveParentPopup"  data-id="${rowData._id}">
 						<svg class="button-icon">
 							<use xlink:href="#trash"></use>

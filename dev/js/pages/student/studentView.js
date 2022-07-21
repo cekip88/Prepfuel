@@ -89,46 +89,16 @@ export const studentView = {
 						<button class="navigate-item tests" data-click="StudentPage:changeSection;StudentPage:navigate" section="/student/tests"><span>Tests</span></button>
 						<button class="navigate-item review" data-click="StudentPage:changeSection" section="/student/review"><span>Review</span></button>
 						<button class="navigate-item bookmarks" data-click="StudentPage:changeSection" section="/student/bookmarks"><span>Bookmarks&Notes</span></button>
-						<button class="navigate-item tips" data-click="StudentPage:changeSection" section="/student/tips"><span>Tips&Strategies</span></button>
-						<div class="navigate-label" style="width: 210px;left: 15px;">
+						<button class="navigate-item tips-button" data-click="StudentPage:changeSection" section="/student/tips"><span>Tips&Strategies</span></button>
+						<div class="navigate-label" style="left: 15px;">
 							<div class="navigate-label-left"></div>
 							<div class="navigate-label-right"></div>
 						</div>
 					</nav>
-					</div>
-			</section>
-			`;
-	},
-	sectionHeaderTpl({title,subtitle,buttonsData,gap = true}){
-		let tpl = buttonsData ? `<div class="section-header ${gap ? 'block-gap' : ''}">` : '';
-
-		if (!title && subtitle) {
-			tpl += `<h6 class="admin-subtitle ${!buttonsData && gap ? "block-gap" : ''}"><span>${subtitle}</span></h6>`
-		} else if (!subtitle && title) {
-			tpl += `<h5 class="admin-title ${!buttonsData && gap ? "block-gap" : ''}"><span>${title}</span></h5>`
-		} else if (title && subtitle) {
-			tpl += `
-				<div ${!buttonsData && gap ? 'class="block-gap"' : ''}>
-					<h5 class="admin-title"><span>${title}</span></h5>
-					<h6 class="admin-subtitle"><span>${subtitle}</span></h6>
 				</div>
-			`
-		}
-
-		if (buttonsData) {
-			tpl += `<div class="section-buttons">`;
-			let buttonAction = buttonsData.action, pos = 0;
-			for(let button of buttonsData['buttons']){
-				tpl += `<button ${button['action'] ?? buttonAction ?? ''} class="section-button ${button['active'] ?? ''}" data-pos="${button['pos'] ?? pos}"><span>${button['title']}</span></button>`;
-				pos++;
-			}
-			/*	for (let key in buttons) {
-					tpl += `<button class="section-button ${buttons[key]}"><span>${key}</span></button>`
-				}*/
-			tpl += '</div>';
-		}
-
-		tpl += buttonsData ? '</div>' : '';
-		return tpl
+			</section> 
+		`;
 	},
+
+
 }

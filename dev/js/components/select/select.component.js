@@ -379,7 +379,7 @@ export default class GSelect extends GComponent {
 			  padding: 5px 10px;
 			}
 			.g-select-title {
-				margin-right: 23px;
+				//margin-right: 23px;
 				font: 14px "Roboto-Medium";
 				color: #5E6278;
 			}	
@@ -692,6 +692,49 @@ export default class GSelect extends GComponent {
 			}
 			.form-row-select .g-select-head{
 				height: 40px;
+			}
+			
+			.head-select .g-select-head{
+				justify-content: space-between;
+			}
+			.head-select .g-select-title {
+				font: 12px "Roboto-Bold";
+				color: #fff;
+			}
+			.head-select .g-select-body {
+				width: 92px;
+				padding: 0 12px;
+				background-color: #fff;
+				align-items: center;
+				top: calc(100% + 6px);
+				right: 0;
+				left: initial;
+			}
+			.head-select .g-select-head:before {
+				width: 10px;
+				height: 10px;
+				background-color: transparent;
+				transform: rotate(45deg);
+				border-radius: 2px;
+				content: '';
+				position: absolute;
+				bottom: -12px;
+				right: 24px;
+			}
+			.head-select.active .g-select-body {
+				padding: 12px;
+			}
+			.head-select.active .g-select-head:before {
+				background-color: #fff;
+			}
+			.head-select .g-select-option {
+				min-width: initial;
+				justify-content: center;
+				border-radius: 8px;
+			}
+			.head-select .g-select-option.active {
+				background-color: #F5F8FA;
+				color: #00A3FF;
 			}
 		`;
 	}

@@ -16,20 +16,24 @@ export default {
 		</label>`,
 	'tip': (tip) =>
 		`${tip ? '<span class="inpt-tip">'+tip+'</span>' : ''}`,
-	'input': ( data={})=>`
-		<label class="inpt ${data['className'] ?? ''}">
-			${data['title'] ? '<h6 class="inpt-title">'+data['title']+'</h6>' : ''}
-			<input
-				${data['placeholder'] ? 'placeholder="'+data['placeholder']+'"' : ''}
-				${data['value'] ? 'value="'+data['value'] +'"' : ''}
-				${ (data['type']=='phone') || (data['type']=='numeric') ? 'data-keydown="doKeyDown"' : '' }
-				type="${data['type']}"
-				class="inpt-value"
-				data-input="doInput"
-				data-focusout="doFocusOut"
-				data-click="getCaretPosition"
-			> 
-		</label>`,
+	'input': ( data= {})=>{
+		return `
+			<label class="inpt ${data['className'] ?? ''}">
+				${data['title'] ? '<h6 class="inpt-title">'+data['title']+'</h6>' : ''}
+				<input
+					${data['disabled'] != undefined ? 'disabled' : ''}
+					${data['placeholder'] ? 'placeholder="'+data['placeholder']+'"' : ''}
+					${data['value'] ? 'value="'+data['value'] +'"' : ''}
+					${ (data['type']=='phone') || (data['type']=='numeric') ? 'data-keydown="doKeyDown"' : '' }
+					type="${data['type']}"
+					class="inpt-value"
+					data-input="doInput"
+					data-focusout="doFocusOut"
+					data-click="getCaretPosition"
+				> 
+			</label>
+		`
+	},
 	'check': ( data={})=>{
 		let items= ``;
 		if(!data['items'] || !data['items'].length) return '<span class="inpt-checkbox-items-fail">Items not found</span>';

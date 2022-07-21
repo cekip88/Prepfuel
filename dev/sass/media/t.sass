@@ -35,14 +35,18 @@
 		height: 100%
 
 .col
+	margin-left: 12px
+	width: 100%
+	&:first-child
+		margin-left: 0
 	&.t50
-		width: calc(50% - 12px)
+		max-width: calc(50% - 12px)
 	&.t260
-		width: 260px
+		max-width: 260px
 	&.t456
-		width: 456px
+		max-width: 456px
 	&.t358
-		width: 358px
+		max-width: 358px
 .block
 	margin-top: 24px
 	padding: 30px
@@ -450,6 +454,19 @@
 			height: 15px
 			margin: 0 5px
 			border-bottom: 2px dotted
+	&-quiz
+		&-list
+			padding-top: 16px
+		&-item
+			margin-top: 20px
+			padding: 19px 16px
+			flex-wrap: nowrap
+			&-title
+				width: initial
+				margin-bottom: 0
+				margin-right: auto
+			&-button
+				margin-left: 63px
 
 
 .remove-btn

@@ -100,10 +100,9 @@ class StudentPage extends G{
 			await _.moduleRender(params);
 			_.currentSection = '/student/' + params[0];
 		}
-		console.log(_.f('.navigate-list'))
 		setTimeout(()=>{
 			_.navigationInit();
-		},1500)
+		},1000)
 	}
 	
 }

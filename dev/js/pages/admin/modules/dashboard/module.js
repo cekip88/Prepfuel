@@ -80,7 +80,7 @@ export class DashboardModule extends AdminPage{
 		};
 		_.coursesVariants = {
 			title:'Course',
-			buttons:{'ISEE':'active', 'SSAT':'', 'SHSAT':''},
+			buttonsData: {buttons:[{title:'ISEE',class:'active'},{title:'SSAT'},{title:'SHSAT'}]},
 			gap:false,
 		};
 		_.systemStats = {
@@ -699,7 +699,6 @@ export class DashboardModule extends AdminPage{
 		_.switchSubNavigate();
 	}
 
-
 	setInteger(number){
 		const _ = this;
 		let string = '';
@@ -720,7 +719,6 @@ export class DashboardModule extends AdminPage{
 
 		return string;
 	}
-
 	
 	newUsersFill(data){
 		const _ = this;

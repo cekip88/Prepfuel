@@ -707,11 +707,11 @@ g-modaler
 		line-height: 20px
 		text-transform: capitalize
 	&-footer
-		@extend %dfa
-		flex-wrap: wrap
+		@extend %df
+		flex-direction: column
 		&-button
 			@extend %dfa
-			margin-right: 12px
+			margin-bottom: 10px
 			padding: 10px
 			border-radius: 8px
 			border: 2px dashed transparent
@@ -724,10 +724,13 @@ g-modaler
 				+wh(14px)
 				svg
 					+wh(100%)
+					fill: rgb($neutral-600)
 			.text
 				margin: 0 12px
 				color: rgb($neutral-600)
-				font: 12px $f_medium
+				font: 12px $f_bold
+				&:last-child
+					margin-right: 0
 			.arrow
 				+wh(9px)
 				border-top: 2px solid rgb($neutral-600)
@@ -2552,80 +2555,6 @@ g-modaler
 			background-color: rgb($blue)
 
 
-.practice
-	&-schedule
-		&-text
-			margin-bottom: 20px
-			.test-subtitle
-				margin-top: 7px
-		&-rows
-			margin-bottom: 20px
-		&-row
-			@extend %dfa
-			@extend %fw
-			padding: 10px 0
-			.blue-icon
-				margin-right: 20px
-			.line
-				width: 100%
-				height: 2px
-				margin-top: 12px
-				background-color: rgb($neutral-300)
-		&-right
-			width: 100%
-			max-width: 404px
-			margin-left: auto
-		&-title
-			font-size: $fz15
-			font-family: $p_reg
-			&.bold
-				font-family: $f_bold
-			&:last-child
-				margin-left: auto
-		&-date
-			margin-top: 10px
-			&,g-input
-				width: 100%
-			span
-				font-size: $fz15
-				font-family: $p_semi
-	&-desc
-		&-list
-			padding-top: 20px
-		&-item
-			margin-bottom: 13px
-			&-button
-				@extend %df
-				&.active,&:hover
-					.img
-						background-color: rgb($blue)
-						svg
-							fill: rgb($white)
-				.img
-					@extend %dfc
-					@extend %transition
-					+wh(32px)
-					margin-right: 15px
-					border-radius: 100%
-					background-color: rgb($turquoise-light)
-					svg
-						@extend %transition
-						+wh(15px)
-						fill: rgb($turquoise)
-				.desc
-					@extend %df
-					@extend %fdc
-					align-items: flex-start
-					&-title
-						font-family: $p_semi
-						line-height: $fz21
-					&-text
-						font-family: $p_reg
-						font-size: $fz13
-						color: rgb($neutral-400)
-						line-height: $fz19
-
-
 .blue-icon
 	+wh(48px)
 	padding: 10px
@@ -4227,3 +4156,116 @@ div.tbl-head
 				padding: 9px 16px
 				background-color: #F6F8FA
 				border-radius: 6px
+
+
+.practice
+	&-title
+		font-family: $p_semi
+	&-schedule
+		&-text
+			margin-bottom: 20px
+			.test-subtitle
+				margin-top: 7px
+		&-rows
+			margin-bottom: 20px
+		&-row
+			@extend %dfa
+			@extend %fw
+			padding: 10px 0
+			.blue-icon
+				margin-right: 20px
+			.line
+				width: 100%
+				height: 2px
+				margin-top: 12px
+				background-color: rgb($neutral-300)
+		&-right
+			width: 100%
+			max-width: 404px
+			margin-left: auto
+		&-title
+			font-size: $fz15
+			font-family: $p_reg
+			&.bold
+				font-family: $f_bold
+			&:last-child
+				margin-left: auto
+		&-date
+			margin-top: 10px
+			&,g-input
+				width: 100%
+			span
+				font-size: $fz15
+				font-family: $p_semi
+	&-desc
+		&-list
+			padding-top: 20px
+		&-item
+			margin-bottom: 13px
+			&-button
+				@extend %df
+				&.active,&:hover
+					.img
+						background-color: rgb($blue)
+						svg
+							fill: rgb($white)
+				.img
+					@extend %dfc
+					@extend %transition
+					+wh(32px)
+					margin-right: 15px
+					border-radius: 100%
+					background-color: rgb($turquoise-light)
+					svg
+						@extend %transition
+						+wh(15px)
+						fill: rgb($turquoise)
+				.desc
+					@extend %df
+					@extend %fdc
+					align-items: flex-start
+					&-title
+						font-family: $p_semi
+						line-height: $fz21
+					&-text
+						font-family: $p_reg
+						font-size: $fz13
+						color: rgb($neutral-400)
+						line-height: $fz19
+	&-block
+		&-title
+			letter-spacing: -.02em
+	&-quiz
+		&-list
+			padding-top: 10px
+		&-item
+			@extend %dfa
+			flex-wrap: wrap
+			padding: 10px
+			margin-top: 10px
+			border-radius: 8px
+			background-color: rgb($viol-light)
+			&:first-child
+				margin-top: 0
+			&-title
+				width: 100%
+				margin-bottom: 20px
+				font: $fz15 $p_semi
+				color: rgb($viol)
+				text-align: left
+			&-status
+				padding: 6px 12px
+				border-radius: 6px
+				color: rgb($viol)
+				font: $fz12 $f_bold
+				border: 1px solid rgb($viol)
+				&.completed
+					background-color: rgba(114,57,234,.15)
+			&-button
+				width: 106px
+				margin-left: auto
+				padding: 12px 20px
+				border-radius: 9px
+				background-color: rgb($viol)
+				color: rgb($white)
+				font: $fz15 $f_medium
