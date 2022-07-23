@@ -107,6 +107,7 @@ export class UsersModule extends AdminPage {
 				update = item.hasAttribute('rerender');
 			}
 			let tableData = await Model.getUsers({role:_.subSection,update: update});
+			console.log(tableData)
 			_.fillUserTable(tableData);
 
 			_.studentInfo = {};

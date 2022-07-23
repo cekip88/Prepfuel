@@ -212,11 +212,10 @@ export class G extends G_G{
 
 
 
-	sectionHeaderTpl({title,subtitle,buttonsData = null,titlesData = {},gap = true}){
-		let tpl = buttonsData ? `<div class="section-header ${gap ? 'block-gap' : ''}">` : '';
+	sectionHeaderTpl({title,subtitle,titlesData = {},buttonsData = null,icon= null,gap = true}){
+		let tpl = buttonsData || icon ? `<div class="section-header ${gap ? 'block-gap' : ''} ${icon ? 'with-icon' : ''}">` : '';
 
 		let titleTpl = `<h5 class="admin-title ${titlesData['titleCls'] ?? ''} ${!buttonsData && gap ? "block-gap" : ''}"><span>${title}</span></h5>`;
-
 		let subtitleTpl = '';
 		if (subtitle) {
 			subtitleTpl = `<h6 class="admin-subtitle ${titlesData['subtitleCls'] ?? ''} ${!buttonsData && gap ? "block-gap" : ''}">`;
@@ -230,34 +229,55 @@ export class G extends G_G{
 			subtitleTpl += '</h6>';
 		}
 
-
 		if (!title && subtitle) {
 			tpl += subtitleTpl;
 		} else if (!subtitle && title) {
 			tpl += titleTpl;
 		} else if (title && subtitle) {
 			tpl += `
-				<div class="${!buttonsData && gap ? 'block-gap ' : ''} ${titlesData['contCls'] ?? ''}">
+				<div class="section-titles ${!buttonsData && gap ? 'block-gap ' : ''} ${titlesData['contCls'] ?? ''}">
 					${titleTpl}
 					${subtitleTpl}
 				</div>
 			`
 		}
 
+		if (icon) {
+			tpl += `<div class="section-icon" style="background-color:rgba(${icon.color},.05)"><svg fill="rgb(${icon.color})"><use xlink:href="#${icon.href}"></use></svg></div>`;
+		}
+
 		if (buttonsData) {
 			tpl += `<div class="section-buttons">`;
 			let buttonAction = buttonsData.action, pos = 0;
 			for(let button of buttonsData['buttons']){
-				tpl += `<button ${buttonAction} class="section-button ${button['active'] ?? ''} ${button.class ?? ''}" data-pos="${button['pos'] ?? pos}"><span>${button['title']}</span></button>`;
+				tpl += `<button ${buttonAction ?? ''} class="section-button ${button['active'] ?? ''} ${button.class ?? ''}" data-pos="${button['pos'] ?? pos}"><span>${button['title']}</span></button>`;
 				pos++;
 			}
-			/*	for (let key in buttons) {
-					tpl += `<button class="section-button ${buttons[key]}"><span>${key}</span></button>`
-				}*/
 			tpl += '</div>';
 		}
 
-		tpl += buttonsData ? '</div>' : '';
+		tpl += buttonsData || icon ? '</div>' : '';
 		return tpl
+	}
+	sectionFilterTpl({icon,title,buttonsData}){
+		const _ = this;
+		let tpl = `
+			<div class="block-filter">
+				<h2 class="block-title">
+					${icon ? '<div class="icon"><svg><use xlink:href="#' + icon + '"></use></svg></div>' : ''}
+					<span>${title}</span>
+				</h2>
+				<div class="block-filter-buttons">`
+		for (let buttonInfo of buttonsData) {
+			tpl += `
+				<button 
+					class="block-filter-button ${buttonInfo.cls ?? ''}"
+					${buttonInfo.action ?? ''}
+				><span>${buttonInfo.title}</span></button>`
+		}
+		tpl += `</div>
+			</div>
+		`;
+		return tpl;
 	}
 }

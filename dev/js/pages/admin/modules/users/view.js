@@ -1444,13 +1444,13 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Course</label>
 					</div>
-					<g-input type="text" name="course" value='${course}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+					<g-input type="text" name="course" value='${course}' class="g-form-item" classname="form-input adding-inpt" disabled></g-input>
 					</div>
 				<div class="adding-inpt">
 					<div class="form-label-row">
 						<label class="form-label">Official test date</label>
 					</div>
-					<g-input type="date" name="testDate" format="month DD, YYYY" icon="false" value="${testDate}" class="g-form-item" classname="form-input adding-inpt" disabled></g-input>
+					<g-input type="date" name="testDate" format="month DD, YYYY" icon="false" value="${testDate}" class="g-form-item" classname="form-input adding-inpt"></g-input>
 					</div>
 			</div>
 			${_.choiseSelectStudent(choiceData,'Application School List')}

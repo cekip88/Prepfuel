@@ -2,6 +2,8 @@
 	+w(calc($tablet-large - 70px))
 .section
 	+w($tablet-large)
+	&-button
+		font-family: $p_semi
 .col
 	&.tl716
 		max-width: 716px
@@ -9,6 +11,12 @@
 	padding: 24px 32px
 	&-filter
 		margin-bottom: 24px
+		flex-wrap: nowrap
+		&-buttons
+			width: initial
+			margin-top: 0
+		&-button
+			margin-right: 22px
 	&-header
 		&-item
 			width: calc(25% - 15px)
@@ -185,7 +193,20 @@ g-modaler
 	&-schedule
 		&-row
 			padding: 0 0 12px
-
+	&-table
+		&-head .accuracy,&-row .progress
+			width: 177px
+		&-row
+			&-title
+				font-size: $fz18
+			&-subtitle
+				font-size: $fz16
+				color: rgb($neutral-900)
+			.text
+				font-size: $fz18
+	&-achievement
+		&-item
+			margin-bottom: 40px
 
 .adding
 	&-inner

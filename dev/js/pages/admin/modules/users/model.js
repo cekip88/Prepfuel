@@ -124,6 +124,7 @@ class _Model {
 			});
 			if(rawResponse.status < 210) {
 				let response = await rawResponse.json();
+				console.log(rawResponse,`${_.getEndpoint('usersList')}/?role=${role}&page=${page}&search=${search}`)
 				if(response['status'] == 'success') {
 					_[`${role}sData`] = response;
 					resolve(response);
