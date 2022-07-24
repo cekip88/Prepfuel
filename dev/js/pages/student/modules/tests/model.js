@@ -16,6 +16,7 @@ class _Model{
 		_.testStatus = 'in progress';
 		_.currentSectionPos = 0; // Section position in array section list
 		_.currentSubSectionPos = 0;
+		_.currentTestPos = 0;
 //		_.sectionPos = 0;
 	}
 	get currentSection(){
@@ -26,13 +27,23 @@ class _Model{
 		const _ = this;
 		let questions = [];
 		for(let subSection of _.currentSection['subSections']){
+			/*console.log(subSection['questionData']);
+			if(subSection['questionData']['type'] == 'passage'){
+				questions.push(subSection['questionData']);
+			}else{*/
 			subSection['questionData'].forEach((page,i) => {
-				page['questions'].forEach(quest =>{
-					//questions[quest['_id']] = quest;
-					questions.push(quest);
-				});
+				if(page['type'] == 'passage'){
+					questions.push(page);
+				}else{
+					page['questions'].forEach(quest =>{
+						//questions[quest['_id']] = quest;
+						questions.push(quest);
+					});
+				}
 			});
+			
 		}
+		console.log(questions);
 		return questions;
 	}
 	get questionsDatas(){
@@ -72,6 +83,10 @@ class _Model{
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					_.tests = response['response']['tests'];
+					console.log(_.tests);
+					_.tests.sort( (a,b)=>{
+						return a['testNumber'] - b['testNumber'];
+					});
 					await Model.getTest();
 					resolve(_.tests);
 				}
@@ -88,7 +103,9 @@ class _Model{
 		*     _id title description testTime testType testStandard sections number
 		*   }
 		* */
-		let testId = _.tests[0]['_id']; // temp test id
+		let testId = _.tests[_.currentTestPos]['_id'];
+		
+		// temp test id
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['tests']}/${testId}`,{
 				method: 'GET',
@@ -114,14 +131,18 @@ class _Model{
 			break;
 		}
 		return question;*/
+	/*	if(_.currentSection['subSections'][0]['_id'] == "62d78f71c58621b0b2ed446b"){
+			console.log(_.currentSection['subSections'][0]);
+			return _.currentSection['subSections'][0]['questionData'][0];
+		}*/
 		return  _.questions[0]; //_.currentSection['subSections'][_.currentSectionPos]['questionDatas'][0];
 	}
 	async start(){
 		const _ =this;
-		if(localStorage.getItem('resultId')){
-			_.test['resultId'] = localStorage.getItem('resultId');
-			return Promise.resolve(_.test['resultId']);
-		}
+/*		if(localStorage.getItem('resultId')){
+			_.test['resultId'] = localStorage.getItem('resultId');*/
+			//return Promise.resolve(_.test['resultId']);
+	//	}
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['create']}/${_.test['_id']}`,{
 				'method': 'POST',
@@ -254,6 +275,13 @@ class _Model{
 				}
 			}
 		});
+	}
+	
+	
+	async changeTest(pos){
+		const _ = this;
+		_.currentTestPos = pos;
+		await _.getTest();
 	}
 	
 	currentQuestionPosById(questionId){

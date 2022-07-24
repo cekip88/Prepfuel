@@ -244,7 +244,6 @@ export const view = {
 	async scoreCarcass(){
 		const _ = this;
 		let summary = await Model.getTestSummary();
-//		console.log(summary);
 		return	`
 			<div class="section">
 				<div class="section-header">
@@ -261,10 +260,10 @@ export const view = {
 					</div>
 					<div class="test-inner">
 						<h5 class="block-title test-title">
-							<span>You finished ${Model.test['title']}</span>
+							<span>You finished ${Model.test['testType']} ${Model.test['testNumber']}</span>
 						</h5>
 						<p class="test-text">
-							${Model.test['description']}
+							${Model.test['description'] ?? ''}
 						</p>
 					<div class="test-result">
 						<div class="test-result-block violet">
@@ -415,7 +414,6 @@ export const view = {
 	},
 	gridQuestion(){
 		const _ = this;
-		
 		let
 			currentQuestion = _._$.currentQuestion,
 			tpl =	`
@@ -595,7 +593,7 @@ export const view = {
 	},
 	async passageQuestion(){
 		const _ = this;
-		
+		console.log(_._$.currentQuestion);
 		let tpl= `
 			<div class="test-inner test-row">
 				<div class="test-col">
@@ -624,6 +622,7 @@ export const view = {
 			}
 			tpl+=`</ul>${_.noteTpl(question)}</div>`;
 		}
+		
 		tpl+=`</div>
 				</div>
 			</div>`;
@@ -827,8 +826,8 @@ export const view = {
 		const _ = this;
 		return `
 			<li class="test-aside-item">
-				<button class="test-aside-btn ${i == 1 ? 'active' : ''}" data-id="${test['_id']}">
-					<h6 class="test-aside-btn-title">Practice test ${i}</h6><span class="test-aside-btn-desc">0 of 4 sections complete</span>
+				<button data-pos="${i-1}" class="test-aside-btn ${i == 1 ? 'active' : ''}" data-id="${test['_id']}" data-click="${_.componentName}:changePracticeTest">
+					<h6 class="test-aside-btn-title">Practice test ${test['testNumber']}</h6><span class="test-aside-btn-desc">0 of 4 sections complete</span>
 					<div class="test-aside-btn-date">
 						<svg>
 							<use xlink:href="#calendar"></use>

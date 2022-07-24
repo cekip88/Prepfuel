@@ -31,15 +31,18 @@ export class TestsModule extends StudentPage{
 			'isGrid','showResults','showSummary','changeSection','setWrongAnswer','setCorrectAnswer','changeQuestion',
 			'jumpToQuestion','jumpToQuestion','saveBookmark','saveNote','changeInnerQuestionId','showForm','deleteNote',
 			'editNote','showTestLabelModal','startTimer','updateStorageTest','saveReport','changeTestSection','enterGridAnswer',
-			'resetTest','domReady'
+			'resetTest','domReady','changePracticeTest'
 		]);
 		//TestModel = new TestModel();
 		_.isLastQuestion = false;
 		_.storageTest = Model.getTestFromStorage();
 		_.types = {
 			'Multiple Choice':'standart',
+			'text':'standart',
 			'text and images':'graphic',
-			'passage':' Full Passage and Questions (450 words)',
+			'text-image':'graphic',
+			'Full Passage and Questions (450 words)':'',
+			'passage':'passage',
 			4:'compare',
 			'Grid-In':'grid'
 		};
@@ -68,24 +71,31 @@ export class TestsModule extends StudentPage{
 				currentQuestion: Model.firstQuestion,
 			});
 			_.currentQuestion = Model.firstQuestion;
-			console.log('Current Question: ',_.currentQuestion);
+			//console.log('Current Question: ',_.currentQuestion);
 			_.fillTestsList();
 		}
 	}
 	
+	fillTestsBody(){
+		const _ = this;
+		let pickList = _.f('#testPickList');
+		pickList.innerHTML = '<img src="/img/loader.gif" alt="Loading...">';
+		_.clear(pickList);
+		pickList.append(_.markup(_.testPickTpl()));
+	}
 	async fillTestsList(){
 		const _ = this;
-		let tests = await Model.getStudentTests();
+		let
+			container = _.f('#testAsideList');
+		container.innerHTML = '<img src="/img/loader.gif" alt="Loading...">';
+		let tests = Model.tests;
 		if(!tests) return void 0;
-		let container = _.f('#testAsideList');
 		_.clear(container);
 		tests.forEach( (test,i)=>{
 			container.append(_.markup(_.testListAsideItemTpl(test,i+1)));
 		});
 		
-		let pickList = _.f('#testPickList');
-		_.clear(pickList);
-		pickList.append(_.markup(_.testPickTpl(tests[0])));
+		_.fillTestsBody();
 	}
 	
 	
@@ -107,6 +117,7 @@ export class TestsModule extends StudentPage{
 			'body': _.flexible(section),
 		};
 		_.subSection = section;
+		console.log(section);
 		if(section == 'score') {
 			if(!Model.isFinished()){
 				console.log('Last answer saved',await _.saveAnswerToDB());
@@ -207,6 +218,16 @@ export class TestsModule extends StudentPage{
 
 	}
 
+	async changePracticeTest({item}){
+		const _ = this;
+		let
+			pos = parseInt(item.getAttribute('data-pos')),
+			id = item.getAttribute('data-id');
+		_.f('.test-aside-btn.active').classList.remove('active');
+		item.classList.add('active');
+		Model.changeTest(pos);
+		_.fillTestsBody();
+	}
 	
 	
 	isGrid(){
@@ -602,8 +623,8 @@ export class TestsModule extends StudentPage{
 	
 	async getQuestionTpl(){
 		const _ = this;
-		console.log(_._$.currentQuestion['questionType']);
-		return await _[`${_.types[_._$.currentQuestion['questionType']]}Question`]();
+		console.log(_._$.currentQuestion);
+		return await _[`${_.types[_._$.currentQuestion['type']]}Question`]();
 	}
 	flexible(section){
 		const _ = this;
