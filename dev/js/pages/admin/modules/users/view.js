@@ -147,11 +147,11 @@ export const view = {
 						<h2 class="block-title">Students (<span class="users-count gusers-count"><img src='/img/loader.gif' class='loader'></span>)</h2>
 						<div class="block-header-item block-header-search">
 							<svg><use xlink:href="#search"></use></svg>
-							<g-input class="block-header-input search-user" type="text" placeholder="Search" classname="form-input form-search" data-input="${_.componentName}:searchUsers" role="student"></g-input>
+							<g-input class="block-header-input search-user" type="text" name="search" placeholder="Search" classname="form-input form-search" data-input="${_.componentName}:searchUsers" role="student"></g-input>
 						</div>
 						<div class="block-header-item block-header-date">
 							<svg><use xlink:href="#calendar"></use></svg>
-							<g-input class="block-header-input block-header-date" range previous type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input>
+							<g-input class="block-header-input block-header-date" range previous type="date" icon="false" format="month DD, YYYY" classname="form-input form-search" data-change="${_.componentName}:filterUsersByDates"></g-input>
 						</div>
 						<div class="block-header-item block-header-select" multiple>
 							<g-select

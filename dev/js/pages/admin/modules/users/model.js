@@ -114,17 +114,22 @@ class _Model {
 			'data': request
 		});
 	}
-	getUsers({role,page = 1,update,search=''}) {
+	getUsers({role,page = 1,update,searchInfo= {}}) {
 		const _ = this;
 		if(!update)	if(_[`${role}sData`]) return Promise.resolve(_[`${role}sData`]);
+		let request = `?role=${role}&page=${page}`;
+		for (let key in searchInfo) {
+			request += `&${key}=${searchInfo[key]}`
+		}
+		console.log(request)
 		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.getEndpoint('usersList')}/?role=${role}&page=${page}&search=${search}`, {
+			let rawResponse = await fetch(`${_.getEndpoint('usersList')}/${request}`, {
 				method: 'GET',
 				headers: _.baseHeaders,
 			});
 			if(rawResponse.status < 210) {
 				let response = await rawResponse.json();
-				console.log(rawResponse,`${_.getEndpoint('usersList')}/?role=${role}&page=${page}&search=${search}`)
+				//console.log(rawResponse,`${_.getEndpoint('usersList')}/?role=${role}&page=${page}&search=${search}`)
 				if(response['status'] == 'success') {
 					_[`${role}sData`] = response;
 					resolve(response);

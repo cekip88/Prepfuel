@@ -49,6 +49,7 @@ export class UsersModule extends AdminPage {
 		_.subSection = 'student';
 		_.validationsSteps = [/*2,3,4,5*/];
 		_.parentSkipped =  false;
+		_.searchInfo = {};
 		_.set({
 			addingStep : 1,
 			assignStep : 1
@@ -73,7 +74,7 @@ export class UsersModule extends AdminPage {
 				'changeProfileTab','updateStudent','updateAdmin',
 				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab','cancelParentProfile',
 				'showHistoryDetails','createNewParent','assignFirstParent',
-				'notificationNavigate','showAddCard','showAddBillingAddress','searchUsers',
+				'notificationNavigate','showAddCard','showAddBillingAddress','searchUsers','filterUsersByDates',
 				'checkEmail',
 			]);
 
@@ -485,9 +486,24 @@ export class UsersModule extends AdminPage {
 		_.parentSkipped = false;
 		_.coursePos = 0;
 	}
-	async searchUsers({item}){
+	searchUsers({item}) {
 		const _ = this;
-		let tableData = await Model.getUsers({role: _.subSection,update: true,search: item.value});
+		if (!_.searchInfo[_.subSection]) _.searchInfo[_.subSection] = {};
+		let name = item.getAttribute('name');
+		_.searchInfo[_.subSection][name] = item.value;
+		_.getSearchUsers(_.searchInfo[_.subSection])
+	}
+	filterUsersByDates({item}){
+		const _ = this;
+		if (!_.searchInfo[_.subSection]) _.searchInfo[_.subSection] = {};
+		let dates = item.value.split('|');
+		_.searchInfo[_.subSection]['startDate'] = dates[0];
+		_.searchInfo[_.subSection]['endDate'] = dates[1] ?? dates[0];
+		_.getSearchUsers(_.searchInfo[_.subSection])
+	}
+	async getSearchUsers(searchInfo){
+		const _ = this;
+		let tableData = await Model.getUsers({role: _.subSection,update: true,searchInfo});
 
 		if(_.subSection == 'student') {
 			_.fillUserTable(tableData);

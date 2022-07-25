@@ -438,6 +438,7 @@ export default class GInput extends GComponent {
 
 		if (!_.isDateRange()) _.notRangeChangeDate(clickData,dateValues);
 		else _.rangeChangeDate(clickData,dateValues);
+		_.triggerChangeEvent();
 	}
 	notRangeChangeDate(clickData,dateValues){
 		const _ = this;
