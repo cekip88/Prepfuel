@@ -22,7 +22,7 @@ class HeaderBlock extends G{
 	}
 	fullHeader(){
 		const _ = this;
-		return `<header class="head">
+		let tpl = `<header class="head">
 			<div class="section">
 				<div class="head-row">
 					<a class="head-logo" href="/">
@@ -38,10 +38,26 @@ class HeaderBlock extends G{
 							<svg>
 								<use xlink:href="/img/sprite.svg#chat"></use>
 							</svg>
-						</button>
-						<div class="head-select-block"><span>Course</span>
-							<g-select class="g-select select head-select" classname="head-select" items='[{"text":"ISEE","value":"isee","active":true},{"text":"SSAT","value":"ssat"},{"text":"SAT","value":"sat"},{"text":"ACT","value":"act"}]'><input type="hidden" name="null" slot="value" value="isee"></g-select>
-						</div>
+						</button>`;
+		let courses = localStorage.getItem('courses');
+		if (courses) {
+			courses = JSON.parse(courses);
+			if (courses.length > 1) {
+				let i = false;
+				tpl += `
+					<div class="head-select-block"><span>Course</span>
+						<g-select class="g-select select head-select" classname="head-select" items='[`;
+				for (let course of courses) {
+					tpl += `{"text":"${course.course.title}","value":"${course.course._id}","active":${!i}}`
+					i = true;
+				}
+				tpl += `
+						]'><input type="hidden" name="null" slot="value" value="isee"></g-select>
+					</div>
+				`;
+			}
+		}
+		tpl += `
 						<div class="head-info">
 							<span class="head-name">${this._$.firstName}</span>
 							<span class="head-position">${this._$.role}</span>
@@ -57,6 +73,7 @@ class HeaderBlock extends G{
 				</div>
 			</div>
 		</header>`;
+		return tpl;
 	}
 	simpleHeader(){
 		return `<header class="head">

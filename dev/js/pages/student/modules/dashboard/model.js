@@ -7,9 +7,25 @@ export class _Model{
 		}
 		_.endpoints = {
 			schedule: `${env.backendUrl}/student/schedule`,
-			dashSchedule: `${env.backendUrl}/student/schedule/dashboard`
+			dashSchedule: `${env.backendUrl}/student/schedule/dashboard`,
+			me: `${env.backendUrl}/user/me`
 		};
 	}
+
+	getMe(){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['me']}`,{
+				method: 'GET',
+				headers:_.baseHeaders
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				resolve(response['response']);
+			}
+		});
+	}
+
 	getSchedule(){
 		const _ = this;
 		return new Promise(async resolve =>{
