@@ -23,14 +23,22 @@ class _Model{
 		const _ = this;
 		return _.test['sections'][_.currentSectionPos];
 	}
+	get questionsLength(){
+		const _ = this;
+		let cnt = 0;
+		for(let subSection of _.currentSection['subSections']){
+			subSection['questionData'].forEach((page,i) => {
+				page['questions'].forEach(quest =>{
+					cnt++;
+				});
+			});
+		}
+		return cnt;
+	}
 	get questions(){
 		const _ = this;
 		let questions = [];
 		for(let subSection of _.currentSection['subSections']){
-			/*console.log(subSection['questionData']);
-			if(subSection['questionData']['type'] == 'passage'){
-				questions.push(subSection['questionData']);
-			}else{*/
 			subSection['questionData'].forEach((page,i) => {
 				if(page['type'] == 'passage'){
 					questions.push(page);
@@ -41,9 +49,7 @@ class _Model{
 					});
 				}
 			});
-			
 		}
-		console.log(questions);
 		return questions;
 	}
 	get questionsDatas(){
@@ -83,7 +89,6 @@ class _Model{
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					_.tests = response['response']['tests'];
-					console.log(_.tests);
 					_.tests.sort( (a,b)=>{
 						return a['testNumber'] - b['testNumber'];
 					});
@@ -104,7 +109,10 @@ class _Model{
 		*   }
 		* */
 		let testId = _.tests[_.currentTestPos]['_id'];
-		
+		let resultId = null;
+		if( _.test ){
+			resultId = _.test['resultId'];
+		}
 		// temp test id
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['tests']}/${testId}`,{
@@ -115,6 +123,7 @@ class _Model{
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					_.test = response['response'];
+					_.test['resultId'] = resultId;
 					resolve(_.test);
 				}
 			}
@@ -169,7 +178,6 @@ class _Model{
 		if(answer){
 			answer['status'] = 'in progress';
 		}
-		console.log(_.test);
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['results']}/${_.test['resultId']}`,{
 				method: 'PUT',
@@ -282,6 +290,7 @@ class _Model{
 		const _ = this;
 		_.currentTestPos = pos;
 		await _.getTest();
+		return Promise.resolve(true);
 	}
 	
 	currentQuestionPosById(questionId){

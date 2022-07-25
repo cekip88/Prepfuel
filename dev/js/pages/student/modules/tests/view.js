@@ -311,10 +311,11 @@ export const view = {
 	},
 	questionHeader(){
 		const _ = this;
+		console.log(Model.test);
 		return new Promise( (resolve) =>{resolve(`
 			<div class="section">
 				<div class="section-header">
-					<h1 class="title">${Model.test.title} - ${Model.currentSection.sectionName}</h1>
+					<h1 class="title">${Model.test.testStandard}-${Model.test.testGrade} &mdash; ${Model.currentSection.sectionName}</h1>
 					<div class="test-timer"><span class="test-timer-value">${Model.test.testTime}</span> minutes left</div>
 					<button class="button-white" data-click="${this.componentName}:changeSection" section="score"><span>Finish this section</span></button>
 				</div>
@@ -357,7 +358,7 @@ export const view = {
 		for(let questionPage of _.questionsPages){
 			for(let question of questionPage['questions']){
 				tpl+=`
-					<li class="questions-item" data-question-id="${question._id}">
+					<li class="questions-item" data-questionPage-id="${questionPage['type'] == 'passage' ? questionPage['_id'] : -1 }" data-question-id="${question._id}" >
 						<span class="questions-number">${cnt++}</span>
 						<button class="questions-variant" data-click="${this.componentName}:jumpToQuestion"></button>
 						<div class="questions-bookmark">
@@ -593,7 +594,6 @@ export const view = {
 	},
 	async passageQuestion(){
 		const _ = this;
-		console.log(_._$.currentQuestion);
 		let tpl= `
 			<div class="test-inner test-row">
 				<div class="test-col">
@@ -603,24 +603,25 @@ export const view = {
 					</div>
 				</div>
 				<div class="test-col">
-					<div class="test-right">
+					<div class="test-right" >
 						<p class="test-text">${_._$.currentQuestion['passageType']}</p>
 				`;
-		let cnt = 0;
+		let cnt = _.questionPos;
 		for(let question of _._$.currentQuestion['questions']){
 			tpl+= `
 					<div class="test-sec">
 					<div class="test-header">
-						<h5 class="block-title test-title"><span>Question ${_.questionPos+1} of ${_.questionsLength}</span></h5>
+						<h5 class="block-title test-title"><span>Question ${cnt+1} of ${_.questionsLength}</span></h5>
 						${_.actionsTpl(question)}
 					</div>
 					<p class="test-text"><span>${question['title']}</span></p>
-					<ul class="answer-list" data-question-id="${question['_id']}">`;
+					<ul class="answer-list" data-question-id="${question['_id']}" id="${question['_id']}">`;
 			for(let answer in question['answers']){
 				let ans = question['answers'][answer];
 				tpl+= await _.answerTpl(question,answer);
 			}
 			tpl+=`</ul>${_.noteTpl(question)}</div>`;
+			cnt++;
 		}
 		
 		tpl+=`</div>

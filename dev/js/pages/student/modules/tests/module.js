@@ -55,6 +55,10 @@ export class TestsModule extends StudentPage{
 		
 		_.datasPos = 0;
 		
+		_.letters = [
+			'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'
+		];
+		
 		_.set({
 			currentSection: 'welcome'
 		});
@@ -100,10 +104,10 @@ export class TestsModule extends StudentPage{
 	
 	
 	
-	get questionsPages(){return Model.currentSection['subSections'][0]['questionData']}
+	get questionsPages(){return Model.currentSection['subSections'][Model.currentSubSectionPos]['questionData']}
 	get questionsLength(){
 		const _ = this;
-		return Model.currentSection['subSections'][0]['questionData'].length;
+		return Model.questionsLength;//currentSection['subSections'][Model.currentSubSectionPos]['questionData'].length;
 		return Model.questions.length;
 	}
 	
@@ -117,7 +121,6 @@ export class TestsModule extends StudentPage{
 			'body': _.flexible(section),
 		};
 		_.subSection = section;
-		console.log(section);
 		if(section == 'score') {
 			if(!Model.isFinished()){
 				console.log('Last answer saved',await _.saveAnswerToDB());
@@ -164,30 +167,31 @@ export class TestsModule extends StudentPage{
 	// Change current question
 	async changeQuestion({ item, event }){
 		const _ = this;
-		let dir = item.getAttribute('data-dir');
-		let index = _.questionPos;
+		let
+			dir = item.getAttribute('data-dir'),
+			index = _.questionPos;
 
-		if(dir == 'prev'){
+		if( dir == 'prev' ){
 			if( index == 0){
 				return void 0;
 			}
 		//	_.currentPos-=1;
-			_.datasPos-=1;
+			//_.datasPos-=1;
 			_.questionPos-=1;
 			_._$.currentQuestion=  Model.questions[index-1]; //_.questionsPages[index-1];
 		}
-		if(dir== 'next'){
-			if( index == _.questionsLength.length-1){
+		if(dir == 'next'){
+			if( index == _.questionsLength.length-1 ){
 				await _.saveAnswerToDB();
 				Model.finishTest({});
 				Model.getTestResultsByResultId();
 				return void 0;
 			}
-			if(!Model.isFinished()){
+			if( !Model.isFinished() ){
 				let test = await _.saveAnswerToDB();
 			}
 			//_.currentPos+=1;
-			_.datasPos+=1;
+		//	_.datasPos+=1;
 			_.questionPos+=1;
 			_._$.currentQuestion=  Model.questions[index+1]; //_.questionsPages[index+1];
 		}
@@ -196,7 +200,12 @@ export class TestsModule extends StudentPage{
 	jumpToQuestion({item,event}){
 		const _ = this;
 		let
-		jumpQuestionPos = Model.currentQuestionPosById(item.parentNode.getAttribute('data-question-id'));
+			jumpQuestionPos = Model.currentQuestionPosById(item.parentNode.getAttribute('data-question-id')),
+			questionPageId = item.parentNode.getAttribute('data-questionpage-id');
+		if(questionPageId !== '-1'){
+			jumpQuestionPos = Model.currentQuestionPosById(questionPageId);
+		}
+		location.hash= item.parentNode.getAttribute('data-question-id');
 		if(_.questionPos == jumpQuestionPos) return void 0;
 		_.questionPos = jumpQuestionPos;
 		_._$.currentQuestion = Model.questions[jumpQuestionPos];
@@ -213,9 +222,7 @@ export class TestsModule extends StudentPage{
 		_.sectionChanged = true;
 		_._$.currentQuestion = Model.currentQuestionData(_.datasPos);
 		
-	
 		
-
 	}
 
 	async changePracticeTest({item}){
@@ -225,7 +232,11 @@ export class TestsModule extends StudentPage{
 			id = item.getAttribute('data-id');
 		_.f('.test-aside-btn.active').classList.remove('active');
 		item.classList.add('active');
-		Model.changeTest(pos);
+		let pickList = _.f('#testPickList');
+		pickList.innerHTML = '<img src="/img/loader.gif" alt="Loading...">';
+		await Model.changeTest(pos);
+		_._$.currentQuestion = await Model.firstQuestion;
+		//_.currentQuestion = _._$.currentQuestion;
 		_.fillTestsBody();
 	}
 	
@@ -418,12 +429,13 @@ export class TestsModule extends StudentPage{
 		//_.currentQuestion = _._$.currentQuestion['questions'][0];// Model.innerQuestion(_.questionPos);
 		return new Promise(  async (resolve) => {
 			let questionData = Model.currentQuestionData(_.questionPos);
+			console.log(questionData);
 			let handle = (answer)=>{
 				return Model.saveAnswer({
 					answer:{
 						sectionName: Model.currentSection['sectionName'],
 						subSectionName: Model.currentSection['subSections'][0]['subSectionName'],
-						questionDatasId: Model.currentQuestionData(_.datasPos)['_id'],
+ 						questionDatasId: Model.currentQuestionData(_.datasPos)['_id'],
 						questionId: answer['questionId'],
 						answer: answer['answer'],
 						bookmark: answer['bookmark'],
@@ -623,7 +635,7 @@ export class TestsModule extends StudentPage{
 	
 	async getQuestionTpl(){
 		const _ = this;
-		console.log(_._$.currentQuestion);
+		console.log(_._$.currentQuestion,Model);
 		return await _[`${_.types[_._$.currentQuestion['type']]}Question`]();
 	}
 	flexible(section){
@@ -638,7 +650,6 @@ export class TestsModule extends StudentPage{
 			if(!cont) return;
 			_.clear(cont);
 			//_.questionPos = Model.questionPos(_.currentPos);
-			
 			cont.append(
 				_.markup(await _.getQuestionTpl()),
 				_.markup(_.questionFooter())
@@ -650,15 +661,15 @@ export class TestsModule extends StudentPage{
 			if( len > 1 ){
 				step= len;
 			}
-			if(_.questionPos < _.questionsLength){
+			if( _.questionPos < _.questionsLength ){
 				_.f('.skip-to-question').textContent = _.questionPos+step;
 			}
-			if(_.questionPos == _.questionsLength-1){
+			if( _.questionPos == _.questionsLength - 1 ){
 				_.changeSkipButtonToFinish();
 				_.isLastQuestion = true;
 			}else if(_.questionPos > 0){
 				_.removeBackToQuestionBtn();
-				_.addBackToQuestionBtn(_.questionPos-1);
+				_.addBackToQuestionBtn(_.questionPos);
 			}
 			
 
@@ -670,9 +681,9 @@ export class TestsModule extends StudentPage{
 				_.clear(questionCont);
 				questionCont.append(_.markup(_.questionsList()));
 			}
+			_.fillCheckedAnswers();
 			if(Model.isFinished()) {
 				if(_.sectionChanged){
-					_.fillCheckedAnswers();
 					_.sectionChanged = false;
 				}
 				_.markAnswers();
@@ -681,8 +692,9 @@ export class TestsModule extends StudentPage{
 			}
 
 			// work on marked answers
+			let currentStorageTest = _.storageTest[ _.currentQuestion['_id'] ];
 			
-			let currentStorageTest = _.storageTest[_.currentQuestion['_id']];
+			_.sectionChanged = false;
 			
 			if(!currentStorageTest) return void 0;
 			if(currentStorageTest['answer']){
@@ -702,10 +714,6 @@ export class TestsModule extends StudentPage{
 					item.setAttribute('disabled', 'disabled');
 				}
 			}
-			
-		
-		
-			
 		},['currentQuestion']);
 	}
 }
