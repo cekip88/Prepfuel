@@ -119,9 +119,15 @@ class _Model {
 		if(!update)	if(_[`${role}sData`]) return Promise.resolve(_[`${role}sData`]);
 		let request = `?role=${role}&page=${page}`;
 		for (let key in searchInfo) {
-			request += `&${key}=${searchInfo[key]}`
+			if (key === 'dates' || searchInfo[key] == 'undefined') continue;
+			if (typeof searchInfo[key] !== 'object') {
+				request += `&${key}=${searchInfo[key]}`
+			} else {
+				for (let item of searchInfo[key]) {
+					request += `&${key}=${item}`
+				}
+			}
 		}
-		console.log(request)
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.getEndpoint('usersList')}/${request}`, {
 				method: 'GET',

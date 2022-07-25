@@ -97,7 +97,7 @@ export class UsersModule extends AdminPage {
 
 	async domReady(data){
 		const _ = this;
-		_.wizardData = await Model.wizardData;
+		_.wizardData = await Model.getWizardData();
 		_.parentInfo = {};
 		_.studentInfo = {};
 		if(_.subSection === 'student') {
@@ -107,8 +107,9 @@ export class UsersModule extends AdminPage {
 				item = data.item;
 				update = item.hasAttribute('rerender');
 			}
+			_.fillTableFilter();
+
 			let tableData = await Model.getUsers({role:_.subSection,update: update});
-			console.log(tableData)
 			_.fillUserTable(tableData);
 
 			_.studentInfo = {};
@@ -131,6 +132,7 @@ export class UsersModule extends AdminPage {
 				item = data.item;
 				update = item.hasAttribute('rerender');
 			}
+			_.fillTableFilter();
 			let tableData = await Model.getUsers({role:_.subSection,update: update});
 			_.fillBodyParentsTable(tableData);
 		}
@@ -141,6 +143,7 @@ export class UsersModule extends AdminPage {
 				item = data.item;
 				update = item.hasAttribute('rerender');
 			}
+			_.fillTableFilter();
 			let tableData = await Model.getUsers({role:_.subSection,update: update});
 			_.fillBodyAdminsTable(tableData);
 		}
@@ -486,24 +489,27 @@ export class UsersModule extends AdminPage {
 		_.parentSkipped = false;
 		_.coursePos = 0;
 	}
-	searchUsers({item}) {
+	fillTableFilter(){
 		const _ = this;
+		let filter = _.f('#filter-cont');
+		_.clear(filter);
+		filter.append(_.markup(_.filterTpl()))
+
 		if (!_.searchInfo[_.subSection]) _.searchInfo[_.subSection] = {};
-		let name = item.getAttribute('name');
-		_.searchInfo[_.subSection][name] = item.value;
-		_.getSearchUsers(_.searchInfo[_.subSection])
-	}
-	filterUsersByDates({item}){
-		const _ = this;
-		if (!_.searchInfo[_.subSection]) _.searchInfo[_.subSection] = {};
-		let dates = item.value.split('|');
-		_.searchInfo[_.subSection]['startDate'] = dates[0];
-		_.searchInfo[_.subSection]['endDate'] = dates[1] ?? dates[0];
-		_.getSearchUsers(_.searchInfo[_.subSection])
+		setTimeout(()=>{
+			for (let key in _.searchInfo[_.subSection]) {
+				let
+					input = filter.querySelector(`[name="${key}"]`),
+					value = _.searchInfo[_.subSection][key];
+				if (input) input.value = value;
+			}
+		})
+
 	}
 	async getSearchUsers(searchInfo){
 		const _ = this;
 		let tableData = await Model.getUsers({role: _.subSection,update: true,searchInfo});
+		//console.log(tableData)
 
 		if(_.subSection == 'student') {
 			_.fillUserTable(tableData);
@@ -985,8 +991,9 @@ export class UsersModule extends AdminPage {
 			head = cont.querySelector('.tbl-head'),
 			ths = head.querySelectorAll('.tbl-item'),
 			table = cont.querySelector('TABLE'),
-			row = table.querySelector('TBODY TR'),
-			tds = row.querySelectorAll('.tbl-item');
+			row = table.querySelector('TBODY TR');
+		if (!row) return;
+		let tds = row.querySelectorAll('.tbl-item');
 		ths.forEach(function (item,index){
 			let w = tds[index].getBoundingClientRect().width;
 			item.style = `width:${w}px;flex: 0 0 ${w}px;`
@@ -1167,6 +1174,27 @@ export class UsersModule extends AdminPage {
 		_.f('.parent-adding-table').innerHTML = _.assignParentTpl(true);
 	}
 	// Remove methods
+
+	//search methods
+	searchUsers({item}) {
+		const _ = this;
+		if (!_.searchInfo[_.subSection]) _.searchInfo[_.subSection] = {};
+		let
+			name = item.getAttribute('name'),
+			value = item.value;
+		_.searchInfo[_.subSection][name] = value;
+		_.getSearchUsers(_.searchInfo[_.subSection])
+	}
+	filterUsersByDates({item}){
+		const _ = this;
+		if (!_.searchInfo[_.subSection]) _.searchInfo[_.subSection] = {};
+		let dates = item.value.split('|');
+		_.searchInfo[_.subSection]['startDate'] = dates[0];
+		_.searchInfo[_.subSection]['endDate'] = dates[1] ?? dates[0];
+		_.searchInfo[_.subSection][item.getAttribute('name')] = item.value;
+		_.getSearchUsers(_.searchInfo[_.subSection])
+	}
+	//end search methods
 
 
 	setCancelBtn(type = 'adding') {

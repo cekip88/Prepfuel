@@ -145,37 +145,7 @@ export const view = {
 				<div class="block">
 					<div class="block-header">
 						<h2 class="block-title">Students (<span class="users-count gusers-count"><img src='/img/loader.gif' class='loader'></span>)</h2>
-						<div class="block-header-item block-header-search">
-							<svg><use xlink:href="#search"></use></svg>
-							<g-input class="block-header-input search-user" type="text" name="search" placeholder="Search" classname="form-input form-search" data-input="${_.componentName}:searchUsers" role="student"></g-input>
-						</div>
-						<div class="block-header-item block-header-date">
-							<svg><use xlink:href="#calendar"></use></svg>
-							<g-input class="block-header-input block-header-date" range previous type="date" icon="false" format="month DD, YYYY" classname="form-input form-search" data-change="${_.componentName}:filterUsersByDates"></g-input>
-						</div>
-						<div class="block-header-item block-header-select" multiple>
-							<g-select
-								class="select"
-								multiple="true"
-								name="testField"
-								classname="filter-select table-filter" 
-								arrowsvg="/img/sprite.svg#select-arrow" 
-								title="Course"
-								items="[
-									{&quot;value&quot;:0,&quot;text&quot;:&quot;ISEE Middle&quot;},
-									{&quot;value&quot;:1,&quot;text&quot;:&quot;ISEE Lower&quot;},
-									{&quot;value&quot;:2,&quot;text&quot;:&quot;ISEE Upper&quot;},
-									{&quot;value&quot;:3,&quot;text&quot;:&quot;SSAT Middle&quot;},
-									{&quot;value&quot;:4,&quot;text&quot;:&quot;SSAT Upper&quot;},
-									{&quot;value&quot;:5,&quot;text&quot;:&quot;SHSAT 8th&quot;},
-									{&quot;value&quot;:6,&quot;text&quot;:&quot;SHSAT 9th&quot;}
-								]"></g-select>
-						</div>
-						<button class="block-header-item button-blue" data-click="${_.componentName}:addStudent"><span>Add Student</span>
-							<svg class="button-icon large">
-								<use xlink:href="#plus2"></use>
-							</svg>
-						</button> 
+						<div class="filter" id="filter-cont"><img src="/img/loader.gif" alt=""></div>
 					</div>
 					${_.pagination()}
 					<div class="tbl">
@@ -229,6 +199,92 @@ export const view = {
 			</div>
 		`;
 	},
+
+
+	filterTpl(){
+		const _ = this;
+		let tpl;
+		if (_.subSection === 'student') {
+			let options = [];
+			for (let option of _.wizardData.courses) {
+				options.push({value:option._id,text:option.title});
+			}
+			tpl = `
+				<div class="block-header-item block-header-search">
+					<svg><use xlink:href="#search"></use></svg>
+					<g-input class="block-header-input search-user" type="text" name="search" placeholder="Search" classname="form-input form-search" data-input="${_.componentName}:searchUsers" role="student"></g-input>
+				</div>
+				<div class="block-header-item block-header-date">
+					<svg><use xlink:href="#calendar"></use></svg>
+					<g-input class="block-header-input block-header-date" name="dates" range previous type="date" icon="false" format="month DD, YYYY" classname="form-input form-search" data-change="${_.componentName}:filterUsersByDates"></g-input>
+				</div>
+				<div class="block-header-item block-header-select" multiple>
+					<g-select
+						class="select"
+						data-change="${_.componentName}:searchUsers"
+						multiple="true"
+						name="level"
+						classname="filter-select table-filter" 
+						arrowsvg="/img/sprite.svg#select-arrow" 
+						title="Course"
+						items=${JSON.stringify(options)}
+					></g-select>
+				</div>
+				<button class="block-header-item button-blue" data-click="${_.componentName}:addStudent"><span>Add Student</span>
+					<svg class="button-icon large">
+						<use xlink:href="#plus2"></use>
+					</svg>
+				</button> 
+			`;
+			return tpl;
+		} else if (_.subSection === 'parent') {
+			let options = [{text:'All parents',value:undefined},{text:'No Students',value:false},{text:'With Students',value:true}];
+			tpl = `
+				<div class="block-header-item block-header-search">
+					<svg><use xlink:href="#search"></use></svg>
+					<g-input class="block-header-input" type="text" name="search" placeholder="Search" classname="form-input form-search" data-input="${_.componentName}:searchUsers"></g-input>
+				</div>
+				<div class="block-header-item block-header-date">
+					<svg><use xlink:href="#calendar"></use></svg>
+					<g-input class="block-header-input block-header-date" range previous type="date" icon="false" format="month DD, YYYY" classname="form-input form-search" data-change="${_.componentName}:filterUsersByDates"></g-input>
+				</div>
+				<div class="block-header-item block-header-select">
+					<g-select class="select" data-change="${_.componentName}:searchUsers" name="hasStudents" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents"
+					items='${JSON.stringify(options)}'></g-select>
+				</div>
+				<button class="block-header-item button-blue" data-click="${_.componentName}:showAddParentPopup" from="body">
+					<span>Add Parent</span>
+					<svg class="button-icon large">
+						<use xlink:href="#plus2"></use>
+					</svg>
+				</button>
+			`;
+		} else if (_.subSection === 'admin') {
+			let options = [{text:'Superadmin',value:'superadmin'},{text:'Admin',value:'admin'}];
+			tpl = `
+				<div class="block-header-item block-header-search">
+					<svg><use xlink:href="#search"></use></svg>
+					<g-input class="block-header-input" type="text" name="search" placeholder="Search" classname="form-input form-search" data-input="${_.componentName}:searchUsers"></g-input>
+				</div>
+				<div class="block-header-item block-header-date">
+					<svg><use xlink:href="#calendar"></use></svg>
+					<g-input class="block-header-input block-header-date" name="dates" range previous type="date" icon="false" format="month DD, YYYY" classname="form-input form-search" data-change="${_.componentName}:filterUsersByDates"></g-input>
+				</div>
+				<div class="block-header-item block-header-select">
+					<g-select class="select" data-change="${_.componentName}:searchUsers" name="hasStudents" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents"
+					items='${JSON.stringify(options)}'></g-select>
+				</div>
+				<button class="block-header-item button-blue" data-click="${_.componentName}:showAddAdminPopup" from="body">
+					<span>Add Admin</span>
+					<svg class="button-icon large">
+						<use xlink:href="#plus2"></use>
+					</svg>
+				</button>
+			`;
+		}
+		return tpl;
+	},
+
 	
 	removeCourseTpl(){
 		const _ = this;
@@ -2362,24 +2418,7 @@ export const view = {
 				<div class="block">
 					<div class="block-header">
 						<h2 class="block-title">Parents (<span class="users-count gusers-count"><img src='/img/loader.gif' class='loader'></span>)</h2>
-						<div class="block-header-item block-header-search">
-							<svg><use xlink:href="#search"></use></svg>
-							<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search" data-input="${_.componentName}:searchUsers"></g-input>
-						</div>
-						<div class="block-header-item block-header-date">
-							<svg><use xlink:href="#calendar"></use></svg>
-							<g-input class="block-header-input block-header-date"  type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input>
-						</div>
-						<div class="block-header-item block-header-select">
-							<g-select class="select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents"
-							items='${JSON.stringify(filterSelectOptions)}'></g-select>
-						</div>
-						<button class="block-header-item button-blue" data-click="${_.componentName}:showAddParentPopup" from="body">
-							<span>Add Parent</span>
-							<svg class="button-icon large">
-								<use xlink:href="#plus2"></use>
-							</svg>
-						</button>
+						<div id="filter-cont"><img src="/img/loader.gif" alt=""></div>
 					</div>
 					${_.pagination()}
 					<div class="tbl">
@@ -2810,24 +2849,8 @@ export const view = {
 				<div class="block">
 					<div class="block-header">
 						<h2 class="block-title">Admins (<span class="users-count gusers-count"><img src='/img/loader.gif' class='loader'></span>)</h2>
-						<div class="block-header-item block-header-search">
-							<svg><use xlink:href="#search"></use></svg>
-							<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search" data-input="${_.componentName}:searchUsers"></g-input>
-						</div>
-						<div class="block-header-item block-header-date">
-							<svg><use xlink:href="#calendar"></use></svg>
-							<g-input class="block-header-input block-header-date"  type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input>
-						</div>
-						<div class="block-header-item block-header-select">
-							<g-select class="select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Admins"
-							items='${JSON.stringify(filterSelectOptions)}'></g-select>
-						</div>
-						<button class="block-header-item button-blue" data-click="${_.componentName}:showAddAdminPopup" from="body">
-							<span>Add Admin</span>
-							<svg class="button-icon large">
-								<use xlink:href="#plus2"></use>
-							</svg>
-						</button>
+						<div id="filter-cont"><img src="/img/loader.gif" alt=""></div>
+						
 					</div>
 					${_.pagination()}
 					<div class="tbl">

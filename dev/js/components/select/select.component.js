@@ -52,6 +52,19 @@ export default class GSelect extends GComponent {
 		return 	this.shadow.querySelector('.g-select-body .active span').textContent;
 	}
 
+	set value(val){
+		const _ = this;
+		if (typeof val !== 'object') val = [val];
+
+		_.shadow.querySelectorAll('.g-select-option').forEach((option)=>{
+			if (option.value) {
+				if (val.indexOf(option.value) >= 0) _.choose({fakeItem:option})
+			} else {
+				if (val.indexOf(option.textContent) >= 0) _.choose({fakeItem:option})
+			}
+		});
+	}
+
 	hasOption(prop,option){
 		const _ = this;
 		return _[prop].indexOf(option) > -1;
@@ -281,13 +294,23 @@ export default class GSelect extends GComponent {
 		if (!_.titles.length) _.shadow.querySelector('.g-select-title').removeAttribute('style');
 
 		_.optionsSort(option);
+		_.triggerChangeEvent();
 	}
 	unChooseAll(){
 		const _ = this;
 		let labels = _.shadow.querySelectorAll('.g-select-head-label .g-select-head-close');
 		labels.forEach((label)=>{
-			_.unChoose({item: label})
+			let value = label.value,
+				option = _.shadow.querySelector(`.g-select-body BUTTON[data-number="${value}"]`);
+
+			_.removeOption('selectedValues',option,'value');
+			_.removeOption('titles',option,'textContent');
+
+			if (!_.titles.length) _.shadow.querySelector('.g-select-title').removeAttribute('style');
+			_.optionsSort(option);
 		})
+
+		_.triggerChangeEvent();
 	}
 
 	createHiddenInput(data){

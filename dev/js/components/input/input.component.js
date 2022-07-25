@@ -78,7 +78,15 @@ export default class GInput extends GComponent {
 		if(_.isSymbolPassword()) {
 			_.shadow.querySelector('.inpt-value').innerHTML = val;
 		}
-		if(!_.isCheckbox()){
+		else if(_.isDateRange()){
+			let dates = val.split('|');
+			_.shadow.querySelector('.inpt-date[data-type="from"]').value = dates[0];
+			_.shadow.querySelector('.inpt-date[data-type="to"]').value = dates[1] ?? dates[0];
+
+			let value = _.fillDate(dates[0]).outValue + (dates[1] ? ' - ' + _.fillDate(dates[1]).outValue : '');
+			_.shadow.querySelector('.inpt-value').value = value;
+		}
+		else if(!_.isCheckbox()){
 			_.shadow.querySelector('.inpt-value').value = val;
 		}
 
