@@ -12,6 +12,7 @@ class _Model{
 			create: `${env.backendUrl}/tests-results/create`,
 			results: `${env.backendUrl}/tests-results`,
 			resultsBy: `${env.backendUrl}/tests/test-by-result`,
+			reset: `${env.backendUrl}/tests-results/reset/`,
 		};
 		_.testStatus = 'in progress';
 		_.currentSectionPos = 0; // Section position in array section list
@@ -23,8 +24,12 @@ class _Model{
 		const _ = this;
 		return _.test['sections'][_.currentSectionPos];
 	}
+	get allQuestionsLength(){
+		return this.allquestions.length;
+	}
 	get questionsLength(){
 		const _ = this;
+		return _.questions.length;
 		let cnt = 0;
 		for(let subSection of _.currentSection['subSections']){
 			subSection['questionData'].forEach((page,i) => {
@@ -34,6 +39,19 @@ class _Model{
 			});
 		}
 		return cnt;
+	}
+	get allquestions(){
+		const _ = this;
+		let questions = [];
+		for(let subSection of _.currentSection['subSections']){
+			subSection['questionData'].forEach((page,i) => {
+				page['questions'].forEach(quest =>{
+						//questions[quest['_id']] = quest;
+						questions.push(quest);
+					});
+			});
+		}
+		return questions;
 	}
 	get questions(){
 		const _ = this;
@@ -57,26 +75,6 @@ class _Model{
 		return _.currentSection['subSections']['questionsData'][_.currentSubSectionPos];
 	}
 	
-	async getTests(){
-		const _ = this;
-		// get all tests from Database
-		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.endpoints['tests']}/`,{
-				method: 'GET',
-				headers:_.baseHeaders,
-			});
-			if(rawResponse.status < 210){
-				let response = await rawResponse.json();
-				if(response['status'] == 'success'){
-					_.tests = response['response'];
-					await Model.getTest();
-					resolve(_.tests);
-				}
-			}else{
-				G_Bus.trigger('TestPage','showResults',rawResponse);
-			}
-		});
-	}
 	async getStudentTests(type='practice'){
 		const _ = this;
 		// get all tests from Database
@@ -92,6 +90,7 @@ class _Model{
 					_.tests.sort( (a,b)=>{
 						return a['testNumber'] - b['testNumber'];
 					});
+					
 					await Model.getTest();
 					resolve(_.tests);
 				}
@@ -109,10 +108,12 @@ class _Model{
 		*   }
 		* */
 		let testId = _.tests[_.currentTestPos]['_id'];
-		let resultId = null;
+		_.test = _.tests[_.currentTestPos];
+		return Promise.resolve(_.test);
+/*		let resultId = null;
 		if( _.test ){
 			resultId = _.test['resultId'];
-		}
+		}*/
 		// temp test id
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['tests']}/${testId}`,{
@@ -123,7 +124,8 @@ class _Model{
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					_.test = response['response'];
-					_.test['resultId'] = resultId;
+					
+			//		_.test['resultId'] = resultId;
 					resolve(_.test);
 				}
 			}
@@ -187,7 +189,7 @@ class _Model{
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
-					_.getTestResults();
+					//_.getTestResults();
 					resolve(response);
 				}
 			}else{
@@ -284,6 +286,22 @@ class _Model{
 			}
 		});
 	}
+	resetTest(resultId){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['reset']}/${resultId}`,{
+				method: 'DELETE',
+				headers:_.baseHeaders
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				_.test['resultId'] = null;
+				if(response['status'] == 'success'){
+					resolve(response['response']);
+				}
+			}
+		});
+	}
 	
 	
 	async changeTest(pos){
@@ -295,9 +313,19 @@ class _Model{
 	
 	currentQuestionPosById(questionId){
 		const _ = this;
+		let pos = _.allquestions.findIndex( question => {
+			return question['_id'] == questionId
+		} );
+		
+		if(pos >= 0)	return pos;
+		return null;
+	}
+	currentQuestionDataPosById(questionId){
+		const _ = this;
 		let pos = _.questions.findIndex( question => {
 			return question['_id'] == questionId
 		} );
+		
 		if(pos >= 0)	return pos;
 		return null;
 	}

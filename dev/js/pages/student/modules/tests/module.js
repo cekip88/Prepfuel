@@ -16,13 +16,7 @@ export class TestsModule extends StudentPage{
 	}
 	async asyncDefine(){
 		const _ = this;
-/*		await Model.getTests(); // requests all user tests
-		_.currentQuestion = Model.firstQuestion;
-		console.log('Current Question: ',_.currentQuestion);
-		_.set({
-			currentQuestion: Model.firstQuestion,
-		});
-		*/
+
 	}
 	async define(){
 		const _ = this;
@@ -35,6 +29,7 @@ export class TestsModule extends StudentPage{
 		]);
 		//TestModel = new TestModel();
 		_.isLastQuestion = false;
+		_.isJump = false;
 		_.storageTest = Model.getTestFromStorage();
 		_.types = {
 			'Multiple Choice':'standart',
@@ -46,8 +41,11 @@ export class TestsModule extends StudentPage{
 			4:'compare',
 			'Grid-In':'grid'
 		};
+		_.questionStep = 1;
 		
+		_.rawQuestionPos = 0;
 		_.questionPos = 0;
+		
 		_.currentPos = 0;
 		_.currentQuestionPos = 0;
 		_.innerQuestionId = 1;
@@ -65,12 +63,9 @@ export class TestsModule extends StudentPage{
 	}
 	async domReady(){
 		const _ = this;
-		
-	
 		if(_.subSection == 'tests-list'){
 		
 			await Model.getStudentTests(); // requests all user tests
-			
 			_.set({
 				currentQuestion: Model.firstQuestion,
 			});
@@ -82,10 +77,15 @@ export class TestsModule extends StudentPage{
 	
 	fillTestsBody(){
 		const _ = this;
-		let pickList = _.f('#testPickList');
+		let pickList = _.f('#testPickList'),buttonCont = _.f('#test-pick-button-cont');
 		pickList.innerHTML = '<img src="/img/loader.gif" alt="Loading...">';
+		buttonCont.innerHTML =  '<img src="/img/loader.gif" alt="Loading...">';
 		_.clear(pickList);
+		_.clear(buttonCont);
 		pickList.append(_.markup(_.testPickTpl()));
+		if(!Model.test['resultId']) return void 0;
+		
+		buttonCont.append(_.markup(_.resetButtonTpl()));
 	}
 	async fillTestsList(){
 		const _ = this;
@@ -157,28 +157,32 @@ export class TestsModule extends StudentPage{
 	}
 	
 	//
-	resetTest({item}){
+	async resetTest({item}){
 		const _ = this;
 		localStorage.removeItem('resultId');
 		localStorage.removeItem('test');
 		localStorage.removeItem('_id');
+		item.innerHTML = '<img src="/img/loader.gif" alt="Loading...">';
+		await Model.resetTest(item.getAttribute('data-id'))
 		item.textContent = 'Test reseted';
 	}
 	// Change current question
 	async changeQuestion({ item, event }){
 		const _ = this;
 		let
-			dir = item.getAttribute('data-dir'),
-			index = _.questionPos;
-
+			dir = item.getAttribute('data-dir');
+		if(_.isJump){
+			_.questionPos = Model.currentQuestionDataPosById(_._$.currentQuestion['_id'])
+		}
+		let index = _.questionPos;
 		if( dir == 'prev' ){
 			if( index == 0){
 				return void 0;
 			}
 		//	_.currentPos-=1;
-			//_.datasPos-=1;
+		//	_.datasPos-=1;
 			_.questionPos-=1;
-			_._$.currentQuestion=  Model.questions[index-1]; //_.questionsPages[index-1];
+			_._$.currentQuestion=  Model.questions[index-1];
 		}
 		if(dir == 'next'){
 			if( index == _.questionsLength.length-1 ){
@@ -191,24 +195,35 @@ export class TestsModule extends StudentPage{
 				let test = await _.saveAnswerToDB();
 			}
 			//_.currentPos+=1;
-		//	_.datasPos+=1;
+			//_.datasPos+=1;
 			_.questionPos+=1;
-			_._$.currentQuestion=  Model.questions[index+1]; //_.questionsPages[index+1];
+			_._$.currentQuestion=  Model.questions[index+1];
 		}
-		
+		_.isJump = false;
 	}
 	jumpToQuestion({item,event}){
 		const _ = this;
+		_.isJump = true;
 		let
 			jumpQuestionPos = Model.currentQuestionPosById(item.parentNode.getAttribute('data-question-id')),
 			questionPageId = item.parentNode.getAttribute('data-questionpage-id');
+		
+		if( _.questionPos == jumpQuestionPos ) return void 0;
+	
+		
 		if(questionPageId !== '-1'){
-			jumpQuestionPos = Model.currentQuestionPosById(questionPageId);
+			jumpQuestionPos = Model.currentQuestionDataPosById(questionPageId);
+			_._$.currentQuestion = Model.questions[jumpQuestionPos];
+		}else{
+			_._$.currentQuestion = Model.allquestions[jumpQuestionPos];
 		}
+		
 		location.hash= item.parentNode.getAttribute('data-question-id');
-		if(_.questionPos == jumpQuestionPos) return void 0;
 		_.questionPos = jumpQuestionPos;
-		_._$.currentQuestion = Model.questions[jumpQuestionPos];
+		
+	//	console.log(_._$.currentQuestion,jumpQuestionPos);
+		
+		
 	}
 	changeTestSection({item}){
 		const _ = this;
@@ -306,7 +321,6 @@ export class TestsModule extends StudentPage{
 			let
 				currentTestObj = test[t],
 				questionId= currentTestObj['questionId']; // if request was not in local storage, try another prop for questionId
-
 			if(currentTestObj['bookmarked']) {
 				let listAnswerItem = _.f(`.questions-list .questions-item[data-question-id="${questionId}"]`);
 				if(listAnswerItem) listAnswerItem.classList.add('checked');
@@ -429,9 +443,8 @@ export class TestsModule extends StudentPage{
 		//_.currentQuestion = _._$.currentQuestion['questions'][0];// Model.innerQuestion(_.questionPos);
 		return new Promise(  async (resolve) => {
 			let questionData = Model.currentQuestionData(_.questionPos);
-			console.log(questionData);
-			let handle = (answer)=>{
-				return Model.saveAnswer({
+			let handle = async (answer)=>{
+				return await Model.saveAnswer({
 					answer:{
 						sectionName: Model.currentSection['sectionName'],
 						subSectionName: Model.currentSection['subSections'][0]['subSectionName'],
@@ -456,7 +469,7 @@ export class TestsModule extends StudentPage{
 						});
 						continue;
 					}
-					resolve(handle(answer));
+					resolve(await handle(answer));
 				}
 			}else{
 				let answer = _.storageTest[_._$.currentQuestion['_id']];
@@ -465,7 +478,6 @@ export class TestsModule extends StudentPage{
 					resolve(handle(answer));
 				}else{
 					// else set bookmarked this answer
-
 					_.saveBookmark({
 						item: _.f('.bookmarked-button')
 					});
@@ -635,7 +647,6 @@ export class TestsModule extends StudentPage{
 	
 	async getQuestionTpl(){
 		const _ = this;
-		console.log(_._$.currentQuestion,Model);
 		return await _[`${_.types[_._$.currentQuestion['type']]}Question`]();
 	}
 	flexible(section){
@@ -643,10 +654,32 @@ export class TestsModule extends StudentPage{
 		// welcome | directions | questions
 		return `${section}Carcass`;
 	}
+	
+	getStep(){
+		const _ = this;
+		let cnt = 0;
+		for(let i = 0; i <= _.questionPos;i++){
+			if(Model.questions[i]['questions']){
+				cnt+=Model.questions[i]['questions'].length;
+			}else{
+				cnt+=1;
+			}
+		}
+		return cnt;
+	}
+	getPrevStepCnt(){
+		const _ = this;
+		return _.getStep()-1;
+	}
+	getNextStepCnt(){
+		const _ = this;
+		return _.getStep()+1;
+	}
 	async init(){
 		const _ = this;
-		_._( async ()=>{
+		_._( async (obj)=>{
 			let cont = _.f('.tt-ii');
+			
 			if(!cont) return;
 			_.clear(cont);
 			//_.questionPos = Model.questionPos(_.currentPos);
@@ -656,20 +689,16 @@ export class TestsModule extends StudentPage{
 			);
 			_.isLastQuestion = false;
 			_.setActions(['bookmarked','note']);
-			let step = 2,
-					len = Model.currentQuestionData(_.datasPos)['questions'].length;
-			if( len > 1 ){
-				step= len;
-			}
+			
 			if( _.questionPos < _.questionsLength ){
-				_.f('.skip-to-question').textContent = _.questionPos+step;
+				_.f('.skip-to-question').textContent = _.getNextStepCnt();
 			}
 			if( _.questionPos == _.questionsLength - 1 ){
 				_.changeSkipButtonToFinish();
 				_.isLastQuestion = true;
 			}else if(_.questionPos > 0){
 				_.removeBackToQuestionBtn();
-				_.addBackToQuestionBtn(_.questionPos);
+				_.addBackToQuestionBtn(_.getPrevStepCnt());
 			}
 			
 
@@ -682,6 +711,7 @@ export class TestsModule extends StudentPage{
 				questionCont.append(_.markup(_.questionsList()));
 			}
 			_.fillCheckedAnswers();
+			
 			if(Model.isFinished()) {
 				if(_.sectionChanged){
 					_.sectionChanged = false;
@@ -693,7 +723,6 @@ export class TestsModule extends StudentPage{
 
 			// work on marked answers
 			let currentStorageTest = _.storageTest[ _.currentQuestion['_id'] ];
-			
 			_.sectionChanged = false;
 			
 			if(!currentStorageTest) return void 0;
