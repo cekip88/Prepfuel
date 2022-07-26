@@ -76,6 +76,7 @@ export class UsersModule extends AdminPage {
 				'showHistoryDetails','createNewParent','assignFirstParent',
 				'notificationNavigate','showAddCard','showAddBillingAddress','searchUsers','filterUsersByDates',
 				'checkEmail',
+				'paginate','paginateTo',
 			]);
 
 		_.initialState = {
@@ -111,6 +112,7 @@ export class UsersModule extends AdminPage {
 
 			let tableData = await Model.getUsers({role:_.subSection,update: update});
 			_.fillUserTable(tableData);
+			_.paginationFill({total:tableData.total,limit:tableData.limit});
 
 			_.studentInfo = {};
 		}
@@ -298,8 +300,7 @@ export class UsersModule extends AdminPage {
 	}
 	fillDataByClass({className,data}){
 		const _ = this;
-		let
-		conts = _.f(`${className}`);
+		let conts = _.f(`${className}`);
 		if(conts.length){
 			conts.forEach( item=>{
 				item.textContent = data;
@@ -308,20 +309,28 @@ export class UsersModule extends AdminPage {
 			conts.textContent = data;
 		}
 	}
+	paginationFill({limit,total,selector,count}){
+		const _ = this;
+		let paginations = document.querySelectorAll(`${selector ? selector + ' ' : ''}.pagination`);
+		let tpl = _.paginationTpl({limit,total,page:_.searchInfo[_.subSection].page})
+		paginations.forEach(function (item){
+			_.clear(item);
+			//if (limit > total) return;
+			item.append(_.markup(tpl));
+		})
+	}
 	async fillUserTable(usersData,selector){
 		const _ = this;
 		let
 			tbody = _.f('#usersBody .tbl-body'),
-			total = usersData['total'],
-			limit = usersData['limit'];
+			total = usersData['total'];
 
 		_.clear(tbody);
 
 		_.fillDataByClass({className:`.gusers-count`,data:`${usersData ? total : 0}`});
-		_.fillDataByClass({className:`.gusers-limit`,data:`${usersData ? (limit <= total ? limit : total) : 0}`});
 
-		if(!usersData) {
-			return void 'no users data';
+		if(!usersData.total) {
+			return void 'No users data';
 		}
 		
 		let
@@ -495,7 +504,7 @@ export class UsersModule extends AdminPage {
 		_.clear(filter);
 		filter.append(_.markup(_.filterTpl()))
 
-		if (!_.searchInfo[_.subSection]) _.searchInfo[_.subSection] = {};
+		if (!_.searchInfo[_.subSection]) _.searchInfo[_.subSection] = {page: 1};
 		setTimeout(()=>{
 			for (let key in _.searchInfo[_.subSection]) {
 				let
@@ -506,7 +515,7 @@ export class UsersModule extends AdminPage {
 		})
 
 	}
-	async getSearchUsers(searchInfo){
+	async getSearchUsers(searchInfo,paginationCont){
 		const _ = this;
 		let tableData = await Model.getUsers({role: _.subSection,update: true,searchInfo});
 		//console.log(tableData)
@@ -521,6 +530,14 @@ export class UsersModule extends AdminPage {
 			_.fillBodyAdminsTable(tableData)
 		}
 		_.studentInfo = {};
+		console.log(_.searchInfo,tableData)
+		let paginationData = {
+			cont:paginationCont,
+			page:_.searchInfo[_.subSection].page,
+			limit:tableData.limit,
+			total:tableData.total
+		}
+		_.rebuildPagination(paginationData);
 	}
 	// Fill methods end
 
@@ -1343,6 +1360,83 @@ export class UsersModule extends AdminPage {
 		_.f('#assignForm .adding-list-item.active').classList.remove('active');
 		_.f(`#assignForm .adding-list-item:nth-child(${ assignStep })`).classList.add('active');
 	}
+
+
+	// Paginate
+	paginate({item}){
+		const _ = this;
+		if (item.hasAttribute('disabled')) return;
+		let page = parseInt(item.value);
+
+		_.searchInfo[_.subSection].page = page;
+		let cont = item.closest('.pagination');
+		_.getSearchUsers(_.searchInfo[_.subSection],cont);
+	}
+	paginateTo({item}){
+		const _ = this;
+		let value = parseInt(item.value);
+		let limit = parseInt(item.getAttribute('limit'));
+
+		if (isNaN(value)) item.value = 1;
+		else if (value > limit) item.value = limit;
+		else item.value = value;
+
+		_.paginate({item})
+	}
+	rebuildPagination({cont,page,limit,total}){
+		const _ = this;
+		let from = cont.querySelector('.gusers-page'),
+			to = cont.querySelector('.gusers-limit'),
+			count = cont.querySelector('.gusers-count'),
+			inner = cont.querySelector('.pagination-inner'),
+			prev = cont.querySelector('.pagination-prev'),
+			next = cont.querySelector('.pagination-next'),
+			jumpTo = cont.querySelector('.pagination-jump-to');
+
+		let lastPage = Math.ceil(total / limit);
+		let len = lastPage < 5 ? lastPage : 5;
+		for (let index = 0; index < len; index++){
+			let i,button = inner.children[index];
+			if (page < 4) {
+				i = index + 1;
+			} else if (page > lastPage - 2) {
+				i = lastPage - (len - 1) + index;
+			} else {
+				i = (page - 2) + index;
+			}
+			if (inner.children.length > len) {
+				inner.children[inner.children.length - 1].remove();
+			} else {
+				if (!button && len > index) {
+					button = document.createElement('BUTTON');
+					button.className = 'pagination-link';
+					inner.append(button);
+				}
+				button.textContent = i.toString();
+				button.value = i;
+				if (page == i) button.classList.add('active');
+				else button.classList.remove('active')
+			}
+		}
+
+		let previousPage = page - 1;
+		prev.value = previousPage;
+		if (previousPage) prev.removeAttribute('disabled');
+		else prev.setAttribute('disabled','');
+
+		let nextPage = page + 1;
+		next.value = nextPage;
+		if (nextPage <= lastPage) next.removeAttribute('disabled');
+		else next.setAttribute('disabled','');
+
+		jumpTo.value = page;
+		jumpTo.setAttribute('limit',lastPage);
+
+		from.textContent = (page - 1) * limit + 1;
+		to.textContent = page * limit > total ? total : page * limit;
+		count.textContent = total;
+	}
+	// End paginate
 	
 	async init(){
 		const _ = this;

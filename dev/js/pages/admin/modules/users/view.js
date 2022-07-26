@@ -11,39 +11,11 @@ export const view = {
 			</div>
 		`;
 	},
-	pagination(count = null,limit = null){
+	pagination(){
 		const _ = this;
 		return `
 			<div class="pagination pagination-top fill">
-				<div class="pagination-info">
-					<span>
-						1 - 
-						<i class="gusers-limit">${limit !== null ? limit : "<img src='/img/loader.gif' class='loader'>"}</i>
-						 of 
-						<i class="gusers-count ">${count !== null ? count : "<img src='/img/loader.gif' class='loader'>"}</i>
-					</span>
-				</div>
-				<div class="pagination-links">
-					<a class="pagination-arrow pagination-prev" href="#">
-						<svg class="arrow">
-							<use xlink:href="#arrow-left-transparent"></use>
-						</svg>
-					</a>
-					<a class="pagination-link active" href="#"><span>1</span></a>
-					<a class="pagination-link" href="#"><span>2</span></a>
-					<a class="pagination-link" href="#"><span>3</span></a>
-					<a class="pagination-link" href="#"><span>4</span></a>
-					<a class="pagination-link" href="#"><span>5</span></a>
-					<a class="pagination-arrow pagination-next" href="#">
-						<svg class="arrow">
-							<use xlink:href="#arrow-right-transparent"></use>
-						</svg>
-					</a>
-				</div>
-				<div class="pagination-end">
-					<span>Jump to</span>
-					<input type="text" value="1">
-				</div>
+				<img src="/img/loader.gif" alt="">
 			</div>
 		`;
 	},
@@ -282,6 +254,47 @@ export const view = {
 				</button>
 			`;
 		}
+		return tpl;
+	},
+	paginationTpl({limit,total,page}){
+		const _ = this;
+		let lastPage = Math.ceil(total / limit);
+		let buttonsCount = lastPage < 5 ? lastPage : 5;
+		let tpl = `
+			<div class="pagination-info">
+				<span>
+					<i class="gusers-page">1</i> - 
+					<i class="gusers-limit">${limit > total ? total : limit}</i>
+					 of 
+					<i class="gusers-count ">${total}</i>
+				</span>
+			</div>
+			<div class="pagination-links"> 
+				<button class="pagination-arrow pagination-prev" data-click="${_.componentName}:paginate" value="${page - 1}" ${page < 2 ? 'disabled': ''}>
+					<svg class="arrow">
+						<use xlink:href="#arrow-left-transparent"></use>
+					</svg>
+				</button><div class="pagination-inner" data-total="${total}" data-limit="${limit}">`;
+		let index = page <= 3 ? 1 : page - 2;
+		if (index > lastPage - 4) index = lastPage - 4;
+		if (lastPage < 5) index = 1;
+		for (let i = 0; i < buttonsCount; i++, index++) {
+			tpl += `<button class="pagination-link${page == index ? ' active' : ''}" value="${index}" data-click="${_.componentName}:paginate">${index}</button>`;
+		}
+		tpl += `
+				</div>
+				<button class="pagination-arrow pagination-next" data-click="${_.componentName}:paginate" value="${page + 1}" ${page >= lastPage ? 'disabled': ''}>
+					<svg class="arrow">
+						<use xlink:href="#arrow-right-transparent"></use>
+					</svg>
+				</button>
+			</div>
+			<div class="pagination-end">
+				<span>Jump to</span>
+				<input class="pagination-jump-to" type="text" value="1" limit="${lastPage}" data-change="${_.componentName}:paginateTo">
+			</div>
+		`;
+
 		return tpl;
 	},
 

@@ -200,10 +200,14 @@ g-modaler
 		border-radius: 6px
 	&-info
 		margin-bottom: 10px
+	&-inner
+		@extend %dfc
 	&-arrow
 		svg
 			height: 13px
 			fill: rgb($neutral-600)
+		&[disabled]
+			opacity: .3
 	&-prev
 		margin-right: 12px
 	&-next

@@ -114,10 +114,10 @@ class _Model {
 			'data': request
 		});
 	}
-	getUsers({role,page = 1,update,searchInfo= {}}) {
+	getUsers({role,update,searchInfo= {page: 1}}) {
 		const _ = this;
 		if(!update)	if(_[`${role}sData`]) return Promise.resolve(_[`${role}sData`]);
-		let request = `?role=${role}&page=${page}`;
+		let request = `?role=${role}`;
 		for (let key in searchInfo) {
 			if (key === 'dates' || searchInfo[key] == 'undefined') continue;
 			if (typeof searchInfo[key] !== 'object') {
@@ -128,6 +128,7 @@ class _Model {
 				}
 			}
 		}
+		console.log(request)
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.getEndpoint('usersList')}/${request}`, {
 				method: 'GET',
@@ -138,6 +139,7 @@ class _Model {
 				//console.log(rawResponse,`${_.getEndpoint('usersList')}/?role=${role}&page=${page}&search=${search}`)
 				if(response['status'] == 'success') {
 					_[`${role}sData`] = response;
+					console.log(response)
 					resolve(response);
 				} else {
 					_.wrongResponse('getUsers', response);
