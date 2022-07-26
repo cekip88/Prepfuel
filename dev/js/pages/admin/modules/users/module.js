@@ -98,7 +98,6 @@ export class UsersModule extends AdminPage {
 
 	async domReady(data){
 		const _ = this;
-		_.wizardData = await Model.getWizardData();
 		_.parentInfo = {};
 		_.studentInfo = {};
 		if(_.subSection === 'student') {
@@ -498,11 +497,12 @@ export class UsersModule extends AdminPage {
 		_.parentSkipped = false;
 		_.coursePos = 0;
 	}
-	fillTableFilter(){
+	async fillTableFilter(){
 		const _ = this;
 		let filter = _.f('#filter-cont');
 		_.clear(filter);
-		filter.append(_.markup(_.filterTpl()))
+		let wizardData = Model.wizardData ?? await Model.getWizardData();
+		filter.append(_.markup(_.filterTpl(wizardData)))
 
 		if (!_.searchInfo[_.subSection]) _.searchInfo[_.subSection] = {page: 1};
 		setTimeout(()=>{
@@ -515,10 +515,9 @@ export class UsersModule extends AdminPage {
 		})
 
 	}
-	async getSearchUsers(searchInfo,paginationCont){
+	async getSearchUsers(searchInfo,paginationCont = undefined){
 		const _ = this;
 		let tableData = await Model.getUsers({role: _.subSection,update: true,searchInfo});
-		//console.log(tableData)
 
 		if(_.subSection == 'student') {
 			_.fillUserTable(tableData);
@@ -530,9 +529,8 @@ export class UsersModule extends AdminPage {
 			_.fillBodyAdminsTable(tableData)
 		}
 		_.studentInfo = {};
-		console.log(_.searchInfo,tableData)
 		let paginationData = {
-			cont:paginationCont,
+			cont:paginationCont ?? document.querySelector('.pagination'),
 			page:_.searchInfo[_.subSection].page,
 			limit:tableData.limit,
 			total:tableData.total

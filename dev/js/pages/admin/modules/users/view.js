@@ -173,13 +173,16 @@ export const view = {
 	},
 
 
-	filterTpl(){
+	filterTpl(wizardData){
 		const _ = this;
 		let tpl;
 		if (_.subSection === 'student') {
 			let options = [];
-			for (let option of _.wizardData.courses) {
-				options.push({value:option._id,text:option.title});
+			for (let courseData of wizardData.courses) {
+				for (let option of courseData['levels']) {
+					let optionTitle = courseData.title + ' ' + option.title;
+					options.push({value:option._id,text:optionTitle});
+				}
 			}
 			tpl = `
 				<div class="block-header-item block-header-search">
@@ -199,7 +202,7 @@ export const view = {
 						classname="filter-select table-filter" 
 						arrowsvg="/img/sprite.svg#select-arrow" 
 						title="Course"
-						items=${JSON.stringify(options)}
+						items='${JSON.stringify(options)}'
 					></g-select>
 				</div>
 				<button class="block-header-item button-blue" data-click="${_.componentName}:addStudent"><span>Add Student</span>
