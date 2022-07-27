@@ -377,6 +377,10 @@ g-modaler
 
 
 
+.note,.report
+	padding: 24px
+
+
 .filter
 	@extend %df
 	width: 100%
@@ -2326,7 +2330,8 @@ g-modaler
 		&.end
 			justify-content: flex-end
 	&-area
-		+wh(100%,140px)
+		+wh(100%,calc(100vh - 270px))
+		max-height: 140px
 		padding: 20px
 		background-color: rgb($neutral-200)
 		resize: none
