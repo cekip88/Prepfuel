@@ -186,8 +186,8 @@ export const view = {
 		 <div class="section row">
 				<div class="col wide">
 					<div class="block test-block tt-ii">
-							${await _.getQuestionTpl()}
-							${_.questionFooter()}
+						${await _.getQuestionTpl()}
+						${_.questionFooter()}
 					</div>
 				</div>
 					${_.questionsListCont()}
@@ -311,7 +311,6 @@ export const view = {
 	},
 	questionHeader(){
 		const _ = this;
-		console.log(Model.test);
 		return new Promise( (resolve) =>{resolve(`
 			<div class="section">
 				<div class="section-header">
@@ -324,14 +323,14 @@ export const view = {
 	},
 	questionFooter(){
 		return `
-		<div class="test-footer">
-			<button class="test-footer-button dir-button" data-click="${this.componentName}:changeSection" section="directions">
-				<span>Directions</span>
-			</button>
-			<button class="button skip-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="next">
-				<span><em class="skip-to-question-title">Skip to questions</em> <b class="skip-to-question">2</b></span>
-			</button>
-		</div>`;
+			<div class="test-footer">
+				<button class="test-footer-button dir-button" data-click="${this.componentName}:changeSection" section="directions">
+					<span>Directions</span>
+				</button>
+				<button class="button skip-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="next">
+					<span><em class="skip-to-question-title">Skip to questions</em> <b class="skip-to-question">${Model.currentQuestionData(0)['questions'].length+1}</b></span>
+				</button>
+			</div>`;
 	},
 
 	questionsListNavTabs(){
@@ -383,7 +382,7 @@ export const view = {
 				<h5 class="block-title small"><span>Questions</span></h5>
 				${Model.test.testStandard == "SHSAT" ? _.questionsListNavTabs() : ''}
 				<div class="questions-cont">
-					<h6 class="questions-list-title"><span>Question 1 - <i class="questions-length">${_.questionsLength}</i></span></h6>
+					<h6 class="questions-list-title"><span>Question 1 - <i class="questions-length">${Model.allQuestionsLength}</i></span></h6>
 					<ul class="questions-list">
 						${_.questionsList()}
 					</ul>
@@ -607,11 +606,12 @@ export const view = {
 						<p class="test-text">${_._$.currentQuestion['passageType']}</p>
 				`;
 		let cnt = _.questionPos;
+		//allQuestionsLength()
 		for(let question of _._$.currentQuestion['questions']){
 			tpl+= `
 					<div class="test-sec">
 					<div class="test-header">
-						<h5 class="block-title test-title"><span>Question ${cnt+1} of ${_.questionsLength}</span></h5>
+						<h5 class="block-title test-title"><span>Question ${cnt+1} of ${_._$.currentQuestion['questions'].length}</span></h5>
 						${_.actionsTpl(question)}
 					</div>
 					<p class="test-text"><span>${question['title']}</span></p>
@@ -643,7 +643,7 @@ export const view = {
 			tpl = `
 			<div class="test-header">
 				<h5 class="block-title test-title ddss">
-					<span>Question ${_.questionPos+1} of ${_.questionsLength}</span>
+					<span>Question ${_.getStep()} of ${Model.allQuestionsLength}</span>
 				</h5>
 				${_.actionsTpl(currentQuestion)}
 			</div>
@@ -703,18 +703,40 @@ export const view = {
 	
 	testPickTpl(test){
 		const _ = this;
-		return `
+		let status = "Start";
+		if(Model.test['status'] == 'in progress') status = "Continue";
+		if(Model.test['status'] == 'finished') status = "Review";
+		let tpl = `
 			<li class="test-pick-item green">
 				<div class="test-pick-time"><span id="testTime">180</span><span>min</span></div>
 				<ul class="test-pick-desc">
+				`;
+			for(let section of Model.test.sections){
+				let questionCnt = 0;
+				for(let sectionData of section['subSections'][0]['questionData']){
+					if(!sectionData['questions']) continue;
+					questionCnt+=sectionData['questions'].length;
+				}
+				tpl+=`
 					<li class="test-pick-desc-item">
-						<h6 class="test-pick-title">${Model.test.sections[0]['sectionName']}</h6>
-						<p class="text">${Model.test.sections[0]['subSections'][0]['questionData'].length} questions</p>
+						<h6 class="test-pick-title">${section['sectionName']}</h6>
+						<p class="text">${questionCnt} questions</p>
 					</li>
+				`;
+			}
+		tpl+= `
 				</ul>
-				<button class="button" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="welcome"><span>Start this test</span></button>
+				<button class="button" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="welcome"><span>${status} this test</span></button>
 			</li>
 		`;
+			return tpl;
+	},
+	resetButtonTpl(){
+		const _ = this;
+		return `
+			<h5 class="title"><span>Reset Practice Test </span></h5>
+			<p class="text">You can discard your current progress and re-take this test from the beginning</p>
+			<button class="button" id="testResetBtn"  data-click="${_.componentName}:resetTest" data-id="${Model.test['resultId']}"><span>Reset this test</span></button>`;
 	},
 	tempTestListTpl(){
 		const _ = this;
@@ -733,10 +755,8 @@ export const view = {
 							<ul class="test-pick-list shsat loader-parent" id="testPickList">
 								<img src="/img/loader.gif" alt="">
 							</ul>
-							<div class="test-pick-result">
-								<h5 class="title"><span>Reset Practice Test </span></h5>
-								<p class="text">You can discard your current progress and re-take this test from the beginning</p>
-								<button class="button" id="testResetBtn"  data-click="${_.componentName}:resetTest"><span>Reset this test</span></button>
+							<div class="test-pick-result" id="test-pick-button-cont">
+								<img src="/img/loader.gif" alt="">
 							</div>
 						</div>
 					</div>
