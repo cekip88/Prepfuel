@@ -777,6 +777,13 @@ export const view = {
 				<svg><use xlink:href="#select-arrow-bottom"></use></svg>
 			</button>
 			${_.showScore()}
+			<div class="test-results-reset">
+				<h5 class="block-title test-title">
+					<span>Reset ${item.title}</span>
+				</h5>
+				<p class="test-results-reset-text">You can discard your current progress and re-take this test from the beginning</p>
+				<button class="button">Reset this test</button>
+			</div>
 		</div>
 		`;
 		return tpl;
