@@ -117,7 +117,12 @@ export const view = {
 				<div class="block">
 					<div class="block-header">
 						<h2 class="block-title">Students (<span class="users-count gusers-count"><img src='/img/loader.gif' class='loader'></span>)</h2>
-						<div class="filter" id="filter-cont"><img src="/img/loader.gif" alt=""></div>
+						<div class="filter"><img src="/img/loader.gif" alt=""></div>
+						<button class="block-header-item button-blue" data-click="${_.componentName}:addStudent"><span>Add Student</span>
+							<svg class="button-icon large">
+								<use xlink:href="#plus2"></use>
+							</svg>
+						</button> 
 					</div>
 					${_.pagination()}
 					<div class="tbl">
@@ -172,13 +177,12 @@ export const view = {
 		`;
 	},
 
-
-	filterTpl(wizardData){
+	filterTpl(subSection = this.subSection){
 		const _ = this;
 		let tpl;
-		if (_.subSection === 'student') {
+		if (subSection === 'student') {
 			let options = [];
-			for (let courseData of wizardData.courses) {
+			for (let courseData of _.wizardData.courses) {
 				for (let option of courseData['levels']) {
 					let optionTitle = courseData.title + ' ' + option.title;
 					options.push({value:option._id,text:optionTitle});
@@ -205,14 +209,9 @@ export const view = {
 						items='${JSON.stringify(options)}'
 					></g-select>
 				</div>
-				<button class="block-header-item button-blue" data-click="${_.componentName}:addStudent"><span>Add Student</span>
-					<svg class="button-icon large">
-						<use xlink:href="#plus2"></use>
-					</svg>
-				</button> 
 			`;
 			return tpl;
-		} else if (_.subSection === 'parent') {
+		} else if (subSection === 'parent') {
 			let options = [{text:'All parents',value:undefined},{text:'No Students',value:false},{text:'With Students',value:true}];
 			tpl = `
 				<div class="block-header-item block-header-search">
@@ -227,14 +226,8 @@ export const view = {
 					<g-select class="select" data-change="${_.componentName}:searchUsers" name="hasStudents" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents"
 					items='${JSON.stringify(options)}'></g-select>
 				</div>
-				<button class="block-header-item button-blue" data-click="${_.componentName}:showAddParentPopup" from="body">
-					<span>Add Parent</span>
-					<svg class="button-icon large">
-						<use xlink:href="#plus2"></use>
-					</svg>
-				</button>
 			`;
-		} else if (_.subSection === 'admin') {
+		} else if (subSection === 'admin') {
 			let options = [{text:'Superadmin',value:'superadmin'},{text:'Admin',value:'admin'}];
 			tpl = `
 				<div class="block-header-item block-header-search">
@@ -249,12 +242,6 @@ export const view = {
 					<g-select class="select" data-change="${_.componentName}:searchUsers" name="hasStudents" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents"
 					items='${JSON.stringify(options)}'></g-select>
 				</div>
-				<button class="block-header-item button-blue" data-click="${_.componentName}:showAddAdminPopup" from="body">
-					<span>Add Admin</span>
-					<svg class="button-icon large">
-						<use xlink:href="#plus2"></use>
-					</svg>
-				</button>
 			`;
 		}
 		return tpl;
@@ -301,7 +288,6 @@ export const view = {
 		return tpl;
 	},
 
-	
 	removeCourseTpl(){
 		const _ = this;
 		return `
@@ -616,7 +602,7 @@ export const view = {
 	addingStudent(){
 		const _ = this;
 		return `
-				<div class="admin-modal"	id="addingForm">
+				<div class="admin-modal" id="addingForm">
 					<div class="block test-block adding-block">
 					<div class="test-header">
 						<h5 class="block-title test-title adding-header-title">
@@ -1136,19 +1122,9 @@ export const view = {
 			<div class="block" id="assignParent">
 				<div class="block-header">
 					<h2 class="block-title">Parents (<span class="users-count">${count ?? ''}</span>)</h2>
-					<div class="block-header-item block-header-search">
-						<svg><use xlink:href="#search"></use></svg>
-						<g-input class="block-header-input" type="text" placeholder="Search" classname="form-input form-search"></g-input>
-					</div>
-					<div class="block-header-item block-header-date">
-						<svg><use xlink:href="#calendar"></use></svg>
-						<g-input class="block-header-input block-header-date" type="date" icon="false" format="month DD, YYYY" classname="form-input form-search"></g-input>
-					</div>
-					<div class="block-header-item block-header-select">
-						<g-select class="select" action="testChange" name="testField" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents" items="[{&quot;value&quot;:1,&quot;text&quot;:&quot;option 1&quot;},{&quot;value&quot;:2,&quot;text&quot;:&quot;option 2&quot;},{&quot;value&quot;:3,&quot;text&quot;:&quot;option 3&quot;}]" style="--class:select block-header-select; --action:testChange; --name:testField; --classname:filter-select; --arrowsvg:img/sprite.svg#select-arrow;"><input type="hidden" name="testField" slot="value"></g-select>
-					</div>
+					<div class="filter" role="parent">${_.filterTpl('parent')}</div>
 				</div>
-				${_.pagination(count,limit)}
+				${_.pagination()}
 				<div class="tbl">
 					<div class="tbl-head">
 						<div class="tbl-item"> 
@@ -1221,8 +1197,9 @@ export const view = {
 		`
 		return tpl;
 	},
-	parentsBodyRowsTpl(usersData,type='adding'){
+	parentsBodyRowsTpl({usersData,type = 'adding',role}){
 		const _ = this;
+		if (!role) role = _.subSection;
 		let trs = [];
 		usersData = usersData['response'];
 		for(let item of usersData){
@@ -1232,8 +1209,8 @@ export const view = {
 			if(type=='adding'){
 				tr.innerHTML = _.parentsBodyRowTpl(item);
 			} else if(type == 'single') {
-				tr.innerHTML = _.subSection == 'parent' ? _.parentsSingleBodyRowTpl(item) : _.adminSingleBodyRowTpl(item);
-			}else {
+				tr.innerHTML = role === 'parent' ? _.parentsSingleBodyRowTpl(item) : _.adminSingleBodyRowTpl(item);
+			} else {
 				tr.innerHTML = _.parentsInfoRow(item);
 			}
 			trs.push(tr);
@@ -2420,21 +2397,18 @@ export const view = {
 	// Parents Page
 	parentsBody(){
 		const _ = this;
-		let filterSelectOptions = [
-			{
-				value: 1, text: 'All parents',active:true
-			},{
-				value: 2, text: 'No students',
-			},{
-				value: 3, text: 'With students',
-			}
-		];
 		return `
 			<div class="section users-page" id="bodyParents">
 				<div class="block">
 					<div class="block-header">
 						<h2 class="block-title">Parents (<span class="users-count gusers-count"><img src='/img/loader.gif' class='loader'></span>)</h2>
-						<div id="filter-cont"><img src="/img/loader.gif" alt=""></div>
+						<div class="filter"><img src="/img/loader.gif" alt=""></div>
+						<button class="block-header-item button-blue" data-click="${_.componentName}:showAddParentPopup" from="body">
+							<span>Add Parent</span>
+							<svg class="button-icon large">
+								<use xlink:href="#plus2"></use>
+							</svg>
+						</button>
 					</div>
 					${_.pagination()}
 					<div class="tbl">
@@ -2865,8 +2839,11 @@ export const view = {
 				<div class="block">
 					<div class="block-header">
 						<h2 class="block-title">Admins (<span class="users-count gusers-count"><img src='/img/loader.gif' class='loader'></span>)</h2>
-						<div id="filter-cont"><img src="/img/loader.gif" alt=""></div>
-						
+						<div class="filter"><img src="/img/loader.gif" alt=""></div>
+						<button class="block-header-item button-blue" data-click="${_.componentName}:showAddAdminPopup" from="body">
+							<span>Add Admin</span>
+							<svg class="button-icon large"><use xlink:href="#plus2"></use></svg>
+						</button>
 					</div>
 					${_.pagination()}
 					<div class="tbl">

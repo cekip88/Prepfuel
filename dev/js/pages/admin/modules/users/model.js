@@ -128,7 +128,6 @@ class _Model {
 				}
 			}
 		}
-		console.log(request)
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.getEndpoint('usersList')}/${request}`, {
 				method: 'GET',
@@ -136,10 +135,8 @@ class _Model {
 			});
 			if(rawResponse.status < 210) {
 				let response = await rawResponse.json();
-				//console.log(rawResponse,`${_.getEndpoint('usersList')}/?role=${role}&page=${page}&search=${search}`)
 				if(response['status'] == 'success') {
 					_[`${role}sData`] = response;
-					console.log(response)
 					resolve(response);
 				} else {
 					_.wrongResponse('getUsers', response);
