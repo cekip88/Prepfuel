@@ -52,6 +52,9 @@ export class TestsModule extends StudentPage{
 		_.innerQuestionId = 1;
 		_.subSection = 'tests-list';
 		
+		_.sectionColors = [
+			'80,205,137','4,200,200'
+		]
 		_.datasPos = 0;
 		
 		_.letters = [
@@ -66,31 +69,38 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		if(_.subSection == 'tests-list'){
 		
-			await Model.getStudentTests(); // requests all user tests
-			_.set({
-				currentQuestion: Model.firstQuestion,
-			});
-			_.currentQuestion = Model.firstQuestion;
+		
 			//console.log('Current Question: ',_.currentQuestion);
 			_.fillTestsList();
-			_.practiceTestResultsFill();
 		}
 	}
 	
-	fillTestsBody(){
+	async fillTestsBody(){
 		const _ = this;
 		let pickList = _.f('#testPickList'),buttonCont = _.f('#test-pick-button-cont');
 		pickList.innerHTML = '<img src="/img/loader.gif" alt="Loading...">';
 		buttonCont.innerHTML =  '<img src="/img/loader.gif" alt="Loading...">';
 		_.clear(pickList);
 		_.clear(buttonCont);
-		pickList.append(_.markup(_.testPickTpl()));
+		if(Model.test['status'] == 'finished'){
+			
+			let summary = await Model.getTestSummary();
+			pickList.append(_.markup(_.resultsTabBodyTpl(summary)));
+		}else{
+			pickList.append(_.markup(_.testPickTpl()));
+		}
+		
 		if(!Model.test['resultId']) return void 0;
 		
 		buttonCont.append(_.markup(_.resetButtonTpl()));
 	}
 	async fillTestsList(){
 		const _ = this;
+		await Model.getStudentTests(); // requests all user tests
+		_.set({
+			currentQuestion: Model.firstQuestion,
+		});
+		_.currentQuestion = Model.firstQuestion;
 		let
 			container = _.f('#testAsideList');
 		container.innerHTML = '<img src="/img/loader.gif" alt="Loading...">';
@@ -165,8 +175,9 @@ export class TestsModule extends StudentPage{
 		localStorage.removeItem('test');
 		localStorage.removeItem('_id');
 		item.innerHTML = '<img src="/img/loader.gif" alt="Loading...">';
-		await Model.resetTest(item.getAttribute('data-id'))
+		await Model.resetTest(item.getAttribute('data-id'));
 		item.textContent = 'Test reseted';
+		_.fillTestsList();
 	}
 	// Change current question
 	async changeQuestion({ item, event }){
@@ -209,7 +220,6 @@ export class TestsModule extends StudentPage{
 		let
 			jumpQuestionPos = Model.currentQuestionPosById(item.parentNode.getAttribute('data-question-id')),
 			questionPageId = item.parentNode.getAttribute('data-questionpage-id');
-		
 		if( _.questionPos == jumpQuestionPos ) return void 0;
 	
 		
@@ -239,14 +249,15 @@ export class TestsModule extends StudentPage{
 		_.sectionChanged = true;
 		_._$.currentQuestion = Model.currentQuestionData(_.datasPos);
 		
+		_.f('#test-section-name').textContent = Model.currentSection.sectionName;
 		
 	}
 
 	async changePracticeTest({item}){
 		const _ = this;
 		let
-			pos = parseInt(item.getAttribute('data-pos')),
-			id = item.getAttribute('data-id');
+			pos = parseInt(item.getAttribute('data-pos'));
+		
 		_.f('.test-aside-btn.active').classList.remove('active');
 		item.classList.add('active');
 		let pickList = _.f('#testPickList');
@@ -255,6 +266,9 @@ export class TestsModule extends StudentPage{
 		_._$.currentQuestion = await Model.firstQuestion;
 		//_.currentQuestion = _._$.currentQuestion;
 		_.fillTestsBody();
+		
+		
+		
 	}
 	
 	
@@ -323,7 +337,7 @@ export class TestsModule extends StudentPage{
 			let
 				currentTestObj = test[t],
 				questionId= currentTestObj['questionId']; // if request was not in local storage, try another prop for questionId
-			if(currentTestObj['bookmarked']) {
+			if(currentTestObj['bookmark']) {
 				let listAnswerItem = _.f(`.questions-list .questions-item[data-question-id="${questionId}"]`);
 				if(listAnswerItem) listAnswerItem.classList.add('checked');
 			}
@@ -333,13 +347,13 @@ export class TestsModule extends StudentPage{
 				_.f(`.questions-list .questions-item[data-question-id="${questionId}"] .questions-variant`).textContent = currentTestObj['answer'].toUpperCase();
 			}
 		}
-		_.setActions(['bookmarked','note']);
+		_.setActions(['bookmark','note']);
 	}
 	markAnswers(){
 		const _ = this;
 		let
 			questionItems = _.f('.questions-item'),
-			serverQuestions = Model.questions,
+			serverQuestions = Model.allquestions,
 			cnt = 0;
 		for(let item of questionItems){
 			let
@@ -347,6 +361,7 @@ export class TestsModule extends StudentPage{
 				serverQuestion = serverQuestions[cnt],
 				variant = item.querySelector('.questions-variant').textContent;
 			if(Model.testServerAnswers && Model.testServerAnswers[id]){
+				serverQuestion['correctAnswer'] = '4'; // stub, delete in the future
 				if(Model.testServerAnswers[id]['answer']){
 					let
 						answer = Model.testServerAnswers[id]['answer'].toUpperCase(),
@@ -384,7 +399,7 @@ export class TestsModule extends StudentPage{
 			
 		Model.saveTestToStorage({
 			questionId: questionId,
-			bookmarked: !bookmarked
+			bookmark: !bookmarked
 		});
 		item.classList.toggle('active');
 		_.f(`.questions-list .questions-item[data-question-id="${questionId}"]`).classList.toggle('checked');
@@ -411,9 +426,8 @@ export class TestsModule extends StudentPage{
 	}
 		// Нижнего переднего рычага задний сайлентблоки
 	
-	setActions(types = ['bookmarked']){
-		//='bookmarked'
-		
+	setActions(types = ['bookmark']){
+		//='bookmark'
 		const _ = this;
 		let handle = (currentTest)=>{
 			if(currentTest) {
@@ -659,12 +673,33 @@ export class TestsModule extends StudentPage{
 	
 	getStep(){
 		const _ = this;
+		let pos = 0;
+		Model.questions.find((item,index)=> {
+			if( item['questions']){
+				let findedInQuestions = false;
+				item['questions'].find((item,index)=> {
+					if( item['_id'] == _._$.currentQuestion['_id'] ){
+						pos = index;
+						findedInQuestions = true;
+						return true;
+					}
+				});
+				if(!findedInQuestions){ pos = index;}
+			}
+			if( item['_id'] == _._$.currentQuestion['_id'] ){
+				pos = index;
+				return true;
+			}
+		});
+		//_.questionPos = pos;
 		let cnt = 0;
-		for(let i = 0; i <= _.questionPos;i++){
-			if(Model.questions[i]['questions']){
-				cnt+=Model.questions[i]['questions'].length;
-			}else{
-				cnt+=1;
+		for(let i = 0; i <= pos;i++){
+			if(Model.questions[i]){
+				if(Model.questions[i]['questions']){
+					cnt+=Model.questions[i]['questions'].length;
+				}else{
+					cnt+=1;
+				}
 			}
 		}
 		return cnt;
@@ -735,9 +770,8 @@ export class TestsModule extends StudentPage{
 				_.markup(_.questionFooter())
 			);
 			_.isLastQuestion = false;
-			_.setActions(['bookmarked','note']);
-			
-			if( _.questionPos < _.questionsLength ){
+			_.setActions(['bookmark','note']);
+			if( _.questionPos < Model.allQuestionsLength ){
 				_.f('.skip-to-question').textContent = _.getNextStepCnt();
 			}
 			if( _.questionPos == _.questionsLength - 1 ){
@@ -755,6 +789,7 @@ export class TestsModule extends StudentPage{
 			if(_.sectionChanged) {
 				let questionCont = _.f('.questions-list');
 				_.clear(questionCont);
+				_.f('#questions-length').textContent = Model.allQuestionsLength;
 				questionCont.append(_.markup(_.questionsList()));
 			}
 			_.fillCheckedAnswers();

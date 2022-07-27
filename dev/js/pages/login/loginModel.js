@@ -39,7 +39,6 @@ class _loginModel{
 			method: 'POST',
 			..._.baseHeaders,
 			body: JSON.stringify(formData),
-			
 		});
 		if(_.isSuccessStatus(rawResponse.status)){
 			let response = await rawResponse.json();

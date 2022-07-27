@@ -314,7 +314,7 @@ export const view = {
 		return new Promise( (resolve) =>{resolve(`
 			<div class="section">
 				<div class="section-header">
-					<h1 class="title">${Model.test.testStandard}-${Model.test.testGrade} &mdash; ${Model.currentSection.sectionName}</h1>
+					<h1 class="title">Practice test ${Model.test['testNumber']} &mdash; <strong id="test-section-name">${Model.currentSection.sectionName}</strong></h1>
 					<div class="test-timer"><span class="test-timer-value">${Model.test.testTime}</span> minutes left</div>
 					<button class="button-white" data-click="${this.componentName}:changeSection" section="score"><span>Finish this section</span></button>
 				</div>
@@ -382,7 +382,7 @@ export const view = {
 				<h5 class="block-title small"><span>Questions</span></h5>
 				${Model.test.testStandard == "SHSAT" ? _.questionsListNavTabs() : ''}
 				<div class="questions-cont">
-					<h6 class="questions-list-title"><span>Question 1 - <i class="questions-length">${Model.allQuestionsLength}</i></span></h6>
+					<h6 class="questions-list-title"><span>Question 1 - <i class="questions-length" id="questions-length">${Model.allQuestionsLength}</i></span></h6>
 					<ul class="questions-list">
 						${_.questionsList()}
 					</ul>
@@ -605,17 +605,17 @@ export const view = {
 					<div class="test-right" >
 						<p class="test-text">${_._$.currentQuestion['passageType']}</p>
 				`;
-		let cnt = _.questionPos;
+		let cnt = 0;
 		//allQuestionsLength()
 		for(let question of _._$.currentQuestion['questions']){
 			tpl+= `
-					<div class="test-sec">
+					<div class="test-sec" id="${question['_id']}">
 					<div class="test-header">
 						<h5 class="block-title test-title"><span>Question ${cnt+1} of ${_._$.currentQuestion['questions'].length}</span></h5>
 						${_.actionsTpl(question)}
 					</div>
 					<p class="test-text"><span>${question['title']}</span></p>
-					<ul class="answer-list" data-question-id="${question['_id']}" id="${question['_id']}">`;
+					<ul class="answer-list" data-question-id="${question['_id']}" >`;
 			for(let answer in question['answers']){
 				let ans = question['answers'][answer];
 				tpl+= await _.answerTpl(question,answer);
@@ -686,8 +686,6 @@ export const view = {
 			</div>`;
 	},
 	
-	
-	
 	testScoreHeaderTpl(){
 		const _ = this;
 		return `
@@ -696,29 +694,12 @@ export const view = {
 					<h1 class="title">Test Scores</h1>
 					<p class="test-text test-header-text">Your test scores will appear here once you complete your first practice test.</p>
 				</div>
-				${_.testScoreBlock()}
 			</div>
 		`;
 	},
 
 
-	testScoreBlock(){
-		const _ = this;
-		let tpl = `
-			<div class="block test-row">
-				<div class="test-aside">
-					<h5 class="test-aside-title">Tests</h5>
-					<ul class="test-aside-list loader-parent" id="practiceTestResultsAside">
-						<img src="/img/loader.gif" alt="">
-					</ul>
-				</div>
-				<div class="test-tabs loader-parent" id="testResultBlock">
-					<img src="/img/loader.gif" alt="">
-				</div>
-			</div>
-		`;
-		return tpl;
-	},
+	
 	resultsAsideButtonsTpl(resultsInfo){
 		const _ = this;
 		let tpl = ``
@@ -746,28 +727,30 @@ export const view = {
 			}
 		return tpl;
 	},
-	resultsTabBodyTpl(item){
+	resultsTabBodyTpl(summary){
 		const _ = this;
 		let tpl = `
 			<div class="test-tabs-body">
 				<h5 class="block-title test-title">
-					<span>${item.title} Score</span>
+					<span>${Model.test['testType']} ${Model.test['testNumber']} Score</span>
 				</h5>
 				<div class="test-results">
 					<div class="total">
 						<span>Total</span>
-					<div class="total-value" id="test-result-total">${item.total}</div>
+					<div class="total-value" id="test-result-total">${summary['score']}</div>
 				</div>
 				<div class="test-results-list">
 		`;
-		for (let result of item.lessons) {
+		let cnt=0;
+		for (let result of Model.test['sections']) {
 			tpl += `
-			<div class="test-results-item" style="background-color:rgba(${result.color},.2);color:rgb(${result.color})">
-				<h6 class="test-results-item-title">${result.title}</h6>
-				<span class="test-results-item-value">${result.value}</span>
-				<button class="test-results-item-button" style="background-color:rgb(${result.color})">Review this section</button>
+			<div class="test-results-item" style="background-color:rgba(${_.sectionColors[cnt]},.2);color:rgb(${_.sectionColors[cnt]})">
+				<h6 class="test-results-item-title">${result['sectionName']}</h6>
+				<span class="test-results-item-value">${Math.round(Math.random()*1000)}</span>
+				<button class="test-results-item-button" style="background-color:rgb(${_.sectionColors[cnt]})" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="questions">Review this section</button>
 			</div>
 			`;
+			cnt++;
 		}
 		tpl += `
 				</div>
@@ -777,14 +760,6 @@ export const view = {
 				<svg><use xlink:href="#select-arrow-bottom"></use></svg>
 			</button>
 			${_.showScore()}
-			<div class="test-results-reset">
-				<h5 class="block-title test-title">
-					<span>Reset ${item.title}</span>
-				</h5>
-				<p class="test-results-reset-text">You can discard your current progress and re-take this test from the beginning</p>
-				<button class="button">Reset this test</button>
-			</div>
-		</div>
 		`;
 		return tpl;
 	},
@@ -798,7 +773,15 @@ export const view = {
 		let status = "Start";
 		if(Model.test['status'] == 'in progress') status = "Continue";
 		if(Model.test['status'] == 'finished') status = "Review";
+		
 		let tpl = `
+			<h5 class="block-title test-title">
+				<span>Start Practice Test </span>
+			</h5>
+			<p class="test-text">
+				<span>After completing a section, you can stop or review</span>
+			</p>
+			<ul class="test-pick-list shsat loader-parent" >
 			<li class="test-pick-item green">
 				<div class="test-pick-time"><span id="testTime">180</span><span>min</span></div>
 				<ul class="test-pick-desc">
@@ -820,7 +803,10 @@ export const view = {
 				</ul>
 				<button class="button" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="welcome"><span>${status} this test</span></button>
 			</li>
+			</ul>
 		`;
+			
+			
 			return tpl;
 	},
 	resetButtonTpl(){
@@ -838,15 +824,9 @@ export const view = {
 					${_.testListAsideTpl()}
 					<div class="test-tabs">
 						<div class="test-tabs-body">
-							<h5 class="block-title test-title">
-								<span>Start Practice Test </span>
-							</h5>
-							<p class="test-text">
-								<span>After completing a section, you can stop or review</span>
-							</p>
-							<ul class="test-pick-list shsat loader-parent" id="testPickList">
+							<div id="testPickList">
 								<img src="/img/loader.gif" alt="">
-							</ul>
+							</div>
 							<div class="test-pick-result" id="test-pick-button-cont">
 								<img src="/img/loader.gif" alt="">
 							</div>
@@ -939,7 +919,7 @@ export const view = {
 		const _ = this;
 		return `
 			<li class="test-aside-item">
-				<button data-pos="${i-1}" class="test-aside-btn ${i == 1 ? 'active' : ''}" data-id="${test['_id']}" data-click="${_.componentName}:changePracticeTest">
+				<button data-pos="${i-1}" class="test-aside-btn ${i-1 == Model.currentTestPos ? 'active' : ''}" data-id="${test['_id']}" data-click="${_.componentName}:changePracticeTest">
 					<h6 class="test-aside-btn-title">Practice test ${test['testNumber']}</h6><span class="test-aside-btn-desc">0 of 4 sections complete</span>
 					<div class="test-aside-btn-date">
 						<svg>

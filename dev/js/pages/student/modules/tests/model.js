@@ -109,27 +109,8 @@ class _Model{
 		* */
 		let testId = _.tests[_.currentTestPos]['_id'];
 		_.test = _.tests[_.currentTestPos];
+		_.testStatus = _.test['status'];
 		return Promise.resolve(_.test);
-/*		let resultId = null;
-		if( _.test ){
-			resultId = _.test['resultId'];
-		}*/
-		// temp test id
-		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.endpoints['tests']}/${testId}`,{
-				method: 'GET',
-				headers:_.baseHeaders
-			});
-			if(rawResponse.status == 200){
-				let response = await rawResponse.json();
-				if(response['status'] == 'success'){
-					_.test = response['response'];
-					
-			//		_.test['resultId'] = resultId;
-					resolve(_.test);
-				}
-			}
-		});
 	}
 	changeSectionPos(pos=0){
 		this.currentSectionPos = pos;

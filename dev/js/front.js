@@ -108,6 +108,11 @@ new router().init({
 				'/admin/courses': 'admin',
 			}
 		},
+	  'parent':{
+			routes:{
+				'/parent/dashboard': 'parent',
+			}
+	  },
 		'student':{
 			routes:{
 				'/profile': 'student',
