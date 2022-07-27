@@ -696,10 +696,95 @@ export const view = {
 					<h1 class="title">Test Scores</h1>
 					<p class="test-text test-header-text">Your test scores will appear here once you complete your first practice test.</p>
 				</div>
+				${_.testScoreBlock()}
 			</div>
 		`;
 	},
-	
+
+
+	testScoreBlock(){
+		const _ = this;
+		let tpl = `
+			<div class="block test-row">
+				<div class="test-aside">
+					<h5 class="test-aside-title">Tests</h5>
+					<ul class="test-aside-list loader-parent" id="practiceTestResultsAside">
+						<img src="/img/loader.gif" alt="">
+					</ul>
+				</div>
+				<div class="test-tabs loader-parent" id="testResultBlock">
+					<img src="/img/loader.gif" alt="">
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
+	resultsAsideButtonsTpl(resultsInfo){
+		const _ = this;
+		let tpl = ``
+		for (let i = 0; i < resultsInfo.length; i++) {
+			let item = resultsInfo[i];
+			tpl += `
+				<li class="test-aside-item">
+					<button data-pos="0" class="test-aside-btn ${ !i ? 'active' : ''}" data-id="${item._id}" data-click="${_.componentName}:changeTestResultsTab">
+						<h6 class="test-aside-btn-title">${item.title}</h6>
+						<span class="test-aside-btn-results">
+							<span>${item.total}</span>`;
+			for (let subItem of item.lessons) {
+				tpl += `<span style="color: rgba(${subItem.color},1)">${subItem.value} ${_.getFirstLetters(subItem.title)}</span>`
+			}
+			tpl += `</span>
+						<div class="test-aside-btn-date">
+							<svg>
+								<use xlink:href="#calendar"></use>
+							</svg>
+							<span>Monday, July 20</span>
+						</div>
+					</button>
+				</li>
+			`;
+			}
+		return tpl;
+	},
+	resultsTabBodyTpl(item){
+		const _ = this;
+		let tpl = `
+			<div class="test-tabs-body">
+				<h5 class="block-title test-title">
+					<span>${item.title} Score</span>
+				</h5>
+				<div class="test-results">
+					<div class="total">
+						<span>Total</span>
+					<div class="total-value" id="test-result-total">${item.total}</div>
+				</div>
+				<div class="test-results-list">
+		`;
+		for (let result of item.lessons) {
+			tpl += `
+			<div class="test-results-item" style="background-color:rgba(${result.color},.2);color:rgb(${result.color})">
+				<h6 class="test-results-item-title">${result.title}</h6>
+				<span class="test-results-item-value">${result.value}</span>
+				<button class="test-results-item-button" style="background-color:rgb(${result.color})">Review this section</button>
+			</div>
+			`;
+		}
+		tpl += `
+				</div>
+			</div>
+			<button class="show-score">
+				<span>Show Score Breakdown</span>
+				<svg><use xlink:href="#select-arrow-bottom"></use></svg>
+			</button>
+			${_.showScore()}
+		</div>
+		`;
+		return tpl;
+	},
+	showScore(){
+		const _ = this;
+		return '';
+	},
 	
 	testPickTpl(test){
 		const _ = this;

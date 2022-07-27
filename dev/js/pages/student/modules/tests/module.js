@@ -25,7 +25,8 @@ export class TestsModule extends StudentPage{
 			'isGrid','showResults','showSummary','changeSection','setWrongAnswer','setCorrectAnswer','changeQuestion',
 			'jumpToQuestion','jumpToQuestion','saveBookmark','saveNote','changeInnerQuestionId','showForm','deleteNote',
 			'editNote','showTestLabelModal','startTimer','updateStorageTest','saveReport','changeTestSection','enterGridAnswer',
-			'resetTest','domReady','changePracticeTest'
+			'resetTest','domReady','changePracticeTest',
+			'changeTestResultsTab',
 		]);
 		//TestModel = new TestModel();
 		_.isLastQuestion = false;
@@ -72,6 +73,7 @@ export class TestsModule extends StudentPage{
 			_.currentQuestion = Model.firstQuestion;
 			//console.log('Current Question: ',_.currentQuestion);
 			_.fillTestsList();
+			_.practiceTestResultsFill();
 		}
 	}
 	
@@ -675,6 +677,51 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		return _.getStep()+1;
 	}
+
+
+	// practice test results
+	getFirstLetters(string){
+		const _ = this;
+		let words = string.split(' ');
+		let resultString = '';
+		for (let i = 0; i < words.length; i++) {
+			resultString += words[i][0].toUpperCase();
+		}
+		return resultString;
+	}
+	practiceTestResultsFill(){
+		const _ = this;
+		let results = Model.getPracticeTestResults();
+
+		let asideCont = _.f('#practiceTestResultsAside');
+		_.clear(asideCont);
+		asideCont.append(_.markup(_.resultsAsideButtonsTpl(results)));
+
+		let body = _.f('#testResultBlock');
+		_.clear(body);
+		body.append(_.markup(_.resultsTabBodyTpl(results[0])))
+	}
+	async changeTestResultsTab({item}){
+		const _ = this;
+		let
+			body = _.f('#testResultBlock'),
+			cont = item.closest('ul'),
+			id = item.getAttribute('data-id');
+
+		let active = cont.querySelector('.active');
+		if (item == active) return;
+
+		_.clear(body);
+		body.append(_.markup('<img src="/img/loader.gif">'))
+		let info = await Model.getPracticeTestResults(id);
+
+		active.classList.remove('active');
+		item.classList.add('active');
+		_.clear(body);
+		if (info) body.append(_.markup(_.resultsTabBodyTpl(info)))
+	}
+	// end practice test results
+
 	async init(){
 		const _ = this;
 		_._( async (obj)=>{

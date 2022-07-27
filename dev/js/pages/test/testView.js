@@ -369,6 +369,8 @@ export const testView = {
 	},
 	
 	/* Questions tpls */
+
+
 	gridDigitButtons(){
 		const _ = this;
 		let tpl = ``;
@@ -619,5 +621,7 @@ export const testView = {
 					<p>Nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt aliquip deserunt reprehenderit elit laborum.</p>
 				</div>
 			</div>`;
-	}
+	},
+
+
 }

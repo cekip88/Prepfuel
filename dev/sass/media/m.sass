@@ -1327,9 +1327,72 @@ g-modaler
 					+wh(16px)
 					margin-right: 4px
 					fill: rgb($blue)
+			&-results
+				@extend %dfa
+				margin-bottom: 4px
+				opacity: .8
+				span
+					@extend %dfa
+					font: $fz12 $p_medium
+					line-height: calc(18em/12)
+					&:first-child
+						color: #464E5F
+					&:after
+						+af
+						+wh(3px)
+						margin: 0 5px
+						border-radius: 100%
+						background-color: #464E5F
+					&:last-child
+						&:after
+							content: none
+	&-results
+		.total
+			padding: 24px
+			border-radius: 12px
+			background-color: rgb($bgc)
+			font: $fz15 $p_medium
+			&-value
+				margin-top: 3px
+				font: calc(36em / 14) $p_bold
+				line-height: 1.5
+		&-item
+			@extend %df
+			margin-top: 12px
+			flex-direction: column
+			border-radius: 12px
+			padding: 24px
+			&-title
+				margin-bottom: 16px
+				font: $fz15 $p_medium
+			&-value
+				font: $fz25 $p_bold
+			&-button
+				margin-top: 16px
+				padding: 12px 20px
+				border-radius: 9px
+				color: #fff
+				font: $fz15 $p_medium
 	&-tabs
 		width: 100%
 		position: relative
+		&-body
+			.show-score
+				@extend %dfc
+				width: 100%
+				margin-top: 24px
+				padding: 12px 20px
+				border-radius: 6px
+				background-color: #F5F8FA
+				color: rgb($neutral-600)
+				text-transform: capitalize
+				font: $fz15 $f_semi
+				span
+					margin-right: 15px
+				svg
+					+wh(11px,8px)
+					fill: rgb($neutral-600)
+
 	&-pick
 		&-list
 			margin-bottom: 55px

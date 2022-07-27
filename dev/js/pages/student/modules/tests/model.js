@@ -302,6 +302,52 @@ class _Model{
 			}
 		});
 	}
+
+
+	getPracticeTestResults(id){
+		const _ = this;
+		let results = [
+			{
+				title: 'Practice test 1',
+				_id: 'asdfafasdf',
+				total: 400,
+				lessons: [
+					{
+						title: 'English Language Arts',
+						value: 200,
+						color: '80,205,137'
+					},{
+						title: 'Mathematics',
+						value: 200,
+						color: '4,200,200'
+					}
+				]
+			},{
+				title: 'Practice test 2',
+				_id: '12fasffasfa',
+				total: 600,
+				lessons: [
+					{
+						title: 'English Language Arts',
+						value: 300,
+						color: '80,205,137'
+					},{
+						title: 'Mathematics',
+						value: 300,
+						color: '4,200,200'
+					}
+				]
+			}
+		];
+
+		if (!id) return results;
+		else {
+			for (let item of results) {
+				if (item._id === id) return item;
+			}
+		}
+	}
+
 	
 	
 	async changeTest(pos){
