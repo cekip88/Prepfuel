@@ -77,21 +77,22 @@ export class TestsModule extends StudentPage{
 	
 	async fillTestsBody(){
 		const _ = this;
-		let pickList = _.f('#testPickList'),buttonCont = _.f('#test-pick-button-cont');
+		let pickList = _.f('#testPickList'),
+		buttonCont = _.f('#test-pick-button-cont');
 		pickList.innerHTML = '<img src="/img/loader.gif" alt="Loading...">';
-		buttonCont.innerHTML =  '<img src="/img/loader.gif" alt="Loading...">';
-		_.clear(pickList);
-		_.clear(buttonCont);
+	//	buttonCont.innerHTML =  '<img src="/img/loader.gif" alt="Loading...">';
+		
 		if(Model.test['status'] == 'finished'){
-			
 			let summary = await Model.getTestSummary();
+			_.clear(pickList);
 			pickList.append(_.markup(_.resultsTabBodyTpl(summary)));
 		}else{
+			_.clear(pickList);
 			pickList.append(_.markup(_.testPickTpl()));
 		}
 		
 		if(!Model.test['resultId']) return void 0;
-		
+		_.clear(buttonCont);
 		buttonCont.append(_.markup(_.resetButtonTpl()));
 	}
 	async fillTestsList(){
@@ -330,9 +331,9 @@ export class TestsModule extends StudentPage{
 		_.f('.note-button').classList.remove('active');
 	}
 	/* Work with note end */
-	fillCheckedAnswers(){
+	async fillCheckedAnswers(){
 		const _ = this;
-		let test = Model.getTestFromStorage();
+		let test = await Model.getTestResults();//Model.getTestFromStorage();
 		for(let t in test){
 			let
 				currentTestObj = test[t],

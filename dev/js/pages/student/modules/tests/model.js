@@ -213,7 +213,7 @@ class _Model{
 				}
 				//_.testServerAnswers = response['response']['sections'][_.currentSectionPos]['subSections'][_.currentSubSectionPos]['answers'];
 				_.testStatus = response['response']['status'];
-				resolve(response['response']);
+				resolve(_.testServerAnswers);
 			}
 		});
 	}

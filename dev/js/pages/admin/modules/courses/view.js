@@ -109,10 +109,11 @@ export const view = {
 		const _ = this;
 		let trs = [];
 		if(!usersData) return void 0;
+		console.log(usersData);
 		for(let item of usersData){
 			let tr = document.createElement('TR');
 			tr.className = 'tbl-row';
-			tr.setAttribute('data-id',item['_id']);
+			tr.setAttribute('data-id',item[0]);
 			tr.innerHTML = _.filesRowTpl(item);
 			trs.push(tr);
 		}
@@ -123,7 +124,7 @@ export const view = {
 		let tpl = `
 				<td>
 					<div class="tbl-item courses-table-title">
-						${rowData.type == 'folder' ? _.folderTitle(rowData) : _.fileTitle(rowData)}
+						${rowData[1]['type'] == 'file' ? _.fileTitle(rowData) :  _.folderTitle(rowData)}
 					</div>
 				</td>
 				<td>
@@ -133,9 +134,9 @@ export const view = {
 			</td>
 			<td>
 				<div class="tbl-item right courses-table-action">
-					${rowData.type == 'file' ? '<button class="courses-action-btn users-btn button">Preview</button>' : ''}
+					${rowData[1].type == 'file' ? '<button class="courses-action-btn users-btn button">Preview</button>' : ''}
 					<div class="courses-action">
-						${rowData.type == 'folder' ? _.folderActions() : _.fileActions()}
+						${rowData[1].type == 'folder' ? _.folderActions() : _.fileActions()}
 						<button class="courses-action-btn users-btn button">
 							<span></span><span></span><span></span>
 						</button>
@@ -168,22 +169,22 @@ export const view = {
 	folderTitle(rowData){
 		const _ = this;
 		return `
-			<button class="courses-table-button" id="${rowData._id}" data-click="${_.componentName}:moveToFolder">
+			<button class="courses-table-button" id="${rowData[0]}" data-click="${_.componentName}:moveToFolder">
 				<div class="courses-table-icon">
-					<svg><use xlink:href="#folder"></use></svg>
+					<svg><use xlink:href="#uploadedfolder"></use></svg>
 				</div>
-				<span class="courses-table-name">${rowData.title}</span>
+				<span class="courses-table-name">${rowData[0]}</span>
 			</button>
 		`
 	},
 	fileTitle(rowData){
 		const _ = this;
 		return `
-			<div class="courses-table-div" id="${rowData._id}">
+			<div class="courses-table-div" id="${rowData[0]}">
 				<div class="courses-table-icon">
-					<svg><use xlink:href="#uploadedFile"></use></svg>
+					<svg><use xlink:href="#uploadedfile"></use></svg>
 				</div>
-				<span class="courses-table-name">${rowData.sections[0].sectionName}</span>
+				<span class="courses-table-name">${rowData[0]}</span>
 			</div>
 		`
 	},

@@ -527,7 +527,7 @@ export const view = {
 		if(isGrid){
 			return void 0;
 		}
-		let handle = (questionId,correctVariant)=>{
+		let handle = ( questionId,correctVariant )=>{
 			let
 				answerItem = _.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${correctVariant}"]`);
 			if(!answerItem) return void 0;
@@ -538,15 +538,16 @@ export const view = {
 			if(_._$.currentQuestion['questions'].length > 1){
 				for(let question of _._$.currentQuestion['questions']){
 					let
-						answeredQuestion = Model.questions[_.questionPos],//Model.questions[question['id']],
+						answeredQuestion = Model.allquestions[_.questionPos],//Model.questions[question['id']],
 					correctVariant = answeredQuestion['correctAnswer'];
+				//	correctVariant = '4'; // stub, delete in future
 					handle(question['_id'],correctVariant);
 				}
 			}
 		}else{
 			let
 				currentQuestion = _._$.currentQuestion,
-				answeredQuestion = Model.questions[_.questionPos],
+				answeredQuestion = Model.allquestions[_.questionPos],
 				correctVariant = answeredQuestion['correctAnswer'];
 			handle(currentQuestion['_id'],correctVariant);
 		}
@@ -554,7 +555,6 @@ export const view = {
 	},
 	async graphicQuestion(){
 		const _ = this;
-		
 		let
 			currentQuestion = _._$.currentQuestion,//['questions'][0],
 		tpl= `
@@ -574,6 +574,7 @@ export const view = {
 					<div class="test-header">
 						<h5 class="block-title test-title">
 							<span>Question ${_.questionPos+1} of ${_.questionsLength}</span>
+							<strong style="font-size:10px;margin-left: 15px">${_._$.currentQuestion['questionId']}</strong>
 						</h5>
 						${_.actionsTpl(currentQuestion)}
 					</div>
@@ -611,7 +612,9 @@ export const view = {
 			tpl+= `
 					<div class="test-sec" id="${question['_id']}">
 					<div class="test-header">
-						<h5 class="block-title test-title"><span>Question ${cnt+1} of ${_._$.currentQuestion['questions'].length}</span></h5>
+						<h5 class="block-title test-title"><span>Question ${cnt+1} of ${_._$.currentQuestion['questions'].length}</span>
+						<strong style="font-size:10px;margin-left: 15px">${question['questionId']}</strong>
+						</h5>
 						${_.actionsTpl(question)}
 					</div>
 					<p class="test-text"><span>${question['title']}</span></p>
@@ -631,6 +634,7 @@ export const view = {
 	},
 	async standartQuestion(){
 		const _ = this;
+		
 		let
 			currentQuestion = _._$.currentQuestion,
 			output = document.createElement('div');
@@ -644,6 +648,7 @@ export const view = {
 			<div class="test-header">
 				<h5 class="block-title test-title ddss">
 					<span>Question ${_.getStep()} of ${Model.allQuestionsLength}</span>
+					<strong style="font-size:10px;margin-left: 15px">${_._$.currentQuestion['questionId']}</strong>
 				</h5>
 				${_.actionsTpl(currentQuestion)}
 			</div>
@@ -913,18 +918,14 @@ export const view = {
 			</div>
 		`;
 	},
-	
-	
 	testListAsideItemTpl(test,i){
 		const _ = this;
 		return `
 			<li class="test-aside-item">
 				<button data-pos="${i-1}" class="test-aside-btn ${i-1 == Model.currentTestPos ? 'active' : ''}" data-id="${test['_id']}" data-click="${_.componentName}:changePracticeTest">
-					<h6 class="test-aside-btn-title">Practice test ${test['testNumber']}</h6><span class="test-aside-btn-desc">0 of 4 sections complete</span>
+					<h6 class="test-aside-btn-title">Practice test ${test['testNumber']}</h6><span class="test-aside-btn-desc">0 of ${test['sections'].length} sections complete</span>
 					<div class="test-aside-btn-date">
-						<svg>
-							<use xlink:href="#calendar"></use>
-						</svg><span>${_.createdAtFormat(test['createdAt'])}</span>
+						<svg><use xlink:href="#calendar"></use></svg><span>${_.createdAtFormat(test['createdAt'])}</span>
 					</div>
 				</button>
 			</li>
@@ -942,8 +943,6 @@ export const view = {
 			</div>
 		`;
 	},
-
-
 	testsBody(){
 		const _ = this;
 		//${_.testScoreHeaderTpl()}
