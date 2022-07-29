@@ -48,6 +48,7 @@ export const view = {
 	},
 	scheduleBlock(dashSchedule){
 		const _ = this;
+		if (!dashSchedule) return null;
 		let
 			practiceDate = dashSchedule['practiceTest'] ? new Date(dashSchedule['practiceTest']['date']) : undefined,
 			testDate = dashSchedule['test'] ? new Date(dashSchedule['test']['date']) : undefined;
@@ -103,5 +104,4 @@ export const view = {
 			</div>
 		`;
 	},
-
 }

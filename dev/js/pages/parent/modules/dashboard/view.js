@@ -110,7 +110,6 @@ export const view = {
 		`
 	},
 
-
 	addingStudentTpl(){
 		const _ = this;
 		return `

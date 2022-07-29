@@ -99,6 +99,4 @@ export const studentView = {
 			</section> 
 		`;
 	},
-
-
 }

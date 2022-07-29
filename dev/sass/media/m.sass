@@ -317,16 +317,7 @@ g-modaler
 			opacity: 0
 			visibility: hidden
 			transition: .35s ease
-			&:before
-				+af
-				+wh(1px)
-				position: absolute
-				top: -13px
-				right: 24px
-				border: 6px solid transparent
-				border-bottom-color: #fff
-			+wh(112px,100px)
-			box-shadow: 0px 0px 40px rgba(56, 71, 109, 0.29)
+			box-shadow: 0 0 40px rgba(56, 71, 109, 0.29)
 			border-radius: 12px
 			background-color: #fff
 			position: absolute
@@ -336,11 +327,20 @@ g-modaler
 			color: RGB($neutral-600)
 			text-align: left
 			padding: 20px 24px
+			&:before
+				+af
+				+wh(1px)
+				position: absolute
+				top: -13px
+				right: 24px
+				border: 6px solid transparent
+				border-bottom-color: #fff
 			strong
 				display: block
 				cursor: pointer
 				font: 14px $f_reg
 				margin-bottom: 28px
+				white-space: nowrap
 				&:last-child
 					margin-bottom: 0
 	&-select
