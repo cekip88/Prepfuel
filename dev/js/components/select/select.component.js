@@ -657,7 +657,7 @@ export default class GSelect extends GComponent {
 			}
 			.adding-select .g-select-option {
 			  font: 14px "roboto-medium";
-			  padding: 9px 12px;
+			  padding: 12px 24px;
 			  color: #5E6278;
 			}
 			
@@ -758,6 +758,26 @@ export default class GSelect extends GComponent {
 			.head-select .g-select-option.active {
 				background-color: #F5F8FA;
 				color: #00A3FF;
+			}
+			
+			.adding-summary-select {
+				border: none;
+			}
+			.adding-summary-select .g-select-head {
+				background: none;
+				padding: 0;
+			}
+			.adding-summary-select .g-select-title {
+				order: 1;
+				margin-left: 10px;
+				font-size: 15px;
+			}
+			.adding-summary-select .g-select-head:after {
+				border-width: 1px;
+				width: 7px;
+				height: 7px;
+				flex-basis: 7px;
+				transform: rotate(135deg) translate(-1px, 1px);
 			}
 		`;
 	}

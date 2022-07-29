@@ -26,13 +26,20 @@ class ParentPage extends G{
 				id:'',
 				container: document.createElement('g-body')
 			},
+			'footer': {
+				id:'',
+				container: document.createElement('g-footer')
+			}
 		};
 	}
 	define(){
 		const _ = this;
 		_.componentName = 'ParentPage';
 		G_Bus
-		.on(_,['changeSection','navigate'])
+		.on(_,[
+			'changeSection','navigate',
+			'showSuccessPopup','showErrorPopup','closePopup',
+		]);
 	}
 	navigate(clickData){
 		const _ = this;
@@ -82,9 +89,34 @@ class ParentPage extends G{
 			'name': params[0],
 			'structure':_.pageStructure
 		});
+		if(!module._$){
+			module._$ = {};
+		}
+		module.super_$ = _._$;
 		module.headerBlock = _.header;
 		return Promise.resolve(module.render());
 	}
+
+	showSuccessPopup(text) {
+		const _ =  this;
+		_.closePopup();
+		_.f('BODY').append(_.markup(_.successPopupTpl(text,'green')));
+		setTimeout(_.closePopup.bind(_),3000)
+	}
+	showErrorPopup(text) {
+		const _ =  this;
+		_.closePopup();
+		_.f('BODY').append(_.markup(_.successPopupTpl(text,'red')));
+		setTimeout(_.closePopup.bind(_),3000);
+	}
+	closePopup(clickData) {
+		const _ = this;
+		let label;
+		if (clickData && clickData.item) label = clickData.item.closest('.label');
+		else label = _.f('.label');
+		if (label) label.remove();
+	}
+
 	async init(blockData){
 		const _ = this;
 		let params;
@@ -98,7 +130,7 @@ class ParentPage extends G{
 		}
 		setTimeout(()=>{
 			_.navigationInit();
-		},1000)
+		},1500)
 	}
 }
 

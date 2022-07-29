@@ -217,8 +217,8 @@ g-modaler
 		padding-left: 32px
 	&-list
 		flex: 0 0 320px
+		padding-top: 44px
 		border-right: 1px solid #EBEDF3
-		padding-right: 50px
 
 	&-body
 		+w(100%)
@@ -228,6 +228,19 @@ g-modaler
 			padding: 20px 32px
 			justify-content: space-between
 
+.parent
+	&-adding
+		&-inner
+			display: flex
+			align-items: flex-start
+			.adding-list
+				margin-right: 20px
+		&-body
+			width: 100%
+			.test-footer
+				border-top: none
+		&-subtitle
+			font-size: $fz18
 
 .plansBlock
 	&-info

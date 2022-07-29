@@ -70,4 +70,15 @@ export const parentView = {
 			</section>
 		`;
 	},
+	successPopupTpl(text,color){
+		const _ = this;
+		return `
+			<div class="success-label label ${color}">
+				<svg><use xlink:href="#checkmark-reverse"></use></svg>
+				<span>${text}</span>
+				<button data-click="${_.componentName}:closePopup">
+					<svg><use xlink:href="#close-transparent"></use></svg>
+				</button>
+			</div>`
+	},
 };

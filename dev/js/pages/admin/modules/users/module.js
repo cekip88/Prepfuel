@@ -375,6 +375,7 @@ export class UsersModule extends AdminPage {
 		}
 		let
 			currentStudent = Model.studentsData.response.filter( student => student['_id'] == studentId )[0];
+		console.log(currentStudent)
 		_.studentInfo = Object.assign({},currentStudent['user']);
 		_.studentInfo['currentSchool'] = currentStudent['currentSchool'];
 		_.studentInfo['currentPlan'] = currentStudent['currentPlan'];
@@ -1460,7 +1461,7 @@ export class UsersModule extends AdminPage {
 	
 	async init(){
 		const _ = this;
-		_._( _.handleAddingSteps.bind(_),['addingStep'] );
+		_._( _.handleAddingSteps.bind(_),[ 'addingStep' ] );
 		_._( _.handleAssignSteps.bind(_),[ 'assignStep' ] );
 	}
 	

@@ -513,10 +513,20 @@
 	&-circle
 		margin-right: 80px
 		
+.comGraph
+	&-row
+		display: flex
+		align-items: flex-start
+	&-circle
+		margin-right: 80px
+
 .adding
-	&-body,&-list
+	&-list
+		max-height: calc(100vh - 350px)
+		overflow-y: auto
+	&-body
 		height: calc(100vh - 350px)
-		overflow-y: scroll
+		overflow-y: auto
 	&-inner
 		+w(1200px)
 	&-subtitle
@@ -538,6 +548,17 @@
 		margin: 0 auto
 		&.wide
 			+w(647px)
+	&-section
+		margin-top: 48px
+	&-summary
+		&-item
+			display: flex
+			flex-wrap: wrap
+			align-items: center
+			span
+				width: 100%
+			strong
+				margin-right: 10px
 
 
 .perItemBlock
@@ -618,6 +639,15 @@ thead.tbl-head
 				white-space: nowrap
 	&-skip
 		padding: 96px 0
+	&-adding
+		&-body
+			padding-top: 48px
+#parent
+	&-adding
+		&-body
+			height: calc(100vh - 410px)
+			padding-right: 20px
+			overflow-y: auto
 .users
 	&-info
 		&-email,&-name

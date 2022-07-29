@@ -602,72 +602,72 @@ export const view = {
 	addingStudent(){
 		const _ = this;
 		return `
-				<div class="admin-modal" id="addingForm">
-					<div class="block test-block adding-block">
-					<div class="test-header">
-						<h5 class="block-title test-title adding-header-title">
-							<span>Adding a Student</span>
-						</h5>
-					</div>
-					<div class="adding-inner">
-						<div class="adding-row">
-							<ol class="adding-list">
-								<li class="adding-list-item active">
-									<strong class="adding-list-digit">1</strong>
-									<div class="adding-list-desc">
-										<h5 class="adding-list-title">Course & Plan</h5>
-										<h6 class="adding-list-subtitle">Set Type of a Test & Membership </h6>
-									</div>
-								</li>
-								<li class="adding-list-item">
-									<strong class="adding-list-digit">2</strong>
-									<div class="adding-list-desc">
-										<h5 class="adding-list-title">Account Settings</h5>
-										<h6 class="adding-list-subtitle">Setup Student Account Settings</h6>
-									</div>
-								</li>
-								<li class="adding-list-item">
-									<strong class="adding-list-digit">3</strong>
-									<div class="adding-list-desc">
-										<h5 class="adding-list-title">Parent Information</h5>
-										<h6 class="adding-list-subtitle">Assign Or Add a Parent</h6>
-									</div>
-								</li>
-								<li class="adding-list-item">
-									<strong class="adding-list-digit">4</strong>
-									<div class="adding-list-desc">
-										<h5 class="adding-list-title">School Information</h5>
-										<h6 class="adding-list-subtitle">Student's School Related Info</h6>
-									</div>
-								</li>
-								<li class="adding-list-item">
-									<strong class="adding-list-digit">5</strong>
-									<div class="adding-list-desc">
-										<h5 class="adding-list-title">Test Information</h5>
-										<h6 class="adding-list-subtitle">Set Test Info</h6>
-									</div>
-								</li>
-								<li class="adding-list-item">
-									<strong class="adding-list-digit">6</strong>
-									<div class="adding-list-desc">
-										<h5 class="adding-list-title">Summary</h5>
-										<h6 class="adding-list-subtitle">Review and Confirm</h6>
-									</div>
-								</li>
-							</ol>
-							<div class="adding-body"><img src="/img/loader.gif"></div>
-						</div>
-					</div>
-					<div class="test-footer">
-						<button class="test-footer-back step-prev-btn" data-click="modaler:closeModal" type="adding">
-							<span>Cancel</span>
-						</button>
-						<button class="button-blue step-next-btn" data-click="${_.componentName}:changeNextStep" type="adding" step="2">
-							<span>Next</span>
-						</button>
+			<div class="admin-modal" id="addingForm">
+				<div class="block test-block adding-block">
+				<div class="test-header">
+					<h5 class="block-title test-title adding-header-title">
+						<span>Adding a Student</span>
+					</h5>
+				</div>
+				<div class="adding-inner">
+					<div class="adding-row">
+						<ol class="adding-list">
+							<li class="adding-list-item active">
+								<strong class="adding-list-digit">1</strong>
+								<div class="adding-list-desc">
+									<h5 class="adding-list-title">Course & Plan</h5>
+									<h6 class="adding-list-subtitle">Set Type of a Test & Membership </h6>
+								</div>
+							</li>
+							<li class="adding-list-item">
+								<strong class="adding-list-digit">2</strong>
+								<div class="adding-list-desc">
+									<h5 class="adding-list-title">Account Settings</h5>
+									<h6 class="adding-list-subtitle">Setup Student Account Settings</h6>
+								</div>
+							</li>
+							<li class="adding-list-item">
+								<strong class="adding-list-digit">3</strong>
+								<div class="adding-list-desc">
+									<h5 class="adding-list-title">Parent Information</h5>
+									<h6 class="adding-list-subtitle">Assign Or Add a Parent</h6>
+								</div>
+							</li>
+							<li class="adding-list-item">
+								<strong class="adding-list-digit">4</strong>
+								<div class="adding-list-desc">
+									<h5 class="adding-list-title">School Information</h5>
+									<h6 class="adding-list-subtitle">Student's School Related Info</h6>
+								</div>
+							</li>
+							<li class="adding-list-item">
+								<strong class="adding-list-digit">5</strong>
+								<div class="adding-list-desc">
+									<h5 class="adding-list-title">Test Information</h5>
+									<h6 class="adding-list-subtitle">Set Test Info</h6>
+								</div>
+							</li>
+							<li class="adding-list-item">
+								<strong class="adding-list-digit">6</strong>
+								<div class="adding-list-desc">
+									<h5 class="adding-list-title">Summary</h5>
+									<h6 class="adding-list-subtitle">Review and Confirm</h6>
+								</div>
+							</li>
+						</ol>
+						<div class="adding-body"><img src="/img/loader.gif"></div>
 					</div>
 				</div>
+				<div class="test-footer">
+					<button class="test-footer-back step-prev-btn" data-click="modaler:closeModal" type="adding">
+						<span>Cancel</span>
+					</button>
+					<button class="button-blue step-next-btn" data-click="${_.componentName}:changeNextStep" type="adding" step="2">
+						<span>Next</span>
+					</button>
 				</div>
+			</div>
+			</div>
 		`;
 	},
 	levelButtons(stepData){
@@ -744,6 +744,7 @@ export const view = {
 	// Adding steps
 	addingStepOne(stepData){
 		const _ = this;
+		console.log(stepData)
 		let
 			courses = stepData['courses'],
 			tpl = `

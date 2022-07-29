@@ -150,6 +150,8 @@ body
 				display: block
 	&-gap
 		margin-bottom: 24px
+	.test-header
+		padding-bottom: 20px
 g-modaler
 	.block
 		margin: 0
@@ -1038,7 +1040,6 @@ g-modaler
 			display: block
 	&-header
 		@extend %dfi
-		padding-bottom: 20px
 		flex-wrap: wrap
 		border-bottom: 1px solid rgb($neutral-200)
 		&-button
@@ -1124,6 +1125,9 @@ g-modaler
 		flex-direction: column
 		align-items: flex-start
 		border-top: 1px solid rgb($neutral-200)
+		&.narrow
+			max-width: 494px
+			margin: 0 auto
 		&-back
 			@extend %dfc
 			+w(100%)
@@ -2513,7 +2517,7 @@ g-modaler
 		color: rgb($blue-text)
 		font-family: $f_medium
 	&-left,&-right,&-full
-		min-height: 100vh
+		min-height: calc(100vh - 24px)
 	&-left,&-success
 		align-items: center
 		justify-content: flex-end
@@ -2902,6 +2906,7 @@ div.tbl-head
 		&-item
 			@extend %dfa
 			margin-bottom: 38px
+			text-align: left
 			&:last-child
 				.adding-list-digit:after
 					display: none
@@ -2920,10 +2925,13 @@ div.tbl-head
 			position: relative
 			&:after
 				+af
-				+wh(0px,30px)
+				+wh(0px,50px)
 				position: absolute
-				bottom: -35px
+				top: 100%
 				border: 1px dashed #E4E6EF
+			svg
+				+wh(19px,14px)
+				fill: rgb($blue)
 	&-title
 		font: 26px $f_bold
 		letter-spacing: -2%
@@ -3027,7 +3035,7 @@ div.tbl-head
 			@extend %dfa
 			margin-bottom: 16px
 			span
-				+w(90px)
+				+w(100%)
 				font: 14px $f_medium
 				line-height: 20px
 				display: inline-block
@@ -3050,8 +3058,6 @@ div.tbl-head
 			padding: 13px 26px
 			background-color: rgb($blue)
 			color: rgb($white)
-		.button-green
-			background-color: rgb($green)
 	&-subtitle
 		font: 14px $p_semi
 		line-height: 20px
@@ -3106,7 +3112,7 @@ div.tbl-head
 			color: #7E8299
 			margin-right: 20px
 		&-btn
-			font: 16px $f_bold
+			font: 16px $f_semi
 			color: rgb($blue-text)
 		&-list,&-item,&-table
 			margin-top: 24px
@@ -3139,6 +3145,29 @@ div.tbl-head
 					margin-bottom: 16px
 				span
 					color: #7E8299
+		&-final
+			margin-top: 0
+			border-top: 1px solid rgb($neutral-200)
+		&-text
+			margin-top: 32px
+			font-size: $fz16
+			color: rgb($neutral-400)
+			a
+				color: rgb($blue-text)
+				position: relative
+				&:after
+					@extend %transition
+					+af
+					+wh(0,1px)
+					background-color: rgb($blue-text)
+					position: absolute
+					left: 50%
+					bottom: -2px
+				&:hover:after
+					width: 100%
+					left: 0
+
+
 	&-assign
 		&-body
 			.block
@@ -3270,6 +3299,78 @@ div.tbl-head
 			margin: 20px 0 32px
 
 
+
+
+.billing
+	&-inner
+		max-width: 587px
+		margin: auto
+	&-block
+		padding: 32px 0
+		border-bottom: 1px solid #EBEDF3
+		&:last-child
+			border-bottom: none
+		&-inner
+			margin-bottom: 24px
+	&-title
+		margin-bottom: 24px
+		font: 1em $p_semi
+		color: rgb($neutral-400)
+	&-item
+		margin-bottom: 24px
+		padding: 26px 32px
+		border-radius: 6px
+		border: 1px dashed rgb($neutral-400)
+		&-row
+			@extend %df
+			&.alc
+				align-items: center
+		&-title
+			font: $fz18 $f_semi
+			color: #3F4254
+		&-name
+			text-transform: uppercase
+		&-primary
+			margin-left: 12px
+			padding: 6px 11px
+			font: $fz12 $f_semi
+			color: rgb($green)
+			background-color: rgb($green-light)
+		&-body
+			padding-top: 14px
+			flex-wrap: wrap
+		&-info
+			@extend %df
+			margin-bottom: 10px
+			flex-direction: column
+			align-items: flex-start
+			text-align: left
+			font: $fz16 $f_medium
+			color: rgb($neutral-600)
+			line-height: 22px
+			strong
+				font: $fz16 $f_bold
+				color: #3F4254
+				text-transform: capitalize
+			strong, em, span
+				line-height: calc(22em / 16)
+			strong, em
+				white-space: nowrap
+		&-actions
+			width: 100%
+			flex-wrap: wrap
+			button
+				width: 100%
+		&-card
+			&-img
+				@extend %dfc
+				+wh(80px,48px)
+				margin-bottom: 10px
+				padding: 9px 16px
+				background-color: #F6F8FA
+				border-radius: 6px
+
+
 .parent
 	&-table
 		&-avatar
@@ -3321,6 +3422,26 @@ div.tbl-head
 			&.short
 				max-width: 588px
 				margin: auto
+	.test-header
+		padding-top: 24px
+	&-adding
+		&-subtitle
+			margin-top: 8px
+			font: 1em $f_medium
+			span
+				color: rgb($neutral-400)
+			a
+				color: rgb($blue-text)
+		&-section
+			@extend %dfa
+			flex-direction: column
+			.adding-label
+				width: 100%
+				text-align: right
+		&-billing
+			max-width: 494px
+
+
 
 .newUsers
 	&-item
@@ -4125,6 +4246,8 @@ div.tbl-head
 			fill: rgb($blue)
 		&.wide
 			width: 100%
+	&-green
+		background-color: rgb($green)
 #parent-profile-popup .section-header
 	padding: 0 32px
 #parent-profile-popup .adding-list
@@ -4199,75 +4322,18 @@ div.tbl-head
 			width: 100%
 
 
-.billing
-	&-inner
-		max-width: 587px
-		margin: auto
-	&-block
-		padding: 32px 0
-		border-top: 1px solid #EBEDF3
-		&:first-child
-			border-top: none
-		&-inner
-			margin-bottom: 24px
-	&-title
-		margin-bottom: 24px
-		font: 1em $p_semi
-		color: rgb($neutral-400)
-	&-item
-		margin-bottom: 24px
-		padding: 26px 32px
-		border-radius: 6px
-		border: 1px dashed rgb($neutral-400)
-		&-row
-			@extend %df
-			&.alc
-				align-items: center
-		&-title
-			font: $fz18 $f_semi
-			color: #3F4254
-		&-name
-			text-transform: uppercase
-		&-primary
-			margin-left: 12px
-			padding: 6px 11px
-			font: $fz12 $f_semi
-			color: rgb($green)
-			background-color: rgb($green-light)
-		&-body
-			padding-top: 14px
-			flex-wrap: wrap
-		&-info
-			@extend %df
-			margin-bottom: 10px
-			flex-direction: column
-			align-items: flex-start
-			text-align: left
-			font: $fz16 $f_medium
-			color: rgb($neutral-600)
-			line-height: 22px
-			strong
-				font: $fz16 $f_bold
-				color: #3F4254
-				text-transform: capitalize
-			strong, em, span
-				line-height: calc(22em / 16)
-			strong, em
-				white-space: nowrap
-		&-actions
-			width: 100%
-			flex-wrap: wrap
-			button
-				width: 100%
-		&-card
-			&-img
-				@extend %dfc
-				+wh(80px,48px)
-				margin-bottom: 10px
-				padding: 9px 16px
-				background-color: #F6F8FA
-				border-radius: 6px
-
+#congratulationsPopup
+	@extend %dfa
+	width: 90vw
+	max-width: 573px
+	padding: 24px
+	flex-direction: column
+	.title
+		letter-spacing: -.02em
+		font: $fz26 $f_bold
+		text-align: center
+	.text
+		margin: 16px 0 24px
 
 .practice
 	&-title
