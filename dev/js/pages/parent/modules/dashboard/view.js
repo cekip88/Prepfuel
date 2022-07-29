@@ -404,8 +404,6 @@ export const view = {
 	},
 	addingStepSix(){
 		const _ = this;
-		let testDate = 'Have not registered yet';
-		console.log(_.studentInfo,_.metaInfo)
 		//if (_.studentInfo.testDatePicked) testDate = _.createdAtFormat(_.studentInfo['testDate']);
 		//let schoolTitles = [_.metaInfo.firstSchool,_.metaInfo.secondSchool,_.metaInfo.thirdSchool];
 		//_.addingSummarySchoolsTpl(schoolTitles)
