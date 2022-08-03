@@ -165,6 +165,7 @@ export class router {
 	async logout(){
 		const _ = this;
 		Object.keys(localStorage).forEach( key => {
+			if (key == 'loginData') return;
 			localStorage.removeItem(key)
 		});
 		let rawResponse = await fetch(_.endpoints['logout'],{

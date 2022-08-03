@@ -1195,7 +1195,7 @@ export const view = {
 			</div>
 			</div>
 			</div>
-		`
+		`;
 		return tpl;
 	},
 	parentsBodyRowsTpl({usersData,type = 'adding',role}){
@@ -1853,7 +1853,7 @@ export const view = {
 		} else {
 			studentsTpl += `<div class="parent-table-students-empty">No Students</div>`
 		}
-		return `
+		let tpl = `
 			<div class="tbl">
 				<div class="tbl-head">
 						
@@ -1951,6 +1951,7 @@ export const view = {
 				</div>
 			</div>
 		`;
+		return tpl;
 	},
 	parentsInfo(){
 		const _ = this;
@@ -2526,25 +2527,25 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">First name</label>
 						</div>
-						<g-input type="text" value="${_.parentInfo.firstName ?? ''}" name="firstName" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+						<g-input type="text" value="${_.parentInfo.firstName ?? ''}" name="firstName" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 					</div>
 					<div class="profile-form-row">
 						<div class="form-label-row">
 							<label class="form-label">Last name</label>
 						</div>
-						<g-input type="text" name="lastName" value="${_.parentInfo.lastName ?? ''}" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+						<g-input type="text" name="lastName" value="${_.parentInfo.lastName ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 					</div>
 					<div class="profile-form-row">
 						<div class="form-label-row">
 							<label class="form-label">Email</label>
 						</div>
-						<g-input type="email" name="email" value="${_.parentInfo.email ?? ''}" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+						<g-input type="email" name="email" value="${_.parentInfo.email ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 					</div>
 					<div class="profile-form-row">
 						<div class="form-label-row">
 							<label class="form-label">Phone</label>
 						</div>
-						<g-input type="phone" name="phone" value="${_.parentInfo.phone ?? ''}" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+						<g-input type="phone" name="phone" value="${_.parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 					</div>
 					<div class="admin-profile-line"></div>
 					<div class="admin-profile-password">
@@ -2553,7 +2554,7 @@ export const view = {
 							<svg><use xlink:href="#mail"></use></svg>
 							<span>Send Link To Reset Password</span>
 						</button>
-						<button class="admin-profile-password-button" data-click="${_.componentName}:showChangePassword">
+						<button class="admin-profile-password-button" data-role="parent" data-click="${_.componentName}:showChangePassword">
 							<svg><use xlink:href="#edit-transparent"></use></svg>
 							<span>Change Manually</span>
 						</button>
@@ -3027,7 +3028,7 @@ export const view = {
 							<svg><use xlink:href="#mail"></use></svg>
 							<span>Send Link To Reset Password</span>
 						</button>
-						<button class="admin-profile-password-button" data-click="${_.componentName}:showChangePassword">
+						<button class="admin-profile-password-button" data-role="admin" data-click="${_.componentName}:showChangePassword">
 							<svg><use xlink:href="#edit-transparent"></use></svg>
 							<span>Change Manually</span>
 						</button>

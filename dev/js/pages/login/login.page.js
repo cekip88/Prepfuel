@@ -50,9 +50,17 @@ class LoginPage extends G{
 				'resetSuccess',
 				'resetFail',
 				'changeSection',
-				'changeAgree'
+				'changeAgree',
+				'formInputHandle'
 		]);
 	}
+
+	formInputHandle({item}){
+		const _ = this;
+		let form = item.closest('FORM');
+		G_Bus.trigger(_.componentName,'doFormAction',{item:form})
+	}
+	
 	async doFormAction({item:form,event:e}){
 		/**
 		 * @param { string } handle - form attribute for LoginModel action exmp 'doLogin'
@@ -60,10 +68,24 @@ class LoginPage extends G{
 		 * @return void;
 		 */
 		const _ = this;
-		e.preventDefault();
+		if (e) e.preventDefault();
 		let handle = form.getAttribute('data-handle');
 		let formData = _.prepareForm(form);
 		if(!formData){return void 0}
+
+
+		if (handle == 'doLogin') {
+			let remember = form.querySelector('[name="remember"]');
+			if (remember.value.length) {
+				let loginData = {
+					email: formData.email,
+					password: formData.password
+				}
+				localStorage.setItem('loginData',JSON.stringify(loginData))
+			}
+			else localStorage.removeItem('loginData')
+		}
+
 		await loginModel[handle](formData);
 	}
 	changeSection({item,event}){

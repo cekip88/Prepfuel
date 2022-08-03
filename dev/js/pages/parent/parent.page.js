@@ -44,9 +44,9 @@ class ParentPage extends G{
 	navigate(clickData){
 		const _ = this;
 		let
-		list = clickData.item,
-		target = clickData.event.target,
-		btn = _.ascent(target,'.navigate-item','navigate-list');
+			list = clickData.item,
+			target = clickData.event.target,
+			btn = _.ascent(target,'.navigate-item','navigate-list');
 		_.showActiveNavItem(btn,list);
 		_.changeActiveNavItem(btn);
 	}

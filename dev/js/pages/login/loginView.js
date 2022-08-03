@@ -188,6 +188,8 @@ export const loginView = {
 	},
 	loginTpl(){
 		const _ = this;
+		let loginData = localStorage.getItem('loginData');
+		if (loginData) loginData = JSON.parse(loginData);
 		return `
 				<form class="login-form" data-submit="${_.componentName}:doFormAction" data-handle="doLogin">
 					<h2 class="login-title">
@@ -203,7 +205,7 @@ export const loginView = {
 						<div class="form-label-row">
 							<label class="form-label">Email</label>
 						</div>
-						<g-input class="g-form-item" type="email"  value="admin@mail.ru" name="email" className="form-input" required></g-input>
+						<g-input class="g-form-item" type="email" data-keydown="${_.componentName}:formInputHandle" value="${loginData ? loginData.email : 'admin@mail.ru'}" name="email" className="form-input" required></g-input>
 					</div>
 					<div class="form-block">
 						<div class="form-label-row">
@@ -212,10 +214,10 @@ export const loginView = {
 								<span>Forgot Password?</span>
 							</a>
 						</div>
-						<g-input class="g-form-item" type="password" name="password"  className="form-input"  value="admin123" required></g-input>
+						<g-input class="g-form-item" type="password" data-keydown="${_.componentName}:formInputHandle" name="password"  className="form-input"  value="${loginData ? loginData.password : 'admin123'}" required></g-input>
 					</div>
 					<div class="form-block">
-						<g-input type="checkbox" class="g-form-item" items='[{"value":1,"text":"Remember me"}]' name="remember"></g-input>
+						<g-input type="checkbox" class="g-form-item" items='[{"value":1,"text":"Remember me","checked":${loginData ? true : false}}]' name="remember"></g-input>
 					</label>
 				</div>
 					<div class="form-block">

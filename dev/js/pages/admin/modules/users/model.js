@@ -560,8 +560,9 @@ class _Model {
 			password: passwordData.password,
 			repeatPassword: passwordData['confirm_password'],
 		};
+		console.log(`${_.getEndpoint('changePassword')}${passwordData['_id']}`)
 		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.getEndpoint('changePassword')}/${passwordData['studentId']}`, {
+			let rawResponse = await fetch(`${_.getEndpoint('changePassword')}${passwordData['_id']}`, {
 				method: 'PUT',
 				headers: _.baseHeaders,
 				body: JSON.stringify(data)

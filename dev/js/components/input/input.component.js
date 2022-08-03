@@ -88,6 +88,18 @@ export default class GInput extends GComponent {
 		}
 		else if(!_.isCheckbox()){
 			_.shadow.querySelector('.inpt-value').value = val;
+		} else {
+			if (typeof val !== "object") {
+				let input = _.shadow.querySelector(`INPUT[value='${val}']`);
+				input.checked = true;
+				_.setCheckboxValue({item:input})
+			} else {
+				for (let value of val) {
+					let input = _.shadow.querySelector(`INPUT[value='${value}']`);
+					input.checked = true;
+					_.setCheckboxValue({item:input})
+				}
+			}
 		}
 
 		//_.value =

@@ -39,6 +39,9 @@ class _G_Control{
 	keyUpHandler(e){
 		return prepareHandler(e,'keyup');
 	}
+	keyDownHandler(e){
+		return prepareHandler(e,'keydown');
+	}
 	submitHandler(e){
 		return prepareHandler(e,'submit');
 	}
@@ -82,6 +85,7 @@ class _G_Control{
 		_.container.addEventListener('change',_.changeHandler);
 		_.container.addEventListener('input',_.inputHandler);
 		_.container.addEventListener('keyup',_.keyUpHandler);
+		_.container.addEventListener('keydown',_.keyDownHandler);
 		_.container.addEventListener('mouseover',_.overHandler);
 		_.container.addEventListener('mouseout',_.outHandler);
 		_.container.addEventListener('mouseleave',_.leaveHandler);

@@ -101,7 +101,7 @@ export class UsersModule extends AdminPage {
 		_.parentInfo = {};
 		_.studentInfo = {};
 		_.wizardData = Model.wizardData ?? await Model.getWizardData();
-		if(_.subSection === 'student') {
+		if(_.subSection === 'student'){
 			let
 				item,update= true;
 			if(data){
@@ -181,7 +181,7 @@ export class UsersModule extends AdminPage {
 		G_Bus.trigger(_.componentName,'showSuccessPopup','Student has been successfully added');
 		_._$.addingStep = 1;
 		let users = await Model.getUsers({role:_.subSection,page: 1,update: true});
-		_.fillUserTable({usersData:users});
+		_.fillUserTable({usersData:users,selector:'#usersBody'});
 	}
 	// Create methods
 	
@@ -223,6 +223,7 @@ export class UsersModule extends AdminPage {
 	}
 	async updateParent({item}){
 		const _ = this;
+		console.log(_.parentInfo)
 		let response = await Model.updateParent({
 			'_id': _.parentInfo['_id'],
 			'firstName': _.parentInfo['firstName'],
@@ -240,17 +241,24 @@ export class UsersModule extends AdminPage {
 	async saveChangePassword({item}){
 		const _ = this;
 		let
-			form = item.closest('.password'),
+			form = item.closest('.passwords'),
 			inputs = form.querySelectorAll('G-INPUT[type="password"]'),
-			passwords = {};
+			role = form.getAttribute('data-role') ?? 'student';
+
+		console.log(role,_[`${role}Info`])
+		let
+			passwords = {
+				'_id': _[`${role}Info`].studentId ?? _[`${role}Info`].outerId
+			};
+
 
 		for (let input of inputs) {
 			let name = input.getAttribute('name');
-			_.studentInfo[name] = input.value;
+			_[`${role}Info`][name] = input.value;
 			passwords[name] = input.value;
 		}
 
-		let response = await Model.updateStudentPassword(_.studentInfo);
+		let response = await Model.updateStudentPassword(passwords);
 		if (response) {
 			G_Bus.trigger('modaler','closeModal')
 			_.showSuccessPopup('Password has bben changed');
@@ -307,11 +315,11 @@ export class UsersModule extends AdminPage {
 			conts.forEach( item=>{
 				item.textContent = data;
 			});
-		}else{
+		} else {
 			conts.textContent = data;
 		}
 	}
-	async fillUserTable({usersData,selector,cont}){
+	async fillUserTable({usersData,selector = '',cont}){
 		const _ = this;
 		let
 			tbody = cont ? cont.querySelector('.tbl-body') : _.f(selector + ' .tbl-body'),
@@ -424,6 +432,7 @@ export class UsersModule extends AdminPage {
 			currentParent = Model.parentsData.response.filter( parent => parent['_id'] == parentId )[0];
 		console.log(currentParent)
 		_.parentInfo = Object.assign({},currentParent['user']);
+		_.parentInfo['outerId'] = _.parentInfo['_id'];
 		_.parentInfo['_id'] = currentParent['_id'];
 
 		_.f('.parent-profile-inner').innerHTML = _.parentsProfileInner();
@@ -880,6 +889,11 @@ export class UsersModule extends AdminPage {
 	}
 	showChangePassword({item}){
 		const _ = this;
+		let role = item.getAttribute('data-role');
+		if (role) {
+			let targetForm = _.f('#changePassword');
+			targetForm.setAttribute('data-role',role);
+		}
 		G_Bus.trigger('modaler','showModal',{target:'#changePassword'})
 	}
 	async notificationNavigate({item}){
@@ -959,21 +973,23 @@ export class UsersModule extends AdminPage {
 			cont = item.closest('.passwords'),
 			inputs = cont.querySelectorAll('G-INPUT[type="password"]'),
 			text = item.nextElementSibling;
+
+
 		if (item == inputs[0]) {
 			if (item.value.length < 8) {
 				item.setMarker('red');
-				text.style = 'color: red;'
+				text.style = 'color: red;';
 			} else {
 				item.setMarker();
-				text.removeAttribute('style')
+				text.removeAttribute('style');
 			}
 		} else {
 			if (item.value !== inputs[0].value) {
 				item.setMarker('red');
-				text.style = 'color: red;'
+				text.style = 'color: red;';
 			} else {
 				item.setMarker();
-				text.style = 'display:none;'
+				text.style = 'display:none;';
 			}
 		}
 
@@ -1050,7 +1066,7 @@ export class UsersModule extends AdminPage {
 			let number = Math.ceil(Math.random() * 65);
 			password += symbols[number];
 		}
-		
+
 		for (let i = 0; i < inputs.length; i++) {
 			inputs[i].value = password.toString();
 			let callBack = inputs[i].getAttribute('data-input');
@@ -1064,9 +1080,9 @@ export class UsersModule extends AdminPage {
 				input.select();
 				document.execCommand("copy");
 			}
+			_.validatePassword({item:inputs[i]})
 		}
-		G_Bus.trigger(_.componentName,'showSuccessPopup','Password Generated and Copied')
-		
+		G_Bus.trigger(_.componentName,'showSuccessPopup','Password Generated and Copied');
 		setTimeout(()=>{input.type = 'password'},2000)
 	}
 	
@@ -1194,11 +1210,13 @@ export class UsersModule extends AdminPage {
 		G_Bus.trigger('modaler','closeModal')
 		_.showSuccessPopup('Parent profile deleted');
 	}
-	async removeAssignedParent({item}){
+	async removeAssignedParent({item}) {
 		const _ = this;
 		_.studentInfo['parentId'] = null;
 		_.metaInfo.parentAssigned = false;
-		_.f('.parent-adding-table').innerHTML = _.assignParentTpl(true);
+		let cont = _.f('.parent-adding-table');
+		cont.innerHTML = _.assignParentTpl(true);
+		_.paginationFill({total:_.parents.total,limit:_.parents.limit,cont:cont.querySelector('.pagination')});
 	}
 	// Remove methods
 
