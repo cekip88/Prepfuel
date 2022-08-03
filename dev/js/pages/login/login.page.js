@@ -55,10 +55,13 @@ class LoginPage extends G{
 		]);
 	}
 
-	formInputHandle({item}){
+	formInputHandle({item,event}){
 		const _ = this;
-		let form = item.closest('FORM');
-		G_Bus.trigger(_.componentName,'doFormAction',{item:form})
+
+		if (event.keyCode === 13) {
+			let form = item.closest('FORM');
+			G_Bus.trigger(_.componentName,'doFormAction',{item:form})
+		}
 	}
 	
 	async doFormAction({item:form,event:e}){

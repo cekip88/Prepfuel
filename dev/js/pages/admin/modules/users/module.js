@@ -156,12 +156,18 @@ export class UsersModule extends AdminPage {
 	// Create methods
 	async createNewParent(){
 		const _ = this;
+
+		if (_.subSection == 'profile') {
+
+		}
+
 		let response = await Model.createParent(_.parentInfo);
 		if(!response) return void 0;
+
 		G_Bus.trigger('modaler','closeModal');
 		G_Bus.trigger(_.componentName,'showSuccessPopup','Parent has been successfully added');
+
 		let users = await Model.getUsers({role:_.subSection,page: 1,update: true});
-		console.log(users)
 		_.fillParentsTable({usersData:users});
 	}
 	async createStudent(){
