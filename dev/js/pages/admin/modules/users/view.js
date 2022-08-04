@@ -744,7 +744,7 @@ export const view = {
 	// Adding steps
 	addingStepOne(stepData){
 		const _ = this;
-		console.log(stepData)
+		//console.log(stepData)
 		let
 			courses = stepData['courses'],
 			tpl = `
@@ -897,6 +897,7 @@ export const view = {
 	addingStepThree() {
 		const _ = this;
 		let width = '';
+		//<button class="adding-button ${_.metaInfo && _.metaInfo.parentAddType == 'skip' ? 'active' : ''}" data-click="${_.componentName}:skipParent">Skip for now</button>
 		if (_.metaInfo && _.metaInfo.parentAddType && _.metaInfo.parentAddType == 'assign') width = 'full';
 		let tpl =  `
 			<h3 class="adding-title">Parent Information</h3>
@@ -905,7 +906,7 @@ export const view = {
 				<div class="adding-buttons">
 					<button class="adding-button ${_.metaInfo && _.metaInfo.parentAddType == 'assign' ? 'active' : ''}" data-click="${_.componentName}:assignParent">Assign from base</button>
 					<button class="adding-button ${(_.metaInfo && _.metaInfo.parentAddType == 'adding') || !_.metaInfo || !_.metaInfo.parentAddType ? 'active' : ''}" data-click="${_.componentName}:addNewParent">Add new parent</button>
-					<button class="adding-button ${_.metaInfo && _.metaInfo.parentAddType == 'skip' ? 'active' : ''}" data-click="${_.componentName}:skipParent">Skip for now</button>
+					
 				</div>
 			</div>
 			<div class="adding-assign-body ${width} parent-adding-table">`;

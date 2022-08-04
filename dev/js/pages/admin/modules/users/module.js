@@ -157,18 +157,23 @@ export class UsersModule extends AdminPage {
 	async createNewParent(){
 		const _ = this;
 
-		if (_.subSection == 'profile') {
-
-		}
-
 		let response = await Model.createParent(_.parentInfo);
 		if(!response) return void 0;
+		let role = _.subSection;
+		if (_.subSection == 'profile') {
+			Model.assignStudentToParent(response._id,_.studentInfo.studentId);
+			role = 'parent';
+		}
 
 		G_Bus.trigger('modaler','closeModal');
 		G_Bus.trigger(_.componentName,'showSuccessPopup','Parent has been successfully added');
 
-		let users = await Model.getUsers({role:_.subSection,page: 1,update: true});
-		_.fillParentsTable({usersData:users});
+		let users = await Model.getUsers({role,page: 1,update: true});
+		if (_.subSection == 'profile') {
+			_.fillParentsInfoTable({response:[response]});
+		} else {
+			_.fillParentsTable({usersData:users});
+		}
 	}
 	async createStudent(){
 		const _ = this;
@@ -229,7 +234,7 @@ export class UsersModule extends AdminPage {
 	}
 	async updateParent({item}){
 		const _ = this;
-		console.log(_.parentInfo)
+		//console.log(_.parentInfo)
 		let response = await Model.updateParent({
 			'_id': _.parentInfo['_id'],
 			'firstName': _.parentInfo['firstName'],
@@ -251,7 +256,7 @@ export class UsersModule extends AdminPage {
 			inputs = form.querySelectorAll('G-INPUT[type="password"]'),
 			role = form.getAttribute('data-role') ?? 'student';
 
-		console.log(role,_[`${role}Info`])
+		//console.log(role,_[`${role}Info`])
 		let
 			passwords = {
 				'_id': _[`${role}Info`].studentId ?? _[`${role}Info`].outerId
@@ -389,8 +394,9 @@ export class UsersModule extends AdminPage {
 		}
 		let
 			currentStudent = Model.studentsData.response.filter( student => student['_id'] == studentId )[0];
-		console.log(currentStudent)
+		//console.log(currentStudent)
 		_.studentInfo = Object.assign({},currentStudent['user']);
+		_.metaInfo = {};
 		_.studentInfo['currentSchool'] = currentStudent['currentSchool'];
 		_.studentInfo['currentPlan'] = currentStudent['currentPlan'];
 		_.studentInfo['grade'] = currentStudent['grade']['_id'];
@@ -418,7 +424,7 @@ export class UsersModule extends AdminPage {
 		}
 		let
 			currentAdmin = Model.adminsData.response.filter( admin => admin['_id'] == adminId )[0];
-		console.log(currentAdmin)
+		//console.log(currentAdmin)
 		_.adminInfo = Object.assign({},currentAdmin['user']);
 		_.adminInfo['_id'] = adminId
 
@@ -436,7 +442,7 @@ export class UsersModule extends AdminPage {
 		}
 		let
 			currentParent = Model.parentsData.response.filter( parent => parent['_id'] == parentId )[0];
-		console.log(currentParent)
+		//console.log(currentParent)
 		_.parentInfo = Object.assign({},currentParent['user']);
 		_.parentInfo['outerId'] = _.parentInfo['_id'];
 		_.parentInfo['_id'] = currentParent['_id'];
@@ -533,10 +539,12 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		let paginations = cont ? [cont] : document.querySelectorAll(`${selector ? selector + ' ' : ''}.pagination`);
 		if (!paginations.length) return;
-		let tpl = _.paginationTpl({limit,total,page:_.searchInfo[_.subSection].page})
+		let role = _.subSection;
+		if (!_.searchInfo[role]) _.searchInfo[role] = {page: 1};
+		if (!_.searchInfo[role].page) _.searchInfo[role].page = 1;
+		let tpl = _.paginationTpl({limit,total,page:_.searchInfo[role].page})
 		paginations.forEach(function (item){
 			_.clear(item);
-			//if (limit > total) return;
 			item.append(_.markup(tpl));
 		})
 	}
@@ -555,6 +563,7 @@ export class UsersModule extends AdminPage {
 			_.fillBodyAdminsTable({usersData,cont})
 		}
 		_.studentInfo = {};
+		_.metaInfo = {};
 		let paginationData = {
 			cont:cont.querySelector('.pagination'),
 			page:_.searchInfo[role].page,
@@ -576,18 +585,26 @@ export class UsersModule extends AdminPage {
 	}
 	addNewParent(clickData) {
 		const _ = this;
+		let container;
 		if (clickData) {
 			let item = clickData.item;
 			item.parentElement.querySelector('.active').classList.remove('active');
-			item.classList.add('active')
+			item.classList.add('active');
+
+			container = item.closest('.adding-body');
+		} else {
+			container = _.f('#addingForm');
 		}
-		let cont = _.f('#addingForm .adding-assign-body');
+		let cont = container.querySelector('.adding-assign-body');
 		if (cont) {
 			_.clear(cont);
 			cont.classList.remove('full');
 			cont.append(_.markup(_.assignNewParent()))
 		}
+
 		_.parentSkipped =  false;
+		_.studentInfo.parentId = null;
+		_.metaInfo.parentAssigned = false;
 		_.metaInfo.parentAddType = 'adding';
 	}
 	async selectAvatar(clickData) {
@@ -702,7 +719,6 @@ export class UsersModule extends AdminPage {
 			studentInner.innerHTML = _.parentsInfo();
 			//let parentsData = await Model.getUsers({role: 'parent'});
 			let parentsData = await Model.getStudentParents(_.studentInfo['studentId']);
-			
 			_.fillParentsInfoTable(parentsData);
 		}
 		if(pos == 2){
@@ -948,24 +964,15 @@ export class UsersModule extends AdminPage {
 	}
 	stepTwoValidation(){
 		const _ = this;
-		if (_.studentInfo.firstName) {
-			if (_.studentInfo.lastName) {
-				if (_.studentInfo.email) {
-					if (_.studentInfo.avatar) {
-						if (_.studentInfo.password) {
-							if (_.studentInfo.cpass) {
-								if (_.studentInfo.cpass == _.studentInfo.password) {
-									return true;
-								} else {
-									_.showErrorPopup('Password and Repeat password must match');
-								}
-							}
-						}
-					}
-				}
-			}
+		let props = ['firstName','lastName','email','avatar','password','cpass'];
+		for (let prop of props) if (!_.studentInfo[prop]) return false;
+
+		if (_.searchInfo.cpass !== _.studentInfo.password) {
+			_.showErrorPopup('Password and Repeat password must match');
+			return false;
 		}
-		return false;
+
+		return true;
 	}
 	stepThreeValidation(){
 		const _ = this;
@@ -1024,9 +1031,9 @@ export class UsersModule extends AdminPage {
 
 	handleErrors({method,data}){
 		const _ = this;
-		console.log(method,data);
+		//console.log(method,data);
 		if( method == 'getUsers'){
-			console.log('Users not found ',data);
+			//console.log('Users not found ',data);
 		}
 	}
 
@@ -1095,40 +1102,65 @@ export class UsersModule extends AdminPage {
 	// Assign methods
 	async assignParent(clickData = null) {
 		const _ = this;
-		if (clickData) {
+
+		let container;
+		if ( clickData ) {
 			let item = clickData.item;
-			item.parentElement.querySelector('.active').classList.remove('active');
-			item.classList.add('active')
+			item.parentElement.querySelector('.active').classList.remove( 'active' );
+			item.classList.add('active');
+
+			container = item.closest('.adding-body');
+		} else {
+			container = _.f('#addingForm');
 		}
 
-		let cont = _.f('#addingForm .adding-assign-body');
+		let cont = container.querySelector( '.adding-assign-body' );
 		_.clear(cont);
-		cont.classList.add('full');
-		if(_.metaInfo.parentAssigned){
-			cont.append(_.markup(_.assignedParent(_.currentParent)));
+		cont.classList.add( 'full' );
+
+		if ( _.metaInfo.parentAssigned ){
+			cont.append( _.markup( _.assignedParent( _.currentParent )));
 			return void 0;
-		}else{
-			cont.append(_.markup(_.assignParentTpl()));
+		} else {
+			cont.append( _.markup( _.assignParentTpl() ));
 		}
 
-		let usersData = await Model.getUsers({role: 'parent'});
-		_.paginationFill({total:usersData.total,limit:usersData.limit,cont:cont.querySelector('.pagination')});
-		_.parents = usersData;
+		_.parents = await Model.getUsers({
+			role:'parent',
+			page:1
+		});
 
-		_.fillParentBlock({usersData});
-		_.fillParentsTable({usersData});
+		_.paginationFill({
+			total:_.parents.total,
+			limit:_.parents.limit,
+			cont:cont.querySelector( '.pagination' )
+		});
+
+		_.fillParentBlock({
+			usersData:_.parents
+		});
+
+		_.fillParentsTable({
+			usersData:_.parents
+		});
+
 		_.parentSkipped =  false;
 		_.metaInfo.parentAddType = 'assign';
 	}
 	assignStudentToParent({item}) {
 		const _ = this;
 		if (_.studentInfo['parentId']) {
-			item.closest('.table').querySelector(`.users-btn[data-id="${_.studentInfo['parentId']}"]`).textContent = 'Assign';
+			let
+				usersTable = item.closest('.table'),
+				usersBtnSelector = `.users-btn[data-id="${_.studentInfo['parentId']}"]`,
+				userBtn = usersTable.querySelector(usersBtnSelector);
+			userBtn.textContent = 'Assign';
 		}
 
-		//item.textContent = 'Assigned';
 		_.studentInfo['parentId'] = item.getAttribute('data-id');
-		let currentParent = Model.parentsData.response.filter( parent => parent['_id'] == _.studentInfo['parentId'] )[0];
+		let
+			parData = Model.parentsData.response,
+			currentParent = parData.filter( parent => parent['_id'] == _.studentInfo['parentId'] )[0];
 		_.currentParent = currentParent;
 		_.f('.parent-adding-table').innerHTML = _.assignedParent(currentParent);
 		_.parentInfo = currentParent['user'];
@@ -1220,9 +1252,13 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		_.studentInfo['parentId'] = null;
 		_.metaInfo.parentAssigned = false;
-		let cont = _.f('.parent-adding-table');
-		cont.innerHTML = _.assignParentTpl(true);
-		_.paginationFill({total:_.parents.total,limit:_.parents.limit,cont:cont.querySelector('.pagination')});
+		let cont = _.f( '.parent-adding-table' );
+		cont.innerHTML = _.assignParentTpl( true );
+		_.paginationFill( {
+			total:_.parents.total,
+			limit:_.parents.limit,
+			cont:cont.querySelector('.pagination')
+		} );
 	}
 	// Remove methods
 
