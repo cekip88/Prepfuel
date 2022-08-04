@@ -160,6 +160,7 @@ export class UsersModule extends AdminPage {
 		let response = await Model.createParent(_.parentInfo);
 		if(!response) return void 0;
 		let role = _.subSection;
+
 		if (_.subSection == 'profile') {
 			Model.assignStudentToParent(response._id,_.studentInfo.studentId);
 			role = 'parent';
@@ -171,6 +172,7 @@ export class UsersModule extends AdminPage {
 		let users = await Model.getUsers({role,page: 1,update: true});
 		if (_.subSection == 'profile') {
 			_.fillParentsInfoTable({response:[response]});
+			_.f('g-body .button-link.blue').textContent = 'Change parent';
 		} else {
 			_.fillParentsTable({usersData:users});
 		}
@@ -234,7 +236,6 @@ export class UsersModule extends AdminPage {
 	}
 	async updateParent({item}){
 		const _ = this;
-		//console.log(_.parentInfo)
 		let response = await Model.updateParent({
 			'_id': _.parentInfo['_id'],
 			'firstName': _.parentInfo['firstName'],
@@ -256,12 +257,9 @@ export class UsersModule extends AdminPage {
 			inputs = form.querySelectorAll('G-INPUT[type="password"]'),
 			role = form.getAttribute('data-role') ?? 'student';
 
-		//console.log(role,_[`${role}Info`])
-		let
-			passwords = {
-				'_id': _[`${role}Info`].studentId ?? _[`${role}Info`].outerId
-			};
-
+		let passwords = {
+			'_id': _[`${role}Info`].outerId ?? _[`${role}Info`]._id
+		};
 
 		for (let input of inputs) {
 			let name = input.getAttribute('name');
@@ -346,7 +344,7 @@ export class UsersModule extends AdminPage {
 		
 		let tableData = _.usersBodyRowsTpl(usersData);
 		tbody.append(...tableData);
-		if (usersData.response.length)_.connectTableHead(selector);
+		if (usersData.response.length) _.connectTableHead(selector);
 	}
 	async fillParentBlock({usersData}){
 		const _ = this;
@@ -422,11 +420,10 @@ export class UsersModule extends AdminPage {
 		} else {
 			adminId = profileData['_id'];
 		}
-		let
-			currentAdmin = Model.adminsData.response.filter( admin => admin['_id'] == adminId )[0];
-		//console.log(currentAdmin)
+		let currentAdmin = Model.adminsData.response.filter( admin => admin['_id'] == adminId )[0];
 		_.adminInfo = Object.assign({},currentAdmin['user']);
-		_.adminInfo['_id'] = adminId
+		_.adminInfo['outerId'] = _.adminInfo['_id'];
+		_.adminInfo['_id'] = currentAdmin['_id'];
 
 		_.f('.admin-profile-inner').innerHTML = _.adminProfileInner();
 		_.f('.breadcrumbs').innerHTML = _.breadCrumbsTpl([{title:'Users'},{title:'Admins'},{title:`${_.adminInfo['firstName']} ${_.adminInfo['lastName']} Profile`}]);
@@ -699,8 +696,8 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		_.subSection = item.getAttribute('section');
 		let struct = _.flexible();
-		await _.render(struct,{item});
-		_.switchSubNavigate()
+		await _.render( struct,{item} );
+		_.switchSubNavigate();
 	}
 	async changeProfileTab({item}) {
 		const _ = this;
@@ -718,8 +715,11 @@ export class UsersModule extends AdminPage {
 			studentInner.classList.remove('short')
 			studentInner.innerHTML = _.parentsInfo();
 			//let parentsData = await Model.getUsers({role: 'parent'});
-			let parentsData = await Model.getStudentParents(_.studentInfo['studentId']);
-			_.fillParentsInfoTable(parentsData);
+			_.currentParent = await Model.getStudentParents( _.studentInfo['studentId'] );
+			if ( _.currentParent['response']['length'] ){
+				studentInner.querySelector( '.button-link.blue' ).textContent = 'Change parent';
+			}
+			_.fillParentsInfoTable( _.currentParent );
 		}
 		if(pos == 2){
 			studentInner.classList.remove('short')
@@ -889,12 +889,15 @@ export class UsersModule extends AdminPage {
 			target: '#add-parent'
 		})
 	}
-	showPopupParentProfile({item}){
+	async showPopupParentProfile({item}){
 		const _ = this;
-		let parentId = item.getAttribute('data-id')
+
+		let parentId = item.getAttribute('data-id');
 		_.f('#parent-profile-popup').setAttribute('data-id',parentId);
-		let tableData = Model.parentsData.response.filter( parent => parent['_id'] == parentId )[0];
-		_.parentInfo = tableData['user'];
+
+		let tableData = await Model.getUsers({role:'parent'});
+		_.currentParent = tableData.response.filter( parent => parent['_id'] == parentId )[0];
+		_.parentInfo = _.currentParent['user'];
 		
 		G_Bus.trigger('modaler','closeModal');
 		_.f('.parent-popup-profile-body').innerHTML = _.parentPersonalInfoTpl();
@@ -903,7 +906,6 @@ export class UsersModule extends AdminPage {
 			target: '#parent-profile-popup',
 			closeBtn: 'hide'
 		});
-		
 	}
 	showHistoryDetails({item}){
 		const _ = this;
@@ -937,8 +939,11 @@ export class UsersModule extends AdminPage {
 	cancelParentProfile({item}){
 		const _ = this;
 		G_Bus.trigger('modaler','closeModal');
-		G_Bus.trigger(_.componentName,'addStudent',{item});
-		G_Bus.trigger(_.componentName,'assignParent');
+
+		if (_.subSection === 'student'){
+			G_Bus.trigger(_.componentName,'addStudent',{item});
+			G_Bus.trigger(_.componentName,'assignParent');
+		}
 	}
 	// Show methods end
 	
@@ -1039,15 +1044,18 @@ export class UsersModule extends AdminPage {
 
 	connectTableHead(selector) {
 		const _ = this;
-		let
-			cont = _.f(`${selector ?? ''} .tbl`);
+
+		let cont = _.f(`${selector ?? ''} .tbl`);
 		if (!cont) return void 0;
+
 		let
 			head = cont.querySelector('.tbl-head'),
 			ths = head.querySelectorAll('.tbl-item'),
 			table = cont.querySelector('TABLE'),
 			row = table.querySelector('TBODY TR');
+
 		if (!row) return;
+
 		let tds = row.querySelectorAll('.tbl-item');
 		ths.forEach(function (item,index){
 			let w = tds[index].getBoundingClientRect().width;
@@ -1144,26 +1152,49 @@ export class UsersModule extends AdminPage {
 			usersData:_.parents
 		});
 
+		if ( _.currentParent ){
+			for ( let parent of _.currentParent['response'] ){
+				let curParentAssignBtn = cont.querySelector(`.users-btn.button-blue[data-id="${ parent['_id'] }"]`);
+				if ( !curParentAssignBtn ) continue;
+				curParentAssignBtn.closest('TR').remove();
+			}
+		}
+
+
 		_.parentSkipped =  false;
 		_.metaInfo.parentAddType = 'assign';
 	}
-	assignStudentToParent({item}) {
+	async assignStudentToParent({item}) {
 		const _ = this;
-		if (_.studentInfo['parentId']) {
+
+		let parentId = item.getAttribute('data-id');
+
+		if ( _.subSection === 'profile' && _.studentInfo['studentId'] ){
+			let cont = _.f( '#add-parent .tbl' );
+			_.clear( cont );
+			cont.append( _.markup( `<img src="/img/loader.gif">` ));
+
+			await Model.assignStudentToParent( parentId,_.studentInfo['studentId'] );
+			G_Bus.trigger('modaler','closeModal');
+			let sectionButton = _.f('g-body .section-button.active');
+			_.changeProfileTab({item:sectionButton});
+			return;
+		}
+
+		if ( _.studentInfo['parentId'] ){
 			let
 				usersTable = item.closest('.table'),
 				usersBtnSelector = `.users-btn[data-id="${_.studentInfo['parentId']}"]`,
 				userBtn = usersTable.querySelector(usersBtnSelector);
 			userBtn.textContent = 'Assign';
 		}
+		_.studentInfo['parentId'] = parentId;
 
-		_.studentInfo['parentId'] = item.getAttribute('data-id');
-		let
-			parData = Model.parentsData.response,
-			currentParent = parData.filter( parent => parent['_id'] == _.studentInfo['parentId'] )[0];
-		_.currentParent = currentParent;
-		_.f('.parent-adding-table').innerHTML = _.assignedParent(currentParent);
-		_.parentInfo = currentParent['user'];
+		let parData = Model.parentsData.response;
+		_.currentParent = parData.filter( parent => parent['_id'] == _.studentInfo['parentId'] )[0];
+
+		_.f('.parent-adding-table').innerHTML = _.assignedParent(_.currentParent);
+		_.parentInfo = _.currentParent['user'];
 		_.parentInfo.type = 'assigned';
 		_.metaInfo.parentAssigned = true;
 	}
@@ -1251,14 +1282,14 @@ export class UsersModule extends AdminPage {
 	async removeAssignedParent({item}) {
 		const _ = this;
 		_.studentInfo['parentId'] = null;
-		_.metaInfo.parentAssigned = false;
+		_.metaInfo['parentAssigned'] = false;
 		let cont = _.f( '.parent-adding-table' );
 		cont.innerHTML = _.assignParentTpl( true );
-		_.paginationFill( {
+		_.paginationFill({
 			total:_.parents.total,
 			limit:_.parents.limit,
 			cont:cont.querySelector('.pagination')
-		} );
+		});
 	}
 	// Remove methods
 

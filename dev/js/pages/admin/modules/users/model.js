@@ -23,7 +23,7 @@ class _Model {
 			studentParents: `/admin/student`,
 			parentStudents: `/admin/parent`,
 			assignStudentToParent: `/admin/assign/student-to-parent`,
-			changePassword: `/user/update-student-password/`,
+			changePassword: `/user/change-password`,
 			checkEmail: `/user/check-email/`,
 		};
 	}
@@ -83,7 +83,6 @@ class _Model {
 			if(rawResponse.status < 210) {
 				let response = await rawResponse.json();
 				if(response['status'] == 'success') {
-					console.log(response);
 					resolve(response);
 				} else {
 					_.wrongResponse('getStudentParents', response);
@@ -557,12 +556,11 @@ class _Model {
 	updateStudentPassword(passwordData){
 		const _ = this;
 		let data = {
-			password: passwordData.password,
+			password: passwordData['password'],
 			repeatPassword: passwordData['confirm_password'],
 		};
-		console.log(`${_.getEndpoint('changePassword')}${passwordData['_id']}`)
 		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.getEndpoint('changePassword')}${passwordData['_id']}`, {
+			let rawResponse = await fetch(`${_.getEndpoint('changePassword')}/${passwordData['_id']}`, {
 				method: 'PUT',
 				headers: _.baseHeaders,
 				body: JSON.stringify(data)

@@ -1759,7 +1759,11 @@ export const view = {
 			</td>
 			<td>
 				<div class="tbl-item right actions">
-					<button class="users-btn button profile">Profile</button>
+					<button 
+						class="users-btn button profile" 
+						data-click="UsersModule:showPopupParentProfile" 
+						data-id="${rowData._id}"
+					>Profile</button>
 					<button
 						class="users-btn button-blue profile"
 						data-id="${rowData['_id']}"
