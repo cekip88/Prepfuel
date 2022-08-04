@@ -895,6 +895,7 @@ export const view = {
 		`;
 	},
 	addingStepThree() {
+		/* <button class="adding-button ${_.metaInfo && _.metaInfo.parentAddType == 'skip' ? 'active' : ''}" data-click="${_.componentName}:skipParent">Skip for now</button>*/
 		const _ = this;
 		let width = '';
 		if (_.metaInfo && _.metaInfo.parentAddType && _.metaInfo.parentAddType == 'assign') width = 'full';
@@ -905,7 +906,7 @@ export const view = {
 				<div class="adding-buttons">
 					<button class="adding-button ${_.metaInfo && _.metaInfo.parentAddType == 'assign' ? 'active' : ''}" data-click="${_.componentName}:assignParent">Assign from base</button>
 					<button class="adding-button ${(_.metaInfo && _.metaInfo.parentAddType == 'adding') || !_.metaInfo || !_.metaInfo.parentAddType ? 'active' : ''}" data-click="${_.componentName}:addNewParent">Add new parent</button>
-					<button class="adding-button ${_.metaInfo && _.metaInfo.parentAddType == 'skip' ? 'active' : ''}" data-click="${_.componentName}:skipParent">Skip for now</button>
+					
 				</div>
 			</div>
 			<div class="adding-assign-body ${width} parent-adding-table">`;

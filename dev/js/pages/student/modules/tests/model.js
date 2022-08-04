@@ -8,7 +8,7 @@ class _Model{
 		}
 		_.endpoints = {
 			tests: `${env.backendUrl}/tests`,
-			studentTests: `${env.backendUrl}/student/current-course/tests`,
+			studentTests: `${env.backendUrl}/student/current-course`,
 			create: `${env.backendUrl}/tests-results/create`,
 			results: `${env.backendUrl}/tests-results`,
 			resultsBy: `${env.backendUrl}/tests/test-by-result`,
@@ -90,7 +90,7 @@ class _Model{
 					_.tests.sort( (a,b)=>{
 						return a['testNumber'] - b['testNumber'];
 					});
-					
+					console.log(_.tests);
 					await Model.getTest();
 					resolve(_.tests);
 				}
