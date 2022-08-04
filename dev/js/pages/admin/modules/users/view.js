@@ -895,6 +895,7 @@ export const view = {
 		`;
 	},
 	addingStepThree() {
+		/* <button class="adding-button ${_.metaInfo && _.metaInfo.parentAddType == 'skip' ? 'active' : ''}" data-click="${_.componentName}:skipParent">Skip for now</button>*/
 		const _ = this;
 		let width = '';
 		//<button class="adding-button ${_.metaInfo && _.metaInfo.parentAddType == 'skip' ? 'active' : ''}" data-click="${_.componentName}:skipParent">Skip for now</button>

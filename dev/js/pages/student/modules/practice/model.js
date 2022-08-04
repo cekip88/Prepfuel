@@ -1,5 +1,38 @@
 import { env }   from "/env.js";
+import {G_Bus} from "../../../../libs/G_Bus.js";
 export class _Model {
+	constructor(){
+		const _ = this;
+		_.baseHeaders = {
+			"Content-Type": "application/json"
+		}
+		_.endpoints = {
+			skillPractice: `${env.backendUrl}/student/skill-practice`,
+			sectionCategories: `${env.backendUrl}/student/current-course/skill`,
+			create: `${env.backendUrl}/skill-results/create`
+		};
+	}
+	
+	get allQuestionsLength(){
+		const _ = this;
+		return _.questions.length;
+	}
+	
+	get questions(){
+		const _ = this;
+		return _.skillTest;
+	}
+	get allquestions(){
+		const _ = this;
+		let questions = [];
+		_.skillTest.forEach( test =>{
+			questions = questions.concat(test['questions']);
+		});
+		return questions;
+	}
+	
+	
+	
 	getQuizInfo() {
 		const _ = this;
 		return {
@@ -28,6 +61,10 @@ export class _Model {
 			]
 		}
 	}
+	
+	
+	
+	/* Create  */
 	getPracticeInfo() {
 		const _ = this;
 		return {
@@ -293,6 +330,151 @@ export class _Model {
 				]
 			},
 		]
+	}
+	async getTest(){
+		const _ = this;
+		/*
+		*   Current test structure
+		*   {
+		*     _id title description testTime testType testStandard sections number
+		*   }
+		* */
+		let testId = _.tests[_.currentTestPos]['_id'];
+		_.test = _.tests[_.currentTestPos];
+		_.testStatus = _.test['status'];
+		return Promise.resolve(_.test);
+	}
+	async getSectionCategories(subject='math'){
+		const _ = this;
+		// get all tests from Database
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['sectionCategories']}/${subject}`,{
+				method: 'GET',
+				headers:_.baseHeaders,
+			});
+			if(rawResponse.status < 210){
+				let response = await rawResponse.json();
+				if(response['status'] == 'success'){
+					_.categories = response['response'];
+					resolve(_.categories);
+				}
+			}else{
+				G_Bus.trigger('TestPage','showResults',rawResponse);
+			}
+		});
+	}
+	
+	//
+	getSkillPractice(concept,category){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['skillPractice']}/?concept=${concept}&category=${category}`,{
+				method: 'GET',
+				headers:_.baseHeaders,
+			});
+			if(rawResponse.status < 210){
+				let response = await rawResponse.json();
+				if(response['status'] == 'success'){
+					_.skillTest = response['response']['tests'];
+					console.log(_.skillTest);
+					resolve(response['response']['tests']);
+				}
+			}else{
+				G_Bus.trigger('TestPage','showResults',rawResponse);
+			}
+		});
+	}
+	getCurrentConcept(id){
+		const _ = this;
+		let
+			currentCategory,	currentConcept,exit= false;
+		_.categories.forEach( category => {
+			if(exit) return void 'exited';
+			if(category['concepts']){
+				category['concepts'].filter( concept =>{
+					if(concept['concept'] == id){
+						currentConcept = concept;
+						currentCategory = category['category'];
+						exit=true;
+						return void 0;
+					}
+				});
+			}
+		});
+		_.currentCategory = currentCategory;
+		_.currentConcept = currentConcept;
+		return { currentCategory, currentConcept};
+	}
+	isFinished(){
+		return false;
+	}
+	hasTestFromStorage(){
+		return localStorage.getItem('skilltest') ? true : false;
+	}
+	isEmpty(obj){
+		return Object.keys(obj).length ? false : true;
+	}
+	getTestFromStorage(){
+		const _ = this;
+		if(_.testSkillServerAnswers) return _.testSkillServerAnswers;
+		if(!_.hasTestFromStorage()) return {};
+		let test;
+		try{
+			test = JSON.parse(localStorage.getItem('skilltest'))
+		}catch(e){
+			throw new Error('Wrong test data from localStorage')
+		}
+		return test;
+	}
+	async saveTestToStorage(testData){
+		const _ = this;
+		let test = _.getTestFromStorage();
+		if(_.isEmpty(test)){
+			test[testData['questionId']] = testData;
+		}else{
+			if(testData['questionId'] in test){
+				for(let t in test){
+					let testId = testData['questionId'];
+					if(testId == test[t]['questionId']){
+						for(let rawT in testData){
+							if(!testData[rawT]){
+								delete test[t][rawT];
+							}
+							test[t][rawT] = testData[rawT];
+						}
+						break;
+					}
+				}
+			}else{
+				test[testData['questionId']] = testData;
+			}
+		}
+		localStorage.setItem('skilltest',JSON.stringify(test));
+	}
+	async start(concept,category){
+		const _ =this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['create']}`,{
+				'method': 'POST',
+				headers:_.baseHeaders,
+				body: JSON.stringify({
+					"concept": concept,
+					"category": category,
+				})
+			});
+			if(rawResponse.status < 206){
+				let response = await rawResponse.json();
+				if(response['status'] == 'success'){
+					let resultId = response['response']['resultId'];
+					//_.test['resultId'] = resultId;
+					localStorage.setItem('resultId', resultId);
+					resolve(resultId);
+				}
+			}else{
+				resolve(false);
+			}
+			
+		});
 	}
 }
 

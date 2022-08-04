@@ -40,7 +40,8 @@ export class TestsModule extends StudentPage{
 			'Full Passage and Questions (450 words)':'',
 			'passage':'passage',
 			4:'compare',
-			'Grid-In':'grid'
+			'Grid-In':'grid',
+			'grid-in':'grid'
 		};
 		_.questionStep = 1;
 		
@@ -134,6 +135,7 @@ export class TestsModule extends StudentPage{
 			'body': _.flexible(section),
 		};
 		_.subSection = section;
+	
 		if(section == 'score') {
 			if(!Model.isFinished()){
 				console.log('Last answer saved',await _.saveAnswerToDB());
@@ -147,9 +149,11 @@ export class TestsModule extends StudentPage{
 		}
 		if(section == 'directions') {
 			// start of test
+
 			let started = await Model.start();
 			if(!started) return void 0;
 			let results = await Model.getTestResults();
+			
 			if(results['status'] === 'finished'){
 				section = 'score';
 				_.moduleStructure['body'] = _.flexible(section);
@@ -158,8 +162,12 @@ export class TestsModule extends StudentPage{
 		}
 	//	_._$.currentSection = section;
 		await _.render();
+		if(section == 'directions') {
+			_.f('#directionsQuestion').textContent = _.questionPos+1;
+		}
 		if(section == 'questions'){
 			_.fillCheckedAnswers();
+			
 			if(Model.isFinished()){
 				await Model.getTestResults();
 				_.markAnswers();
@@ -190,7 +198,7 @@ export class TestsModule extends StudentPage{
 		}
 		let index = _.questionPos;
 		if( dir == 'prev' ){
-			if( index == 0){
+			if( index == 0 ){
 				return void 0;
 			}
 		//	_.currentPos-=1;
@@ -198,7 +206,7 @@ export class TestsModule extends StudentPage{
 			_.questionPos-=1;
 			_._$.currentQuestion=  Model.questions[index-1];
 		}
-		if(dir == 'next'){
+		if( dir == 'next' ){
 			if( index == _.questionsLength.length-1 ){
 				await _.saveAnswerToDB();
 				Model.finishTest({});
@@ -206,7 +214,7 @@ export class TestsModule extends StudentPage{
 				return void 0;
 			}
 			if( !Model.isFinished() ){
-				let test = await _.saveAnswerToDB();
+				await _.saveAnswerToDB()
 			}
 			//_.currentPos+=1;
 			//_.datasPos+=1;
@@ -249,9 +257,8 @@ export class TestsModule extends StudentPage{
 		_.datasPos = 0;
 		_.sectionChanged = true;
 		_._$.currentQuestion = Model.currentQuestionData(_.datasPos);
-		
+		_.isJump = false;
 		_.f('#test-section-name').textContent = Model.currentSection.sectionName;
-		
 	}
 
 	async changePracticeTest({item}){
@@ -275,10 +282,10 @@ export class TestsModule extends StudentPage{
 	
 	isGrid(){
 		const _ = this;
-		return _._$.currentQuestion.type == 'grid in';
+		return _._$.currentQuestion.type == 'grid-in';
 	}
 	showResults(data){
-		console.log('Results info: ',data);
+		//console.log('Results info: ',data);
 	}
 	showSummary(data){
 		console.log('Summary info: ',data);
@@ -347,6 +354,7 @@ export class TestsModule extends StudentPage{
 				if(listAnswerItemVariant)
 				_.f(`.questions-list .questions-item[data-question-id="${questionId}"] .questions-variant`).textContent = currentTestObj['answer'].toUpperCase();
 			}
+			_.fillAnswer(questionId,currentTestObj)
 		}
 		_.setActions(['bookmark','note']);
 	}
@@ -403,6 +411,7 @@ export class TestsModule extends StudentPage{
 			bookmark: !bookmarked
 		});
 		item.classList.toggle('active');
+		if(!_.isGrid())
 		_.f(`.questions-list .questions-item[data-question-id="${questionId}"]`).classList.toggle('checked');
 	}
 	async saveNote({item:form,event}){
@@ -622,7 +631,7 @@ export class TestsModule extends StudentPage{
 		}
 	}
 
-	fillAnswer(){
+	fillAnswer(questionId,currentTestObj){
 		const _ = this
 		if(_.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${currentTestObj['answer']}"]`)){
 			_.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${currentTestObj['answer']}"]`).classList.add('active');
@@ -657,9 +666,13 @@ export class TestsModule extends StudentPage{
 		let activeBtn = item.querySelector(`.grid-col:nth-child(${index + 1}) .active`);
 		if (activeBtn) {
 			activeBtn.classList.remove('active');
+			shower.children[index].textContent = '';
+			input.value = '';
+		}else{
+			btn.classList.add('active');
+			_.setCorrectAnswer({item:item,type:'grid'})
 		}
-		btn.classList.add('active');
-		_.setCorrectAnswer({item:item,type:'grid'})
+		
 	}
 	
 	async getQuestionTpl(){
@@ -713,7 +726,26 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		return _.getStep()+1;
 	}
-
+	async getQuestionFields(currentQuestion){
+		let
+			output = document.createElement('div');
+			output.innerHTML = currentQuestion['questionText'];
+		let
+			handle = async () => await MathJax.typesetPromise([output]).then( () => {
+				if(output.innerHTML != 'undefined'){
+					return output.innerHTML;
+				}
+				return '';
+			} ),
+			text = await handle();
+		output.innerHTML = currentQuestion['questionIntro'];
+		let intro = await handle();
+		output.innerHTML = currentQuestion['questionContent'];
+		let content =  await handle();
+		output.innerHTML = currentQuestion['title'];
+		let title =  await handle();
+		return { title,text,intro,content };
+	}
 
 	// practice test results
 	getFirstLetters(string){
@@ -762,7 +794,6 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		_._( async (obj)=>{
 			let cont = _.f('.tt-ii');
-			
 			if(!cont) return;
 			_.clear(cont);
 			//_.questionPos = Model.questionPos(_.currentPos);
@@ -770,6 +801,7 @@ export class TestsModule extends StudentPage{
 				_.markup(await _.getQuestionTpl()),
 				_.markup(_.questionFooter())
 			);
+			_.fillCheckedAnswers();
 			_.isLastQuestion = false;
 			_.setActions(['bookmark','note']);
 			if( _.questionPos < Model.allQuestionsLength ){
@@ -793,7 +825,7 @@ export class TestsModule extends StudentPage{
 				_.f('#questions-length').textContent = Model.allQuestionsLength;
 				questionCont.append(_.markup(_.questionsList()));
 			}
-			_.fillCheckedAnswers();
+			
 			
 			if(Model.isFinished()) {
 				if(_.sectionChanged){
@@ -807,10 +839,10 @@ export class TestsModule extends StudentPage{
 			// work on marked answers
 			let currentStorageTest = _.storageTest[ _.currentQuestion['_id'] ];
 			_.sectionChanged = false;
-			
 			if(!currentStorageTest) return void 0;
 			if(currentStorageTest['answer']){
 				// mark choosed answer
+		
 				if(!_.isGrid()){
 					_.f(`.answer-list .answer-item[data-question-id="${currentStorageTest['questionId']}"][data-variant="${currentStorageTest['answer']}"]`).classList.add('active');
 				}else{

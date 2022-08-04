@@ -51,7 +51,6 @@ export const view = {
 				</li>`;
 		if(Model.isFinished()){
 			//console.log(Model);
-			
 			let
 				status = 'wrong',answeredQuestion,
 				currentQuestion = _._$.currentQuestion;
@@ -61,18 +60,20 @@ export const view = {
 			if(currentQuestion['type'] == 'passage'){
 				currentQuestion = currentQuestion.questions.find( question => question['_id'] == currentQuestionId )
 			}
-			if( answeredQuestion ){
+			if( answeredQuestion && answeredQuestion['answer']){
 				if(currentQuestion['correctAnswer']){
 					if( (currentQuestion['correctAnswer'].toUpperCase() !== answeredQuestion['answer'].toUpperCase())  && (answeredQuestion['answer'].toUpperCase() == answer.toUpperCase()) ) {
 						status = 'incorrect';
 					}
 				}
 			}
+			output.innerHTML = question['answers'][answer];
+			let text = await MathJax.typesetPromise([output]).then( () => output.innerHTML);
 				tpl = `
 					<li class="answer-item ${status}" data-question-id="${question['_id']}" data-variant="${answer}">
 						<button class="answer-button">
 							<span class="answer-variant">${answer}</span>
-							<span class="answer-value">${question['answers'][answer]}</span>
+							<span class="answer-value">${text}</span>
 						</button>
 						<div class="answer-review-icon">
 							<svg>
@@ -139,7 +140,7 @@ export const view = {
 					</div>
 					<div class="test-footer">
 						<button class="button-blue"	data-click="${this.componentName}:changeSection" section="questions">
-							<span>Continue to first question</span>
+							<span>Continue to <strong id="directionsQuestion">1</strong> question</span>
 						</button>
 					</div>
 				</div>
@@ -412,10 +413,16 @@ export const view = {
 		}
 		return tpl;
 	},
-	gridQuestion(){
+	async gridQuestion(){
 		const _ = this;
+		let currentQuestion;
+		if(_._$.currentQuestion['questions']){
+			currentQuestion = _._$.currentQuestion['questions'][0]
+		}else {
+			currentQuestion = _._$.currentQuestion;
+		}
 		let
-			currentQuestion = _._$.currentQuestion,
+			{ title, text, intro, content } = await _.getQuestionFields(currentQuestion),
 			tpl =	`
 			<div class="test-header">
 				<h5 class="block-title test-title"><span>Question ${_.questionPos+1} of ${_.questionsLength}</span></h5>
@@ -431,60 +438,64 @@ export const view = {
 		}
 		tpl+=`
 			<p class="test-text">
-				<span>${currentQuestion['title']}</span>
+				<span>${intro}</span>
 			</p>
 			<p class="test-text">
-				<span>${currentQuestion['questionText']}</span>
+				<span>${text}</span>
 			</p>
-			<br><br>
+			<p class="test-text">
+				<span>${content}</span>
+			</p>
 			</div>
 				<div class="test-col narrow grid" data-click="TestPage:enterGridAnswer">
-			<div class="grid-row">
-				<input id="grid-value" type="hidden" data-question-id="${currentQuestion['_id']}">
-				<div class="grid-input">
-				<span> </span>
-				<span> </span>
-				<span> </span>
-				<span> </span>
-				<span> </span>
-			</div>
-			</div>
-			<div class="grid-row">
-				<div class="grid-col">
-				<button class="grid-button">-</button>
-			</div>
-				<div class="grid-col">
-					<button class="grid-button">.</button>
+					<div class="grid-row">
+						<input id="grid-value" type="hidden" data-question-id="${currentQuestion['_id']}">
+						<div class="grid-input">
+						<span> </span>
+						<span> </span>
+						<span> </span>
+						<span> </span>
+						<span> </span>
+					</div>
+					</div>
+					<div class="grid-row">
+						<div class="grid-col">
+						<button class="grid-button">-</button>
+					</div>
+						<div class="grid-col">
+							<button class="grid-button">.</button>
+						</div>
+						<div class="grid-col">
+							<button class="grid-button">.</button>
+						</div>
+						<div class="grid-col">
+							<button class="grid-button">.</button>
+						</div>
+						<div class="grid-col">
+							<button class="grid-button">.</button>
+						</div>
+					</div>
+					<div class="grid-row">
+						<div class="grid-col">
+							<button class="grid-button high"></button>
+						</div>
+					<div class="grid-col">
+						${_.gridDigitButtons()}
+					</div>
+					<div class="grid-col">
+						${_.gridDigitButtons()}
+					</div>
+					<div class="grid-col">
+						${_.gridDigitButtons()}
+					</div>
+					<div class="grid-col">
+						${_.gridDigitButtons()}
+					</div>
+					</div>
 				</div>
-				<div class="grid-col">
-					<button class="grid-button">.</button>
-				</div>
-				<div class="grid-col">
-					<button class="grid-button">.</button>
-				</div>
-				<div class="grid-col">
-					<button class="grid-button">.</button>
-				</div>
 			</div>
-			<div class="grid-row">
-				<div class="grid-col">
-					<button class="grid-button high"></button>
-				</div>
-			<div class="grid-col">
-				${_.gridDigitButtons()}
-			</div>
-			<div class="grid-col">
-				${_.gridDigitButtons()}
-			</div>
-			<div class="grid-col">
-				${_.gridDigitButtons()}
-			</div>
-			<div class="grid-col">
-				${_.gridDigitButtons()}
-			</div>
-			</div>
-			</div>
-			</div>
+			${_.noteTpl(currentQuestion)}
+			${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
 		`;
 		return tpl;
 	},
@@ -517,6 +528,7 @@ export const view = {
 		
 		tpl+=`</ul>
 			${_.noteTpl(currentQuestion)}
+			${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
 			</div>
 		`;
 		return tpl;
@@ -555,16 +567,18 @@ export const view = {
 	},
 	async graphicQuestion(){
 		const _ = this;
-		let
-			currentQuestion = _._$.currentQuestion,//['questions'][0],
+		let currentQuestion;
+		if(_._$.currentQuestion['questions']){
+			currentQuestion = _._$.currentQuestion['questions'][0]
+		}else {
+			currentQuestion = _._$.currentQuestion;
+		}
+		let { text,intro,content } = await _.getQuestionFields(currentQuestion),
 		tpl= `
 				<div class="test-row test-inner">
 					<div class="test-col">
 						<div class="test-left">
 			`;
-		let output = document.createElement('div');
-		output.innerHTML = currentQuestion['questionText'];
-		let text = await MathJax.typesetPromise([output]).then( () => output.innerHTML);
 		for(let fileLink of currentQuestion['questionImages']){
 			tpl+=`<img src="${fileLink}" alt="">`;
 		}
@@ -578,7 +592,7 @@ export const view = {
 						</h5>
 						${_.actionsTpl(currentQuestion)}
 					</div>
-					<p class="test-text"><span>${currentQuestion['title']}</span></p>
+					<p class="test-text"><span>${intro}</span></p>
 					<p class="test-text"><span>${text}</span></p>
 					<ul class="answer-list" data-question-id="${currentQuestion['_id']}">
 				`;
@@ -588,12 +602,14 @@ export const view = {
 		tpl+=`
 					</ul>
 					${_.noteTpl(currentQuestion)}
+					${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
 				</div>
 			</div>`;
 		return tpl;
 	},
 	async passageQuestion(){
 		const _ = this;
+		/*<p class="test-text"><span>${question['title']}</span></p>*/
 		let tpl= `
 			<div class="test-inner test-row">
 				<div class="test-col">
@@ -607,7 +623,6 @@ export const view = {
 						<p class="test-text">${_._$.currentQuestion['passageType']}</p>
 				`;
 		let cnt = 0;
-		//allQuestionsLength()
 		for(let question of _._$.currentQuestion['questions']){
 			tpl+= `
 					<div class="test-sec" id="${question['_id']}">
@@ -617,16 +632,19 @@ export const view = {
 						</h5>
 						${_.actionsTpl(question)}
 					</div>
-					<p class="test-text"><span>${question['title']}</span></p>
+					
+					<p class="test-text"><span>${question['questionText']}</span></p>
 					<ul class="answer-list" data-question-id="${question['_id']}" >`;
 			for(let answer in question['answers']){
 				let ans = question['answers'][answer];
 				tpl+= await _.answerTpl(question,answer);
 			}
-			tpl+=`</ul>${_.noteTpl(question)}</div>`;
+			tpl+=`</ul>
+				${_.noteTpl(question)}
+				${Model.isFinished() ? await _.explanationAnswer(question) : ''}
+			</div>`;
 			cnt++;
 		}
-		
 		tpl+=`</div>
 				</div>
 			</div>`;
@@ -634,16 +652,10 @@ export const view = {
 	},
 	async standartQuestion(){
 		const _ = this;
-		
 		let
-			currentQuestion = _._$.currentQuestion,
-			output = document.createElement('div');
-		if(!currentQuestion['title']) currentQuestion = currentQuestion['questions'][0];
-		output.innerHTML = currentQuestion['questionText'];
-		MathJax.texReset();
-		MathJax.typesetClear();
+			currentQuestion = _._$.currentQuestion;
 		let
-			text = await MathJax.typesetPromise([output]).then( () => output.innerHTML),
+			{ text,intro,content } = await _.getQuestionFields(currentQuestion),
 			tpl = `
 			<div class="test-header">
 				<h5 class="block-title test-title ddss">
@@ -654,7 +666,10 @@ export const view = {
 			</div>
 			<div class="test-inner middle">
 				<p class="test-text">
-					${currentQuestion['title']}
+					${intro}
+				</p>
+				<p class="test-text">
+					${content != 'undefined' ? content : ''}
 				</p>
 				<p class="test-text">
 					${text}
@@ -669,12 +684,24 @@ export const view = {
 		tpl+=`
 			</ul>
 			${_.noteTpl(currentQuestion)}
+			${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
 		</div>`;
 		return tpl;
 	},
 	/* Questions tpls */
-	explanationAnswer(){
+	async explanationAnswer(currentQuestion){
 		const _ = this;
+		let
+			output = document.createElement('div');
+			output.innerHTML = currentQuestion['explanationText'];
+		let
+			handle = async () => await MathJax.typesetPromise([output]).then( () => {
+			if(output.innerHTML != 'undefined'){
+				return output.innerHTML;
+			}
+			return '';
+		});
+		let text = await handle();
 		return `
 			<div class="test-label-block">
 				<div class="test-label-icon">
@@ -686,7 +713,7 @@ export const view = {
 					<h5 class="test-label-title">
 						<span>Explanation to correct answer</span>
 					</h5>
-					<p>Nulla Lorem mollit cupidatat irure. Laborum magna nulla duis ullamco cillum dolor. Voluptate exercitation incididunt aliquip deserunt reprehenderit elit laborum.</p>
+					<p>${text}</p>
 				</div>
 			</div>`;
 	},
@@ -702,8 +729,6 @@ export const view = {
 			</div>
 		`;
 	},
-
-
 	
 	resultsAsideButtonsTpl(resultsInfo){
 		const _ = this;
@@ -920,13 +945,14 @@ export const view = {
 	},
 	testListAsideItemTpl(test,i){
 		const _ = this;
+		/*<div class="test-aside-btn-date">
+						<svg><use xlink:href="#calendar"></use></svg><span>${_.createdAtFormat(test['createdAt'])}</span>
+					</div>*/
 		return `
 			<li class="test-aside-item">
 				<button data-pos="${i-1}" class="test-aside-btn ${i-1 == Model.currentTestPos ? 'active' : ''}" data-id="${test['_id']}" data-click="${_.componentName}:changePracticeTest">
 					<h6 class="test-aside-btn-title">Practice test ${test['testNumber']}</h6><span class="test-aside-btn-desc">0 of ${test['sections'].length} sections complete</span>
-					<div class="test-aside-btn-date">
-						<svg><use xlink:href="#calendar"></use></svg><span>${_.createdAtFormat(test['createdAt'])}</span>
-					</div>
+					
 				</button>
 			</li>
 		`;
