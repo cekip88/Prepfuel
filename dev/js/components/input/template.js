@@ -42,7 +42,7 @@ export default {
 			items+=`
 				<input class=${data['type'] =='checkbox' ? 'inpt-checkbox' : 'inpt-radio'} type="${data['type']}" ${item.checked ? 'checked' : ''} ${item.disabled ? 'disabled' : ''} value="${item.value}" name="${data['name']}" id="${id}" data-input="setCheckboxValue">
 				<label class=${data['type'] =='checkbox' ? 'inpt-checkbox-label' : 'inpt-radio-label'} ${item.disabled ? 'disabled' : ''} for="${id}" >${item.text ? '<span class="inpt-checkbox-label-text">'+item.text+'</span>' : '' } </label>
-			`
+			`;
 		});
 		return `  
 			<div class="inpt ${data['className'] ?? ''}">

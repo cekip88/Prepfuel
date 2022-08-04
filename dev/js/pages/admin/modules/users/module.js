@@ -1160,7 +1160,6 @@ export class UsersModule extends AdminPage {
 			}
 		}
 
-
 		_.parentSkipped =  false;
 		_.metaInfo.parentAddType = 'assign';
 	}

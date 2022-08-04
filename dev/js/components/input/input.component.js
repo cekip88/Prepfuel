@@ -101,8 +101,6 @@ export default class GInput extends GComponent {
 				}
 			}
 		}
-
-		//_.value =
 	}
 	set title(value){
 		const _ = this;
@@ -903,6 +901,13 @@ export default class GInput extends GComponent {
 			}
 		}
 		_.type = _.attr('type');
+		if ( _.isCheckbox() ){
+			let items = JSON.parse(_.attr('items'));
+			_._value = [];
+			for (let item of items) {
+				if (item.checked) _._value.push(item.value)
+			}
+		}
 		if(_.attr('symbol'))
 		_.symbol = _.attr('symbol');
 		_.symbolImg = _.attr('symbolImg');
