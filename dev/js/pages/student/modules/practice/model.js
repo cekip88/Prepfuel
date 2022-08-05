@@ -9,7 +9,8 @@ export class _Model {
 		_.endpoints = {
 			skillPractice: `${env.backendUrl}/student/skill-practice`,
 			sectionCategories: `${env.backendUrl}/student/current-course/skill`,
-			create: `${env.backendUrl}/skill-results/create`
+			create: `${env.backendUrl}/skill-results/create`,
+			results: `${env.backendUrl}/skill-results`
 		};
 	}
 	
@@ -17,7 +18,6 @@ export class _Model {
 		const _ = this;
 		return _.questions.length;
 	}
-	
 	get questions(){
 		const _ = this;
 		return _.skillTest;
@@ -61,10 +61,6 @@ export class _Model {
 			]
 		}
 	}
-	
-	
-	
-	/* Create  */
 	getPracticeInfo() {
 		const _ = this;
 		return {
@@ -331,6 +327,10 @@ export class _Model {
 			},
 		]
 	}
+	
+	
+	/* Create  */
+
 	async getTest(){
 		const _ = this;
 		/*
@@ -364,7 +364,18 @@ export class _Model {
 		});
 	}
 	
-	//
+	getTestFromStorage(){
+		const _ = this;
+		if(_.testSkillServerAnswers) return _.testSkillServerAnswers;
+		if(!_.hasTestFromStorage()) return {};
+		let test;
+		try{
+			test = JSON.parse(localStorage.getItem('skilltest'))
+		}catch(e){
+			throw new Error('Wrong test data from localStorage')
+		}
+		return test;
+	}
 	getSkillPractice(concept,category){
 		const _ = this;
 		return new Promise(async resolve =>{
@@ -376,7 +387,6 @@ export class _Model {
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					_.skillTest = response['response']['tests'];
-					console.log(_.skillTest);
 					resolve(response['response']['tests']);
 				}
 			}else{
@@ -405,27 +415,19 @@ export class _Model {
 		_.currentConcept = currentConcept;
 		return { currentCategory, currentConcept};
 	}
-	isFinished(){
-		return false;
-	}
+	
+	
 	hasTestFromStorage(){
 		return localStorage.getItem('skilltest') ? true : false;
 	}
 	isEmpty(obj){
 		return Object.keys(obj).length ? false : true;
 	}
-	getTestFromStorage(){
-		const _ = this;
-		if(_.testSkillServerAnswers) return _.testSkillServerAnswers;
-		if(!_.hasTestFromStorage()) return {};
-		let test;
-		try{
-			test = JSON.parse(localStorage.getItem('skilltest'))
-		}catch(e){
-			throw new Error('Wrong test data from localStorage')
-		}
-		return test;
+	isFinished(){
+		return false;
 	}
+	
+	
 	async saveTestToStorage(testData){
 		const _ = this;
 		let test = _.getTestFromStorage();
@@ -451,6 +453,23 @@ export class _Model {
 		}
 		localStorage.setItem('skilltest',JSON.stringify(test));
 	}
+	async getTestResults(){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['results']}/${_.resultId}`,{
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status == 200){
+				let
+					response = await rawResponse.json(),
+				answers = response['response']['answers'];
+				_.testServerAnswers = answers;
+				_.testStatus = response['response']['status'];
+				resolve(_.testServerAnswers);
+			}
+		});
+	}
 	async start(concept,category){
 		const _ =this;
 		return new Promise(async resolve =>{
@@ -466,8 +485,8 @@ export class _Model {
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					let resultId = response['response']['resultId'];
-					//_.test['resultId'] = resultId;
-					localStorage.setItem('resultId', resultId);
+					_.resultId = resultId;
+			
 					resolve(resultId);
 				}
 			}else{
@@ -476,6 +495,30 @@ export class _Model {
 			
 		});
 	}
+	async saveAnswer(answer){
+		// Save choosed answer in server
+		const _ = this;
+		if(answer){
+			answer['status'] = 'in progress';
+		}
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['results']}/${_.resultId}`,{
+				method: 'PUT',
+				headers:_.baseHeaders,
+				body: JSON.stringify(answer)
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				if(response['status'] == 'success'){
+					resolve(response);
+				}
+			}else{
+				console.log(rawResponse);
+			}
+		});
+	}
+	
+	
 }
 
 export const Model = new _Model();

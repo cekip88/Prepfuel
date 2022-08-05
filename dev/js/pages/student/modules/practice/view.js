@@ -5,10 +5,7 @@ export const view = {
 	
 	noteTpl(question){
 		const _ = this;
-		let tpl = ``;
-		if(!_.storageTest[question['_id']]) return tpl;
-		if(_.storageTest[question['_id']].note) {
-			tpl = `<div class="test-label-block note-block">
+		let tpl = `<div class="test-label-block note-block">
 				<div class="test-label-icon">
 					<svg>
 						<use xlink:href="#edit-transparent"></use>
@@ -16,7 +13,7 @@ export const view = {
 				</div>
 				<div class="test-label-text">
 					<p>
-						${_.storageTest[question['_id']].note}
+						${question.text}
 					</p>
 				</div>
 				<button class="test-label-button" data-click="${this.componentName}:showTestLabelModal">
@@ -29,7 +26,7 @@ export const view = {
 					<button class="test-label-modal-button" data-click="${this.componentName}:deleteNote" data-question-id="${question['_id']}"><span>Delete</span></button>
 				</div>
 			</div>`;
-		}
+	//	}
 		return tpl;
 	},
 	async answerTpl(question,answer){
@@ -54,8 +51,8 @@ export const view = {
 		if(Model.isFinished()){
 			//console.log(Model);
 			let
-			status = 'wrong',answeredQuestion,
-			currentQuestion = _._$.currentQuestion;
+				status = 'wrong',answeredQuestion,
+				currentQuestion = _._$.currentQuestion;
 			if( Model.testServerAnswers ){
 				answeredQuestion = Model.testServerAnswers[currentQuestionId]
 			}
@@ -259,7 +256,7 @@ export const view = {
 						<div class="icon"><svg><use xlink:href="#graphic-1"></use></svg></div>
 						<h5 class="practice-table-row-title">${item.concept}</h5>
 					</div>
-					<button class="button" data-click="${_.componentName}:changeSection;${_.componentName}:startTest" section="welcome" data-id="${item.concept}" data-category="${itemsInfo['category']}"><span>Practice</span></button>
+					<button class="button" data-click="${_.componentName}:changeSection;" section="welcome" data-id="${item.concept}" data-category="${itemsInfo['category']}"><span>Practice</span></button>
 					<button class="video">
 						<svg><use xlink:href="#play"></use></svg>
 						<span>Video example</span>
@@ -477,7 +474,7 @@ export const view = {
 			<div class="section">
 				<div class="section-header">
 					<h1 class="title" id="directions-header-title"></h1>
-					<button class="button-white"	data-click="${this.componentName}:changeSection" section="mathematics"><span>Exit this Practice</span></button>
+					<button class="button-white"	data-click="${this.componentName}:changeSection" section="mathematics"><span>Exit this practice</span></button>
 				</div>
 			</div>
 			<div class="section row">
@@ -505,56 +502,41 @@ export const view = {
 		const _ = this;
 		return	`
 			${await _.questionHeader()}
-		<div class="section">
-			<div class="block test-block" id="question-body">
-				<div id="question-inner-body" class="test-block"></div>
-				${_.questionFooter()}
+			<div class="section">
+				<div class="block test-block" id="question-body">
+					<div id="question-inner-body" class="test-block"></div>
+					${_.questionFooter()}
+				</div>
 			</div>
-		</div>
-		<div hidden>
-			<form class="modal report" slot="modal-item" id="report" data-submit="${_.componentName}:saveReport">
-				<h6 class="modal-title"><span>Report a mistake in this question</span></h6>
-				<p class="modal-text">Remember to read through the explanations and double check your answer. Thanks for your help!</p>
-				<p class="modal-text">What’s wrong</p>
-				<div class="check-list">
-					<g-input type='radio' class="g-form-item" name="answer" items='[
-					{"value":"wrong","text":"The answer is wrong"},
-					{"value":"typo","text":"I caught a typo."},
-					{"value":"confus","text":"The question or explanations are confusing or unclear."},
-					{"value":"broken","text":"Something isn’t working / something seems broken."}]'></g-input>
-					<!--<div class="check-item">
-						<input type="radio" name="answer" id="report-wrong">
-						<label class="check-label" for="report-wrong"><span class="check-label-icon radio"></span><span class="check-label-text">The answer is wrong.</span></label>
+			<div hidden>
+				<form class="modal report" slot="modal-item" id="report" data-submit="${_.componentName}:saveReport">
+					<h6 class="modal-title"><span>Report a mistake in this question</span></h6>
+					<p class="modal-text">Remember to read through the explanations and double check your answer. Thanks for your help!</p>
+					<p class="modal-text">What’s wrong</p>
+					<div class="check-list">
+						<g-input type='radio' class="g-form-item" name="answer" items='[
+						{"value":"wrong","text":"The answer is wrong"},
+						{"value":"typo","text":"I caught a typo."},
+						{"value":"confus","text":"The question or explanations are confusing or unclear."},
+						{"value":"broken","text":"Something isn’t working / something seems broken."}]'></g-input>
 					</div>
-					<div class="check-item">
-						<input type="radio" name="answer" id="report-typo">
-						<label class="check-label" for="report-typo"><span class="check-label-icon radio"></span><span class="check-label-text">I caught a typo.</span></label>
-					</div>
-					<div class="check-item">
-						<input type="radio" name="answer" id="report-confusing">
-						<label class="check-label" for="report-confusing"><span class="check-label-icon radio"></span><span class="check-label-text">The question or explanations are confusing or unclear.</span></label>
-					</div>
-					<div class="check-item">
-						<input type="radio" name="answer" id="report-broken">
-						<label class="check-label" for="report-broken"><span class="check-label-icon radio"></span><span class="check-label-text">Something isn’t working / something seems broken.</span></label>
-					</div>-->
-				</div>
-				<h6 class="modal-title"><span>Description of issue</span></h6>
-				<textarea class="modal-area g-form-item" name="description"></textarea>
-				<div class="modal-row end">
-					<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
-					<button class="button-blue"><span>Submit Issue</span></button>
-				</div>
-			</form>
-			<form class="modal note"	slot="modal-item" id="note" data-submit="${this.componentName}:saveNote">
-					<h6 class="modal-title"><span>Note</span></h6>
-					<textarea class="modal-area" name="text"></textarea>
+					<h6 class="modal-title"><span>Description of issue</span></h6>
+					<textarea class="modal-area g-form-item" name="description"></textarea>
 					<div class="modal-row end">
 						<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
-						<button class="button-blue"><span>Save</span></button>
+						<button class="button-blue"><span>Submit Issue</span></button>
 					</div>
 				</form>
-		</div>`;
+				<form class="modal note"	slot="modal-item" id="note" data-submit="${this.componentName}:saveNote">
+						<h6 class="modal-title"><span>Note</span></h6>
+						<textarea class="modal-area" name="text"></textarea>
+						<div class="modal-row end">
+							<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
+							<button class="button-blue"><span>Save</span></button>
+						</div>
+					</form>
+			</div>
+		`;
 	},
 	
 	/* Cacrass templates*/
@@ -689,13 +671,14 @@ export const view = {
 		tpl =	`
 			<div class="test-header">
 				<h5 class="block-title test-title"><span>Question ${_.questionPos+1} of ${_.questionsLength}</span></h5>
-				${_.actionsTpl(_._$.currentQuestion)}
+				${_.actionsTpl(currentQuestion)}
 			</div>
 			<div class="test-inner test-row">
 				<div class="test-col wide">
 					`;
 		if(currentQuestion['questionImages']){
 			for(let fileLink of currentQuestion['questionImages']){
+				if(fileLink == 'No') continue;
 				tpl+=`<img src="${fileLink}" alt="">`;
 			}
 		}
@@ -709,6 +692,8 @@ export const view = {
 			<p class="test-text">
 				<span>${content}</span>
 			</p>
+			<div class="answer-list"></div>
+			
 			</div>
 				<div class="test-col narrow grid" data-click="${_.componentName}:enterGridAnswer">
 					<div class="grid-row">
@@ -722,42 +707,42 @@ export const view = {
 					</div>
 					</div>
 					<div class="grid-row">
-						<div class="grid-col">
-						<button class="grid-button">-</button>
-					</div>
-						<div class="grid-col">
+						<div class="grid-col" data-col="1">
+							<button class="grid-button">-</button>
+						</div>
+						<div class="grid-col"  data-col="2">
 							<button class="grid-button">.</button>
 						</div>
-						<div class="grid-col">
+						<div class="grid-col"  data-col="3">
 							<button class="grid-button">.</button>
 						</div>
-						<div class="grid-col">
+						<div class="grid-col"  data-col="4">
 							<button class="grid-button">.</button>
 						</div>
-						<div class="grid-col">
+						<div class="grid-col"  data-col="5">
 							<button class="grid-button">.</button>
 						</div>
 					</div>
 					<div class="grid-row">
-						<div class="grid-col">
+						<div class="grid-col"  data-col="1">
 							<button class="grid-button high"></button>
 						</div>
-					<div class="grid-col">
-						${_.gridDigitButtons()}
-					</div>
-					<div class="grid-col">
-						${_.gridDigitButtons()}
-					</div>
-					<div class="grid-col">
-						${_.gridDigitButtons()}
-					</div>
-					<div class="grid-col">
-						${_.gridDigitButtons()}
-					</div>
+						<div class="grid-col"  data-col="2">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"  data-col="3">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"  data-col="4">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"  data-col="5">
+							${_.gridDigitButtons()}
+						</div>
 					</div>
 				</div>
 			</div>
-			${_.noteTpl(currentQuestion)}
+			
 			${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
 		`;
 		return tpl;
@@ -876,25 +861,24 @@ export const view = {
 			<div class="test-inner test-row">
 				<div class="test-col">
 					<div class="test-left">
-						<p class="test-left-text">${_._$.currentQuestion['passageType']}</p>
+						<p class="test-left-text">${_._$.currentQuestion['questionDataId']}</p>
 						<p class="test-left-text">${_._$.currentQuestion['passageText']}</p>
 					</div>
 				</div>
 				<div class="test-col">
-					<div class="test-right" >
-						<p class="test-text">${_._$.currentQuestion['passageType']}</p>
-				`;
+					<div class="test-right">
+						<p class="test-text">${_._$.currentQuestion['questionDataId']}</p>
+		`;
 		let cnt = 0;
 		for(let question of _._$.currentQuestion['questions']){
 			tpl+= `
-					<div class="test-sec" id="${question['_id']}">
+				<div class="test-sec" id="${question['_id']}">
 					<div class="test-header">
 						<h5 class="block-title test-title"><span>Question ${cnt+1} of ${_._$.currentQuestion['questions'].length}</span>
 						<strong style="font-size:10px;margin-left: 15px">${question['questionId']}</strong>
 						</h5>
 						${_.actionsTpl(question)}
 					</div>
-					
 					<p class="test-text"><span>${question['questionText']}</span></p>
 					<ul class="answer-list" data-question-id="${question['_id']}" >`;
 			for(let answer in question['answers']){

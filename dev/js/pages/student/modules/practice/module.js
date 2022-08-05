@@ -13,6 +13,14 @@ export class PracticeModule extends StudentPage{
 			'footer':'studentFooter'
 		};
 	}
+	// Getters
+	get questionsLength(){
+		const _ = this;
+		return _.skillTests.length;
+	}
+	
+	
+	// Setters
 	async asyncDefine(){
 		const _ = this;
 
@@ -36,22 +44,22 @@ export class PracticeModule extends StudentPage{
 			'Grid-In':'grid',
 			'grid-in':'grid'
 		};
-		
+		_.innerQuestionId = 1;
+		_.answerVariant = {};
 		_.set({
 			currentQuestion: null
 		})
 		
 		G_Bus.on(_,[
-			'domReady',
-			'changeSection',
-			'changePracticeTab','startPractice','jumpToQuestion',
-			'startTest','enterGridAnswer','checkAnswer','setCorrectAnswer'
+			'domReady','changeSection','changePracticeTab','jumpToQuestion',
+			'startTest','enterGridAnswer','checkAnswer','setCorrectAnswer',
+			'showForm','saveBookmark','saveNote','saveBookmark','changeInnerQuestionId',
+			'showTestLabelModal','editNote','deleteNote'
 		])
 	}
-	get questionsLength(){
-		const _ = this;
-		return _.skillTests.length;
-	}
+
+	
+	// Work with dom
 	async domReady(data){
 		const _ = this;
 		
@@ -70,8 +78,8 @@ export class PracticeModule extends StudentPage{
 		
 	}
 	
-	// Fill methods
 	
+	// Fill methods
 	async fillMathematicsSection(){
 		const _ = this;
 		let inner = _.f('#bodyInner');
@@ -121,11 +129,41 @@ export class PracticeModule extends StudentPage{
 		let
 			conceptName = item.getAttribute('data-id'),
 			{currentConcept,currentCategory} = Model.getCurrentConcept(conceptName);
+		
+		let response = await Model.start(currentConcept['concept'],currentCategory);
+
+		
 		_.skillTests = await Model.getSkillPractice(conceptName,currentCategory);
 		_.f('#question-header-title').textContent = currentConcept['concept'];
 		_.f('#question-pagination').append(_.markup(_.questionNavigation()));
 		
 		_._$.currentQuestion = _.skillTests[_.questionPos];
+		
+	}
+	fillNote(){
+		const _ = this;
+		
+	}
+	
+	async fillCheckedAnswers(){
+		const _ = this;
+		let test = await Model.getTestResults();
+		for(let t in test){
+			let
+			currentTestObj = test[t],
+			questionId= currentTestObj['questionId']; // if request was not in local storage, try another prop for questionId
+			if(currentTestObj['bookmark']) {
+				let listAnswerItem = _.f(`.questions-list .questions-item[data-question-id="${questionId}"]`);
+				if(listAnswerItem) listAnswerItem.classList.add('checked');
+			}
+			if(currentTestObj['answer']) {
+				let listAnswerItemVariant = _.f(`.questions-list .questions-item[data-question-id="${questionId}"] .questions-variant`);
+				if(listAnswerItemVariant)
+					_.f(`.questions-list .questions-item[data-question-id="${questionId}"] .questions-variant`).textContent = currentTestObj['answer'].toUpperCase();
+			}
+			_.fillAnswer(questionId,currentTestObj)
+		}
+		_.setActions(['bookmark','note']);
 	}
 	async rcQuizFill(){
 		const _ = this;
@@ -156,17 +194,9 @@ export class PracticeModule extends StudentPage{
 			cont.append(_.markup(listTpl));
 		}
 	}
-	//end fill methods
 	
-	async startTest({item}){
-		const _ = this;
-		let
-			concept = item.getAttribute('data-id'),
-			category = item.getAttribute('data-category');
-		let response = await Model.start(concept,category);
-		console.log(response);
-	}
 	
+	// Getters
 	async getQuestionFields(currentQuestion){
 		let
 		output = document.createElement('div');
@@ -187,10 +217,100 @@ export class PracticeModule extends StudentPage{
 		let title =  await handle();
 		return { title,text,intro,content };
 	}
+	getStep(){
+		const _ = this;
+		let pos = 0;
+		Model.questions.find((item,index)=> {
+			if( item['questions']){
+				let findedInQuestions = false;
+				item['questions'].find((item,index)=> {
+					if( item['_id'] == _._$.currentQuestion['_id'] ){
+						pos = index;
+						findedInQuestions = true;
+						return true;
+					}
+				});
+				if(!findedInQuestions){ pos = index;}
+			}
+			if( item['_id'] == _._$.currentQuestion['_id'] ){
+				pos = index;
+				return true;
+			}
+		});
+		//_.questionPos = pos;
+		let cnt = 0;
+		for(let i = 0; i <= pos;i++){
+			if(Model.questions[i]){
+				if(Model.questions[i]['questions']){
+					cnt+=Model.questions[i]['questions'].length;
+				}else{
+					cnt+=1;
+				}
+			}
+		}
+		return pos+1;
+	}
+	getPrevStepCnt(){
+		const _ = this;
+		return _.getStep()-1;
+	}
+	getNextStepCnt(){
+		const _ = this;
+		return _.getStep()+1;
+	}
+	async getQuestionTpl(){
+		const _ = this;
+		return await _[`${_.types[_._$.currentQuestion['type']]}Question`]();
+	}
+	
+	
+	// Save methods
+	async saveReport({item:form,event}){
+		event.preventDefault();
+		const _ = this;
+		let gformData = await _.gFormDataCapture(form);
+		Model.saveTestToStorage({
+			questionId: _._$.currentQuestion['_id'],
+			report: gformData
+		});
+		G_Bus.trigger(_.componentName,'updateStorageTest')
+		G_Bus.trigger('modaler','closeModal');
+	}
+	saveBookmark({item}){
+		const _ = this;
+		let
+		questionId = item.getAttribute('data-question-id'),
+		bookmarked = item.classList.contains('active');
+		
+		Model.saveTestToStorage({
+			questionId: questionId,
+			bookmark: !bookmarked
+		});
+		item.classList.toggle('active');
+		if(!_.isGrid())
+			_.f(`.questions-list .questions-item[data-question-id="${questionId}"]`).classList.toggle('checked');
+	}
+	async saveNote({item:form,event}){
+		const _ = this;
+		event.preventDefault();
+		let formData = await _.formDataCapture(form);
+		formData['_id'] = _.innerQuestionId;
+		_.answerVariant[_.innerQuestionId]['note'] = formData;
+		G_Bus.trigger(_.componentName,'updateStorageTest')
+		let answerList = _.f(`#question-inner-body .answer-list`);
+		if(answerList.nextElementSibling) {
+			if(answerList.nextElementSibling.classList.contains('note-block')){
+				answerList.nextElementSibling.remove();
+			}
+		}
+		answerList.after(_.markup(_.noteTpl(formData)));
+		G_Bus.trigger('modaler','closeModal');
+		// Show active note button
+		_.f(`.note-button[data-question-id="${_.innerQuestionId}"]`).classList.add('active');
+	}
 
-
+	
 	// navigate methods
-
 	switchSubNavigate(){
 		const _ = this;
 		let cont = _.f('.subnavigate');
@@ -297,56 +417,20 @@ export class PracticeModule extends StudentPage{
 
 
 	//change methods
-	
+	changeInnerQuestionId({item}){
+		const _ = this;
+		_.innerQuestionId = item.getAttribute('data-question-id');
+	}
 	async changeSection({item,event}) {
 		const _ = this;
 		_.subSection = item.getAttribute('section');
 		let struct = _.flexible();
 		await _.render(struct,{item});
 	}
-	flexible(){
-		const _ = this;
-		
-		if(_.subSection === 'mathematics') {
-			return {
-				'header':'fullHeader',
-				'header-tabs':'studentTabs',
-				'body-tabs':'practiceTabs',
-				'body': 'practiceBody'
-			}
-		}
-		if(_.subSection === 'welcome') {
-			return {
-				'header':'simpleHeader',
-				'header-tabs':null,
-				'body-tabs':null,
-				'body': 'welcomeCarcass'
-			}
-		}
-		if(_.subSection === 'directions') {
-			return {
-				'body': 'directionsCarcass'
-			}
-		}
-		if(_.subSection === 'questions') {
-			return {
-				'body': 'questionsCarcass'
-			}
-		}else if (_.subSection === 'reports') {
-			return {
-				'body': 'reportsBody'
-			}
-		}
-	}
-	async getQuestionTpl(){
-		const _ = this;
-		return await _[`${_.types[_._$.currentQuestion['type']]}Question`]();
-	}
-	startPractice(){
-		const _ = this;
-	}
 	// end change methods
 	
+	
+	// Show / hide / enter
 	enterGridAnswer({item,event}){
 		const _ = this;
 		let btn = event.target;
@@ -443,6 +527,11 @@ export class PracticeModule extends StudentPage{
 			questionId =  input.getAttribute('data-question-id');
 			answerVariant = input.value;
 		}
+		if(!_.answerVariant[questionId]){
+			_.answerVariant[questionId] = {};
+		}
+		_.answerVariant[questionId]['answer'] = answerVariant;
+		
 		_.f('#check-answer-btn').removeAttribute('disabled');
 		
 		Model.saveTestToStorage({
@@ -451,50 +540,151 @@ export class PracticeModule extends StudentPage{
 		});
 		G_Bus.trigger(_.componentName,'updateStorageTest');
 	}
-	checkAnswer({item}){
+	setActions(types = ['bookmark']){
 		const _ = this;
-	}
-	getStep(){
-		const _ = this;
-		let pos = 0;
-		Model.questions.find((item,index)=> {
-			if( item['questions']){
-				let findedInQuestions = false;
-				item['questions'].find((item,index)=> {
-					if( item['_id'] == _._$.currentQuestion['_id'] ){
-						pos = index;
-						findedInQuestions = true;
-						return true;
+		let handle = (currentTest)=>{
+			if(currentTest) {
+				types.forEach( type => {
+					if(currentTest[type]) {
+						if(_.f(`.${type}-button[data-question-id="${currentTest['questionId']}"]`))  _.f(`.${type}-button[data-question-id="${currentTest['questionId']}"]`).classList.add('active')
 					}
 				});
-				if(!findedInQuestions){ pos = index;}
 			}
-			if( item['_id'] == _._$.currentQuestion['_id'] ){
-				pos = index;
-				return true;
-			}
-		});
-		//_.questionPos = pos;
-		let cnt = 0;
-		for(let i = 0; i <= pos;i++){
-			if(Model.questions[i]){
-				if(Model.questions[i]['questions']){
-					cnt+=Model.questions[i]['questions'].length;
-				}else{
-					cnt+=1;
+		};
+		if(_._$.currentQuestion['questions']){
+			if(_._$.currentQuestion.questions.length > 2){
+				for(let q of _._$.currentQuestion.questions) {
+					handle(_.storageTest[q['_id']]);
 				}
 			}
 		}
-		return pos+1;
+		let currentTest = _.storageTest[_._$.currentQuestion['_id']];
+		handle(currentTest);
 	}
-	getPrevStepCnt(){
+	showForm(clickData){
+		let btn = clickData.item,
+		id = btn.getAttribute('data-id');
+		this.f(`#${id}`).reset();
+		G_Bus.trigger('modaler','showModal',{
+			type: 'html',
+			target: `#${id}`
+		});
+	}
+	showTestLabelModal(clickData){
+		let btn = clickData.item,
+		target = btn.nextElementSibling;
+		target.classList.toggle('active')
+	}
+	
+	
+	// Templates
+	flexible(){
 		const _ = this;
-		return _.getStep()-1;
+		
+		if(_.subSection === 'mathematics') {
+			return {
+				'header':'fullHeader',
+				'header-tabs':'studentTabs',
+				'body-tabs':'practiceTabs',
+				'body': 'practiceBody'
+			}
+		}
+		if(_.subSection === 'welcome') {
+			return {
+				'header':'simpleHeader',
+				'header-tabs':null,
+				'body-tabs':null,
+				'body': 'welcomeCarcass'
+			}
+		}
+		if(_.subSection === 'directions') {
+			return {
+				'body': 'directionsCarcass'
+			}
+		}
+		if(_.subSection === 'questions') {
+			return {
+				'body': 'questionsCarcass'
+			}
+		}else if (_.subSection === 'reports') {
+			return {
+				'body': 'reportsBody'
+			}
+		}
 	}
-	getNextStepCnt(){
+	
+	// Other methods
+	isGrid(){
 		const _ = this;
-		return _.getStep()+1;
+		return _._$.currentQuestion.type == 'grid-in';
 	}
+	async checkAnswer({item}){
+		const _ = this;
+		for(let id in _.answerVariant){
+			let response = await Model.saveAnswer({
+				"answer": {
+					"questionId": id,
+					"questionDatasId": _._$.currentQuestion['_id'],
+					"answer": _.answerVariant[id]['answer']
+				},
+				"category": Model.currentCategory,
+				"concept": Model.currentConcept
+			});
+			console.log(response);
+		}
+		
+	}
+	async startTest({item}){
+		const _ = this;
+		let
+			concept = item.getAttribute('data-id'),
+			category = item.getAttribute('data-category');
+		let response = await Model.start(concept,category);
+	}
+	setGridAnswer(value){
+		const _ = this;
+		if( !value.length ) return void 0;
+		let
+			answerObject = value[0],
+			answerText = answerObject.answer,
+			answerDigits = answerText.split('');
+		answerDigits.forEach( (digit,index) => {
+			let currentCol = _.f(`[data-col="${index+1}"] .grid-button`);
+			currentCol.forEach( (item) => {
+				if(item.textContent.trim() == digit){
+					item.classList.add('active');
+				}
+			});
+			
+			let inputValue = _.f(`.grid-input span:nth-child(${index+1})`);
+			inputValue.textContent = digit;
+		})
+	}
+	/* Work with note */
+	editNote({item}){
+		const _ = this;
+		let questionId= item.getAttribute('data-question-id');
+		let note = _.answerVariant[questionId]['note'];
+		G_Bus.trigger('modaler','showModal',{
+			type:'html',
+			target:'#note'
+		});
+		_.f('#note textarea').value = note['text'];
+	}
+	deleteNote({item}){
+		const _ = this;
+		let questionId= item.getAttribute('data-question-id');
+		delete _.storageTest[questionId]['note'];
+		Model.saveTestToStorage({
+			questionId: questionId,
+			note: null
+		});
+		item.parentNode.parentNode.remove();
+		_.f('.note-button').classList.remove('active');
+	}
+	/* Work with note end */
+	
+	// inited methods
 	async init(){
 		const _ = this;
 		
@@ -502,16 +692,27 @@ export class PracticeModule extends StudentPage{
 			if(!_.initedUpdate){
 				return void 'not inited yet';
 			}
-			
+			_.answerVariant = {};
 			let questionBody = _.f('#question-inner-body');
-			
 			questionBody.innerHTML = await _.getQuestionTpl();
-			
-			let storageQuestions = Model.getTestFromStorage();
-			console.log(currentQuestion['questions']);
-		/*	if(storageQuestions[currentQuestion['questions'][0]['_id']]){
-				console.log('Here');
-			}*/
+			let
+				rawAnswers = await Model.getTestResults(),
+				placedAnswers = {};
+			rawAnswers.forEach( (item) => {
+				if(!placedAnswers[item.questionDatasId]) placedAnswers[item.questionDatasId] = [];
+				placedAnswers[item.questionDatasId].push({
+					questionId: item.questionId,
+					answer: item.answer
+				});
+			});
+			let currentAnswers = placedAnswers[currentQuestion['_id']];
+			currentAnswers.forEach( answer =>{
+				if(!_.answerVariant[answer.questionId]) _.answerVariant[answer.questionId] = {};
+				_.answerVariant[answer.questionId]['answer'] = answer.answer;
+			})
+			if( _.isGrid() ){
+				_.setGridAnswer(currentAnswers);
+			}
 			
 		})
 	
