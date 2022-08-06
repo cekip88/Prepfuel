@@ -10,13 +10,25 @@ export class DashboardModule extends ParentPage{
 		_.studentInfo = {};
 		_.metaInfo = {};
 		_.coursePos = 0;
-		this.moduleStructure = {
-			//'header':'fullHeader',
-			//'header-tabs':'studentTabs',
-			//'body-tabs':'dashboardTabs',
-			'body':'badgeTpl',
-			'footer':'dashboardFooter'
-		};
+
+
+		_.me = JSON.parse(localStorage.getItem('me'));
+		if (_.me['students']['length']) {
+			_.moduleStructure = {
+				'header':'fullHeader',
+				'header-tabs':'studentTabs',
+				'body-tabs':'dashboardTabs',
+				'body':'dashboardBodyTpl',
+				'footer':'dashboardFooter'
+			};
+			_.subSection = 'dashboard';
+		} else {
+			_.moduleStructure = {
+				'body':'badgeTpl',
+				'footer':'dashboardFooter'
+			};
+			_.subSection = 'welcome';
+		}
 	}
 	async asyncDefine(){
 		const _ = this;
@@ -27,7 +39,7 @@ export class DashboardModule extends ParentPage{
 	define() {
 		const _ = this;
 		_.componentName = 'Dashboard';
-		_.subSection = 'welcome';
+
 		_.set({
 			addingStep : 1
 		})
@@ -46,19 +58,28 @@ export class DashboardModule extends ParentPage{
 	async domReady() {
 		const _ = this;
 		_.body = _.f("#g-set-inner");
+		_.wizardData = await Model.getWizardData();
 
-		if(_.subSection == 'welcome'){
+		if( _.subSection == 'welcome' ){
 			_.fillWelcome();
 		}
-		if(_.subSection == 'addingStudent'){
+		if( _.subSection == 'addingStudent' ){
+			_.fillDashboardTabs();
 			_.fillAddingStudent();
+		}
+		if( _.subSection == 'dashboard' ){
+			_.fillDashboardTabs();
+			_.fillDashboard();
 		}
 	}
 
 	async changeSection({item, event}) {
 		const _ = this;
+
+		_.previousSection = _.subSection;
 		let section = item.getAttribute('section');
 		_.subSection = section;
+
 		if (section == 'welcome') {
 			_.moduleStructure = {
 				'header':'',
@@ -74,14 +95,66 @@ export class DashboardModule extends ParentPage{
 				'body':'badgeTpl',
 				'footer':'dashboardFooter'
 			}
+			_._( _.handleAddingSteps.bind(_),['addingStep'])
+		}
+		if( section == 'dashboard' ){
+			_.moduleStructure = {
+				'header':'fullHeader',
+				'header-tabs':'studentTabs',
+				'body-tabs':'dashboardTabs',
+				'body':'dashboardBodyTpl',
+				'footer':'dashboardFooter'
+			}
 		}
 		await _.render();
 	}
 
 	fillWelcome(){
 		const _ = this;
-		_.body.innerHTML = _.welcomeTpl();
+		_.body.append( _.markup( _.welcomeTpl()));
 	}
+
+	//dashboard
+	async fillDashboardTabs(){
+		const _ = this;
+
+		let cont = _.f('.subnavigate.parent');
+		let imgs = cont.querySelectorAll('[data-id]');
+		for( let item of imgs ){
+			let imgId = item.getAttribute('data-id');
+			let imgTitle;
+			for (let avatarData of _.wizardData.avatars) {
+				if (avatarData['_id'] == imgId) {
+					imgTitle = avatarData['avatar'];
+					break
+				}
+			}
+			let img = `<img src="/img/${imgTitle}.svg">`;
+			item.append( _.markup( img ));
+		}
+	}
+	fillDashboard(currentStudent = 0){
+		const _ = this;
+		console.log(_.wizardData)
+
+		let cont = _.f('#studentProfile');
+		_.clear(cont);
+		cont.append( _.markup( _.studentProfileTpl( _.me['students'][ currentStudent])))
+
+		let items = cont.querySelectorAll('[data-id]');
+		for ( let item of items ){
+			let type = item.getAttribute('data-type');
+			function search (elem){
+				if (elem['_id'] == item.getAttribute('data-id')){
+					return elem
+				}
+			}
+			let value = _.wizardData[type].find(search);
+			if( type != 'avatars' ) item.textContent = value[item.getAttribute('data-title')];
+			else item.src = `/img/${value[item.getAttribute('data-title')]}.svg`
+		}
+	}
+
 
 	// add student methods
 	fillStudentInfo({item}){
@@ -97,7 +170,7 @@ export class DashboardModule extends ParentPage{
 	cancelAddStudent(){
 		const _ = this;
 		let btn = document.createElement('BUTTON');
-		btn.setAttribute('section','welcome');
+		btn.setAttribute('section',_.previousSection);
 		_.changeSection({item:btn});
 	}
 	async createStudent(){

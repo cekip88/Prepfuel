@@ -1,33 +1,4 @@
 export const view = {
-	dashboardBody(params){
-		const _ = this;
-		return `
-			<div class="section">
-				<div class="block student-main">
-					<h1 class="main-title"><span>Today's goal</span><strong>Choose your practice schedule</strong></h1>
-					<p class="student-main-text">
-						Based on your test date, we'll put together a practice plan
-						to ensure you're ready for the real deal.
-					</p>
-					<button class="button-blue" data-click="StudentPage:changeSection;" section="/student/schedule" ><span>Choose your practice schedule</span></button>
-				</div>
-			</div>
-		`;
-	},
-	dashboardTabs(){
-		return `
-			<div class="subnavigate">
-				<div class="section">
-					<button class="subnavigate-button active"><span>Overview</span></button>
-					<button class="subnavigate-button"><span>Report by Section</span></button>
-					<button class="subnavigate-button"><span>Practice Test</span></button>
-					<button class="subnavigate-button"><span>Trouble Spots</span></button>
-					<button class="subnavigate-button"><span>Achievements</span></button>
-					<button class="subnavigate-button"><span>Activity</span></button>
-				</div>
-			</div>
-		`;
-	},
 	welcomeTpl(){
 		const _ = this;
 		return `<section class="login">
@@ -829,4 +800,146 @@ export const view = {
 	},
 //end staps auxiliary tpls
 
+
+// dashboard
+	dashboardTabs(){
+		const _ = this;
+		let tpl = `
+			<div class="subnavigate parent">
+				<div class="section">`;
+		for (let i = 0; i < _.me['students']['length']; i++) {
+			let student = _.me['students'][i];
+			let img;
+			if (student['user']['avatar']) {
+				img = `<div class="subnavigate-button-img" data-id="${student['user']['avatar']}"></div>`
+			}
+			tpl += `
+				<button class="subnavigate-button${ !i ? ' active' : ''}" data-click="${_.componentName}:changeStudent" data-index="${i}">
+					${img}<span>${student['user']['firstName']} ${student['user']['lastName']}</span>
+				</button>
+			`;
+		}
+		tpl += `
+					<button class="button-blue" data-click="${_.componentName}:changeSection" section="addingStudent">
+						<span>Add student</span>
+						<svg class="button-icon"><use xlink:href="#plus"></use></svg>
+					</button>
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
+	dashboardBodyTpl(){
+		const _ = this;
+		let tpl = `
+			<div class="section parent">
+				<div class="section-header">
+					${_.sectionHeaderTpl({
+						title: 'Student Academic Profile',
+						gap: false
+					})}
+					<div class="section-header-select">
+						<span>Switch Course</span>
+						<g-select
+							class="select filter-select" 
+							className="filter-select section-header-select course-select"
+							arrowsvg="/img/sprite.svg#select-arrow-bottom"
+							items=${JSON.stringify([
+								{text:'ISEE', active:true},
+								{text:'SHSAT'}
+							])}></g-select>
+					</div>
+				</div>
+				<div class="block" id="studentProfile">
+					<img src="/img/loader.gif" alt="">
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
+	studentProfileTpl( studentInfo ){
+		const _ = this;
+		console.log(studentInfo)
+		let tpl = `
+			<div class="df aifs">
+				<div class="parent-student-avatar">
+					<img data-id="${studentInfo['user']['avatar']}" data-type="avatars" data-title="avatar">
+				</div>
+				<div class="parent-student-info">
+					<div class="unit df aic jcsb">
+						<div class="item">
+							<span class="strong">${studentInfo['user']['firstName']} ${studentInfo['user']['lastName']}</span>
+							<span class="text">${studentInfo['user']['email']}</span>
+						</div>
+						<div class="item">
+							<span class="strong">${studentInfo['currentSchool']}</span>
+							<span class="text">School</span>
+						</div>
+						<div class="item">
+							<span 
+								class="strong" 
+								data-id="${studentInfo['grade']}" 
+								data-type="grades"
+								data-title="grade"
+							></span>
+							<span class="text">Grade</span>
+						</div>
+						<div class="item">
+							<span 
+								class="strong" 
+								data-id="${studentInfo['plans'][0]['course']}" 
+								data-type="courses"
+								data-title="title"
+							></span>
+							<span class="text">Course</span>
+						</div>
+						<div class="item buttons">
+							<button class="button">Edit Course</button>
+							<button class="button-blue">Edit Profile</button>
+							<button class="button button-hide">
+								<svg><use xlink:href="#select-arrow-bottom"></use></svg>
+							</button>
+						</div>
+					</div>
+					<div class="unit">
+						<span class="text">APPLICATION SCHOOL LIST</span>
+						<div class="df aic jcsb">`;
+		if ( studentInfo['plans'][0]['firstSchool'] ){
+			tpl += `
+				<div class="item">
+					<span class="strong" data-id="${studentInfo['plans'][0]['firstSchool']}" data-type="schools" data-title="school">${studentInfo['currentSchool']}</span>
+					<span class="text">1st choice</span>
+				</div>
+			`;
+		}
+		if ( studentInfo['plans'][0]['secondSchool'] ){
+			tpl += `
+				<div class="item">
+					<span class="strong" data-id="${studentInfo['plans'][0]['secondSchool']}" data-type="schools" data-title="school">${studentInfo['currentSchool']}</span>
+					<span class="text">2nd choice</span>
+				</div>
+			`;
+		}
+		if ( studentInfo['plans'][0]['thirdSchool'] ){
+			tpl += `
+				<div class="item">
+					<span class="strong" data-id="${studentInfo['plans'][0]['thirdSchool']}" data-type="schools" data-title="school">${studentInfo['currentSchool']}</span>
+					<span class="text">3rd choice</span>
+				</div>
+			`;
+		}
+		tpl += `
+						</div>
+					</div>
+					<div class="unit">
+						<span class="text">CLASSES</span>
+						<div class="df aic jcsb">
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
 }

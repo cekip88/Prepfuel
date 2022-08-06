@@ -44,8 +44,6 @@ export class router {
 		
 		_.currentPageRoute = await _.definePageRoute(route);
 		
-		//console.log(_.currentPageRoute,route);
-		
 		_.clearComponents();
 	
 		await _.includePage(_.currentPageRoute);

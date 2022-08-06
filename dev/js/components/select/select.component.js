@@ -779,6 +779,13 @@ export default class GSelect extends GComponent {
 				flex-basis: 7px;
 				transform: rotate(135deg) translate(-1px, 1px);
 			}
+			.section-header-select .g-select-title {
+				font: 12px "Roboto-Bold";
+				color: #A1A5B7;
+			}
+			.course-select .g-select-option {
+				min-width: initial
+			}
 		`;
 	}
 	

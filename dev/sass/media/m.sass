@@ -26,6 +26,14 @@ body
 	background: rgb($neutral-500)
 #g-set
 	padding-bottom: 24px
+.df
+	@extend %df
+.aifs
+	align-items: flex-start
+.aic
+	align-items: center
+.jcsb
+	justify-content: space-between
 .ui
 	.select,.button,.button-blue,.button-lightblue,.button-transparent
 		margin-top: 20px
@@ -49,6 +57,15 @@ body
 			align-items: flex-start
 			.section-titles
 				width: calc(100% - 60px)
+		&-select
+			@extend %dfa
+			span
+				margin-right: 8px
+				font: $fz12 $p_medium
+				color: rgb($neutral-800)
+			.select
+				width: 80px
+
 	&-button
 		margin: 4px 10px 4px 0
 		font-family: $f_medium
@@ -59,6 +76,7 @@ body
 		svg
 			max-width: 32px
 			max-height: 32px
+
 .section,.block-filter
 	&-buttons
 		@extend %dfa
@@ -594,6 +612,7 @@ g-modaler
 	.section
 		min-height: 44px
 	&-button
+		@extend %dfa
 		padding: 10px 16px
 		border-radius: 8px
 		font-family: $p_semi
@@ -3375,6 +3394,8 @@ div.tbl-head
 
 
 .parent
+	.df
+		width: 100%
 	&-table
 		&-avatar
 			@extend %dfc
@@ -3443,7 +3464,76 @@ div.tbl-head
 				text-align: right
 		&-billing
 			max-width: 494px
-
+	.subnavigate
+		&-button
+			padding: 5px 8px
+			span
+				font: $fz16 $f_semi
+				color: rgb($neutral-800)
+			&-img
+				@extend %dfa
+				+wh(36px)
+				margin-right: 12px
+				background-color: rgb($neutral-200)
+				justify-content: flex-end
+				flex-direction: column
+				border-radius: 12px
+				overflow: hidden
+				img
+					+wh(100%)
+					max-height: 32px
+					max-width: 28px
+			&.active
+				span
+					color: rgb($blue)
+	&-student
+		&-avatar
+			+wh(80px)
+			flex: 0 0 80px
+			margin-right: 32px
+			padding: 9px 10px 0
+			border-radius: 12px
+			background-color: #EFF2F5
+			img
+				+wh(100%)
+				object-fit: contain
+		&-info
+			width: 100%
+			.unit
+				margin-bottom: 40px
+				&:last-child
+					margin-bottom: 0
+			.item
+				@extend %df
+				margin-right: 91px
+				flex-direction: column
+				&:last-child
+					margin-right: 0
+			.buttons
+				flex-direction: row
+				button
+					padding: 12px 20px
+					margin-right: 16px
+					&:last-child
+						margin-right: 0
+			.strong,.text
+				margin-bottom: 4px
+				display: block
+				&:last-child
+					margin-bottom: 0
+			.strong
+				font: $fz18 $f_bold
+				color: rgb($neutral-800)
+				line-height: calc(24 / 18)
+			.text
+				font-family: $f_medium
+				color: rgb($neutral-400)
+			.button-hide
+				@extend %dfc
+				svg
+					+wh(11px,6px)
+					fill: rgb($neutral-600)
+					transform: rotate(180deg)
 
 
 .newUsers

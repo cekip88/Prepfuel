@@ -85,7 +85,6 @@ class LoginPage extends G{
 					password: formData.password
 				}
 				localStorage.setItem('loginData',JSON.stringify(loginData));
-				console.log('remembered')
 			}
 			else localStorage.removeItem('loginData')
 		}
