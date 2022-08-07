@@ -140,9 +140,13 @@ export class PracticeModule extends StudentPage{
 		_._$.currentQuestion = _.skillTests[_.questionPos];
 		
 	}
-	fillNote(){
+	fillNote(currentAnswers){
 		const _ = this;
-		
+		currentAnswers.forEach( answer => {
+			if(answer['note']){
+				_.f('#note-field').append(_.markup(_.noteTpl(answer)));
+			}
+		});
 	}
 	
 	async fillCheckedAnswers(){
@@ -279,34 +283,33 @@ export class PracticeModule extends StudentPage{
 	saveBookmark({item}){
 		const _ = this;
 		let
-		questionId = item.getAttribute('data-question-id'),
-		bookmarked = item.classList.contains('active');
-		
-		Model.saveTestToStorage({
-			questionId: questionId,
-			bookmark: !bookmarked
-		});
+			questionId = item.getAttribute('data-question-id'),
+			bookmarked = item.classList.contains('active');
+		if(!_.answerVariant[_.innerQuestionId]){
+			_.answerVariant[_.innerQuestionId] = {};
+		}
+		_.answerVariant[_.innerQuestionId]['bookmark'] = !bookmarked;
 		item.classList.toggle('active');
-		if(!_.isGrid())
-			_.f(`.questions-list .questions-item[data-question-id="${questionId}"]`).classList.toggle('checked');
 	}
 	async saveNote({item:form,event}){
 		const _ = this;
 		event.preventDefault();
 		let formData = await _.formDataCapture(form);
 		formData['_id'] = _.innerQuestionId;
-		_.answerVariant[_.innerQuestionId]['note'] = formData;
-		G_Bus.trigger(_.componentName,'updateStorageTest')
-		let answerList = _.f(`#question-inner-body .answer-list`);
-		if(answerList.nextElementSibling) {
-			if(answerList.nextElementSibling.classList.contains('note-block')){
-				answerList.nextElementSibling.remove();
-			}
+		if(!_.answerVariant[_.innerQuestionId]){
+			_.answerVariant[_.innerQuestionId] = {};
 		}
-		answerList.after(_.markup(_.noteTpl(formData)));
+		_.answerVariant[_.innerQuestionId]['note'] = formData['text'];
+	
+		let noteField = _.f('#note-field');
+		_.clear(noteField);
+		noteField.append(_.markup(_.noteTplFromForm(formData)));
 		G_Bus.trigger('modaler','closeModal');
 		// Show active note button
+		console.log(_.innerQuestionId);
 		_.f(`.note-button[data-question-id="${_.innerQuestionId}"]`).classList.add('active');
+		_.setAvailableCheckBtn();
+		console.log(_.answerVariant);
 	}
 
 	
@@ -470,13 +473,13 @@ export class PracticeModule extends StudentPage{
 	setWrongAnswer({item,event}){
 		const _ = this;
 		let
-		answer = item.parentNode,
-		questionId =  answer.getAttribute('data-question-id'),
-		currentTest = _.storageTest[questionId],
-		variant = answer.getAttribute('data-variant'),
-		obj  = {
-			questionId: questionId
-		};
+			answer = item.parentNode,
+			questionId =  answer.getAttribute('data-question-id'),
+			currentTest = _.storageTest[questionId],
+			variant = answer.getAttribute('data-variant'),
+			obj  = {
+				questionId: questionId
+			};
 		if(answer.hasAttribute('disabled')){
 			answer.removeAttribute('disabled');
 			if(currentTest['disabledAnswers']){
@@ -532,7 +535,7 @@ export class PracticeModule extends StudentPage{
 		}
 		_.answerVariant[questionId]['answer'] = answerVariant;
 		
-		_.f('#check-answer-btn').removeAttribute('disabled');
+		_.setAvailableCheckBtn();
 		
 		Model.saveTestToStorage({
 			questionId: questionId,
@@ -575,8 +578,22 @@ export class PracticeModule extends StudentPage{
 		target = btn.nextElementSibling;
 		target.classList.toggle('active')
 	}
-	
-	
+	setAvailableCheckBtn(){
+		const _ = this;
+		_.f('#check-answer-btn').removeAttribute('disabled');
+	}
+	setDisableCheckBtn(){
+		const _ = this;
+		_.f('#check-answer-btn').setAttribute('disabled','disabled');
+	}
+	setBookmark(answers){
+		const _ = this;
+		answers.forEach( answer =>{
+			if(answer['bookmark']){
+				_.f('.bookmarked-button').classList.add('active');
+			}
+		})
+	}
 	// Templates
 	flexible(){
 		const _ = this;
@@ -621,14 +638,21 @@ export class PracticeModule extends StudentPage{
 	async checkAnswer({item}){
 		const _ = this;
 		for(let id in _.answerVariant){
+			let answerObj = {
+				"questionId": id,
+				"questionDatasId": _._$.currentQuestion['_id'],
+				"answer": _.answerVariant[id]['answer'],
+			};
+			if(_.answerVariant[id]['note']){
+				answerObj['note'] = _.answerVariant[id]['note'];
+			}
+			if(_.answerVariant[id]['bookmark']){
+				answerObj['bookmark'] = _.answerVariant[id]['bookmark'];
+			}
 			let response = await Model.saveAnswer({
-				"answer": {
-					"questionId": id,
-					"questionDatasId": _._$.currentQuestion['_id'],
-					"answer": _.answerVariant[id]['answer']
-				},
+				"answer": answerObj,
 				"category": Model.currentCategory,
-				"concept": Model.currentConcept
+				"concept": Model.currentConcept['concept']
 			});
 			console.log(response);
 		}
@@ -646,8 +670,9 @@ export class PracticeModule extends StudentPage{
 		if( !value.length ) return void 0;
 		let
 			answerObject = value[0],
-			answerText = answerObject.answer,
-			answerDigits = answerText.split('');
+			answerText = answerObject.answer;
+		if(!answerText) return void 0;
+		let	answerDigits = answerText.split('');
 		answerDigits.forEach( (digit,index) => {
 			let currentCol = _.f(`[data-col="${index+1}"] .grid-button`);
 			currentCol.forEach( (item) => {
@@ -669,16 +694,16 @@ export class PracticeModule extends StudentPage{
 			type:'html',
 			target:'#note'
 		});
-		_.f('#note textarea').value = note['text'];
+		_.f('#note textarea').value = note;
 	}
 	deleteNote({item}){
 		const _ = this;
 		let questionId= item.getAttribute('data-question-id');
-		delete _.storageTest[questionId]['note'];
-		Model.saveTestToStorage({
+		_.answerVariant[questionId]['note'] = "";
+/*		Model.saveTestToStorage({
 			questionId: questionId,
 			note: null
-		});
+		});*/
 		item.parentNode.parentNode.remove();
 		_.f('.note-button').classList.remove('active');
 	}
@@ -702,17 +727,27 @@ export class PracticeModule extends StudentPage{
 				if(!placedAnswers[item.questionDatasId]) placedAnswers[item.questionDatasId] = [];
 				placedAnswers[item.questionDatasId].push({
 					questionId: item.questionId,
-					answer: item.answer
+					answer: item.answer,
+					note: item.note,
+					bookmark: item.bookmark
 				});
 			});
 			let currentAnswers = placedAnswers[currentQuestion['_id']];
+			if(!currentAnswers){
+				return  void 'No answers from Server';
+			}
 			currentAnswers.forEach( answer =>{
 				if(!_.answerVariant[answer.questionId]) _.answerVariant[answer.questionId] = {};
-				_.answerVariant[answer.questionId]['answer'] = answer.answer;
+				_.answerVariant[answer.questionId] = answer;
 			})
 			if( _.isGrid() ){
 				_.setGridAnswer(currentAnswers);
 			}
+			_.fillNote(currentAnswers);
+			
+			_.setBookmark(currentAnswers)
+			
+			_.setDisableCheckBtn();
 			
 		})
 	

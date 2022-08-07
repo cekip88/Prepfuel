@@ -464,6 +464,7 @@ export class _Model {
 				let
 					response = await rawResponse.json(),
 				answers = response['response']['answers'];
+				console.log(answers);
 				_.testServerAnswers = answers;
 				_.testStatus = response['response']['status'];
 				resolve(_.testServerAnswers);
