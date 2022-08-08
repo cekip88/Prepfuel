@@ -52,6 +52,7 @@ export class DashboardModule extends ParentPage{
 			'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
 			'skipTestDate',
 			'showAddCard','showAddBillingAddress',
+			'hideProfile'
 		]);
 	}
 	async domReady() {
@@ -432,6 +433,25 @@ export class DashboardModule extends ParentPage{
 	}
 	//end change methods
 
+
+	hideProfile({item}){
+		const _ = this;
+		let cont = item.closest('.parent-student-info');
+		let show = item.classList.contains('active');
+
+		if (show) item.classList.remove('active');
+		else item.classList.add('active');
+
+		let units = cont.querySelectorAll('.unit');
+		for (let i = 0; i < units.length; i++) {
+			if (i) {
+				if (!show) units[i].setAttribute('style','height: 0;margin-bottom:0;opacity: 0;');
+				else units[i].removeAttribute('style');
+			}
+		}
+	}
+
+
 	//auxiliary methods
 	generatePassword({item}){
 		const _ = this;
@@ -640,6 +660,7 @@ export class DashboardModule extends ParentPage{
 			button.textContent = 'Next';
 		}
 	}
+
 	async init() {
 		const _ = this;
 		_._( _.handleAddingSteps.bind(_),['addingStep'])

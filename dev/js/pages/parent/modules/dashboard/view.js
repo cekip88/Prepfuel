@@ -909,7 +909,7 @@ export const view = {
 						<div class="item buttons last">
 							<button class="button">Edit Course</button>
 							<button class="button-blue">Edit Profile</button>
-							<button class="button button-hide">
+							<button class="button button-hide" data-click="${_.componentName}:hideProfile">
 								<svg><use xlink:href="#select-arrow-bottom"></use></svg>
 							</button>
 						</div>

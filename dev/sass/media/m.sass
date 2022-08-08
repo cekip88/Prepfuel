@@ -3504,10 +3504,12 @@ div.tbl-head
 			width: 100%
 			.unit
 				margin-bottom: 40px
+				transition: .35s ease
 				&:last-child
 					margin-bottom: 0
 			.item
 				@extend %df
+				min-width: 150px
 				margin-right: 91px
 				flex-direction: column
 				&.last
@@ -3537,6 +3539,10 @@ div.tbl-head
 					+wh(11px,6px)
 					fill: rgb($neutral-600)
 					transform: rotate(180deg)
+					transition: .35s ease
+				&.active
+					svg
+						transform: rotate(0)
 
 
 .newUsers
