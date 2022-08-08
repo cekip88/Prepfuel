@@ -137,7 +137,34 @@ export const view = {
 			</button>
 		`;
 	},
-	
+	async explanationAnswer(currentQuestion){
+		const _ = this;
+		let
+			output = document.createElement('div');
+			output.innerHTML = currentQuestion['explanationText'];
+		let
+		handle = async () => await MathJax.typesetPromise([output]).then( () => {
+			if(output.innerHTML != 'undefined'){
+				return output.innerHTML;
+			}
+			return '';
+		});
+		let text = await handle();
+		return `
+			<div class="test-label-block">
+				<div class="test-label-icon">
+					<svg>
+						<use xlink:href="#lamp"></use>
+					</svg>
+				</div>
+				<div class="test-label-text">
+					<h5 class="test-label-title">
+						<span>Explanation to correct answer</span>
+					</h5>
+					<p>${text}</p>
+				</div>
+			</div>`;
+	},
 	
 	practiceTabs(){
 		const _ = this;
@@ -530,7 +557,7 @@ export const view = {
 			${await _.questionHeader()}
 			<div class="section">
 				<div class="block test-block" id="question-body">
-					<div id="question-inner-body" class="test-block"><img src="/img/loader.gif" class="loader"></div>
+					<div id="question-inner-body" style="overflow: hidden"><img src="/img/loader.gif" class="loader"></div>
 					${_.questionFooter()}
 				</div>
 			</div>
@@ -645,13 +672,12 @@ export const view = {
 			</div>
 	`)});
 	},
-	
 	questionNavigation(pos=0){
 		const _ = this;
 		let tpl = ``;
 		for(let i=0; i < _.questionsLength; i++){
 			if(pos == i){
-				tpl+=`<a class="pagination-link active" data-pos="${i}" data-click="${_.componentName}:jumpToQuestion"><span>${i+1}</span></a>`;
+				tpl+=`<a class="pagination-link active" data-pos="${i}"  data-click="${_.componentName}:jumpToQuestion"><span>${i+1}</span></a>`;
 			}else{
 				tpl+=`<a class="pagination-link" data-pos="${i}" data-click="${_.componentName}:jumpToQuestion"><span>${i+1}</span></a>`;
 			}
@@ -661,16 +687,16 @@ export const view = {
 	questionFooter(){
 		const _ = this;
 		return `
-			<div class="test-footer">
+			<div class="test-footer" style="padding-bottom: 0">
 				<a class="test-footer-button" data-click="${this.componentName}:changeSection" section="directions">
 					<span>Directions</span>
 				</a>
-        <div class="pagination pagination-top">
-          <div class="pagination-info"><span>Do <strong class="questions-length"></strong> questions</span></div>
-          <div class="pagination-links" id="question-pagination"></div>
-        </div>
-        <a class="button-blue" disabled="" id="check-answer-btn" data-click="${_.componentName}:checkAnswer"><span>Check answer</span></a>
-      </div>`;
+				<div class="pagination pagination-top">
+			          <div class="pagination-info"><span>Do <strong class="questions-length"></strong> questions</span></div>
+			          <div class="pagination-links" id="question-pagination"></div>
+			        </div>
+			<a class="button-blue" disabled="" id="check-answer-btn" data-click="${_.componentName}:checkAnswer"><span>Check answer</span></a>
+			</div>`;
 	},
 	
 	
@@ -719,7 +745,8 @@ export const view = {
 				<span>${content}</span>
 			</p>
 			<div class="answer-list"></div>
-			<div id="note-field"></div>
+			<div id="note-field-${currentQuestion['_id']}"></div>
+			<div id="explanation-field-${currentQuestion['_id']}"></div>
 			</div>
 				<div class="test-col narrow grid" data-click="${_.componentName}:enterGridAnswer">
 					<div class="grid-row">
@@ -751,7 +778,7 @@ export const view = {
 					</div>
 					<div class="grid-row">
 						<div class="grid-col"  data-col="1">
-							<button class="grid-button high"></button>
+							<button class="grid-button high"> </button>
 						</div>
 						<div class="grid-col"  data-col="2">
 							${_.gridDigitButtons()}
@@ -768,8 +795,6 @@ export const view = {
 					</div>
 				</div>
 			</div>
-			
-			${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
 		`;
 		return tpl;
 	},
@@ -800,7 +825,8 @@ export const view = {
 			tpl+=await _.answerTpl(currentQuestion,answer);
 		}
 		tpl+=`</ul>
-			${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
+			<div id="note-field-${currentQuestion['_id']}"></div>
+			<div id="explanation-field-${currentQuestion['_id']}"></div>
 			</div>
 		`;
 		return tpl;
@@ -873,7 +899,8 @@ export const view = {
 		}
 		tpl+=`
 				</ul>
-				${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
+				<div id="note-field-${currentQuestion['_id']}"></div>
+				<div id="explanation-field-${currentQuestion['_id']}"></div>
 			</div>
 		</div>`;
 		return tpl;
@@ -910,7 +937,8 @@ export const view = {
 				tpl+= await _.answerTpl(question,answer);
 			}
 			tpl+=`</ul>
-				${Model.isFinished() ? await _.explanationAnswer(question) : ''}
+				<div id="note-field-${question['_id']}"></div>
+				<div id="explanation-field-${question['_id']}"></div>
 			</div>`;
 			cnt++;
 		}
@@ -954,7 +982,8 @@ export const view = {
 		}
 		tpl+=`
 			</ul>
-			${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
+			<div id="note-field-${currentQuestion['_id']}"></div>
+			<div id="explanation-field-${currentQuestion['_id']}"></div>
 		</div>`;
 		return tpl;
 	},
