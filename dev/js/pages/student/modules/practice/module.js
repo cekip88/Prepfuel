@@ -145,6 +145,7 @@ export class PracticeModule extends StudentPage{
 		currentAnswers.forEach( answer => {
 			if(answer['note']){
 				_.f('#note-field').append(_.markup(_.noteTpl(answer)));
+				_.f('.note-button').classList.add('active');
 			}
 		});
 	}
@@ -273,11 +274,12 @@ export class PracticeModule extends StudentPage{
 		event.preventDefault();
 		const _ = this;
 		let gformData = await _.gFormDataCapture(form);
-		Model.saveTestToStorage({
-			questionId: _._$.currentQuestion['_id'],
-			report: gformData
-		});
-		G_Bus.trigger(_.componentName,'updateStorageTest')
+		let
+			questionId = item.getAttribute('data-question-id');
+		if(!_.answerVariant[questionId]){
+			_.answerVariant[questionId] = {};
+		}
+		_.answerVariant[questionId]['report'] = gformData;
 		G_Bus.trigger('modaler','closeModal');
 	}
 	saveBookmark({item}){
@@ -285,10 +287,10 @@ export class PracticeModule extends StudentPage{
 		let
 			questionId = item.getAttribute('data-question-id'),
 			bookmarked = item.classList.contains('active');
-		if(!_.answerVariant[_.innerQuestionId]){
-			_.answerVariant[_.innerQuestionId] = {};
+		if(!_.answerVariant[questionId]){
+			_.answerVariant[questionId] = {};
 		}
-		_.answerVariant[_.innerQuestionId]['bookmark'] = !bookmarked;
+		_.answerVariant[questionId]['bookmark'] = !bookmarked;
 		item.classList.toggle('active');
 	}
 	async saveNote({item:form,event}){
@@ -306,10 +308,8 @@ export class PracticeModule extends StudentPage{
 		noteField.append(_.markup(_.noteTplFromForm(formData)));
 		G_Bus.trigger('modaler','closeModal');
 		// Show active note button
-		console.log(_.innerQuestionId);
 		_.f(`.note-button[data-question-id="${_.innerQuestionId}"]`).classList.add('active');
 		_.setAvailableCheckBtn();
-		console.log(_.answerVariant);
 	}
 
 	
@@ -537,10 +537,6 @@ export class PracticeModule extends StudentPage{
 		
 		_.setAvailableCheckBtn();
 		
-		Model.saveTestToStorage({
-			questionId: questionId,
-			answer: answerVariant
-		});
 		G_Bus.trigger(_.componentName,'updateStorageTest');
 	}
 	setActions(types = ['bookmark']){
@@ -655,6 +651,7 @@ export class PracticeModule extends StudentPage{
 				"concept": Model.currentConcept['concept']
 			});
 			console.log(response);
+			_.setDisableCheckBtn();
 		}
 		
 	}
@@ -667,6 +664,7 @@ export class PracticeModule extends StudentPage{
 	}
 	setGridAnswer(value){
 		const _ = this;
+		console.log(value);
 		if( !value.length ) return void 0;
 		let
 			answerObject = value[0],
@@ -723,6 +721,7 @@ export class PracticeModule extends StudentPage{
 			let
 				rawAnswers = await Model.getTestResults(),
 				placedAnswers = {};
+			if(!rawAnswers.length) return void 'No answers from Server';
 			rawAnswers.forEach( (item) => {
 				if(!placedAnswers[item.questionDatasId]) placedAnswers[item.questionDatasId] = [];
 				placedAnswers[item.questionDatasId].push({
@@ -733,9 +732,7 @@ export class PracticeModule extends StudentPage{
 				});
 			});
 			let currentAnswers = placedAnswers[currentQuestion['_id']];
-			if(!currentAnswers){
-				return  void 'No answers from Server';
-			}
+			if(!currentAnswers)	return  void 'No current answers';
 			currentAnswers.forEach( answer =>{
 				if(!_.answerVariant[answer.questionId]) _.answerVariant[answer.questionId] = {};
 				_.answerVariant[answer.questionId] = answer;
@@ -743,10 +740,10 @@ export class PracticeModule extends StudentPage{
 			if( _.isGrid() ){
 				_.setGridAnswer(currentAnswers);
 			}
+			console.log(currentAnswers);
+			
 			_.fillNote(currentAnswers);
-			
 			_.setBookmark(currentAnswers)
-			
 			_.setDisableCheckBtn();
 			
 		})

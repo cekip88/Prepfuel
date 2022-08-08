@@ -530,7 +530,7 @@ export const view = {
 			${await _.questionHeader()}
 			<div class="section">
 				<div class="block test-block" id="question-body">
-					<div id="question-inner-body" class="test-block"></div>
+					<div id="question-inner-body" class="test-block"><img src="/img/loader.gif" class="loader"></div>
 					${_.questionFooter()}
 				</div>
 			</div>
