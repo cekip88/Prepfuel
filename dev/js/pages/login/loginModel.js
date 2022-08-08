@@ -43,8 +43,8 @@ class _loginModel{
 		if(_.isSuccessStatus(rawResponse.status)){
 			let response = await rawResponse.json();
 			if( _.isSuccessResponse(response) ){
-				let user = response['response']['user'];
-				await G_Bus.trigger(_.componentName,'loginSuccess',response['response']);
+				let user = response['user'];
+				await G_Bus.trigger(_.componentName,'loginSuccess',response);
 				localStorage.setItem('me',JSON.stringify(user));
 				await G_Bus.trigger('router','changePage',`/${user['role']}/dashboard`);
 			}else{
