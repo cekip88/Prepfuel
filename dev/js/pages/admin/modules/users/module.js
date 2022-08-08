@@ -398,7 +398,7 @@ export class UsersModule extends AdminPage {
 		_.studentInfo['currentSchool'] = currentStudent['currentSchool'];
 		_.studentInfo['currentPlan'] = currentStudent['currentPlan'];
 		_.studentInfo['grade'] = currentStudent['grade']['_id'];
-		_.studentInfo['studentId'] = currentStudent._id;
+		_.studentInfo['studentId'] = currentStudent['_id'];
 		
 		_.f('.student-profile-inner').innerHTML = _.personalInfo();
 		_._$.addingStep = 1;

@@ -13,7 +13,9 @@ export class DashboardModule extends ParentPage{
 
 
 		_.me = JSON.parse(localStorage.getItem('me'));
-		if (_.me['students']['length']) {
+		console.log(_.me)
+
+		if (_.me['parent']['students']['length']) {
 			_.moduleStructure = {
 				'header':'fullHeader',
 				'header-tabs':'studentTabs',
@@ -32,9 +34,6 @@ export class DashboardModule extends ParentPage{
 	}
 	async asyncDefine(){
 		const _ = this;
-	/*	_.set({
-			dashSchedule: await Model.getDashSchedule()
-		});*/
 	}
 	define() {
 		const _ = this;
@@ -58,18 +57,20 @@ export class DashboardModule extends ParentPage{
 	async domReady() {
 		const _ = this;
 		_.body = _.f("#g-set-inner");
+		_.clear(_.body);
 		_.wizardData = await Model.getWizardData();
 
 		if( _.subSection == 'welcome' ){
 			_.fillWelcome();
 		}
 		if( _.subSection == 'addingStudent' ){
-			_.fillDashboardTabs();
 			_.fillAddingStudent();
 		}
 		if( _.subSection == 'dashboard' ){
 			_.fillDashboardTabs();
 			_.fillDashboard();
+			_.fillScheduleBlock(_.me['parent']['students'][0]['_id']);
+			_.fillStarsBlock();
 		}
 	}
 
@@ -95,7 +96,6 @@ export class DashboardModule extends ParentPage{
 				'body':'badgeTpl',
 				'footer':'dashboardFooter'
 			}
-			_._( _.handleAddingSteps.bind(_),['addingStep'])
 		}
 		if( section == 'dashboard' ){
 			_.moduleStructure = {
@@ -135,26 +135,155 @@ export class DashboardModule extends ParentPage{
 	}
 	fillDashboard(currentStudent = 0){
 		const _ = this;
-		console.log(_.wizardData)
 
 		let cont = _.f('#studentProfile');
 		_.clear(cont);
-		cont.append( _.markup( _.studentProfileTpl( _.me['students'][ currentStudent])))
+		cont.append( _.markup( _.studentProfileTpl( _.me['parent']['students'][currentStudent])))
 
 		let items = cont.querySelectorAll('[data-id]');
 		for ( let item of items ){
 			let type = item.getAttribute('data-type');
-			function search (elem){
+			let value = _.wizardData[type].find(elem=>{
 				if (elem['_id'] == item.getAttribute('data-id')){
 					return elem
 				}
+			});
+			if( type != 'avatars' ){
+				item.textContent = value[item.getAttribute('data-title')];
 			}
-			let value = _.wizardData[type].find(search);
-			if( type != 'avatars' ) item.textContent = value[item.getAttribute('data-title')];
 			else item.src = `/img/${value[item.getAttribute('data-title')]}.svg`
 		}
 	}
 
+	async fillScheduleBlock(id){
+		const _ = this;
+		let
+			schedule = await Model.getSchedule(id),
+			scheduleTpl = _.scheduleBlock(schedule),
+			scheduleList = document.querySelector('#scheduleList');
+		_.clear(scheduleList);
+		scheduleList.append(_.markup(scheduleTpl));
+	}
+	async fillStarsBlock(){
+		const _ = this;
+		let starsCont = _.f('#starsBlock');
+		let starsInfo = {
+			items: [
+				{title:'Skills Practice',count:1500,color:'246,155,17'},
+				{title:'Tests',count:1500,color:'0,149,232'},
+				{title:'Videos Watched',count:2500,color:'80,20,208'},
+				{title:'Reviewed Questions',count:345,color:'0,175,175'},
+			],
+			total: 5845
+		};
+		_.clear( starsCont );
+		starsCont.append( _.markup( _.starsBlockTpl(starsInfo)));
+		_.showCircleGraphic(starsInfo,starsCont)
+	}
+	showCircleGraphic(data,cont){
+		const _ = this;
+		let starsCont = cont.querySelector('.stars-circle');
+		if (!starsCont) return;
+
+		let svg = `</svg>`;
+		let radius = window.innerWidth < 768 ? 106 : 134;
+		let sum = 0;
+		let last;
+		let count = 0;
+		for (let key in data['items']) {
+			let number = parseInt(data['items'][key]['count']);
+			if (isNaN(number) || !number) continue;
+			last = data['items'][key]['count'];
+			sum += number;
+			count++;
+		}
+
+		let circleWidth = 2 * Math.PI * radius;
+		let strokeDashoffset = 0;
+
+		for (let key in data['items']) {
+			if (!data['items'][key]['count'] || isNaN(parseInt(data['items'][key]['count']))) continue;
+			let width = data['items'][key]['count'] / sum * circleWidth;
+			if (data['items'][key]['count'] !== last) {
+				width -= 14 / (count - 1);
+			} else width += 14;
+			let strokeDasharray = `${width} ${circleWidth - width}`;
+			svg = `<circle style="stroke:rgb(${data['items'][key]['color']})" stroke-dasharray="${strokeDasharray}" stroke-dashoffset="-${strokeDashoffset}" stroke-linecap="round" cx="50%" cy="50%"></circle>` + svg;
+			strokeDashoffset += width;
+		}
+
+		svg = '<svg xmlns="http://www.w3.org/2000/svg">' + svg;
+		svg = _.markupElement(svg);
+
+		starsCont.prepend(svg);
+	}
+	setInteger(number){
+		const _ = this;
+		if (number < 1000) return number;
+		let string = Math.ceil(number).toString();
+		let result = '';
+		for ( let i = 0; i < string.length; i++ ){
+			if (!(i%3) && i) {
+				result = ',' + result;
+			}
+			result = string[string["length"] - i - 1] + result;
+		}
+		return result;
+	}
+	fillScheduleItemsTpl(dashSchedule){
+		const _ = this;
+		let schData = [
+			dashSchedule['skillTest'],
+			dashSchedule['practiceTest'],
+			dashSchedule['test'],
+		];
+		let data = [];
+		for (let item of schData) {
+			let title = `Next ${item.title}`;
+			let info = '', count = '';
+
+
+			if (item['title'] === 'isee'){
+				title = 'Your ISEE Date';
+			}
+			if (item['title'] === 'skill test'){
+				title = 'Next practice';
+			}
+			if (item['title'] === "practice test"){
+				title = 'Next Practice Test';
+			}
+
+
+			if (item['daysLeft'] <= 0) {
+				count = 'Today';
+				if (item['title'] === 'isee') {
+					info = '<div class="info">Good luck</div>';
+				}
+			} else {
+				count = item['daysLeft'];
+				if (item['title'] === 'isee') {
+					info = `
+						<div class="info">
+							Day${item['daysLeft'] == 1 ? '' : 's'} until ISEE test
+						</div>`
+				}
+				if (item['title'] === 'skill test') {
+					info = `
+						<div class="info">
+							Day${item['daysLeft'] == 1 ? '' : 's'} until next practice
+						</div>`
+				}
+				if (item['title'] === "practice test") {
+					info = `
+						<div class="info">
+							Day${item['daysLeft'] == 1 ? '' : 's'} until next practice test
+						</div>`
+				}
+			}
+			data.push({info,count,item,title});
+		}
+		return data;
+	}
 
 	// add student methods
 	fillStudentInfo({item}){
@@ -163,7 +292,7 @@ export class DashboardModule extends ParentPage{
 	}
 	fillAddingStudent(){
 		const _ = this;
-		_.body.innerHTML = _.addingStudentTpl();
+		_.body.append( _.markup( _.addingStudentTpl()));
 		_.handleAddingSteps(1);
 	}
 
@@ -186,6 +315,13 @@ export class DashboardModule extends ParentPage{
 				target: '#congratulationsPopup',
 				closeBtn: false
 			})
+
+			console.log(_.students)
+			console.log(resp['response'])
+
+			let btn = document.createElement('BUTTON');
+			btn.setAttribute('section','dashboard');
+			_.changeSection({item:btn});
 		}
 	}
 	//end add student methods
@@ -324,8 +460,9 @@ export class DashboardModule extends ParentPage{
 				input.select();
 				document.execCommand("copy");
 			}
+			_.validatePassword({item:inputs[i]})
 		}
-		G_Bus.trigger('ParentPage','showSuccessPopup','Password Generated and Copied')
+		G_Bus.trigger(_.componentName,'showSuccessPopup','Password Generated and Copied');
 		setTimeout(()=>{input.type = 'password'},2000)
 	}
 	validatePassword({item}){
@@ -487,7 +624,6 @@ export class DashboardModule extends ParentPage{
 			}
 		}
 
-		if (!addingStep) _._$.addingStep = 1;
 		if (addingStep === 5) {
 			let
 				cards = await Model.getCardsInfo(),

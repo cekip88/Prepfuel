@@ -170,6 +170,8 @@ body
 		margin-bottom: 24px
 	.test-header
 		padding-bottom: 20px
+	.subnavigate
+		padding: 0
 g-modaler
 	.block
 		margin: 0
@@ -2035,6 +2037,7 @@ g-modaler
 				+wh(100%)
 		&-text
 			font-size: 12px
+			text-align: left
 			strong
 				display: block
 				font-family: $p_semi
@@ -3507,7 +3510,7 @@ div.tbl-head
 				@extend %df
 				margin-right: 91px
 				flex-direction: column
-				&:last-child
+				&.last
 					margin-right: 0
 			.buttons
 				flex-direction: row
@@ -4707,3 +4710,7 @@ div.tbl-head
 			&-subtitle
 				font: $fz12 $p_reg
 				color: rgb($neutral-400)
+
+
+#studentProfile
+	overflow: auto

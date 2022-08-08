@@ -807,15 +807,15 @@ export const view = {
 		let tpl = `
 			<div class="subnavigate parent">
 				<div class="section">`;
-		for (let i = 0; i < _.me['students']['length']; i++) {
-			let student = _.me['students'][i];
+		for (let i = 0; i < _.me['parent']['students']['length']; i++) {
+			let student = _.me['parent']['students'][i];
 			let img;
 			if (student['user']['avatar']) {
 				img = `<div class="subnavigate-button-img" data-id="${student['user']['avatar']}"></div>`
 			}
 			tpl += `
 				<button class="subnavigate-button${ !i ? ' active' : ''}" data-click="${_.componentName}:changeStudent" data-index="${i}">
-					${img}<span>${student['user']['firstName']} ${student['user']['lastName']}</span>
+					${img ?? ''}<span>${student['user']['firstName']} ${student['user']['lastName']}</span>
 				</button>
 			`;
 		}
@@ -832,7 +832,7 @@ export const view = {
 	dashboardBodyTpl(){
 		const _ = this;
 		let tpl = `
-			<div class="section parent">
+			<div class="section">
 				<div class="section-header">
 					${_.sectionHeaderTpl({
 						title: 'Student Academic Profile',
@@ -850,16 +850,39 @@ export const view = {
 							])}></g-select>
 					</div>
 				</div>
-				<div class="block" id="studentProfile">
+				<div class="block block-gap parent" id="studentProfile">
 					<img src="/img/loader.gif" alt="">
 				</div>
+				<div class="block block-gap">
+					${_.profileSubnavigate()}
+				</div>
 			</div>
+			<div class="section">
+					${_.sectionHeaderTpl({title: 'Dashboard',gap:false})}
+					<div class="row">
+						<div class="col">
+							<div class="block block-gap" id="scheduleCont">
+								<div class="block-title-control">
+									<h5 class="block-title"><span>Practice Schedule</span></h5>
+									<button class="button" data-click="${_.componentName}:deleteSchedule"><span>Delete</span></button>
+									<button class="button" data-click="${_.componentName}:editSchedule"><span>Edit</span></button>
+								</div>
+								<ul class="schedule-list loader-parent" id="scheduleList">
+									<img src="/img/loader.gif">
+								</ul>
+								${_.scheduleFooterTpl()}
+							</div>
+							<div class="block block-gap loader-parent" id="starsBlock">
+								<img src="/img/loader.gif" alt="">
+							</div>
+						</div>
+					</div>
+				</div>
 		`;
 		return tpl;
 	},
 	studentProfileTpl( studentInfo ){
 		const _ = this;
-		console.log(studentInfo)
 		let tpl = `
 			<div class="df aifs">
 				<div class="parent-student-avatar">
@@ -876,24 +899,14 @@ export const view = {
 							<span class="text">School</span>
 						</div>
 						<div class="item">
-							<span 
-								class="strong" 
-								data-id="${studentInfo['grade']}" 
-								data-type="grades"
-								data-title="grade"
-							></span>
+							<span class="strong">${studentInfo['grade']['grade']}</span>
 							<span class="text">Grade</span>
 						</div>
 						<div class="item">
-							<span 
-								class="strong" 
-								data-id="${studentInfo['plans'][0]['course']}" 
-								data-type="courses"
-								data-title="title"
-							></span>
+							<span class="strong">${studentInfo['currentPlan']['course']['title']}</span>
 							<span class="text">Course</span>
 						</div>
-						<div class="item buttons">
+						<div class="item buttons last">
 							<button class="button">Edit Course</button>
 							<button class="button-blue">Edit Profile</button>
 							<button class="button button-hide">
@@ -904,26 +917,26 @@ export const view = {
 					<div class="unit">
 						<span class="text">APPLICATION SCHOOL LIST</span>
 						<div class="df aic jcsb">`;
-		if ( studentInfo['plans'][0]['firstSchool'] ){
+		if ( studentInfo['currentPlan']['firstSchool'] ){
 			tpl += `
 				<div class="item">
-					<span class="strong" data-id="${studentInfo['plans'][0]['firstSchool']}" data-type="schools" data-title="school">${studentInfo['currentSchool']}</span>
+					<span class="strong" data-id="${studentInfo['currentPlan']['firstSchool']}" data-type="schools" data-title="school">${studentInfo['currentSchool']}</span>
 					<span class="text">1st choice</span>
 				</div>
 			`;
 		}
-		if ( studentInfo['plans'][0]['secondSchool'] ){
+		if ( studentInfo['currentPlan']['secondSchool'] ){
 			tpl += `
 				<div class="item">
-					<span class="strong" data-id="${studentInfo['plans'][0]['secondSchool']}" data-type="schools" data-title="school">${studentInfo['currentSchool']}</span>
+					<span class="strong" data-id="${studentInfo['currentPlan']['secondSchool']}" data-type="schools" data-title="school">${studentInfo['currentSchool']}</span>
 					<span class="text">2nd choice</span>
 				</div>
 			`;
 		}
-		if ( studentInfo['plans'][0]['thirdSchool'] ){
+		if ( studentInfo['currentPlan']['thirdSchool'] ){
 			tpl += `
-				<div class="item">
-					<span class="strong" data-id="${studentInfo['plans'][0]['thirdSchool']}" data-type="schools" data-title="school">${studentInfo['currentSchool']}</span>
+				<div class="item last">
+					<span class="strong" data-id="${studentInfo['currentPlan']['thirdSchool']}" data-type="schools" data-title="school">${studentInfo['currentSchool']}</span>
 					<span class="text">3rd choice</span>
 				</div>
 			`;
@@ -942,4 +955,106 @@ export const view = {
 		`;
 		return tpl;
 	},
+	profileSubnavigate(){
+		const _ = this;
+		let buttons = [
+			{text:'Dashboard'},
+			{text:'Report by Section'},
+			{text:'Practice Test'},
+			{text:'Trouble Spots'},
+			{text:'Achievements'},
+			{text:'Activity'},
+		];
+		let tpl = `
+			<div class="subnavigate">
+				<div class="section">`;
+		for (let i = 0; i < buttons['length']; i++) {
+			let button = buttons[i];
+			tpl += `
+				<button class="subnavigate-button${ !i ? ' active' : ''}" data-click="${_.componentName}:changeStudent" data-index="${i}">
+					<span>${button['text']}</span>
+				</button>
+			`;
+		}
+		tpl += `
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
+
+// schedule methods
+	scheduleBlock(dashSchedule){
+		const _ = this;
+		if (!dashSchedule) return null;
+		let
+			practiceDate = dashSchedule['practiceTest'] ? new Date(dashSchedule['practiceTest']['date']) : undefined,
+			testDate = dashSchedule['test'] ? new Date(dashSchedule['test']['date']) : undefined;
+		let tpl = ``;
+		let itemsData = _.fillScheduleItemsTpl(dashSchedule);
+		for (let item of itemsData) {
+			tpl += _.scheduleItemTpl(item);
+		}
+		return tpl;
+	},
+	scheduleFooterTpl(){
+		const _ = this;
+		return `
+			<div class="schedule-footer">
+				<button class="schedule-footer-button active">
+					<span class="icon"><svg><use xlink:href="#calendar-transparent"></use></svg></span>
+					<span class="text">Calendar</span>
+					<span class="arrow"></span>
+				</button>
+				<button class="schedule-footer-button">
+					<span class="icon"><svg><use xlink:href="#list"></use></svg></span>
+					<span class="text">Schedule</span>
+					<span class="arrow"></span>
+				</button>
+				<button class="schedule-footer-button last">
+					<span class="icon"><svg><use xlink:href="#question"></use></svg></span>
+					<span class="text">Practice Schedule FAQ</span>
+				</button>
+			</div>
+		`
+	},
+
+	starsBlockTpl(starsData){
+		const _ = this;
+		let tpl = `
+			<div class="stars">
+				<div class="block-title-control">
+					<h5 class="block-title"><span>Stars</span></h5>
+					<button class="button"><span>What are stars?</span></button>
+				</div>
+				<div class="stars-row">
+					<div class="stars-circle circle" data-radius="106,134" data-borders="28">
+						<div class="circle-count">
+							<svg class="circle-count-icon">
+								<use xlink:href="#stars"></use>
+							</svg><span class="circle-count-title">${_.setInteger(starsData['total'])}</span>
+						</div>
+					</div>
+					<ul class="stars-info">`;
+		for( let item of starsData['items'] ){
+			tpl += `
+				<li class="stars-info-item">
+					<div class="stars-info-img" style="background-color:rgba(${item['color']},.1);">
+						<svg style="fill:rgb(${item['color']});">
+							<use xlink:href="#stars"></use>
+						</svg>
+					</div>
+					<div class="stars-info-text">
+						<strong>${_.setInteger(item['count'])}</strong>
+						<span>${item['title']}</span>
+					</div>
+				</li>
+			`;
+		}
+		tpl += `</ul>
+				</div>
+			</div>
+		`;
+		return tpl;
+	}
 }

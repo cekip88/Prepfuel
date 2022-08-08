@@ -136,6 +136,7 @@ class _Model {
 				let response = await rawResponse.json();
 				if(response['status'] == 'success') {
 					_[`${role}sData`] = response;
+					console.log(response)
 					resolve(response);
 				} else {
 					_.wrongResponse('getUsers', response);

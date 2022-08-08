@@ -115,14 +115,7 @@ class LoginPage extends G{
 		const _ = this;
 		_.storageSave('authorization','true');
 		for(let prop in response['user']){
-			if (prop == 'student') continue;
 			_.storageSave(prop,response['user'][prop]);
-		}
-		console.log(response.user)
-
-		if (response.user.student) _.storageSave('courses',response.user.student.plans);
-		else {
-			if (localStorage.getItem('courses')) localStorage.removeItem('courses')
 		}
 
 		return Promise.resolve(response);
