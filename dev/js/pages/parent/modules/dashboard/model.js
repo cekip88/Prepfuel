@@ -6,7 +6,7 @@ export class _Model{
 			"Content-Type": "application/json"
 		}
 		_.endpoints = {
-			schedule: `${env.backendUrl}/parent/schedule/`,
+			schedule: `${env.backendUrl}/parent/schedule/dashboard/`,
 			dashSchedule: `${env.backendUrl}/student/schedule/dashboard`,
 			me: `${env.backendUrl}/user/me`,
 			wizardData: `/user/wizard-data`,
@@ -68,20 +68,133 @@ export class _Model{
 			}
 		});
 	}
-	getDashSchedule(){
+	getActivities(id){
 		const _ = this;
-		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.endpoints['dashSchedule']}`,{
-				method: 'GET',
-				headers:_.baseHeaders
-			});
-			if(rawResponse.status <= 210){
-				let response = await rawResponse.json();
-				resolve(response['response']);
-			}else{
-				resolve(null);
-			}
-		});
+		return [
+			{
+				date: '2022-02-19',
+				time: '20:16',
+				title: 'Completed 1 Revising Editing A questions and earned 0 trophies.'
+			},{
+				date: '2022-02-19',
+				time: '20:16',
+				title: 'Completed 1 Revising Editing A questions and earned 0 trophies.'
+			},{
+				date: '2022-02-19',
+				time: '20:16',
+				title: 'Completed 1 Revising Editing A questions and earned 0 trophies.'
+			},
+		]
+	}
+	getTestScores(id){
+		const _ = this;
+		return [
+			{
+				value: 1000,
+				title: 'Start Score',
+				titleColor: '63,66,84',
+				textColor: '181,181,195'
+			},{
+				value: 1000,
+				title: 'Current Score',
+				titleColor: '246,155,17'
+			},{
+				value: 1600,
+				title: 'Goal Score',
+				titleColor: '71,190,125'
+			},{
+				value: 600,
+				title: 'Points Needed',
+				titleColor: '152,101,79'
+			},
+		]
+	}
+	getBadges(id){
+		const _ = this;
+		return [
+			{
+				value: 15,
+				icon: 'graphic-3',
+				color: '52,69,229'
+			},{
+				value: 400,
+				icon: 'badge',
+				color: '74,181,142'
+			},{
+				value: 200,
+				icon: 'shield',
+				color: '255,166,33'
+			},{
+				value: 10,
+				icon: 'calendar',
+				color: '241,65,108'
+			},{
+				value: 3,
+				icon: 'rocket',
+				color: '114,57,234',
+				disabled: true
+			},
+		]
+	}
+	getUsage(id){
+		const _ = this;
+		return [
+			{
+				value: 10,
+				title: 'Total Sessions',
+				color: '215,249,239'
+			},{
+				value: '26:30',
+				title: 'Avr. Session Lenght',
+				color: '255,244,222'
+			},{
+				value: 160,
+				title: 'Questions Answered',
+				color: '225,233,255'
+			},{
+				value: 10,
+				title: 'Total Problems',
+				color: '244,225,240'
+			},{
+				value: 1,
+				title: 'Avg. Problems/ Session',
+				color: '248,245,255'
+			},
+		]
+	}
+	getMastered(id){
+		const _ = this;
+		return {
+			title: 'Skills Mastered',
+			value: 24,
+			total: 67
+		}
+	}
+	getTotalTime(id){
+		const _ = this;
+		return {
+			title: 'Total Practice Time',
+			value: '4:25:07',
+			total: '6:00:00'
+		}
+	}
+	getProgress(){
+		const _ = this;
+		return [
+			{
+				title: 'Quizzes Completed',
+				value: 10
+			},{
+				title: 'Homeworks Completed',
+				value: 5
+			},{
+				title: 'Skill Practice Completed',
+				value: 8
+			},{
+				title: 'Practice Tests Completed',
+				value: 1
+			},
+		]
 	}
 
 	getWizardData(){

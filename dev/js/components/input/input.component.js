@@ -1319,12 +1319,26 @@ export default class GInput extends GComponent {
 		.inpt.form-search svg {
 		  bottom: 7px;
 		}
+		.section-header-input .inpt-value{
+			width: 200px;
+			padding: 10px 14px;
+			background-color: #fff;
+			font: 12px "roboto-bold";
+			color: #A1A5B7;
+		}
+		.section-header-input .inpt-date-img{
+			width: 7px;
+			height: 4px;
+		}
 		@media screen and (min-width: 768px) {
 			.date-picker.range {
 				flex-direction: row;
 			}
 			.date-picker-left {
 			order: initial;
+			}
+			.section-header-input .inpt-value {
+				width: 280px;
 			}
 		}
 		`;

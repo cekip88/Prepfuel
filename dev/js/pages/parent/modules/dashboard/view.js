@@ -831,6 +831,8 @@ export const view = {
 	},
 	dashboardBodyTpl(){
 		const _ = this;
+		let date = new Date;
+		date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
 		let tpl = `
 			<div class="section">
 				<div class="section-header">
@@ -858,26 +860,99 @@ export const view = {
 				</div>
 			</div>
 			<div class="section">
-					${_.sectionHeaderTpl({title: 'Dashboard',gap:false})}
-					<div class="row">
-						<div class="col">
-							<div class="block block-gap" id="scheduleCont">
-								<div class="block-title-control">
-									<h5 class="block-title"><span>Practice Schedule</span></h5>
-									<button class="button" data-click="${_.componentName}:deleteSchedule"><span>Delete</span></button>
-									<button class="button" data-click="${_.componentName}:editSchedule"><span>Edit</span></button>
-								</div>
-								<ul class="schedule-list loader-parent" id="scheduleList">
-									<img src="/img/loader.gif">
-								</ul>
-								${_.scheduleFooterTpl()}
+				${_.sectionHeaderTpl({title: 'Dashboard',gap:false})}
+				<div class="row">
+					<div class="col">
+						<div class="block block-gap" id="scheduleCont">
+							${_.scheduleTpl()}
+						</div>
+						<div class="block block-gap loader-parent" id="starsBlock">
+							<img src="/img/loader.gif" alt="">
+						</div>
+						<div class="block block-gap recent" id="activities">
+							<img src="/img/loader.gif" alt="">
+						</div>
+					</div>
+					<div class="col">
+						<div class="block block-gap test-scores">
+							<div class="block-title-control">
+								<h5 class="block-title"><span>Test Scores</span></h5>
+								<button class="button"><span>Hide Scores</span></button>
+								<button class="button"><span>View Practice Tests</span></button>
 							</div>
-							<div class="block block-gap loader-parent" id="starsBlock">
+							<div id="testScores">
 								<img src="/img/loader.gif" alt="">
 							</div>
 						</div>
+						<div class="block block-gap">
+							<div class="block-title-control">
+								<div class="block-title-left">
+									<h5 class="block-title"><span>Current Skill Levels</span></h5>
+									<p class="block-title-control-text">Click on section below to open practice and improve</p>
+								</div>
+								<button class="button"><span>What are skill levels?</span></button>
+							</div>
+							<div id="skillLevels">
+								<img src="/img/loader.gif" alt="">
+							</div>
+						</div>
+						<div class="block block-gap achievements">
+							<div class="block-title-control">
+								<h5 class="block-title"><span>Badges</span></h5>
+								<button class="button"><span>View Badges</span></button>
+							</div>
+							<ul class="achievements-list" id="badges"><img src="/img/loader.gif" alt=""></ul>
+						</div>
+						<div class="block block-gap">
+							<div class="block-title-control">
+								<h5 class="block-title"><span>Recent Rewards</span></h5>
+								<button class="button"><span>View Achivements</span></button>
+							</div>
+							${_.recentRewardsTpl()}
+						</div>
 					</div>
 				</div>
+			</div>
+			<div class="section">
+				<div class="section-header">
+					${_.sectionHeaderTpl({title: 'Usage Statistics',gap:false})}
+					<div class="section-header-select">
+						<span>View</span>
+						<g-input 
+							type="date" 
+							className="section-header-input" 
+							format="weekDay month DD, YYYY" 
+							icon="false"
+							xlink="select-arrow-bottom"
+							value="${date}"
+						></g-input>
+					</div>
+				</div>
+				<ul class="usage-list" id="usageList"><img src="/img/loader.gif" alt=""></ul>
+				<div class="row">
+					<div class="col">
+						<div class="mastered block-gap" id="mastered"><img src="/img/loader.gif" alt=""></div>
+						<div class="total-time block-gap" id="totalTime"><img src="/img/loader.gif" alt=""></div>
+					</div>
+					<div class="col student-progress">
+						<div class="student-progress-graphic">
+							<h5 class="student-progress-title">Student Progress</h5>
+							<div class="student-progress-lines">
+								<span></span>
+								<span></span>
+								<span></span>
+								<span></span>
+								<span></span>
+								<span></span>
+								<span></span>
+							</div>
+						</div>
+						<ul class="student-progress-info" id="studentProgress">
+							<img src="/img/loader.gif" alt="">
+						</ul>
+					</div>
+				</div>
+			</div>
 		`;
 		return tpl;
 	},
@@ -982,11 +1057,289 @@ export const view = {
 		`;
 		return tpl;
 	},
+	recentActivitiesTpl(activities){
+		const _ = this;
+		let tpl = `
+			<h5 class="recent-title block-gap">
+				<div class="recent-title-img">
+					<svg><use xlink:href="#activity"></use></svg>
+				</div>
+				<span>Recent Activities</span>
+			</h5>
+			<ul class="recent-list">`;
+		for ( let item of activities ){
+			tpl += `
+				<li class="recent-item">
+					<div class="recent-item-row">
+						<h6 class="recent-item-title">${_.currentStudent['user']['firstName']} ${_.currentStudent['user']['lastName']}</h6>
+						<span class="recent-item-time">
+							${_.dateToFormat(item['date'],'DD month YYYY')}
+							${_.timeToFormat(item['time'])}
+						</span>
+					</div>
+					<span class="recent-item-text">${ item.title }</span>
+				</li>
+			`;
+		}
+		tpl += `</ul>
+			<button class="button narrow">Show More</button>
+		`;
+		return tpl;
+	},
+
+	testScoresTpl(scores){
+		const _ = this;
+		let tpl = `<ul class="test-scores-list">`;
+		for(let item of scores) {
+			tpl += `
+				<li class="test-scores-item" style="border-color: rgb(${item.textColor ?? item.titleColor})">
+					<strong style="color: rgb(${item.titleColor})">${item['value']}</strong>
+					<span style="color: rgb(${item.textColor ?? item.titleColor})">${item['title']}</span>
+				</li>`;
+		}
+		tpl += `</ul>
+			<button class="hidden-show" data-click="${_.componentName}:showHiddenScores">
+				<div class="hidden-show-text"><span>Details</span></div>
+				<svg>
+					<use xlink:href="#select-arrow-bottom"></use>
+				</svg>
+			</button>
+			<div class="hidden-cont">
+				<div class="table">
+					<table>
+						<thead>
+							<tr>
+								<th>
+									<div class="table-inner">Test</div>
+								</th>
+								<th>
+									<div class="table-inner">total</div>
+								</th>
+								<th>
+									<div class="table-inner">VR</div>
+								</th>
+								<th>
+									<div class="table-inner">QR</div>
+								</th>
+								<th>
+									<div class="table-inner">RC</div>
+								</th>
+								<th>
+									<div class="table-inner">MA</div>
+								</th>
+								<th>
+									<div class="table-inner">ESSAY</div>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<div class="table-inner">Practice test 1</div>
+								</td>
+								<td>
+									<div class="table-inner">1000</div>
+								</td>
+								<td>
+									<div class="table-inner">400</div>
+								</td>
+								<td>
+									<div class="table-inner">300</div>
+								</td>
+								<td>
+									<div class="table-inner">200</div>
+								</td>
+								<td>
+									<div class="table-inner">100</div>
+								</td>
+								<td>
+									<div class="table-inner">-</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="table-inner">Practice test 2</div>
+								</td>
+								<td>
+									<div class="table-inner">1000</div>
+								</td>
+								<td>
+									<div class="table-inner">400</div>
+								</td>
+								<td>
+									<div class="table-inner">300</div>
+								</td>
+								<td>
+									<div class="table-inner">200</div>
+								</td>
+								<td>
+									<div class="table-inner">100</div>
+								</td>
+								<td>
+									<div class="table-inner">-</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="table-inner">Practice test 3</div>
+								</td>
+								<td>
+									<div class="table-inner">1000</div>
+								</td>
+								<td>
+									<div class="table-inner">400</div>
+								</td>
+								<td>
+									<div class="table-inner">300</div>
+								</td>
+								<td>
+									<div class="table-inner">200</div>
+								</td>
+								<td>
+									<div class="table-inner">100</div>
+								</td>
+								<td>
+									<div class="table-inner">-</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
+	skillLevelsTpl(){
+		const _ = this;
+		let tpl = `
+			<div class="skill-level-list">
+				<div class="skill-level-item green">
+					<div class="img">
+						<svg>
+							<use xlink:href="#graphic-4"></use>
+						</svg>
+					</div><a class="link" href="#"><span>Verbal</span><span>Reasoning</span></a>
+				</div>
+				<div class="skill-level-item blue">
+					<div class="img">
+						<svg>
+							<use xlink:href="#graphic-3"></use>
+						</svg>
+					</div><a class="link" href="#"><span>Quantitative</span><span>Reasoning</span></a>
+				</div>
+				<div class="skill-level-item violet">
+					<div class="img">
+						<svg>
+							<use xlink:href="#graphic-2"></use>
+						</svg>
+					</div><a class="link" href="#"><span>Reading</span><span>Comprehension</span></a>
+				</div>
+				<div class="skill-level-item turquoise">
+					<div class="img">
+						<svg>
+							<use xlink:href="#graphic-1"></use>
+						</svg>
+					</div><a class="link" href="#"><span>Mathematics</span><span>Achievement</span></a>
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
+	badgesTpl(badges){
+		const _ = this;
+		let tpl = '';
+		for (let item of badges) {
+			tpl += `
+				<li class="achievements-item" ${item['disabled'] ? 'disabled' : ''}>
+					<div class="img" style="background-color: rgba(${item['color']},.1);">
+						<svg style="fill:rgb(${item['color']})">
+							<use xlink:href="#${item['icon']}"></use>
+						</svg>
+					</div>
+					<div class="text" style="background-color: rgb(${item['color']})"><span>${item['value']}</span></div>
+				</li>
+		`;
+		}
+		return tpl;
+	},
+	recentRewardsTpl(){
+		const _ = this;
+		let tpl = `
+			<ul class="rewards-statistic-list">
+				<li class="rewards-statistic-item"><strong>03/26</strong>
+					<div class="circle violet"></div><span>In-class recognition - 5 stars</span>
+				</li>
+				<li class="rewards-statistic-item"><strong>03/25</strong>
+					<div class="circle green"></div><strong>Badge earned - 15 Skills Mastered</strong>
+				</li>
+				<li class="rewards-statistic-item"><strong>03/24</strong>
+					<div class="circle red"></div><strong>Badge earned - 400 Point Score Improvement</strong>
+				</li>
+			</ul>
+		`;
+		return tpl;
+	},
+	usageStatisticsRow(rowData){
+		const _ = this;
+		let tpl = ``;
+		for( let item of rowData ){
+			tpl += `
+				<li class="usage-item" style="background-color: rgb(${item['color']})">
+					<strong>${item['value']}</strong>
+					<span>${item['title']}</span>
+				</li>
+			`
+		}
+		return tpl;
+	},
+	skillsMastered(masteredData){
+		return `
+			<div class="mastered-title">${masteredData['title']}</div>
+			<div class="mastered-value">${masteredData['value']}/${masteredData['total']}</div>
+			<div class="mastered-progress">
+				<div class="mastered-progress-inner" style="width: ${(masteredData['value']/masteredData['total']) * 100}%"></div>
+			</div>
+		`;
+	},
+	totalPracticeTime(timeData){
+		const _ = this;
+		return `
+			<div class="total-time-value">${timeData['value']}</div>
+			<div class="total-time-title">${timeData['title']}</div>
+		`;
+	},
+	studentProgress(progressData){
+		const _ = this;
+		let tpl = '';
+		for( let item of progressData ){
+			tpl += `
+				<li class="student-progress-item">
+					<h6 class="student-progress-item-title">${item['title']}</h6>
+					<span class="student-progress-item-value">${item['value']}</span>
+				</li>
+			`;
+		}
+		return tpl;
+	},
+
 
 // schedule methods
+	scheduleTpl(){
+		const _ = this;
+		return `
+			<div class="block-title-control">
+				<h5 class="block-title"><span>Practice Schedule</span></h5>
+				<button class="button" data-click="${_.componentName}:deleteSchedule"><span>Delete</span></button>
+				<button class="button" data-click="${_.componentName}:editSchedule"><span>Edit</span></button>
+			</div>
+			<ul class="schedule-list loader-parent" id="scheduleList">
+				<img src="/img/loader.gif">
+			</ul>
+			${_.scheduleFooterTpl()}
+		`
+	},
 	scheduleBlock(dashSchedule){
 		const _ = this;
-		return 
 		if (!dashSchedule) return null;
 		let
 			practiceDate = dashSchedule['practiceTest'] ? new Date(dashSchedule['practiceTest']['date']) : undefined,
@@ -997,6 +1350,19 @@ export const view = {
 			tpl += _.scheduleItemTpl(item);
 		}
 		return tpl;
+	},
+	scheduleItemTpl({title,count,info,item}){
+		const _ = this;
+		return `
+			<li class="schedule-item">
+				<h5 class="schedule-title"><span>${title}</span></h5>
+				<div class="inner">
+					<span class="count">${count}</span>
+					${info}
+					${_.drawCircleGraphic(item, _.scheduleColors[item.title])}
+				</div>
+			</li>
+		`
 	},
 	scheduleFooterTpl(){
 		const _ = this;

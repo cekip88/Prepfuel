@@ -87,7 +87,12 @@ g-modaler
 		background-position: calc(100% - 51px) 50%
 		&-text
 			font-size: $fz16
-
+	&-progress
+		&-info
+			padding: 24px 88px
+		&-item
+			width: 156px
+			flex-basis: 156px
 
 .test
 	&-block
@@ -304,3 +309,9 @@ g-modaler
 			&.last
 				margin-right: 0
 				margin-left: auto
+
+.usage
+	&-item
+		width: calc((100% - 120px) / 5)
+		flex-basis: calc((100% - 120px) / 5)
+
