@@ -38,11 +38,16 @@ export class DashboardModule extends ParentPage{
 	define() {
 		const _ = this;
 		_.componentName = 'Dashboard';
+		_.scheduleColors = {
+			"skill test":'#FFA621',
+			"practice test":'#009EF6',
+			'isee':'#4AB58E',
+		};
 
 		_.set({
 			addingStep : 1
 		})
-		_.months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+		_.months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec'];
 		G_Bus
 		.on(_,[
 			'domReady','changeSection',
@@ -52,7 +57,7 @@ export class DashboardModule extends ParentPage{
 			'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
 			'skipTestDate',
 			'showAddCard','showAddBillingAddress',
-			'hideProfile'
+			'hideProfile','showHiddenScores',
 		]);
 	}
 	async domReady() {
@@ -68,10 +73,50 @@ export class DashboardModule extends ParentPage{
 			_.fillAddingStudent();
 		}
 		if( _.subSection == 'dashboard' ){
+			if ( !_.currentStudent ) _.currentStudent = _.me['parent']['students'][0];
 			_.fillDashboardTabs();
 			_.fillDashboard();
-			_.fillScheduleBlock(_.me['parent']['students'][0]['_id']);
+			_.fillScheduleBlock( _.currentStudent['_id'] );
 			_.fillStarsBlock();
+
+			let activities = await Model.getActivities( _.currentStudent['_id'] );
+			let activitiesCont = _.f('#activities');
+			_.clear(activitiesCont);
+			activitiesCont.append( _.markup( _.recentActivitiesTpl( activities ) ) );
+
+			let testScores = Model.getTestScores( _.currentStudent['_id'] );
+			let testScoresCont = _.f('#testScores' );
+			_.clear(testScoresCont);
+			testScoresCont.append( _.markup( _.testScoresTpl( testScores ) ) );
+
+			let skillLevelsCont = _.f('#skillLevels' );
+			_.clear(skillLevelsCont);
+			skillLevelsCont.append( _.markup( _.skillLevelsTpl() ) );
+
+			let badges = Model.getBadges( _.currentStudent['_id'] );
+			let badgesCont = _.f('#badges' );
+			_.clear(badgesCont);
+			badgesCont.append( _.markup( _.badgesTpl( badges ) ) );
+
+			let usage = Model.getUsage( _.currentStudent['_id'] );
+			let usageCont = _.f('#usageList' );
+			_.clear(usageCont);
+			usageCont.append( _.markup( _.usageStatisticsRow( usage ) ) );
+
+			let mastered = Model.getMastered( _.currentStudent['_id'] );
+			let masteredCont = _.f('#mastered' );
+			_.clear(masteredCont);
+			masteredCont.append( _.markup( _.skillsMastered( mastered ) ) );
+
+			let totalTime = Model.getTotalTime( _.currentStudent['_id'] );
+			let totalTimeCont = _.f('#totalTime' );
+			_.clear(totalTimeCont);
+			totalTimeCont.append( _.markup( _.totalPracticeTime( totalTime ) ) );
+
+			let progress = Model.getProgress( _.currentStudent['_id'] );
+			let progressCont = _.f('#studentProgress' );
+			_.clear(progressCont);
+			progressCont.append( _.markup( _.studentProgress( progress ) ) );
 		}
 	}
 
@@ -233,14 +278,12 @@ export class DashboardModule extends ParentPage{
 	}
 	fillScheduleItemsTpl(dashSchedule){
 		const _ = this;
-		return
 		let schData = [
 			dashSchedule['skillTest'],
 			dashSchedule['practiceTest'],
 			dashSchedule['test'],
 		];
 		let data = [];
-		console.log(dashSchedule)
 		for (let item of schData) {
 			let title = `Next ${item.title}`;
 			let info = '', count = '';
@@ -286,6 +329,21 @@ export class DashboardModule extends ParentPage{
 			data.push({info,count,item,title});
 		}
 		return data;
+	}
+	drawCircleGraphic(item,color){
+		const _ = this;
+		let
+			svg = `</svg>`,
+			radius = 67,
+			progress = item['progressBar'],
+			circleWidth = 2 * Math.PI * radius,
+			width = (progress / 100 * circleWidth),
+			strokeDasharray = `${width} ${circleWidth - width}`;
+
+		svg = `<circle style="stroke:${color}" stroke-dasharray="${strokeDasharray}" stroke-linecap="round" cx="50%" cy="50%"></circle>` + svg;
+		svg = `<circle style="opacity: .2;stroke:${color}" stroke-dasharray="${circleWidth} 0" stroke-linecap="round" cx="50%" cy="50%"></circle>` + svg;
+		svg = '<svg xmlns="http://www.w3.org/2000/svg">' + svg;
+		return svg;
 	}
 
 	// add student methods
@@ -435,7 +493,6 @@ export class DashboardModule extends ParentPage{
 	}
 	//end change methods
 
-
 	hideProfile({item}){
 		const _ = this;
 		let cont = item.closest('.parent-student-info');
@@ -452,7 +509,11 @@ export class DashboardModule extends ParentPage{
 			}
 		}
 	}
-
+	showHiddenScores({item}){
+		const _ = this;
+		item.nextElementSibling.classList.toggle('active');
+		item.classList.toggle('active')
+	}
 
 	//auxiliary methods
 	generatePassword({item}){
@@ -550,6 +611,33 @@ export class DashboardModule extends ParentPage{
 		} else {
 			inputDate.removeAttribute('disabled')
 		}
+	}
+	dateToFormat( date, format ){
+		const _ = this;
+		let
+			result = format,
+			dateDetails = date.split( '-' ),
+			year = parseInt( dateDetails[0] ),
+			month = parseInt( dateDetails[1] ) - 1,
+			day = parseInt( dateDetails[2] );
+
+		result = result.replace( 'DD', day );
+		result = result.replace( 'MM', month );
+		result = result.replace( 'YYYY', year );
+		result = result.replace( 'month', _.months[month] );
+
+		return result;
+	}
+	timeToFormat( time ){
+		const _ = this;
+		let
+			result = time.split( ':' ),
+			hours = (result[0] > 12 ? result[0] - 12 : result[0]),
+			minutes = result[1],
+			details = ( result[0] > 12 ? 'pm' : 'am' );
+
+		result = ( hours < 10 ? '0' + hours : hours ) + ':' + minutes + ' ' + details;
+		return result;
 	}
 
 	showAddCard({item}){

@@ -530,6 +530,68 @@ g-modaler
 			&.short
 				max-width: 588px
 				margin: auto
+	&-progress
+		background-color: #21E1D8
+		border-radius: 12px
+		&-graphic
+			padding: 23px 30px 0
+		&-title
+			margin-bottom: 12px
+			font: $fz17 $p_medium
+			color: #fff
+		&-info
+			@extend %df
+			padding: 20px
+			justify-content: space-between
+			flex-wrap: wrap
+			background-color: #fff
+			border-radius: 12px
+		&-item
+			flex: 0 0 40%
+			width: 40%
+			margin-top: 30px
+			&:nth-child(1),&:nth-child(2)
+				margin-top: 0
+			&-title
+				font: $fz12 $p_reg
+				color: rgb($neutral-400)
+			&-value
+				font: $fz20 $p_bold
+				color: rgb($neutral-800)
+		&-lines
+			@extend %df
+			padding: 0 30px
+			justify-content: space-between
+			align-items: flex-end
+			span
+				width: 11px
+				display: block
+				background-color: #fff
+				position: relative
+				&:before
+					+af
+					width: 100%
+					height: calc(100% - 10px)
+					background-color: rgba(#fff,.5)
+					position: absolute
+					left: -150%
+					bottom: 0
+				&,&:before
+					border-radius: 10px 10px 0 0
+				&:nth-child(1)
+					height: 72px
+				&:nth-child(2)
+					height: 122px
+				&:nth-child(3)
+					height: 142px
+				&:nth-child(4)
+					height: 92px
+				&:nth-child(5)
+					height: 77px
+				&:nth-child(6)
+					height: 112px
+				&:nth-child(7)
+					height: 97px
 
 
 .notifications
@@ -860,7 +922,6 @@ g-modaler
 			overflow: auto
 	&-show
 		@extend %dfa
-		width: 100%
 		margin-top: 20px
 		padding: 10px 14px
 		color: rgb($neutral-500)
@@ -879,7 +940,7 @@ g-modaler
 				position: absolute
 		svg
 			@extend %transition
-			+wh(7px,4px)
+			+wh(11px,7px)
 			margin-left: 16px
 			margin-bottom: 1px
 			fill: rgb($neutral-500)
@@ -4761,3 +4822,97 @@ div.tbl-head
 
 #studentProfile
 	overflow: auto
+
+.recent
+	&-title
+		@extend %dfa
+		span
+			font: $fz18 $f_medium
+			color: rgb($neutral-800)
+		&-img
+			@extend %dfc
+			+wh(32px)
+			margin-right: 8px
+			border-radius: 8px
+			background-color: rgb($turquoise-light)
+			svg
+				+wh(32px,17px)
+				fill: rgb($turquoise)
+	&-item
+		margin-bottom: 16px
+		&-row
+			@extend %df
+			justify-content: space-between
+			align-items: flex-start
+		&-title
+			font: 1em $f_semi
+			color: rgb($neutral-800)
+		&-time
+			font: $fz12 $f_medium
+			color: rgb($blue-text)
+		&-text
+			font: 1em $f_reg
+			color: rgb($neutral-400)
+			line-height: calc(20 / 14)
+	.button
+		width: 100%
+
+.usage
+	&-list
+		@extend %dfi
+		flex-wrap: wrap
+	&-item
+		@extend %df
+		width: calc(50% - 12px)
+		flex: 0 0 calc(50% - 12px)
+		margin-top: 24px
+		padding: 16px
+		flex-direction: column
+		border-radius: 12px
+		strong
+			font: $fz25 $p_bold
+			color: rgb($neutral-800)
+			line-height: calc(37.5 / 25)
+		span
+			font: $fz12 $p_medium
+			color: rgb($neutral-500)
+			line-height: 1.5
+
+
+.total
+	&-time
+		@extend %dfa
+		padding: 36px
+		flex-direction: column
+		background-color: rgb(137,80,252)
+		border-radius: 12px
+		&-title
+			font: $fz12 $p_reg
+			color: rgb(238,229,255)
+		&-value
+			font: $fz22 $p_bold
+			color: #fff
+
+.mastered
+	padding: 29px 29px 40px
+	background-color: rgb(255,244,222)
+	&-title
+		margin-bottom: 19px
+		font: $fz15 $p_medium
+		color: rgb(255,168,0)
+	&-value
+		margin-bottom: 25px
+		font: $fz25 $p_bold
+	&-progress
+		width: 100%
+		height: 6px
+		background-color: rgba(255,168,0,.2)
+		position: relative
+		&-inner
+			height: 100%
+			background-color: rgb(255,168,0)
+			position: absolute
+			left: 0
+			top: 0
+		&,&-inner
+			border-radius: 5px
