@@ -986,6 +986,7 @@ export const view = {
 // schedule methods
 	scheduleBlock(dashSchedule){
 		const _ = this;
+		return 
 		if (!dashSchedule) return null;
 		let
 			practiceDate = dashSchedule['practiceTest'] ? new Date(dashSchedule['practiceTest']['date']) : undefined,

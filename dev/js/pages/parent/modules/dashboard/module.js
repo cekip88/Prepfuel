@@ -233,12 +233,14 @@ export class DashboardModule extends ParentPage{
 	}
 	fillScheduleItemsTpl(dashSchedule){
 		const _ = this;
+		return
 		let schData = [
 			dashSchedule['skillTest'],
 			dashSchedule['practiceTest'],
 			dashSchedule['test'],
 		];
 		let data = [];
+		console.log(dashSchedule)
 		for (let item of schData) {
 			let title = `Next ${item.title}`;
 			let info = '', count = '';
