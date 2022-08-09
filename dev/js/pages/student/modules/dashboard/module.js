@@ -56,9 +56,10 @@ export class DashboardModule extends StudentPage{
 	async fillScheduleBlock(){
 		const _ = this;
 		let
-			schedule =  await Model.getDashSchedule(),
+			schedule = await Model.getDashSchedule(),
 			scheduleTpl = _.scheduleBlock(schedule),
 			scheduleList = document.querySelector('#scheduleList');
+		console.log(schedule)
 
 		_.clear(scheduleList)
 		scheduleList.append(_.markup(scheduleTpl))

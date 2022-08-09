@@ -794,6 +794,106 @@ export const view = {
 						</div>
 					</div>
 				</div>
+				<div class="test-col narrow grid correct" data-click="${_.componentName}:enterGridAnswer">
+					<div class="marker">
+						<span>Correct</span>
+						<svg><use xlink:href="#correct"></use></svg>
+					</div>
+					<div class="grid-row">
+						<input id="grid-value" type="hidden" data-question-id="${currentQuestion['_id']}">
+						<div class="grid-input">
+						<span> </span>
+						<span> </span>
+						<span> </span>
+						<span> </span>
+						<span> </span>
+					</div>
+					</div>
+					<div class="grid-row">
+						<div class="grid-col" data-col="1">
+							<button class="grid-button">-</button>
+						</div>
+						<div class="grid-col"  data-col="2">
+							<button class="grid-button">.</button>
+						</div>
+						<div class="grid-col"  data-col="3">
+							<button class="grid-button">.</button>
+						</div>
+						<div class="grid-col"  data-col="4">
+							<button class="grid-button">.</button>
+						</div>
+						<div class="grid-col"  data-col="5">
+							<button class="grid-button">.</button>
+						</div>
+					</div>
+					<div class="grid-row">
+						<div class="grid-col"  data-col="1">
+							<button class="grid-button high"></button>
+						</div>
+						<div class="grid-col"  data-col="2">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"  data-col="3">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"  data-col="4">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"  data-col="5">
+							${_.gridDigitButtons()}
+						</div>
+					</div>
+				</div>
+				<div class="test-col narrow grid incorrect" data-click="${_.componentName}:enterGridAnswer">
+					<div class="marker">
+						<span>Incorrect</span>
+						<svg><use xlink:href="#incorrect"></use></svg>
+					</div>
+					<div class="grid-row">
+						<input id="grid-value" type="hidden" data-question-id="${currentQuestion['_id']}">
+						<div class="grid-input">
+						<span> </span>
+						<span> </span>
+						<span> </span>
+						<span> </span>
+						<span> </span>
+					</div>
+					</div>
+					<div class="grid-row">
+						<div class="grid-col" data-col="1">
+							<button class="grid-button">-</button>
+						</div>
+						<div class="grid-col"  data-col="2">
+							<button class="grid-button">.</button>
+						</div>
+						<div class="grid-col"  data-col="3">
+							<button class="grid-button">.</button>
+						</div>
+						<div class="grid-col"  data-col="4">
+							<button class="grid-button">.</button>
+						</div>
+						<div class="grid-col"  data-col="5">
+							<button class="grid-button">.</button>
+						</div>
+					</div>
+					<div class="grid-row">
+						<div class="grid-col"  data-col="1">
+							<button class="grid-button high"></button>
+						</div>
+						<div class="grid-col"  data-col="2">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"  data-col="3">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"  data-col="4">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"  data-col="5">
+							${_.gridDigitButtons()}
+						</div>
+					</div>
+				</div>
 			</div>
 		`;
 		return tpl;
