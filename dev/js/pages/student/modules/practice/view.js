@@ -794,7 +794,7 @@ export const view = {
 						</div>
 					</div>
 				</div>
-				<div class="test-col narrow grid correct" data-click="${_.componentName}:enterGridAnswer">
+				<div class="test-col narrow grid correct" hidden data-click="${_.componentName}:enterGridAnswer">
 					<div class="marker">
 						<span>Correct</span>
 						<svg><use xlink:href="#correct"></use></svg>
@@ -844,7 +844,7 @@ export const view = {
 						</div>
 					</div>
 				</div>
-				<div class="test-col narrow grid incorrect" data-click="${_.componentName}:enterGridAnswer">
+				<div class="test-col narrow grid incorrect" hidden data-click="${_.componentName}:enterGridAnswer">
 					<div class="marker">
 						<span>Incorrect</span>
 						<svg><use xlink:href="#incorrect"></use></svg>
@@ -896,6 +896,11 @@ export const view = {
 				</div>
 			</div>
 		`;
+		/*
+		*
+		*
+		*
+		* */
 		return tpl;
 	},
 	async compareQuestion(){

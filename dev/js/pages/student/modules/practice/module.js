@@ -54,7 +54,7 @@ export class PracticeModule extends StudentPage{
 			'domReady','changeSection','changePracticeTab','jumpToQuestion',
 			'startTest','enterGridAnswer','checkAnswer','setCorrectAnswer',
 			'showForm','saveBookmark','saveNote','saveBookmark','changeInnerQuestionId',
-			'showTestLabelModal','editNote','deleteNote'
+			'showTestLabelModal','editNote','deleteNote','saveReport',
 		])
 	}
 
@@ -153,8 +153,7 @@ export class PracticeModule extends StudentPage{
 	fillExplanation(currentQuestion) {
 		const _ = this;
 		currentQuestion['questions'].forEach(  async (question)=>{
-			console.log(_.f(`#explanation-field-${question['_id']}`));
-			_.f(`#explanation-field-${question['_id']}`).append(_.markup(await _.explanationAnswer(question)));
+			if(_.f(`#explanation-field-${question['_id']}`))	_.f(`#explanation-field-${question['_id']}`).append(_.markup(await _.explanationAnswer(question)));
 		});
 	}
 	
@@ -283,12 +282,14 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		let gformData = await _.gFormDataCapture(form);
 		let
-			questionId = item.getAttribute('data-question-id');
+			//questionId = form.getAttribute('data-question-id'),
+			questionId = _.innerQuestionId;
 		if(!_.answerVariant[questionId]){
 			_.answerVariant[questionId] = {};
 		}
 		_.answerVariant[questionId]['report'] = gformData;
 		G_Bus.trigger('modaler','closeModal');
+		console.log(_.answerVariant);
 	}
 	saveBookmark({item}){
 		const _ = this;
@@ -478,12 +479,14 @@ export class PracticeModule extends StudentPage{
 			activeBtn.classList.remove('active');
 			shower.children[index].textContent = '';
 			gridValue[pos] =  '_';
+			input.value = gridValue.join('');
 		}else{
 			btn.classList.add('active');
-			gridValue[pos] =  btn.textContent ;
+			gridValue[pos] =  btn.textContent;
+			input.value = gridValue.join('');
 			_.setCorrectAnswer({item:item,type:'grid'})
 		}
-		input.value = gridValue.join('');
+		
 	}
 	setWrongAnswer({item,event}){
 		const _ = this;
@@ -551,7 +554,7 @@ export class PracticeModule extends StudentPage{
 		_.answerVariant[questionId]['answer'] = answerVariant;
 		
 		_.setAvailableCheckBtn();
-		console.log(_.answerVariant);
+		
 		G_Bus.trigger(_.componentName,'updateStorageTest');
 	}
 	setActions(types = ['bookmark']){
@@ -665,8 +668,20 @@ export class PracticeModule extends StudentPage{
 				"category": Model.currentCategory,
 				"concept": Model.currentConcept['concept']
 			});
-			console.log(response);
+			
 			_.setDisableCheckBtn();
+			
+			
+			_._$.currentQuestion['questions'].forEach( question => {
+				let ans =   _.answerVariant[id]['answer'].join('');
+				ans = ans.replaceAll('_','');
+				if(question['correctAnswer'] == ans){
+					_.f('#question-pagination .active').classList.add('done');
+				}else{
+					_.f('#question-pagination .active').classList.add('error');
+				}
+			});
+			
 		}
 		
 	}
@@ -685,6 +700,7 @@ export class PracticeModule extends StudentPage{
 			answerText = answerObject.answer;
 		if(!answerText) return void 0;
 		let	answerDigits = (typeof answerText == 'string') ? answerText.split('') :  answerText;
+		
 		answerDigits.forEach( (digit,index) => {
 			let currentCol = _.f(`[data-col="${index+1}"] .grid-button`);
 			currentCol.forEach( (item) => {
@@ -736,7 +752,7 @@ export class PracticeModule extends StudentPage{
 	/* Work with note end */
 	
 	// inited methods
-	async init(){
+	async init() {
 		const _ = this;
 		
 		_._( async ({currentQuestion})=>{
@@ -749,7 +765,8 @@ export class PracticeModule extends StudentPage{
 			let
 				rawAnswers = await Model.getTestResults(),
 				placedAnswers = {};
-			if(!rawAnswers.length) return void 'No answers from Server';
+			if(!rawAnswers.length) return void  'No answers from Server';
+
 			rawAnswers.forEach( (item) => {
 				if(!placedAnswers[item.questionDatasId]) placedAnswers[item.questionDatasId] = [];
 				placedAnswers[item.questionDatasId].push({
@@ -764,7 +781,8 @@ export class PracticeModule extends StudentPage{
 			currentAnswers.forEach( answer =>{
 				if(!_.answerVariant[answer.questionId]) _.answerVariant[answer.questionId] = {};
 				_.answerVariant[answer.questionId] = answer;
-			})
+			});
+			
 			if( _.isGrid() ){
 				_.setGridAnswer(currentAnswers);
 			} else{
