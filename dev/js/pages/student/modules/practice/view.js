@@ -819,7 +819,7 @@ export const view = {
 				</div>
 				<div class="test-col narrow grid incorrect" data-click="${_.componentName}:enterGridAnswer">
 					<div class="marker">
-						<span>Correct</span>
+						<span>Incorrect</span>
 						<svg><use xlink:href="#incorrect"></use></svg>
 					</div>
 					<div class="grid-row">
