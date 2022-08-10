@@ -851,7 +851,7 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">Email</label>
 						</div>
-							<g-input type="text" name="email" value="${_.studentInfo['email'] ?? ''}" class="g-form-item" data-outfocus="${_.componentName}:checkEmail" data-input="${_.componentName}:fillStudentInfo" classname="form-input adding-inpt"></g-input>
+							<g-input type="email" name="email" value="${_.studentInfo['email'] ?? ''}" class="g-form-item" data-outfocus="${_.componentName}:checkEmail" data-input="${_.componentName}:fillStudentInfo" classname="form-input adding-inpt"></g-input>
 							<span class="form-label-desc" style="display:none;">Email is not free</span>
 						</div>
 				</div>
@@ -1369,13 +1369,16 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Email</label>
 					</div>
-					<g-input type="email" name="email" value="${parentInfo.email ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<div class="profile-form-row-input">
+						<g-input type="email" data-outfocus="${_.componentName}:checkEmail" name="email" value="${parentInfo.email ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+						<span class="form-label-desc" style="display:none;">Email is not free</span>
+					</div>
 				</div>
 				<div class="profile-form-row">
 					<div class="form-label-row">
 						<label class="form-label">Phone Number</label>
 					</div>
-					<g-input type="email" name="phone" value="${parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input type="text" name="phone" value="${parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 			</div>
 			<div class="adding-section passwords">
@@ -1488,6 +1491,7 @@ export const view = {
 		let
 			plan = _.studentInfo["currentPlan"],
 			course = plan && plan['course'] ? plan['course'].title : '',
+			level = plan && plan['level'] ? plan['level'].title : '',
 			testDate = plan && plan['testDate'] ? _.createdAtFormat(plan['testDate']) : '';
 		return `
 			<div class="adding-section">
@@ -1496,7 +1500,7 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Course</label>
 					</div>
-					<g-input type="text" name="course" value='${course}' class="g-form-item" classname="form-input adding-inpt" disabled></g-input>
+					<g-input type="text" name="course" value='${course} ${level}' class="g-form-item" classname="form-input adding-inpt" disabled></g-input>
 					</div>
 				<div class="adding-inpt">
 					<div class="form-label-row">
@@ -2210,13 +2214,16 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Email</label>
 					</div>
-					<g-input type="email" name="email" value="${_.parentInfo.email ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<div class="profile-form-row-input">
+						<g-input type="email" data-outfocus="${_.componentName}:checkEmail" name="email" value="${_.parentInfo.email ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+						<span class="form-label-desc" style="display:none;">Email is not free</span>
+					</div>
 				</div>
 				<div class="profile-form-row">
 					<div class="form-label-row">
 						<label class="form-label">Phone Number</label>
 					</div>
-					<g-input type="email" name="phone" value="${_.parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input type="text" name="phone" value="${_.parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 			</div>
 		`;
@@ -2545,7 +2552,10 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">Email</label>
 						</div>
-						<g-input type="email" name="email" value="${_.parentInfo.email ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+						<div class="profile-form-row-input">
+							<g-input type="email" data-outfocus="${_.componentName}:checkEmail" name="email" value="${_.parentInfo.email ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+							<span class="form-label-desc" style="display:none;">Email is not free</span>
+						</div>
 					</div>
 					<div class="profile-form-row">
 						<div class="form-label-row">
@@ -3009,7 +3019,10 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">Email</label>
 						</div>
-						<g-input type="email" name="email" value="${_.adminInfo.email ?? ''}" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+						<div class="profile-form-row-input">
+							<g-input type="email" data-outfocus="${_.componentName}:checkEmail" name="email" value="${_.adminInfo.email ?? ''}" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+							<span class="form-label-desc" style="display:none;">Email is not free</span>
+						</div>
 					</div>
 					<div class="profile-form-row">
 						<div class="form-label-row">

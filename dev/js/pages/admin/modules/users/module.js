@@ -170,6 +170,8 @@ export class UsersModule extends AdminPage {
 		G_Bus.trigger(_.componentName,'showSuccessPopup','Parent has been successfully added');
 
 		let users = await Model.getUsers({role,page: 1,update: true});
+		_.parentInfo = {};
+		_.metaInfo = {};
 		if (_.subSection == 'profile') {
 			_.fillParentsInfoTable({response:[response]});
 			_.f('g-body .button-link.blue').textContent = 'Change parent';
@@ -310,10 +312,11 @@ export class UsersModule extends AdminPage {
 			cont = item.closest('.adding-section'),
 			inputDate = cont.querySelector('g-input');
 		if (item.id == "have_yet") {
-			_.studentInfo.testDate = null;
+			_.studentInfo.testDatePicked = false;
 			inputDate.setAttribute('disabled',true);
 			inputDate.value = '';
 		} else {
+			_.studentInfo.testDatePicked = true;
 			inputDate.removeAttribute('disabled')
 		}
 	}
@@ -671,13 +674,14 @@ export class UsersModule extends AdminPage {
 	// Change methods
 	changeStudentLevel({item}) {
 		const _ = this;
-		if(item.parentNode.querySelector('.active')) 	item.parentNode.querySelector('.active').classList.remove('active');
+		if(item.parentNode.querySelector('.active')) item.parentNode.querySelector('.active').classList.remove('active');
 		item.classList.add('active');
-		_['studentInfo'].level = item.getAttribute('data-id');
+		_['studentInfo']['level'] = item.getAttribute('data-id');
+		_['metaInfo']['level'] = item.textContent;
 	}
 	async changeTestType({item}) {
 		const _ = this;
-		if(item.parentNode.querySelector('.active'))  item.parentNode.querySelector('.active').classList.remove('active');
+		if(item.parentNode.querySelector('.active')) item.parentNode.querySelector('.active').classList.remove('active');
 		item.classList.add('active');
 		let
 			pos = parseInt(item.getAttribute('pos')),
