@@ -118,6 +118,10 @@ class LoginPage extends G{
 			_.storageSave(prop,response['user'][prop]);
 		}
 
+		if (response.user.student) _.storageSave('courses',response.user.student.plans);
+		else {
+			if (localStorage.getItem('courses')) localStorage.removeItem('courses')
+		}
 		return Promise.resolve(response);
 	}
 	loginFail({response,formData}){

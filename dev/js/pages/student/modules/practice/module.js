@@ -54,7 +54,7 @@ export class PracticeModule extends StudentPage{
 			'domReady','changeSection','changePracticeTab','jumpToQuestion',
 			'startTest','enterGridAnswer','checkAnswer','setCorrectAnswer',
 			'showForm','saveBookmark','saveNote','saveBookmark','changeInnerQuestionId',
-			'showTestLabelModal','editNote','deleteNote'
+			'showTestLabelModal','editNote','deleteNote','saveReport',
 		])
 	}
 
@@ -135,6 +135,7 @@ export class PracticeModule extends StudentPage{
 		
 		_.skillTests = await Model.getSkillPractice(conceptName,currentCategory);
 		_.f('#question-header-title').textContent = currentConcept['concept'];
+		_.f('.questions-length').textContent = _.questionsLength;
 		_.f('#question-pagination').append(_.markup(_.questionNavigation()));
 		
 		_._$.currentQuestion = _.skillTests[_.questionPos];
@@ -144,9 +145,15 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		currentAnswers.forEach( answer => {
 			if(answer['note']){
-				_.f('#note-field').append(_.markup(_.noteTpl(answer)));
-				_.f('.note-button').classList.add('active');
+				_.f(`#note-field-${answer['questionId']}`).append(_.markup(_.noteTpl(answer)));
+				_.f(`.note-button[data-question-id="${answer['questionId']}"]`).classList.add('active');
 			}
+		});
+	}
+	fillExplanation(currentQuestion) {
+		const _ = this;
+		currentQuestion['questions'].forEach(  async (question)=>{
+			if(_.f(`#explanation-field-${question['_id']}`))	_.f(`#explanation-field-${question['_id']}`).append(_.markup(await _.explanationAnswer(question)));
 		});
 	}
 	
@@ -275,12 +282,14 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		let gformData = await _.gFormDataCapture(form);
 		let
-			questionId = item.getAttribute('data-question-id');
+			//questionId = form.getAttribute('data-question-id'),
+			questionId = _.innerQuestionId;
 		if(!_.answerVariant[questionId]){
 			_.answerVariant[questionId] = {};
 		}
 		_.answerVariant[questionId]['report'] = gformData;
 		G_Bus.trigger('modaler','closeModal');
+		console.log(_.answerVariant);
 	}
 	saveBookmark({item}){
 		const _ = this;
@@ -303,7 +312,7 @@ export class PracticeModule extends StudentPage{
 		}
 		_.answerVariant[_.innerQuestionId]['note'] = formData['text'];
 	
-		let noteField = _.f('#note-field');
+		let noteField = _.f(`#note-field-${_.innerQuestionId}`);
 		_.clear(noteField);
 		noteField.append(_.markup(_.noteTplFromForm(formData)));
 		G_Bus.trigger('modaler','closeModal');
@@ -438,11 +447,11 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		let btn = event.target;
 		if (btn.tagName !== 'BUTTON') return void 0;
-		
 		let
-		col = btn.closest('.grid-col'),
-		parent = col.parentElement,
-		index = 0;
+			col = btn.closest('.grid-col'),
+			parent = col.parentElement,
+			index = 0,
+			pos = parseInt(col.getAttribute('data-col')) - 1;
 		
 		for (let i = 0; i < parent.childElementCount; i++) {
 			let unit = parent.children[i];
@@ -450,22 +459,31 @@ export class PracticeModule extends StudentPage{
 		}
 		
 		let
-		input = item.querySelector('#grid-value'),
-		shower = item.querySelector('.grid-input');
+			input = item.querySelector('#grid-value'),
+			shower = item.querySelector('.grid-input'),
+			gridValue =  ['_','_','_','_','_'];
+		
+		if(input.value) gridValue =  input.value.split('');
+	 
 		
 		shower.children[index].textContent = btn.textContent;
-		input.value = '';
-		for (let i = 0; i < shower.childElementCount; i++) {
+		//input.value = '';
+		/*for (let i = 0; i < shower.childElementCount; i++) {
 			input.value += (shower.children[i].textContent ?? '*');
-		}
+		}*/
 		
+	
 		let activeBtn = item.querySelector(`.grid-col:nth-child(${index + 1}) .active`);
+		
 		if (activeBtn) {
 			activeBtn.classList.remove('active');
 			shower.children[index].textContent = '';
-			input.value = '';
+			gridValue[pos] =  '_';
+			input.value = gridValue.join('');
 		}else{
 			btn.classList.add('active');
+			gridValue[pos] =  btn.textContent;
+			input.value = gridValue.join('');
 			_.setCorrectAnswer({item:item,type:'grid'})
 		}
 		
@@ -528,7 +546,7 @@ export class PracticeModule extends StudentPage{
 		}else{
 			let input = item.querySelector('#grid-value');
 			questionId =  input.getAttribute('data-question-id');
-			answerVariant = input.value;
+			answerVariant = input.value.split('');
 		}
 		if(!_.answerVariant[questionId]){
 			_.answerVariant[questionId] = {};
@@ -586,7 +604,7 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		answers.forEach( answer =>{
 			if(answer['bookmark']){
-				_.f('.bookmarked-button').classList.add('active');
+				_.f(`.bookmarked-button[data-question-id="${answer['questionId']}"]`).classList.add('active');
 			}
 		})
 	}
@@ -650,8 +668,20 @@ export class PracticeModule extends StudentPage{
 				"category": Model.currentCategory,
 				"concept": Model.currentConcept['concept']
 			});
-			console.log(response);
+			
 			_.setDisableCheckBtn();
+			
+			
+			_._$.currentQuestion['questions'].forEach( question => {
+				let ans =   _.answerVariant[id]['answer'].join('');
+				ans = ans.replaceAll('_','');
+				if(question['correctAnswer'] == ans){
+					_.f('#question-pagination .active').classList.add('done');
+				}else{
+					_.f('#question-pagination .active').classList.add('error');
+				}
+			});
+			
 		}
 		
 	}
@@ -664,13 +694,13 @@ export class PracticeModule extends StudentPage{
 	}
 	setGridAnswer(value){
 		const _ = this;
-		console.log(value);
 		if( !value.length ) return void 0;
 		let
 			answerObject = value[0],
 			answerText = answerObject.answer;
 		if(!answerText) return void 0;
-		let	answerDigits = answerText.split('');
+		let	answerDigits = (typeof answerText == 'string') ? answerText.split('') :  answerText;
+		
 		answerDigits.forEach( (digit,index) => {
 			let currentCol = _.f(`[data-col="${index+1}"] .grid-button`);
 			currentCol.forEach( (item) => {
@@ -678,10 +708,26 @@ export class PracticeModule extends StudentPage{
 					item.classList.add('active');
 				}
 			});
-			
 			let inputValue = _.f(`.grid-input span:nth-child(${index+1})`);
-			inputValue.textContent = digit;
+			if(digit != '_') inputValue.textContent = digit;
 		})
+	}
+	setLetterAnswer(currentAnswers){
+		const _ = this;
+		_._$.currentQuestion['questions'].forEach( question =>{
+			let correctAnswer = question['correctAnswer'];
+			currentAnswers.forEach( answer => {
+				if(answer['questionId'] == question['_id'] ) 	answer['correctAnswer'] = correctAnswer;
+			});
+		});
+		currentAnswers.forEach( answer => {
+			if( answer['answer'] == answer['correctAnswer'] ){
+				_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
+			}else{
+				_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`).classList.add('incorrect');
+				_.f(`.answer-item[data-variant="${answer['correctAnswer']}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
+			}
+		});
 	}
 	/* Work with note */
 	editNote({item}){
@@ -696,23 +742,21 @@ export class PracticeModule extends StudentPage{
 	}
 	deleteNote({item}){
 		const _ = this;
-		let questionId= item.getAttribute('data-question-id');
+		let questionId = item.getAttribute('data-question-id');
 		_.answerVariant[questionId]['note'] = "";
-/*		Model.saveTestToStorage({
-			questionId: questionId,
-			note: null
-		});*/
+
 		item.parentNode.parentNode.remove();
-		_.f('.note-button').classList.remove('active');
+		_.f(`.note-button[data-question-id="${questionId}"]`).classList.remove('active');
+		_.setAvailableCheckBtn();
 	}
 	/* Work with note end */
 	
 	// inited methods
-	async init(){
+	async init() {
 		const _ = this;
 		
 		_._( async ({currentQuestion})=>{
-			if(!_.initedUpdate){
+			if( !_.initedUpdate ){
 				return void 'not inited yet';
 			}
 			_.answerVariant = {};
@@ -721,7 +765,8 @@ export class PracticeModule extends StudentPage{
 			let
 				rawAnswers = await Model.getTestResults(),
 				placedAnswers = {};
-			if(!rawAnswers.length) return void 'No answers from Server';
+			if(!rawAnswers.length) return void  'No answers from Server';
+
 			rawAnswers.forEach( (item) => {
 				if(!placedAnswers[item.questionDatasId]) placedAnswers[item.questionDatasId] = [];
 				placedAnswers[item.questionDatasId].push({
@@ -736,12 +781,15 @@ export class PracticeModule extends StudentPage{
 			currentAnswers.forEach( answer =>{
 				if(!_.answerVariant[answer.questionId]) _.answerVariant[answer.questionId] = {};
 				_.answerVariant[answer.questionId] = answer;
-			})
+			});
+			
 			if( _.isGrid() ){
 				_.setGridAnswer(currentAnswers);
+			} else{
+				_.setLetterAnswer(currentAnswers);
 			}
-			console.log(currentAnswers);
 			
+			_.fillExplanation(currentQuestion);
 			_.fillNote(currentAnswers);
 			_.setBookmark(currentAnswers)
 			_.setDisableCheckBtn();
