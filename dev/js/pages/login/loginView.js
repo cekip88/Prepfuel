@@ -217,7 +217,7 @@ export const loginView = {
 						<g-input class="g-form-item" type="password" data-keydown="${_.componentName}:formInputHandle" name="password"  className="form-input"  value="${loginData ? loginData.password : 'admin123'}" required></g-input>
 					</div>
 					<div class="form-block">
-						<g-input type="checkbox" class="g-form-item" items='[{"value":1,"text":"Remember me","checked":${loginData ? true : false}}]' name="remember"></g-input>
+						<g-input type="checkbox" class="g-form-item" items='[{"value":"1","text":"Remember me","checked":${loginData ? true : false}}]' name="remember"></g-input>
 					</label>
 				</div>
 					<div class="form-block">

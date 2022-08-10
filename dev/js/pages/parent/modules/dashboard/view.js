@@ -991,7 +991,7 @@ export const view = {
 					</div>
 					<div class="unit">
 						<span class="text">APPLICATION SCHOOL LIST</span>
-						<div class="df aic jcsb">`;
+						<div class="df jcsb">`;
 		if ( studentInfo['currentPlan']['firstSchool'] ){
 			tpl += `
 				<div class="item">
@@ -1301,12 +1301,33 @@ export const view = {
 			</div>
 		`;
 	},
-	totalPracticeTime(timeData){
+	totalPracticeTime(showData){
 		const _ = this;
-		return `
-			<div class="total-time-value">${timeData['value']}</div>
-			<div class="total-time-title">${timeData['title']}</div>
+		let tpl = `
+			<div class="total-time-cont">
+				<div class="total-time-value">${showData['value']}</div>
+				<div class="total-time-title">${showData['title']}</div>
+			</div>
 		`;
+
+		let
+			timeDataValue = showData['value'].split(':'),
+			valueSeconds = timeDataValue[0] * 3600 + timeDataValue[1] * 60 + timeDataValue[2],
+			timeDataTotal = showData['total'].split(':'),
+			totalSeconds = timeDataTotal[0] * 3600 + timeDataTotal[1] * 60 + timeDataTotal[2],
+			length = Math.PI * 96 * ( valueSeconds / totalSeconds ) - 11;
+
+		let svg = `
+			<div class="total-time-svg">
+				<svg xmlns="http://www.w3.org/2000/svg">
+					<circle stroke-linecap="round" cx="50%" cy="50%"></circle>
+					<circle stroke-dasharray="${length} 1000" stroke-linecap="round" cx="50%" cy="50%"></circle>
+				</svg>
+			</div>
+		`;
+
+		tpl += svg;
+		return tpl;
 	},
 	studentProgress(progressData){
 		const _ = this;
@@ -1346,6 +1367,7 @@ export const view = {
 			testDate = dashSchedule['test'] ? new Date(dashSchedule['test']['date']) : undefined;
 		let tpl = ``;
 		let itemsData = _.fillScheduleItemsTpl(dashSchedule);
+		if (!itemsData || !itemsData.length) return;
 		for (let item of itemsData) {
 			tpl += _.scheduleItemTpl(item);
 		}
