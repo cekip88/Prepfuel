@@ -50,7 +50,7 @@ export class DashboardModule extends ParentPage{
 		_.months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec'];
 		G_Bus
 		.on(_,[
-			'domReady','changeSection',
+			'domReady','changeSection','changeStudent',
 			'generatePassword','validatePassword','checkEmail','fillStudentInfo',
 			'addingStep',
 			'changeStudentLevel','changeTestType','changePayMethod',
@@ -75,48 +75,7 @@ export class DashboardModule extends ParentPage{
 		if( _.subSection == 'dashboard' ){
 			if ( !_.currentStudent ) _.currentStudent = _.me['parent']['students'][0];
 			_.fillDashboardTabs();
-			_.fillDashboard();
-			_.fillScheduleBlock( _.currentStudent['_id'] );
-			_.fillStarsBlock();
-
-			let activities = await Model.getActivities( _.currentStudent['_id'] );
-			let activitiesCont = _.f('#activities');
-			_.clear(activitiesCont);
-			activitiesCont.append( _.markup( _.recentActivitiesTpl( activities ) ) );
-
-			let testScores = Model.getTestScores( _.currentStudent['_id'] );
-			let testScoresCont = _.f('#testScores' );
-			_.clear(testScoresCont);
-			testScoresCont.append( _.markup( _.testScoresTpl( testScores ) ) );
-
-			let skillLevelsCont = _.f('#skillLevels' );
-			_.clear(skillLevelsCont);
-			skillLevelsCont.append( _.markup( _.skillLevelsTpl() ) );
-
-			let badges = Model.getBadges( _.currentStudent['_id'] );
-			let badgesCont = _.f('#badges' );
-			_.clear(badgesCont);
-			badgesCont.append( _.markup( _.badgesTpl( badges ) ) );
-
-			let usage = Model.getUsage( _.currentStudent['_id'] );
-			let usageCont = _.f('#usageList' );
-			_.clear(usageCont);
-			usageCont.append( _.markup( _.usageStatisticsRow( usage ) ) );
-
-			let mastered = Model.getMastered( _.currentStudent['_id'] );
-			let masteredCont = _.f('#mastered' );
-			_.clear(masteredCont);
-			masteredCont.append( _.markup( _.skillsMastered( mastered ) ) );
-
-			let totalTime = Model.getTotalTime( _.currentStudent['_id'] );
-			let totalTimeCont = _.f('#totalTime' );
-			_.clear(totalTimeCont);
-			totalTimeCont.append( _.markup( _.totalPracticeTime( totalTime ) ) );
-
-			let progress = Model.getProgress( _.currentStudent['_id'] );
-			let progressCont = _.f('#studentProgress' );
-			_.clear(progressCont);
-			progressCont.append( _.markup( _.studentProgress( progress ) ) );
+			_.fillStudentProfile();
 		}
 	}
 
@@ -154,6 +113,17 @@ export class DashboardModule extends ParentPage{
 		}
 		await _.render();
 	}
+	changeStudent({item,event}){
+		const _ = this;
+		let index = parseInt(item.getAttribute('data-index'));
+		if(_.currentStudent === _.me['parent']['students'][index]) return void 0;
+
+		_.currentStudent = _.me['parent']['students'][index];
+		let activeButton = item.closest('.section').querySelector('.active');
+		activeButton.classList.remove('active');
+		item.classList.add('active');
+		_.fillStudentProfile({item,event})
+	}
 
 	fillWelcome(){
 		const _ = this;
@@ -179,16 +149,63 @@ export class DashboardModule extends ParentPage{
 			item.append( _.markup( img ));
 		}
 	}
+	async fillStudentProfile(){
+		const _ = this;
+		_.fillDashboard();
+		_.fillScheduleBlock( _.currentStudent['_id'] );
+		_.fillStarsBlock();
+
+		let activities = await Model.getActivities( _.currentStudent['_id'] );
+		let activitiesCont = _.f('#activities');
+		_.clear(activitiesCont);
+		activitiesCont.append( _.markup( _.recentActivitiesTpl( activities ) ) );
+
+		let testScores = Model.getTestScores( _.currentStudent['_id'] );
+		let testScoresCont = _.f('#testScores' );
+		_.clear(testScoresCont);
+		testScoresCont.append( _.markup( _.testScoresTpl( testScores ) ) );
+
+		let skillLevelsCont = _.f('#skillLevels' );
+		_.clear(skillLevelsCont);
+		skillLevelsCont.append( _.markup( _.skillLevelsTpl() ) );
+
+		let badges = Model.getBadges( _.currentStudent['_id'] );
+		let badgesCont = _.f('#badges' );
+		_.clear(badgesCont);
+		badgesCont.append( _.markup( _.badgesTpl( badges ) ) );
+
+		let usage = Model.getUsage( _.currentStudent['_id'] );
+		let usageCont = _.f('#usageList' );
+		_.clear(usageCont);
+		usageCont.append( _.markup( _.usageStatisticsRow( usage ) ) );
+
+		let mastered = Model.getMastered( _.currentStudent['_id'] );
+		let masteredCont = _.f('#mastered' );
+		_.clear(masteredCont);
+		masteredCont.append( _.markup( _.skillsMastered( mastered ) ) );
+
+		let totalTime = Model.getTotalTime( _.currentStudent['_id'] );
+		let totalTimeCont = _.f('#totalTime' );
+		_.clear(totalTimeCont);
+		totalTimeCont.append( _.markup( _.totalPracticeTime( totalTime ) ) );
+
+		let progress = Model.getProgress( _.currentStudent['_id'] );
+		let progressCont = _.f('#studentProgress' );
+		_.clear(progressCont);
+		progressCont.append( _.markup( _.studentProgress( progress ) ) );
+	}
+
 	fillDashboard(currentStudent = 0){
 		const _ = this;
 
 		let cont = _.f('#studentProfile');
 		_.clear(cont);
-		cont.append( _.markup( _.studentProfileTpl( _.me['parent']['students'][currentStudent])))
+		cont.append( _.markup( _.studentProfileTpl( _.currentStudent)))
 
 		let items = cont.querySelectorAll('[data-id]');
 		for ( let item of items ){
 			let type = item.getAttribute('data-type');
+			if (item.getAttribute('data-id') == 'undefined') continue;
 			let value = _.wizardData[type].find(elem=>{
 				if (elem['_id'] == item.getAttribute('data-id')){
 					return elem
@@ -200,14 +217,16 @@ export class DashboardModule extends ParentPage{
 			else item.src = `/img/${value[item.getAttribute('data-title')]}.svg`
 		}
 	}
-
 	async fillScheduleBlock(id){
 		const _ = this;
 		let
 			schedule = await Model.getSchedule(id),
-			scheduleTpl = _.scheduleBlock(schedule),
 			scheduleList = document.querySelector('#scheduleList');
 		_.clear(scheduleList);
+		console.log(schedule)
+		if (!schedule) return;
+		let
+			scheduleTpl = _.scheduleBlock(schedule);
 		scheduleList.append(_.markup(scheduleTpl));
 	}
 	async fillStarsBlock(){
@@ -285,6 +304,7 @@ export class DashboardModule extends ParentPage{
 		];
 		let data = [];
 		for (let item of schData) {
+			if (!item) return void 0;
 			let title = `Next ${item.title}`;
 			let info = '', count = '';
 

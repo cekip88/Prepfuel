@@ -172,9 +172,14 @@ export class _Model{
 	}
 	getTotalTime(id){
 		const _ = this;
-		return {
+		if (id == "62f0ac8e64a52e3beb6a74da") return {
 			title: 'Total Practice Time',
 			value: '4:25:07',
+			total: '6:00:00'
+		}
+		else  return {
+			title: 'Total Practice Time',
+			value: '5:12:07',
 			total: '6:00:00'
 		}
 	}
