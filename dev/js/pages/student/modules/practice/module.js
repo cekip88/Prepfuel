@@ -447,7 +447,10 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		let btn = event.target;
 		if (btn.tagName !== 'BUTTON') return void 0;
+		
 		let
+			testRow = item.parentNode,
+			grids = testRow.querySelectorAll('.grid'),
 			col = btn.closest('.grid-col'),
 			parent = col.parentElement,
 			index = 0,
@@ -462,17 +465,16 @@ export class PracticeModule extends StudentPage{
 			input = item.querySelector('#grid-value'),
 			shower = item.querySelector('.grid-input'),
 			gridValue =  ['_','_','_','_','_'];
-		
 		if(input.value) gridValue =  input.value.split('');
-	 
-		
-		shower.children[index].textContent = btn.textContent;
-		//input.value = '';
-		/*for (let i = 0; i < shower.childElementCount; i++) {
-			input.value += (shower.children[i].textContent ?? '*');
-		}*/
-		
-	
+		//shower.children[index].textContent = btn.textContent;
+
+		grids.forEach( (grid) =>{
+			let
+				input = grid.querySelector('#grid-value'),
+				shower = grid.querySelector('.grid-input');
+			if(input.value) gridValue =  input.value.split('');
+			shower.children[index].textContent = btn.textContent;
+		})
 		let activeBtn = item.querySelector(`.grid-col:nth-child(${index + 1}) .active`);
 		
 		if (activeBtn) {
@@ -671,14 +673,26 @@ export class PracticeModule extends StudentPage{
 			
 			_.setDisableCheckBtn();
 			
-			
 			_._$.currentQuestion['questions'].forEach( question => {
-				let ans =   _.answerVariant[id]['answer'].join('');
-				ans = ans.replaceAll('_','');
+				let ans =   _.answerVariant[id]['answer'];
+				if(_.isGrid()){
+					ans =   _.answerVariant[id]['answer'].join('');
+					ans = ans.replaceAll('_','');
+				}
+			
 				if(question['correctAnswer'] == ans){
 					_.f('#question-pagination .active').classList.add('done');
+					if( _.isGrid()){
+						_.f('.grid.empty').setAttribute('hidden','hidden');
+						_.f('.grid.correct').removeAttribute('hidden');
+					}
 				}else{
 					_.f('#question-pagination .active').classList.add('error');
+					if( _.isGrid()){
+						_.f('.grid.empty').setAttribute('hidden','hidden');
+						_.f('.grid.incorrect').removeAttribute('hidden');
+					}
+					
 				}
 			});
 			
@@ -700,15 +714,27 @@ export class PracticeModule extends StudentPage{
 			answerText = answerObject.answer;
 		if(!answerText) return void 0;
 		let	answerDigits = (typeof answerText == 'string') ? answerText.split('') :  answerText;
+		let
+			className = '.grid.correct',
+			correctAnswer = _._$.currentQuestion['questions'][0]['correctAnswer'],
+			ans =   _.answerVariant[answerObject['questionId']]['answer'].join('');
+		ans = ans.replaceAll('_','');
 		
+		if( correctAnswer != ans) className = '.grid.incorrect';
+		_.f('.grid.empty').setAttribute('hidden','hidden');
+		if( className == '.grid.correct'){
+			_.f('.grid.correct').removeAttribute('hidden');
+		}else{
+			_.f('.grid.incorrect').removeAttribute('hidden');
+		}
 		answerDigits.forEach( (digit,index) => {
-			let currentCol = _.f(`[data-col="${index+1}"] .grid-button`);
+			let currentCol = _.f(`${className} [data-col="${index+1}"] .grid-button`);
 			currentCol.forEach( (item) => {
 				if(item.textContent.trim() == digit){
 					item.classList.add('active');
 				}
 			});
-			let inputValue = _.f(`.grid-input span:nth-child(${index+1})`);
+			let inputValue = _.f(`${className} .grid-input span:nth-child(${index+1})`);
 			if(digit != '_') inputValue.textContent = digit;
 		})
 	}

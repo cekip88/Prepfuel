@@ -748,7 +748,7 @@ export const view = {
 			<div id="note-field-${currentQuestion['_id']}"></div>
 			<div id="explanation-field-${currentQuestion['_id']}"></div>
 			</div>
-				<div class="test-col narrow grid" data-click="${_.componentName}:enterGridAnswer">
+				<div class="test-col narrow grid empty" data-click="${_.componentName}:enterGridAnswer">
 					<div class="grid-row">
 						<input id="grid-value" type="hidden" data-question-id="${currentQuestion['_id']}">
 						<div class="grid-input">
@@ -802,12 +802,12 @@ export const view = {
 					<div class="grid-row">
 						<input id="grid-value" type="hidden" data-question-id="${currentQuestion['_id']}">
 						<div class="grid-input">
-						<span> </span>
-						<span> </span>
-						<span> </span>
-						<span> </span>
-						<span> </span>
-					</div>
+							<span> </span>
+							<span> </span>
+							<span> </span>
+							<span> </span>
+							<span> </span>
+						</div>
 					</div>
 					<div class="grid-row">
 						<div class="grid-col" data-col="1">
@@ -852,12 +852,12 @@ export const view = {
 					<div class="grid-row">
 						<input id="grid-value" type="hidden" data-question-id="${currentQuestion['_id']}">
 						<div class="grid-input">
-						<span> </span>
-						<span> </span>
-						<span> </span>
-						<span> </span>
-						<span> </span>
-					</div>
+							<span> </span>
+							<span> </span>
+							<span> </span>
+							<span> </span>
+							<span> </span>
+						</div>
 					</div>
 					<div class="grid-row">
 						<div class="grid-col" data-col="1">
@@ -893,14 +893,20 @@ export const view = {
 							${_.gridDigitButtons()}
 						</div>
 					</div>
+					<span class="grid-">Correct answer:</span>
+					<div class="grid-row">
+						<input id="grid-value-bottom" type="hidden" data-question-id="${currentQuestion['_id']}">
+						<div class="grid-input" style="background-color: rgb(var(--green-light));  border-color: rgb(var(--green));">
+							<span> </span>
+							<span> </span>
+							<span> </span>
+							<span> </span>
+							<span> </span>
+						</div>
+					</div>
 				</div>
 			</div>
 		`;
-		/*
-		*
-		*
-		*
-		* */
 		return tpl;
 	},
 	async compareQuestion(){
