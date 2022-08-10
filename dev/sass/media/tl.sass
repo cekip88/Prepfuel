@@ -130,7 +130,9 @@ g-modaler
 			height: initial
 			max-height: calc(100vh - 430px)
 		&.wide
-			margin-right: 32px
+			margin-right: 0
+			padding-right: 32px
+			max-width: 612px
 		&.narrow
 			flex: 0 0 257px
 			padding-left: 32px
@@ -140,8 +142,8 @@ g-modaler
 				margin-bottom: 0
 	&-left
 		padding: 32px
-	&-col.narrow
-		border-left: 1px solid rgb($neutral-300)
+	&-col:first-child
+		border-right: 1px solid rgb($neutral-300)
 	&-aside
 		flex: 0 0 267px
 		margin-right: 48px

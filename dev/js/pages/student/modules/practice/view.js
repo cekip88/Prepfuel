@@ -734,6 +734,7 @@ export const view = {
 				tpl+=`<img src="${fileLink}" alt="">`;
 			}
 		}
+		let correctAns = currentQuestion.correctAnswer.split('');
 		tpl+=`
 			<p class="test-text">
 				<span>${intro}</span>
@@ -876,7 +877,7 @@ export const view = {
 							<button class="grid-button">.</button>
 						</div>
 					</div>
-					<div class="grid-row">
+					<div class="grid-row last">
 						<div class="grid-col"  data-col="1">
 							<button class="grid-button high"></button>
 						</div>
@@ -893,16 +894,22 @@ export const view = {
 							${_.gridDigitButtons()}
 						</div>
 					</div>
-					<span class="grid-">Correct answer:</span>
-					<div class="grid-row">
-						<input id="grid-value-bottom" type="hidden" data-question-id="${currentQuestion['_id']}">
-						<div class="grid-input" style="background-color: rgb(var(--green-light));  border-color: rgb(var(--green));">
-							<span> </span>
-							<span> </span>
-							<span> </span>
-							<span> </span>
-							<span> </span>
-						</div>
+					<span class="grid-title">Correct answer:</span>
+					<div class="grid-row ans" data-question-id="${currentQuestion['_id']}">`;
+		for (let i = 0; i < 5; i++) {
+			let curAns = '';
+			if (correctAns[0] == '-') {
+				curAns = correctAns[i] ?? '';
+			} else {
+				curAns = correctAns[i - 1] ?? '';
+			}
+			tpl += `
+				<div class="grid-col" data-col="${i + 1}" >
+					<button class="grid-button" style="background-color: rgb(var(--green-light));color:rgb(var(--green-dark))">${ curAns }</button>
+				</div>
+			`
+		}
+		tpl += `
 					</div>
 				</div>
 			</div>

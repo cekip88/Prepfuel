@@ -1766,8 +1766,11 @@ g-modaler
 		border-bottom: 1px solid rgb($neutral-300)
 		&:first-child
 			padding-top: 0
-		&:last-of-type
+		&:last-of-type,&.last
 			border-bottom: none
+	&-title
+		font: 1em $f_reg
+		color: #5E6278
 	&.correct,&.incorrect
 		.marker
 			padding: 2px 2px 2px 12px
@@ -1832,6 +1835,10 @@ g-modaler
 			color: rgb($white)
 		&.high
 			height: 356px
+	&-row
+		&.ans
+			.grid-button.active
+				box-shadow: none
 
 
 .skill

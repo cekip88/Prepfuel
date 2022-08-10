@@ -55,6 +55,7 @@ export const view = {
 		let tpl = ``;
 		let itemsData = _.fillScheduleItemsTpl(dashSchedule);
 		for (let item of itemsData) {
+			if (!item) continue;
 			tpl += _.scheduleItemTpl(item);
 		}
 		return tpl;

@@ -57,11 +57,10 @@ export class DashboardModule extends StudentPage{
 		const _ = this;
 		let
 			schedule = await Model.getDashSchedule(),
-			scheduleTpl = _.scheduleBlock(schedule),
 			scheduleList = document.querySelector('#scheduleList');
-		console.log(schedule)
-
 		_.clear(scheduleList)
+
+		let scheduleTpl = _.scheduleBlock(schedule);
 		scheduleList.append(_.markup(scheduleTpl))
 	}
 	drawCircleGraphic(item,color){
@@ -88,6 +87,7 @@ export class DashboardModule extends StudentPage{
 		];
 		let data = [];
 		for (let item of schData) {
+			if (!item) continue;
 			let title = `Next ${item.title}`;
 			let info = '', count = '';
 
