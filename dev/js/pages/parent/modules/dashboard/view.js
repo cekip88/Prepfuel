@@ -1,63 +1,56 @@
 export const view = {
 	welcomeTpl(){
 		const _ = this;
-		return `<section class="login">
-			<div class="login-full login-success">
-				<div class="login-left-logo">
-					<svg width="144" height="173" viewBox="0 0 144 173" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<g filter="url(#filter0_d_2566_126400)">
-							<path
-							d="M66.0623 40C90.3042 50.838 97.8241 72.9803 85.7088 95.7556C84.452 98.2445 82.9386 100.6 81.1923 102.785C73.9886 111.391 69.5174 120.752 73.4354 133C61.7378 129.191 51.9823 124.394 44.9819 115.322C39.2009 107.871 38.5686 99.5089 42.4753 91.2472C44.8916 86.1391 48.595 81.5752 51.9823 76.9335C55.6745 71.8254 60.0555 67.1616 63.375 61.8536C67.3495 55.4352 69.4835 48.3617 66.0623 40Z"
-							fill="#00A3FF"/>
-							<path
-							d="M96.1094 77.0334C106.779 92.4243 108.53 111.968 89.3348 123.517C85.5297 125.815 82.0295 128.614 78.0437 131.457C75.6613 126.415 76.3275 121.785 78.2018 117.309C79.2675 114.542 80.7562 111.951 82.6166 109.625C90.4865 100.397 94.7319 89.7481 96.1094 77.0334Z"
-							fill="#00A3FF"/>
-						</g>
-						<defs>
-							<filter id="filter0_d_2566_126400" x="0" y="0" width="144" height="173" filterUnits="userSpaceOnUse"
-							        color-interpolation-filters="sRGB">
-								<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-								<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-								               result="hardAlpha"/>
-								<feOffset/>
-								<feGaussianBlur stdDeviation="20"/>
-								<feColorMatrix type="matrix" values="0 0 0 0 0.219948 0 0 0 0 0.278529 0 0 0 0 0.429167 0 0 0 0.1 0"/>
-								<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2566_126400"/>
-								<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2566_126400" result="shape"/>
-							</filter>
-						</defs>
-					</svg>
-				</div>
-				<h2 class="login-main-title"><span>Welcome to Prepfuel</span></h2>
-				<div class="login-main-subtitle">
-					<span>Help your child succeed</span>
-					<span>with our adaptive learning technology.</span>
-				</div>
-				<button class="button-blue" data-click="${_.componentName}:changeSection" section="addingStudent">
-					<span>Add a Student</span>
-				</button>
-				<img class="login-success-img" src="/img/confirmation-on-white.png" alt=""/>
-				<div class="login-success-bgc">
-					<img src="/img/success-bgc-2,5.png" alt=""/>
-					<img src="/img/success-bgc-1.png" alt=""/>
-					<img src="/img/success-bgc-2.png" alt=""/>
-					<img src="/img/success-bgc-3.png" alt=""/>
-					<img src="/img/success-bgc-4.png" alt="">
-					<img src="/img/success-bgc-5.png" alt=""/>
-					<img src="/img/success-bgc-6.png" alt=""/>
-					<img src="/img/success-bgc-7.png" alt=""/>
-					<img src="/img/success-bgc-8.png" alt=""/>
-				</div>
-			</div>
-		</section>`
-	},
-	badgeTpl(){
-		const _ = this;
 		return `
-			<div id="g-set-inner">
-			
-			</div>
-		`;
+			<section class="login">
+				<div class="login-full login-success">
+					<div class="login-left-logo">
+						<svg width="144" height="173" viewBox="0 0 144 173" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<g filter="url(#filter0_d_2566_126400)">
+								<path
+								d="M66.0623 40C90.3042 50.838 97.8241 72.9803 85.7088 95.7556C84.452 98.2445 82.9386 100.6 81.1923 102.785C73.9886 111.391 69.5174 120.752 73.4354 133C61.7378 129.191 51.9823 124.394 44.9819 115.322C39.2009 107.871 38.5686 99.5089 42.4753 91.2472C44.8916 86.1391 48.595 81.5752 51.9823 76.9335C55.6745 71.8254 60.0555 67.1616 63.375 61.8536C67.3495 55.4352 69.4835 48.3617 66.0623 40Z"
+								fill="#00A3FF"/>
+								<path
+								d="M96.1094 77.0334C106.779 92.4243 108.53 111.968 89.3348 123.517C85.5297 125.815 82.0295 128.614 78.0437 131.457C75.6613 126.415 76.3275 121.785 78.2018 117.309C79.2675 114.542 80.7562 111.951 82.6166 109.625C90.4865 100.397 94.7319 89.7481 96.1094 77.0334Z"
+								fill="#00A3FF"/>
+							</g>
+							<defs>
+								<filter id="filter0_d_2566_126400" x="0" y="0" width="144" height="173" filterUnits="userSpaceOnUse"
+												color-interpolation-filters="sRGB">
+									<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+									<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+																 result="hardAlpha"/>
+									<feOffset/>
+									<feGaussianBlur stdDeviation="20"/>
+									<feColorMatrix type="matrix" values="0 0 0 0 0.219948 0 0 0 0 0.278529 0 0 0 0 0.429167 0 0 0 0.1 0"/>
+									<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2566_126400"/>
+									<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2566_126400" result="shape"/>
+								</filter>
+							</defs>
+						</svg>
+					</div>
+					<h2 class="login-main-title"><span>Welcome to Prepfuel</span></h2>
+					<div class="login-main-subtitle">
+						<span>Help your child succeed</span>
+						<span>with our adaptive learning technology.</span>
+					</div>
+					<button class="button-blue" data-click="${_.componentName}:changeSection" section="addingStudent">
+						<span>Add a Student</span>
+					</button>
+					<img class="login-success-img" src="/img/confirmation-on-white.png" alt=""/>
+					<div class="login-success-bgc">
+						<img src="/img/success-bgc-2,5.png" alt=""/>
+						<img src="/img/success-bgc-1.png" alt=""/>
+						<img src="/img/success-bgc-2.png" alt=""/>
+						<img src="/img/success-bgc-3.png" alt=""/>
+						<img src="/img/success-bgc-4.png" alt="">
+						<img src="/img/success-bgc-5.png" alt=""/>
+						<img src="/img/success-bgc-6.png" alt=""/>
+						<img src="/img/success-bgc-7.png" alt=""/>
+						<img src="/img/success-bgc-8.png" alt=""/>
+					</div>
+				</div>
+			</section>`
 	},
 	dashboardFooter(){
 		const _ = this;
@@ -811,7 +804,7 @@ export const view = {
 			let student = _.me['parent']['students'][i];
 			let img;
 			if (student['user']['avatar']) {
-				img = `<div class="subnavigate-button-img" data-id="${student['user']['avatar']}"></div>`
+				img = `<div class="subnavigate-button-img" data-id="${student['user']['avatar']['_id'] ?? student['user']['avatar']}"></div>`
 			}
 			tpl += `
 				<button class="subnavigate-button${ !i ? ' active' : ''}" data-click="${_.componentName}:changeStudent" data-index="${i}">
@@ -961,7 +954,7 @@ export const view = {
 		let tpl = `
 			<div class="df aifs">
 				<div class="parent-student-avatar">
-					<img data-id="${studentInfo['user']['avatar']}" data-type="avatars" data-title="avatar">
+					<img data-id="${studentInfo['user']['avatar']['_id'] ?? studentInfo['user']['avatar']}" data-type="avatars" data-title="avatar">
 				</div>
 				<div class="parent-student-info">
 					<div class="unit df aic jcsb">
@@ -983,7 +976,12 @@ export const view = {
 						</div>
 						<div class="item buttons last">
 							<button class="button">Edit Course</button>
-							<button class="button-blue">Edit Profile</button>
+							<button 
+								class="button-blue" 
+								id="${ studentInfo['_id'] }" 
+								section="profile"
+								data-click="${_.componentName}:changeSection"	
+							>Edit Profile</button>
 							<button class="button button-hide" data-click="${_.componentName}:hideProfile">
 								<svg><use xlink:href="#select-arrow-bottom"></use></svg>
 							</button>
@@ -1445,5 +1443,147 @@ export const view = {
 			</div>
 		`;
 		return tpl;
-	}
+	},
+
+	// profile
+	personalInfo(){
+		const _ = this;
+		let gradeActive;
+		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade}`;
+		let gradeItems = _.createSelectItems(_.wizardData.grades, 'value:_id;text:grade', gradeActive);
+		//<button class="student-profile-delete" data-click="${_.componentName}:showRemoveUserPopup" data-id="${_.studentInfo['studentId']}">Delete User Profile</button>
+		return `
+			<div class="section">
+				<div class="block">
+					<div class="student-profile-row">
+						<div class="student-profile-left">
+							<h4 class="admin-block-graytitle">Student Personal Info</h4>
+							<div class="adding-avatar">
+								<button data-click="${_.componentName}:selectAvatar">
+									<strong class="adding-avatar-letter">${_.studentInfo.avatar ? '<img src="/img/' + _.studentInfo.avatar.avatar + '.svg">' : _.studentInfo.firstName.substr(0,1)}</strong>
+									<span class="adding-avatar-link">${_.studentInfo.avatar ? 'Change' : 'Select'} Avatar</span>
+								</button>
+							</div>
+							<div class="adding-section">
+								<div class="adding-inpt-row">
+									<div class="adding-inpt small">
+										<div class="form-label-row">
+											<label class="form-label">First name</label>
+										</div>
+										<g-input type="text" name="firstName"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["firstName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+									</div>
+									<div class="adding-inpt small">
+										<div class="form-label-row">
+											<label class="form-label">Last name</label>
+										</div>
+										<g-input type="text" name="lastName"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["lastName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+									</div>
+								</div>
+								<div class="adding-inpt">
+									<div class="form-label-row">
+										<label class="form-label">Email</label>
+									</div>
+									<g-input type="text" name="email"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["email"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+									</div>
+								<div class="adding-inpt">
+									<div class="form-label-row">
+										<label class="form-label">Date registered</label>
+									</div>
+									<g-input type="text" name="testDate"  data-input="${_.componentName}:fillStudentInfo"  value='${_.createdAtFormat(_.studentInfo["createdAt"])}' class="g-form-item" classname="form-input adding-inpt" disabled></g-input>
+									</div>
+							</div>
+							<div class="adding-section">
+								<h4 class="adding-subtitle">Password</h4>
+								<p class="adding-text">Students' password can be changed by a linked parent or by admin manually</p>
+								<button class="adding-generate student-profile-send">Send Link To A Parent To Reset Password</button>
+								<button class="student-profile-change" data-click="${_.componentName}:showChangePassword">Change Manually</button>
+							</div>
+							<div class="adding-section">
+								<h4 class="adding-subtitle withmar">Your current school</h4>
+								<div class="adding-inpt small">
+									<div class="form-label-row">
+										<label class="form-label">Current school</label>
+									</div>
+									<g-input type="text" name="currentSchool"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["currentSchool"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+								</div>
+								<div class="adding-inpt">
+									<div class="form-label-row">
+										<label class="form-label">Grade</label>
+									</div>
+									<g-select class="select adding-select" name="grade"  data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course"
+									items=${JSON.stringify(gradeItems)}></g-select>
+								</div>
+							</div>
+						</div>
+						<div class="student-profile-right">
+							<h4 class="admin-block-graytitle">Courses & Plans</h4>
+							<div class="student-profile-courses-btns">
+								<button class="student-profile-courses-btn">ISEE</button>
+								<button class="student-profile-courses-btn">SSAT</button>
+								<button class="student-profile-courses-btn active">SHSAT</button>
+							</div>
+							<div class="student-profile-course-info loader-parent"><img src='/img/loader.gif' class='loader'></div>
+						</div>
+					</div>
+					<div class="student-profile-footer">
+						<div class="student-profile-actions">
+							<button class="test-footer-back" data-click="${_.componentName}:changeSection" section="dashboard">
+								<span>Discard</span>
+							</button>
+							<button class="button-blue" data-click="${_.componentName}:updateStudent">
+								<span>Save Changes</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		`;
+	},
+	courseInfo(choiceData){
+		const _ = this;
+		let
+			plan = _.currentStudent["currentPlan"],
+			course = plan && plan['course'] ? plan['course'].title : '',
+			level = plan && plan['level'] ? plan['level'].title : '',
+			testDate = plan && plan['testDate'] ? _.createdAtFormat(plan['testDate']) : '';
+		return `
+			<div class="adding-section">
+				<h4 class="adding-subtitle withmar">Course & Test Information</h4>
+				<div class="adding-inpt">
+					<div class="form-label-row">
+						<label class="form-label">Course</label>
+					</div>
+					<g-input type="text" name="course" value='${course} ${level}' class="g-form-item" classname="form-input adding-inpt" disabled></g-input>
+					</div>
+				<div class="adding-inpt">
+					<div class="form-label-row">
+						<label class="form-label">Official test date</label>
+					</div>
+					<g-input type="date" name="testDate" format="month DD, YYYY" icon="false" value="${testDate}" class="g-form-item" classname="form-input adding-inpt"></g-input>
+					</div>
+			</div>
+			${_.choiseSelectStudent(choiceData,'Application School List')}
+			<div class="adding-section">
+				<h4 class="adding-subtitle withmar">Membership Plan</h4>
+				<div class="student-profile-plan">
+					<h5 class="student-profile-plan-title">Free</h5>
+					<div class="student-profile-plan-price">$0.00 per month</div>
+					<button class="student-profile-plan-edit">Edit</button>
+				</div>
+			</div>
+			<button class="student-profile-remove" data-click="${_.componentName}:showRemovePopup">Remove This Course</button>
+		`;
+	},
+	emptyCourseInfo(){
+		const _ = this;
+		return `
+			<h5 class="student-profile-course-empty">Currently, there is no ISEE course assign to this student</h5>
+			<button  class="student-profile-course-empty-btn" data-click="${_.componentName}:showAssignPopup">
+				<svg class="button-icon">
+					<use xlink:href="#plus"></use>
+				</svg>
+				<span>Assign SHSAT Course</span>
+			</button>
+		`;
+	},
 }

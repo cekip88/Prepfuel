@@ -393,9 +393,9 @@ export class UsersModule extends AdminPage {
 		} else {
 			studentId = profileData['studentId'];
 		}
-		let
-			currentStudent = Model.studentsData.response.filter( student => student['_id'] == studentId )[0];
-		//console.log(currentStudent)
+		let currentStudent = Model.studentsData.response.filter( student => student['_id'] == studentId )[0];
+		console.log(currentStudent)
+		console.log('https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/admin?role=student&page=1 - не возвращает currentSchool')
 		_.studentInfo = Object.assign({},currentStudent['user']);
 		_.metaInfo = {};
 		_.studentInfo['currentSchool'] = currentStudent['currentSchool'];

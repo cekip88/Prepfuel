@@ -12,6 +12,7 @@ export class _Model{
 			wizardData: `/user/wizard-data`,
 			checkEmail: `/user/check-email/`,
 			createStudent: `/user/create-student`,
+			updateStudent: `/user/update-student`,
 		};
 	}
 	getEndpoint(endpoint) {
@@ -50,6 +51,27 @@ export class _Model{
 				}
 			} else {
 				_.wrongRequest('createStudent', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+	updateStudent(studentData) {
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('updateStudent')}/${studentData['studentId']}`, {
+				method: 'PUT',
+				headers: _.baseHeaders,
+				body: JSON.stringify(studentData)
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('updateStudent', response);
+				}
+			} else {
+				_.wrongRequest('updateStudent', rawResponse)
 			}
 			resolve(null);
 		});
@@ -172,7 +194,7 @@ export class _Model{
 	}
 	getTotalTime(id){
 		const _ = this;
-		if (id == "62f0ac8e64a52e3beb6a74da") return {
+		if (id == "62f4c682d4ef01642e80564f") return {
 			title: 'Total Practice Time',
 			value: '4:25:07',
 			total: '6:00:00'

@@ -11,9 +11,7 @@ export class DashboardModule extends ParentPage{
 		_.metaInfo = {};
 		_.coursePos = 0;
 
-
 		_.me = JSON.parse(localStorage.getItem('me'));
-		console.log(_.me)
 
 		if (_.me['parent']['students']['length']) {
 			_.moduleStructure = {
@@ -26,7 +24,7 @@ export class DashboardModule extends ParentPage{
 			_.subSection = 'dashboard';
 		} else {
 			_.moduleStructure = {
-				'body':'badgeTpl',
+				'body':'welcomeTpl',
 				'footer':'dashboardFooter'
 			};
 			_.subSection = 'welcome';
@@ -54,28 +52,38 @@ export class DashboardModule extends ParentPage{
 			'generatePassword','validatePassword','checkEmail','fillStudentInfo',
 			'addingStep',
 			'changeStudentLevel','changeTestType','changePayMethod',
+			'updateStudent',
 			'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
 			'skipTestDate',
 			'showAddCard','showAddBillingAddress',
 			'hideProfile','showHiddenScores',
+			'fillProfile',
 		]);
 	}
 	async domReady() {
 		const _ = this;
-		_.body = _.f("#g-set-inner");
-		_.clear(_.body);
-		_.wizardData = await Model.getWizardData();
+		if ( !_.wizardData ) _.wizardData = await Model.getWizardData();
+		if ( !_.currentStudent ) _.currentStudent = _.me['parent']['students'][0];
+
 
 		if( _.subSection == 'welcome' ){
+			_.body = _.f("g-body");
+			_.clear( _.body );
 			_.fillWelcome();
 		}
 		if( _.subSection == 'addingStudent' ){
+			_.body = _.f("g-body");
+			_.clear( _.body );
 			_.fillAddingStudent();
 		}
 		if( _.subSection == 'dashboard' ){
-			if ( !_.currentStudent ) _.currentStudent = _.me['parent']['students'][0];
 			_.fillDashboardTabs();
 			_.fillStudentProfile();
+		}
+		if ( _.subSection == 'profile' ) {
+			_.body = _.f("g-body");
+			_.clear( _.body );
+			_.fillProfile();
 		}
 	}
 
@@ -111,6 +119,15 @@ export class DashboardModule extends ParentPage{
 				'footer':'dashboardFooter'
 			}
 		}
+		if( section == 'profile' ){
+			_.moduleStructure = {
+				'header':'fullHeader',
+				'header-tabs':'studentTabs',
+				'body-tabs':'dashboardTabs',
+				'body':'',
+				'footer':'dashboardFooter'
+			}
+		}
 		await _.render();
 	}
 	changeStudent({item,event}){
@@ -128,6 +145,27 @@ export class DashboardModule extends ParentPage{
 	fillWelcome(){
 		const _ = this;
 		_.body.append( _.markup( _.welcomeTpl()));
+	}
+
+	//profile
+	async fillProfile() {
+		const _ = this;
+		_.studentInfo = Object.assign({},_.currentStudent['user']);
+		_.metaInfo = {};
+		console.log(_.currentStudent)
+		_.studentInfo['currentSchool'] = _.currentStudent['currentSchool'];
+		_.studentInfo['currentPlan'] = _.currentStudent['currentPlan'];
+		_.studentInfo['grade'] = _.currentStudent['grade']['_id'];
+		_.studentInfo['studentId'] = _.currentStudent['_id'];
+
+		_.body.append( _.markup( _.personalInfo()));
+
+		if (_.currentStudent['currentPlan']){
+			_.studentInfo['firstSchool'] = _.currentStudent['currentPlan']['firstSchool'] ?? '';
+			_.studentInfo['secondSchool'] = _.currentStudent['currentPlan']['secondSchool'] ?? '';
+			_.studentInfo['thirdSchool'] = _.currentStudent['currentPlan']['thirdSchool'] ?? '';
+			_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.getWizardData());
+		} else _.f('.student-profile-course-info').innerHTML = _.emptyCourseInfo();
 	}
 
 	//dashboard
@@ -211,6 +249,7 @@ export class DashboardModule extends ParentPage{
 					return elem
 				}
 			});
+			if (!value) continue;
 			if( type != 'avatars' ){
 				item.textContent = value[item.getAttribute('data-title')];
 			}
@@ -223,7 +262,6 @@ export class DashboardModule extends ParentPage{
 			schedule = await Model.getSchedule(id),
 			scheduleList = document.querySelector('#scheduleList');
 		_.clear(scheduleList);
-		console.log(schedule)
 		if (!schedule) return;
 		let
 			scheduleTpl = _.scheduleBlock(schedule);
@@ -380,6 +418,7 @@ export class DashboardModule extends ParentPage{
 	cancelAddStudent(){
 		const _ = this;
 		let btn = document.createElement('BUTTON');
+		if (_.previousSection === 'profile') _.previousSection = 'dashboard'
 		btn.setAttribute('section',_.previousSection);
 		_.changeSection({item:btn});
 	}
@@ -390,6 +429,7 @@ export class DashboardModule extends ParentPage{
 		_.metaInfo = {};
 
 		let resp = await Model.createStudent(registerData);
+		console.log(registerData,resp)
 
 		if (resp.status == "success") {
 			G_Bus.trigger('modaler','showModal',{
@@ -397,8 +437,8 @@ export class DashboardModule extends ParentPage{
 				closeBtn: false
 			})
 
-			console.log(_.students)
-			console.log(resp['response'])
+			_.me['parent'] = await Model.getMe();
+			localStorage.setItem('me',JSON.stringify(_.me))
 
 			let btn = document.createElement('BUTTON');
 			btn.setAttribute('section','dashboard');
@@ -406,6 +446,27 @@ export class DashboardModule extends ParentPage{
 		}
 	}
 	//end add student methods
+	//update methods
+	async updateStudent({item}){
+		const _ = this;
+		return
+		let response = await Model.updateStudent({
+			'studentId': _.studentInfo['studentId'],
+			'firstName': _.studentInfo['firstName'],
+			"lastName": _.studentInfo['lastName'],
+			"email": _.studentInfo['email'],
+			"password": _.studentInfo['password'],
+			"avatar": _.studentInfo['avatar'],
+			"grade": _.studentInfo['grade'],
+			"currentSchool": _.studentInfo['currentSchool']
+		});
+		if(!response) return void 0;
+
+		item.setAttribute('rerender',true);
+		item.setAttribute('section','student');
+		G_Bus.trigger(_.componentName,'changeSection',{item})
+		_.showSuccessPopup('Student profile updated')
+	}
 
 	//avatar methods
 	async selectAvatar(clickData) {
