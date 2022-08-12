@@ -60,6 +60,7 @@ export const view = {
 				${_.addCardForm()}
 				${_.addBillingAddress()}
 				${_.registerSuccessPopup()}
+				${_.removeCourseTpl()}
 			</div>
 		`;
 	},
@@ -74,6 +75,72 @@ export const view = {
 		`
 	},
 
+	removeCourseTpl(){
+		const _ = this;
+		return `
+			<div class="modal-block student-profile-remove-popup" id="removeForm">
+				<h6 class="modal-title">
+					<span>Removing course</span>
+				</h6>
+				<p class="modal-text">Are you sure want to remove this course?</p>
+				<div class="modal-row">
+					<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
+					<button class="button-red" data-click="${_.componentName}:removeCourse"><span>Remove</span></button>
+				</div>
+			</div>
+		`;
+	},
+
+	assignCourseTpl(){
+		const _ = this;
+		return `
+			<div class="section parent" id="parent">
+				<div class="test-block">
+					<div class="test-header">
+						<h5 class="block-title test-title">
+							<span>Adding a Student</span>
+						</h5>
+					</div>
+					<div class="parent-adding-inner">
+						<div class="block adding-list" id="assign-list">
+							<button class="adding-list-item active" data-click="${_.componentName}:assignStep" step="1">
+								<strong class="adding-list-digit">1</strong>
+								<div class="adding-list-desc">
+									<h5 class="adding-list-title">Course & Plan</h5>
+									<h6 class="adding-list-subtitle">Set Type of a Test & Membership </h6>
+								</div>
+							</button>
+							<button class="adding-list-item" data-click="${_.componentName}:assignStep" step="2">
+								<strong class="adding-list-digit">2</strong>
+								<div class="adding-list-desc">
+									<h5 class="adding-list-title">School Information</h5>
+									<h6 class="adding-list-subtitle">Student’s School Related Info</h6>
+								</div>
+							</button>
+							<button class="adding-list-item" data-click="${_.componentName}:assignStep" step="3">
+								<strong class="adding-list-digit">3</strong>
+								<div class="adding-list-desc">
+									<h5 class="adding-list-title">Test Information</h5>
+									<h6 class="adding-list-subtitle">Set Test Info</h6>
+								</div>
+							</button>
+						</div>
+						<div class="block parent-adding-body">
+							<div id="assign-body"><img src="/img/loader.gif"></div>
+							<div class="test-footer" id="assign-footer">
+								<button class="button back" data-click="${_.componentName}:assignStep" step="0">
+									<span>Back</span>
+								</button>
+								<button class="button-blue step-next-btn" data-click="${_.componentName}:assignStep" step="2">
+									<span>Next</span>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		`
+	},
 	addingStudentTpl(){
 		const _ = this;
 		return `
@@ -158,7 +225,7 @@ export const view = {
 				<div class="adding-section">
 					<div class="adding-label">What test is the student purchasing?</div>
 					<div class="adding-buttons">
-		`;
+			`;
 		courses.forEach( (item,cnt) => {
 			let activeClass = '';
 			if(_.studentInfo['course']){
@@ -797,6 +864,12 @@ export const view = {
 // dashboard
 	dashboardTabs(){
 		const _ = this;
+		let curStIndex = 0;
+		if (_.currentStudent) {
+			_.me['parent']['students'].find((student,index)=>{
+				if (student['_id'] == _.currentStudent['_id']) curStIndex = index;
+			})
+		}
 		let tpl = `
 			<div class="subnavigate parent">
 				<div class="section">`;
@@ -807,7 +880,7 @@ export const view = {
 				img = `<div class="subnavigate-button-img" data-id="${student['user']['avatar']['_id'] ?? student['user']['avatar']}"></div>`
 			}
 			tpl += `
-				<button class="subnavigate-button${ !i ? ' active' : ''}" data-click="${_.componentName}:changeStudent" data-index="${i}">
+				<button class="subnavigate-button${ i == curStIndex ? ' active' : ''}" data-click="${_.componentName}:changeStudent" data-index="${i}">
 					${img ?? ''}<span>${student['user']['firstName']} ${student['user']['lastName']}</span>
 				</button>
 			`;
@@ -969,11 +1042,16 @@ export const view = {
 						<div class="item">
 							<span class="strong">${studentInfo['grade']['grade']}</span>
 							<span class="text">Grade</span>
-						</div>
-						<div class="item">
-							<span class="strong">${studentInfo['currentPlan']['course']['title']}</span>
-							<span class="text">Course</span>
-						</div>
+						</div>`;
+		if (studentInfo['currentPlan']) {
+			tpl += `
+				<div class="item">
+					<span class="strong">${studentInfo['currentPlan']['course'] ? studentInfo['currentPlan']['course']['title'] : ''}</span>
+					<span class="text">Course</span>
+				</div>
+			`
+		}
+		tpl += `
 						<div class="item buttons last">
 							<button class="button">Edit Course</button>
 							<button 
@@ -987,36 +1065,52 @@ export const view = {
 							</button>
 						</div>
 					</div>
-					<div class="unit">
-						<span class="text">APPLICATION SCHOOL LIST</span>
-						<div class="df jcsb">`;
-		if ( studentInfo['currentPlan']['firstSchool'] ){
+					`;
+		if ( !_.isEmpty(studentInfo['currentPlan']) ){
 			tpl += `
+				<div class="unit">
+					<span class="text">APPLICATION SCHOOL LIST</span>
+					<div class="df jcsb">`;
+			if ( studentInfo['currentPlan']['firstSchool'] ){
+				tpl += `
 				<div class="item">
-					<span class="strong" data-id="${studentInfo['currentPlan']['firstSchool']}" data-type="schools" data-title="school">${studentInfo['currentSchool']}</span>
+					<span class="strong" 
+						data-id="${studentInfo['currentPlan']['firstSchool']['_id'] ?? studentInfo['currentPlan']['firstSchool']}" 
+						data-type="schools" 
+						data-title="school"
+					>${studentInfo['currentSchool']}</span>
 					<span class="text">1st choice</span>
 				</div>
 			`;
-		}
-		if ( studentInfo['currentPlan']['secondSchool'] ){
-			tpl += `
+			}
+			if ( studentInfo['currentPlan']['secondSchool'] ){
+				tpl += `
 				<div class="item">
-					<span class="strong" data-id="${studentInfo['currentPlan']['secondSchool']}" data-type="schools" data-title="school">${studentInfo['currentSchool']}</span>
+					<span class="strong" 
+						data-id="${studentInfo['currentPlan']['secondSchool']['_id'] ?? studentInfo['currentPlan']['secondSchool']}" 
+						data-type="schools" 
+						data-title="school"
+					>${studentInfo['currentSchool']}</span>
 					<span class="text">2nd choice</span>
 				</div>
 			`;
-		}
-		if ( studentInfo['currentPlan']['thirdSchool'] ){
-			tpl += `
+			}
+			if ( studentInfo['currentPlan']['thirdSchool'] ){
+				tpl += `
 				<div class="item last">
-					<span class="strong" data-id="${studentInfo['currentPlan']['thirdSchool']}" data-type="schools" data-title="school">${studentInfo['currentSchool']}</span>
+					<span class="strong" 
+						data-id="${studentInfo['currentPlan']['thirdSchool']['_id'] ?? studentInfo['currentPlan']['thirdSchool']}" 
+						data-type="schools" 
+						data-title="school"
+					>${studentInfo['currentSchool']}</span>
 					<span class="text">3rd choice</span>
 				</div>
 			`;
+			}
+			tpl += `</div>
+					</div>`
 		}
 		tpl += `
-						</div>
-					</div>
 					<div class="unit">
 						<span class="text">CLASSES</span>
 						<div class="df aic jcsb">
@@ -1578,7 +1672,7 @@ export const view = {
 		const _ = this;
 		return `
 			<h5 class="student-profile-course-empty">Currently, there is no ISEE course assign to this student</h5>
-			<button  class="student-profile-course-empty-btn" data-click="${_.componentName}:showAssignPopup">
+			<button  class="student-profile-course-empty-btn" data-click="${_.componentName}:changeSection" section="assignCourse">
 				<svg class="button-icon">
 					<use xlink:href="#plus"></use>
 				</svg>

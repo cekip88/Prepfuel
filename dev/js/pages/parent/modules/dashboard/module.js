@@ -50,21 +50,20 @@ export class DashboardModule extends ParentPage{
 		.on(_,[
 			'domReady','changeSection','changeStudent',
 			'generatePassword','validatePassword','checkEmail','fillStudentInfo',
-			'addingStep',
+			'addingStep','assignStep',
 			'changeStudentLevel','changeTestType','changePayMethod',
 			'updateStudent',
 			'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
 			'skipTestDate',
 			'showAddCard','showAddBillingAddress',
 			'hideProfile','showHiddenScores',
-			'fillProfile',
+			'fillProfile','showRemovePopup','removeCourse','assignCourse',
 		]);
 	}
 	async domReady() {
 		const _ = this;
 		if ( !_.wizardData ) _.wizardData = await Model.getWizardData();
 		if ( !_.currentStudent ) _.currentStudent = _.me['parent']['students'][0];
-
 
 		if( _.subSection == 'welcome' ){
 			_.body = _.f("g-body");
@@ -75,6 +74,11 @@ export class DashboardModule extends ParentPage{
 			_.body = _.f("g-body");
 			_.clear( _.body );
 			_.fillAddingStudent();
+		}
+		if( _.subSection == 'assignCourse' ){
+			_.body = _.f("g-body");
+			_.clear( _.body );
+			_.fillassignCourse();
 		}
 		if( _.subSection == 'dashboard' ){
 			_.fillDashboardTabs();
@@ -89,7 +93,6 @@ export class DashboardModule extends ParentPage{
 
 	async changeSection({item, event}) {
 		const _ = this;
-
 		_.previousSection = _.subSection;
 		let section = item.getAttribute('section');
 		_.subSection = section;
@@ -110,6 +113,14 @@ export class DashboardModule extends ParentPage{
 				'footer':'dashboardFooter'
 			}
 		}
+		if(section == 'assignCourse'){
+			_.moduleStructure = {
+				'header':'fullHeader',
+				'header-tabs':'studentTabs',
+				'body':'',
+				'footer':'dashboardFooter'
+			}
+		}
 		if( section == 'dashboard' ){
 			_.moduleStructure = {
 				'header':'fullHeader',
@@ -122,8 +133,6 @@ export class DashboardModule extends ParentPage{
 		if( section == 'profile' ){
 			_.moduleStructure = {
 				'header':'fullHeader',
-				'header-tabs':'studentTabs',
-				'body-tabs':'dashboardTabs',
 				'body':'',
 				'footer':'dashboardFooter'
 			}
@@ -136,6 +145,7 @@ export class DashboardModule extends ParentPage{
 		if(_.currentStudent === _.me['parent']['students'][index]) return void 0;
 
 		_.currentStudent = _.me['parent']['students'][index];
+		console.log(_.currentStudent.currentPlan)
 		let activeButton = item.closest('.section').querySelector('.active');
 		activeButton.classList.remove('active');
 		item.classList.add('active');
@@ -152,7 +162,6 @@ export class DashboardModule extends ParentPage{
 		const _ = this;
 		_.studentInfo = Object.assign({},_.currentStudent['user']);
 		_.metaInfo = {};
-		console.log(_.currentStudent)
 		_.studentInfo['currentSchool'] = _.currentStudent['currentSchool'];
 		_.studentInfo['currentPlan'] = _.currentStudent['currentPlan'];
 		_.studentInfo['grade'] = _.currentStudent['grade']['_id'];
@@ -161,11 +170,64 @@ export class DashboardModule extends ParentPage{
 		_.body.append( _.markup( _.personalInfo()));
 
 		if (_.currentStudent['currentPlan']){
-			_.studentInfo['firstSchool'] = _.currentStudent['currentPlan']['firstSchool'] ?? '';
-			_.studentInfo['secondSchool'] = _.currentStudent['currentPlan']['secondSchool'] ?? '';
-			_.studentInfo['thirdSchool'] = _.currentStudent['currentPlan']['thirdSchool'] ?? '';
+			if (_.currentStudent['currentPlan']['firstSchool']) {
+				_.studentInfo['firstSchool'] = _.currentStudent['currentPlan']['firstSchool']['_id'] ?? _.currentStudent['currentPlan']['firstSchool'];
+			}
+			if (_.currentStudent['currentPlan']['secondSchool']) {
+				_.studentInfo['secondSchool'] = _.currentStudent['currentPlan']['secondSchool']['_id'] ?? _.currentStudent['currentPlan']['secondSchool'];
+			}
+			if (_.currentStudent['currentPlan']['thirdSchool']) {
+				_.studentInfo['thirdSchool'] = _.currentStudent['currentPlan']['thirdSchool']['_id'] ?? _.currentStudent['currentPlan']['thirdSchool'];
+			}
 			_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.getWizardData());
 		} else _.f('.student-profile-course-info').innerHTML = _.emptyCourseInfo();
+	}
+
+	showRemovePopup({item}) {
+		const _ = this;
+		G_Bus.trigger('modaler','showModal', {type:'html',target:'#removeForm','closeBtn':'hide'});
+	}
+	async removeCourse({item}) {
+		const _ = this;
+		let courseInfo = _.f('.student-profile-course-info');
+		_.clear(courseInfo);
+		await Model.removeCourse({
+			studentId:_.studentInfo['studentId'],
+			planId:_.studentInfo.currentPlan['_id'],
+		});
+
+		courseInfo.append( _.markup( _.emptyCourseInfo()));
+
+		G_Bus.trigger('modaler','closeModal');
+		let curPlanIndex;
+		_.currentStudent['plans'].find((item,index)=>{
+			if (_.currentStudent['currentPlan']['_id'] == item['_id']) curPlanIndex = index;
+		})
+		_.currentStudent['plans'].splice(curPlanIndex,curPlanIndex + 1);
+		_.updateMe();
+
+		_.currentStudent['currentPlan'] = {};
+		_.studentInfo.firstSchool = null;
+		_.studentInfo.secondSchool = null;
+		_.studentInfo.thirdSchool = null;
+		_.studentInfo.testDate = null;
+		_.studentInfo.testDatePicked = false;
+
+
+		_.showSuccessPopup('Course has been successfully removed')
+	}
+	async assignCourse() {
+		const _ = this;
+		let response = await Model.assignCourse(_.studentInfo);
+		if(!response)	return void 0;
+		_.currentStudent['currentPlan'] = response['currentPlan'];
+		_.currentStudent['plans'].push(response['currentPlan']);
+		console.log(_.currentStudent)
+		_.updateMe();
+
+		let btn = _.markupElement(`<button section="profile"></button>`)
+		_.changeSection({item:btn})
+		_.showSuccessPopup('Course has been successfully assigned');
 	}
 
 	//dashboard
@@ -177,13 +239,11 @@ export class DashboardModule extends ParentPage{
 		for( let item of imgs ){
 			let imgId = item.getAttribute('data-id');
 			let imgTitle;
-			for (let avatarData of _.wizardData.avatars) {
-				if (avatarData['_id'] == imgId) {
-					imgTitle = avatarData['avatar'];
-					break
-				}
-			}
+			_.wizardData['avatars'].find((elem)=>{
+				if ( imgId == elem['_id'] ) imgTitle = elem['avatar'];
+			})
 			let img = `<img src="/img/${imgTitle}.svg">`;
+			item.removeAttribute('data-id')
 			item.append( _.markup( img ));
 		}
 	}
@@ -233,7 +293,7 @@ export class DashboardModule extends ParentPage{
 		progressCont.append( _.markup( _.studentProgress( progress ) ) );
 	}
 
-	fillDashboard(currentStudent = 0){
+	fillDashboard(){
 		const _ = this;
 
 		let cont = _.f('#studentProfile');
@@ -447,9 +507,17 @@ export class DashboardModule extends ParentPage{
 	}
 	//end add student methods
 	//update methods
+	updateMe(){
+		const _ = this;
+		_.me['parent']['students'].find((student,index)=>{
+			if (student['_id'] == _.currentStudent['_id']) {
+				_.me['parent']['students'][index] = _.currentStudent
+			}
+		})
+		localStorage.setItem('me',JSON.stringify(_.me));
+	}
 	async updateStudent({item}){
 		const _ = this;
-		return
 		let response = await Model.updateStudent({
 			'studentId': _.studentInfo['studentId'],
 			'firstName': _.studentInfo['firstName'],
@@ -462,8 +530,11 @@ export class DashboardModule extends ParentPage{
 		});
 		if(!response) return void 0;
 
+		_.currentStudent = response;
+		_.updateMe()
+
 		item.setAttribute('rerender',true);
-		item.setAttribute('section','student');
+		item.setAttribute('section','dashboard');
 		G_Bus.trigger(_.componentName,'changeSection',{item})
 		_.showSuccessPopup('Student profile updated')
 	}
@@ -720,6 +791,13 @@ export class DashboardModule extends ParentPage{
 		result = ( hours < 10 ? '0' + hours : hours ) + ':' + minutes + ' ' + details;
 		return result;
 	}
+	isEmpty(obj){
+		const _ = this;
+		for (let key in obj) {
+			return false;
+		}
+		return true;
+	}
 
 	showAddCard({item}){
 		const _ = this;
@@ -750,6 +828,10 @@ export class DashboardModule extends ParentPage{
 	addingStep({item}){
 		const _ = this;
 		_._$.addingStep = parseInt(item.getAttribute('step'));
+	}
+	assignStep({item}){
+		const _ = this;
+		_._$.assignStep = parseInt(item.getAttribute('step'));
 	}
 	async handleAddingSteps({addingStep = 1}){
 		const _ = this;
@@ -831,10 +913,88 @@ export class DashboardModule extends ParentPage{
 			button.textContent = 'Next';
 		}
 	}
+	async handleAssignSteps({assignStep = 1}){
+		const _ = this;
+		if( !_.initedAssign ) {
+			_.assignSteps = {
+				0: 'changeSection',
+				1: 'addingStepOne',
+				2: 'addingStepThree',
+				3: 'addingStepFour',
+				4: 'assignCourse'
+			}
+			_.initedAssign = true;
+			return void 0;
+		}
+
+
+		if (assignStep === 0 || assignStep === 4) {
+			if (assignStep === 0) {
+				let btn = _.markupElement(`<button section="profile"></button>`)
+				_[_.assignSteps[assignStep]]({item:btn});
+			} else {
+				_[_.assignSteps[assignStep]]();
+			}
+			return void 0;
+		}
+		if (assignStep === 1) {
+			if (!_.studentInfo['course']) _.studentInfo['course'] = _.wizardData['courses'][0]['_id'];
+			if (!_.studentInfo['level']) _.studentInfo['level'] = _.wizardData['courses'][0]['levels'][0]['_id'];
+		}
+
+
+		let assignFooter = _.f('#assign-footer');
+		if (assignStep >= 2) assignFooter.classList.add('narrow');
+		else assignFooter.classList.remove('narrow');
+		assignFooter.querySelectorAll('BUTTON').forEach((btn)=>{
+			if (btn.classList.contains('back')) btn.setAttribute('step',assignStep - 1)
+			else  btn.setAttribute('step',assignStep + 1)
+		})
+
+
+		let assignBody = _.f('#assign-body');
+		_.clear(assignBody);
+		assignBody.append( _.markup( _[_.assignSteps[assignStep]]()))
+
+
+		let
+			aside = _.f('#assign-list'),
+			activeAside = aside.querySelector('.active'),
+			asideButtons = aside.querySelectorAll('.adding-list-item'),
+			asideTarget = asideButtons[assignStep - 1];
+		if (asideTarget != activeAside) {
+			activeAside.classList.remove('active');
+			asideTarget.classList.add('active')
+		}
+		for (let i = 0; i < 3; i++) {
+			let button = asideButtons[i].querySelector('.adding-list-digit');
+			_.clear(button);
+			if (i < assignStep - 1) {
+				button.append(_.markup(`<svg><use xlink:href="#checkmark"></use></svg>`))
+			} else {
+				button.textContent = i + 1
+			}
+		}
+
+		let button = assignFooter.querySelector('.button-blue');
+		if (assignStep === 3) {
+			button.classList.add('button-green');
+			button.textContent = 'Purchase';
+		} else {
+			button.classList.remove('button-green');
+			button.textContent = 'Next';
+		}
+	}
+	fillassignCourse(){
+		const _ = this;
+		_.body.append( _.markup( _.assignCourseTpl()));
+		_.handleAssignSteps(1);
+	}
 
 	async init() {
 		const _ = this;
 		_._( _.handleAddingSteps.bind(_),['addingStep'])
+		_._( _.handleAssignSteps.bind(_),['assignStep'])
 	}
 	
 }
