@@ -13,6 +13,8 @@ export class _Model{
 			checkEmail: `/user/check-email/`,
 			createStudent: `/user/create-student`,
 			updateStudent: `/user/update-student`,
+			removeCourse: `/user/remove-plan`,
+			assignCourse: `/user/assign-plan`,
 		};
 	}
 	getEndpoint(endpoint) {
@@ -279,6 +281,50 @@ export class _Model{
 			{title:'Address 1',line1:'Ap #285-7193',line2:'Ullamcorper Avenue',state:'Amesbury HI',postcode:' 93373',country:'United States',primary: true},
 			{title:'Address 2',line1:'Ap #285-7193',line2:'Ullamcorper Avenue',state:'Amesbury HI',postcode:' 93373',country:'United States',primary: false},
 		]
+	}
+
+	//course methods
+	assignCourse(assignData) {
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('assignCourse')}`, {
+				method: 'POST',
+				headers: _.baseHeaders,
+				body: JSON.stringify(assignData)
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('assignCourse', response);
+				}
+			} else {
+				_.wrongRequest('assignCourse', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+	removeCourse(removeData){
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('removeCourse')}`, {
+				method: 'DELETE',
+				headers: _.baseHeaders,
+				body: JSON.stringify(removeData)
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('removeCourse', response);
+				}
+			} else {
+				_.wrongRequest('removeCourse', rawResponse)
+			}
+			resolve(null);
+		});
 	}
 
 }
