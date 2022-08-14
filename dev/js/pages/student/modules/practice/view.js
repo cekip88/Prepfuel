@@ -87,7 +87,7 @@ export const view = {
 			}
 			if( answeredQuestion && answeredQuestion['answer']){
 				if(currentQuestion['correctAnswer']){
-					if( (currentQuestion['correctAnswer'].toUpperCase() !== answeredQuestion['answer'].toUpperCase())  && (answeredQuestion['answer'].toUpperCase() == answer.toUpperCase()) ) {
+					if( (currentQuestion['correctAnswer'].toUpperCase() !== answeredQuestion['answer'].toUpperCase())	&& (answeredQuestion['answer'].toUpperCase() == answer.toUpperCase()) ) {
 						status = 'incorrect';
 					}
 				}
@@ -210,25 +210,37 @@ export const view = {
 		`
 	},
 
-	practiceTasksTpl(){
+	quizessTasksTpl(headerData){
 		const _ = this;
 		return `
 			<div class="block">
-				<ul class="practice-task-list loader-parent">
+				${_.sectionHeaderTpl(headerData)}
+				<ul class="quizess-task-list practice-task-list loader-parent">
 					<img src="/img/loader.gif" alt="">
 				</ul>
 			</div>
 		`;
 	},
-	taskItemsTpl(taskData){
+	practiceTasksTpl(){
+		const _ = this;
+		return `
+			<div class="block">
+				<ul class="practices-task-list loader-parent">
+					<img src="/img/loader.gif" alt="">
+				</ul>
+			</div>
+		`;
+	},
+	taskItemsTpl(taskDataItems){
 		const _ = this;
 		let taskItems = [];
-		for (let taskInfo of taskData.items) {
-			taskItems.push(_.markup(_.taskItemTpl(taskInfo,taskData.color)))
+		
+		for (let taskInfo of taskDataItems) {
+			taskItems.push(_.markup(_.taskItemTpl(taskInfo)))
 		}
 		return taskItems;
 	},
-	taskItemTpl(task,color){
+	taskItemTpl(task,color='80, 20, 208'){
 		const _ = this;
 		return `
 			<li 
@@ -255,13 +267,16 @@ export const view = {
 							${task['status'] != 'completed' && task['status' != 'locked'] ? 'border: 1px solid rgb(' + color + ');' : ''}
 							${task['status'] == 'completed' ? 'background-color:rgba(' + color + ',.15)' : ''}
 							${task['status'] == 'locked' ? 'background-color:#fff;' : ''}
-						"
-					>
-						${task['status'].substr(0,1).toUpperCase() + task['status'].substr(1)}
+						">
+					 ${task['status']  ? 'Completed' : 'Yet to start'}
 					</span>
 					<button 
-						class="practice-task-item-button" 
-						data-click="${_.componentName}:${task['status'] == 'completed' ? 'reviewTask' : 'startTask'}"
+						class="practice-task-item-button"
+						data-subject="${task.subject}"
+						data-id="${task.title}"
+						data-num="${task.num}"
+						section = "quizDirections"
+						data-click="${_.componentName}:changeSection"
 						style="background-color:rgb(${color});"
 					>
 						${task['status'] == 'completed' ? 'Review' : 'Start task'}
@@ -269,6 +284,8 @@ export const view = {
 				</div>
 			</li>
 		`;
+		//	data-click="${_.componentName}:${task['status'] == 'completed' ? 'reviewTask' : 'startQuiz'}"
+		//
 	},
 
 	practiceAchievementTpl(){
@@ -296,7 +313,7 @@ export const view = {
 				<div class="practice-table-head">
 					<span class="info">
 						<span class="level">Level</span>
-						<span class="practice-table-head-title">Sections and skills</span>  
+						<span class="practice-table-head-title">Sections and skills</span>	
 					</span>
 					<span class="videoTd">How-to examples</span>
 				</div>
@@ -462,58 +479,58 @@ export const view = {
 							Check out these resources before diving into practice to help reinforce the concepts, level up in this skill, and ultimately boost your scores!
 						</p>
 						<ul class="practice-desc-list">
-              <li class="practice-desc-item">
-                <button class="practice-desc-item-button" data-id="video" data-click="showModal">
-                  <div class="img">
-                    <svg>
-                      <use xlink:href="#video-clip"></use>
-                    </svg>
-                  </div>
-                  <div class="desc">
-                    <h6 class="desc-title">Section, concept</h6><span class="desc-text">Video</span>
-                  </div>
-                </button>
-              </li>
-              <li class="practice-desc-item">
-                <button class="practice-desc-item-button" data-id="video" data-click="showModal">
-                  <div class="img">
-                    <svg>
-                      <use xlink:href="#video-clip"></use>
-                    </svg>
-                  </div>
-                  <div class="desc">
-                    <h6 class="desc-title">Section, concept</h6><span class="desc-text">Video</span>
-                  </div>
-                </button>
-              </li>
-              <li class="practice-desc-item">
-                <button class="practice-desc-item-button" data-id="article" data-click="showModal">
-                  <div class="img">
-                    <svg>
-                      <use xlink:href="#hwcompleted"></use>
-                    </svg>
-                  </div>
-                  <div class="desc">
-                    <h6 class="desc-title">Section, concept</h6><span class="desc-text">Video</span>
-                  </div>
-                </button>
-              </li>
-              <li class="practice-desc-item">
-                <button class="practice-desc-item-button" data-id="video" data-click="showModal">
-                  <div class="img">
-                    <svg>
-                      <use xlink:href="#play-icon"></use>
-                    </svg>
-                  </div>
-                  <div class="desc">
-                    <h6 class="desc-title">Section, concept</h6><span class="desc-text">Video</span>
-                  </div>
-                </button>
-              </li>
-            </ul>
+							<li class="practice-desc-item">
+								<button class="practice-desc-item-button" data-id="video" data-click="showModal">
+									<div class="img">
+										<svg>
+											<use xlink:href="#video-clip"></use>
+										</svg>
+									</div>
+									<div class="desc">
+										<h6 class="desc-title">Section, concept</h6><span class="desc-text">Video</span>
+									</div>
+								</button>
+							</li>
+							<li class="practice-desc-item">
+								<button class="practice-desc-item-button" data-id="video" data-click="showModal">
+									<div class="img">
+										<svg>
+											<use xlink:href="#video-clip"></use>
+										</svg>
+									</div>
+									<div class="desc">
+										<h6 class="desc-title">Section, concept</h6><span class="desc-text">Video</span>
+									</div>
+								</button>
+							</li>
+							<li class="practice-desc-item">
+								<button class="practice-desc-item-button" data-id="article" data-click="showModal">
+									<div class="img">
+										<svg>
+											<use xlink:href="#hwcompleted"></use>
+										</svg>
+									</div>
+									<div class="desc">
+										<h6 class="desc-title">Section, concept</h6><span class="desc-text">Video</span>
+									</div>
+								</button>
+							</li>
+							<li class="practice-desc-item">
+								<button class="practice-desc-item-button" data-id="video" data-click="showModal">
+									<div class="img">
+										<svg>
+											<use xlink:href="#play-icon"></use>
+										</svg>
+									</div>
+									<div class="desc">
+										<h6 class="desc-title">Section, concept</h6><span class="desc-text">Video</span>
+									</div>
+								</button>
+							</li>
+						</ul>
 					</div>
 					<div class="test-footer">
-						<button class="button-blue" id="welcome-btn"  type="button" data-click="${this.componentName}:changeSection" section="directions">
+						<button class="button-blue" id="welcome-btn"	type="button" data-click="${this.componentName}:changeSection" section="directions">
 							<span>Start skill practice</span>
 						</button>
 					</div>
@@ -677,7 +694,7 @@ export const view = {
 		let tpl = ``;
 		for(let i=0; i < _.questionsLength; i++){
 			if(pos == i){
-				tpl+=`<a class="pagination-link active" data-pos="${i}"  data-click="${_.componentName}:jumpToQuestion"><span>${i+1}</span></a>`;
+				tpl+=`<a class="pagination-link active" data-pos="${i}"	data-click="${_.componentName}:jumpToQuestion"><span>${i+1}</span></a>`;
 			}else{
 				tpl+=`<a class="pagination-link" data-pos="${i}" data-click="${_.componentName}:jumpToQuestion"><span>${i+1}</span></a>`;
 			}
@@ -692,9 +709,9 @@ export const view = {
 					<span>Directions</span>
 				</a>
 				<div class="pagination pagination-top">
-			          <div class="pagination-info"><span>Do <strong class="questions-length"></strong> questions</span></div>
-			          <div class="pagination-links" id="question-pagination"></div>
-			        </div>
+								<div class="pagination-info"><span>Do <strong class="questions-length"></strong> questions</span></div>
+								<div class="pagination-links" id="question-pagination"></div>
+							</div>
 			<a class="button-blue" disabled="" id="check-answer-btn" data-click="${_.componentName}:checkAnswer"><span>Check answer</span></a>
 			</div>`;
 	},
@@ -764,33 +781,33 @@ export const view = {
 						<div class="grid-col" data-col="1">
 							<button class="grid-button">-</button>
 						</div>
-						<div class="grid-col"  data-col="2">
+						<div class="grid-col"	data-col="2">
 							<button class="grid-button">.</button>
 						</div>
-						<div class="grid-col"  data-col="3">
+						<div class="grid-col"	data-col="3">
 							<button class="grid-button">.</button>
 						</div>
-						<div class="grid-col"  data-col="4">
+						<div class="grid-col"	data-col="4">
 							<button class="grid-button">.</button>
 						</div>
-						<div class="grid-col"  data-col="5">
+						<div class="grid-col"	data-col="5">
 							<button class="grid-button">.</button>
 						</div>
 					</div>
 					<div class="grid-row">
-						<div class="grid-col"  data-col="1">
+						<div class="grid-col"	data-col="1">
 							<button class="grid-button high"> </button>
 						</div>
-						<div class="grid-col"  data-col="2">
+						<div class="grid-col"	data-col="2">
 							${_.gridDigitButtons()}
 						</div>
-						<div class="grid-col"  data-col="3">
+						<div class="grid-col"	data-col="3">
 							${_.gridDigitButtons()}
 						</div>
-						<div class="grid-col"  data-col="4">
+						<div class="grid-col"	data-col="4">
 							${_.gridDigitButtons()}
 						</div>
-						<div class="grid-col"  data-col="5">
+						<div class="grid-col"	data-col="5">
 							${_.gridDigitButtons()}
 						</div>
 					</div>
@@ -814,33 +831,33 @@ export const view = {
 						<div class="grid-col" data-col="1">
 							<button class="grid-button">-</button>
 						</div>
-						<div class="grid-col"  data-col="2">
+						<div class="grid-col"	data-col="2">
 							<button class="grid-button">.</button>
 						</div>
-						<div class="grid-col"  data-col="3">
+						<div class="grid-col"	data-col="3">
 							<button class="grid-button">.</button>
 						</div>
-						<div class="grid-col"  data-col="4">
+						<div class="grid-col"	data-col="4">
 							<button class="grid-button">.</button>
 						</div>
-						<div class="grid-col"  data-col="5">
+						<div class="grid-col"	data-col="5">
 							<button class="grid-button">.</button>
 						</div>
 					</div>
 					<div class="grid-row">
-						<div class="grid-col"  data-col="1">
+						<div class="grid-col"	data-col="1">
 							<button class="grid-button high"></button>
 						</div>
-						<div class="grid-col"  data-col="2">
+						<div class="grid-col"	data-col="2">
 							${_.gridDigitButtons()}
 						</div>
-						<div class="grid-col"  data-col="3">
+						<div class="grid-col"	data-col="3">
 							${_.gridDigitButtons()}
 						</div>
-						<div class="grid-col"  data-col="4">
+						<div class="grid-col"	data-col="4">
 							${_.gridDigitButtons()}
 						</div>
-						<div class="grid-col"  data-col="5">
+						<div class="grid-col"	data-col="5">
 							${_.gridDigitButtons()}
 						</div>
 					</div>
@@ -864,33 +881,33 @@ export const view = {
 						<div class="grid-col" data-col="1">
 							<button class="grid-button">-</button>
 						</div>
-						<div class="grid-col"  data-col="2">
+						<div class="grid-col"	data-col="2">
 							<button class="grid-button">.</button>
 						</div>
-						<div class="grid-col"  data-col="3">
+						<div class="grid-col"	data-col="3">
 							<button class="grid-button">.</button>
 						</div>
-						<div class="grid-col"  data-col="4">
+						<div class="grid-col"	data-col="4">
 							<button class="grid-button">.</button>
 						</div>
-						<div class="grid-col"  data-col="5">
+						<div class="grid-col"	data-col="5">
 							<button class="grid-button">.</button>
 						</div>
 					</div>
 					<div class="grid-row last">
-						<div class="grid-col"  data-col="1">
+						<div class="grid-col"	data-col="1">
 							<button class="grid-button high"></button>
 						</div>
-						<div class="grid-col"  data-col="2">
+						<div class="grid-col"	data-col="2">
 							${_.gridDigitButtons()}
 						</div>
-						<div class="grid-col"  data-col="3">
+						<div class="grid-col"	data-col="3">
 							${_.gridDigitButtons()}
 						</div>
-						<div class="grid-col"  data-col="4">
+						<div class="grid-col"	data-col="4">
 							${_.gridDigitButtons()}
 						</div>
-						<div class="grid-col"  data-col="5">
+						<div class="grid-col"	data-col="5">
 							${_.gridDigitButtons()}
 						</div>
 					</div>
@@ -1107,4 +1124,47 @@ export const view = {
 	},
 	/* Questions tpls */
 	
+	skillSummary(summary,category,concept){
+		const _ = this;
+		return `
+			<div class="test-inner">
+				<h5 class="block-title test-title"><span>You finished ${concept}</span></h5>
+				<p class="test-text">Description text about rules at the real test - if there will be break or not etc.</p>
+				<div class="test-result">
+					<div class="test-result-block half violet">
+						<h6 class="test-result-title"><span>Questions Answered</span></h6>
+						<p class="test-result-score">${summary['answered']}</p>
+					</div>
+					<div class="test-result-block half turquoise">
+						<h6 class="test-result-title"><span>Questions Correct</span></h6>
+						<p class="test-result-score">${summary['correct']}</p>
+					</div>
+					<div class="test-result-block half gold">
+						<h6 class="test-result-title"><span>Stars for section of the Test</span></h6>
+						<p class="test-result-score">+${summary['stars']}</p>
+						<div class="test-result-img">
+							<svg>
+								<use xlink:href="#stars"></use>
+							</svg>
+							<svg>
+								<use xlink:href="#stars"></use>
+							</svg>
+							<svg>
+								<use xlink:href="#stars"></use>
+							</svg>
+						</div>
+					</div>
+					<div class="test-result-block blue half">
+						<h6 class="test-result-title"><span>Skill Level: Converting between decimals, fractions, and percents</span></h6>
+						<p class="test-result-score">${summary['level']}</p>
+						<div class="test-result-img solo">
+							<svg>
+								<use xlink:href="#graphic-3"></use>
+							</svg>
+						</div>
+					</div>
+				</div>
+			</div>
+		`;
+	}
 }

@@ -46,6 +46,9 @@ export class PracticeModule extends StudentPage{
 		};
 		_.innerQuestionId = 1;
 		_.answerVariant = {};
+		_.isLastQuestion = false;
+		_.testFinished = false;
+		_.currentTestType = 'quiz';
 		_.set({
 			currentQuestion: null
 		})
@@ -54,7 +57,8 @@ export class PracticeModule extends StudentPage{
 			'domReady','changeSection','changePracticeTab','jumpToQuestion',
 			'startTest','enterGridAnswer','checkAnswer','setCorrectAnswer',
 			'showForm','saveBookmark','saveNote','saveBookmark','changeInnerQuestionId',
-			'showTestLabelModal','editNote','deleteNote','saveReport',
+			'showTestLabelModal','editNote','deleteNote','saveReport','changeQuestion','viewResult',
+			'startQuiz','checkQuizAnswer'
 		])
 	}
 
@@ -67,15 +71,24 @@ export class PracticeModule extends StudentPage{
 			_.fillMathematicsSection();
 		}
 		if( _.subSection == 'welcome' ){
+			_.testFinished = false;
 			_.fillWelcomeSection(data);
 		}
 		if( _.subSection == 'directions' ){
 			_.fillDirectionsSection(data)
 		}
+		if( _.subSection == 'quizDirections' ){
+			_.fillQuizDirectionsSection(data)
+		}
 		if( _.subSection == 'questions' ){
 			_.fillQuestionSection(data);
 		}
-		
+		if( _.subSection == 'quizQuestions' ){
+			_.fillQuizQuestionSection(data);
+		}
+		if( _.subSection == 'summary' ){
+			_.fillSummary();
+		}
 	}
 	
 	
@@ -85,24 +98,25 @@ export class PracticeModule extends StudentPage{
 		let inner = _.f('#bodyInner');
 		_.clear(inner)
 		inner.append(_.markup(_.practiceTasksTpl()));
+		let cont = _.f('.practices-task-list');
+		_.clear(cont);
+		await _.rcQuizFill();
+		
 		let skills = await Model.getSectionCategories('math');
 		_.rcAchievementFill(skills);
+		
+		
+		
 		
 	}
 	async fillEnglishSection(){
 		const _ = this;
 		let inner = _.f('#bodyInner');
 		_.clear(inner);
-		/*let headerData = {
-			title: 'Your Diagnostics Recomendations',
-			subtitle: ['Take these 4 quizzes or a full test to unlock your practice recommendations','Today’s schedule: 5 / 10 questions completed'],
-			gap: false,
-			titlesData: {
-				titleCls: 'practice-title practice-block-title',
-				subtitleCls: 'practice-block-subtitle'
-			}
-		}*/
 		inner.append(_.markup(_.practiceTasksTpl()));
+		let cont = _.f('.practices-task-list');
+		_.clear(cont);
+		await _.rcQuizFill('english');
 		let skills = await Model.getSectionCategories('english');
 		
 		_.rcAchievementFill(skills);
@@ -115,6 +129,22 @@ export class PracticeModule extends StudentPage{
 		_.f('#welcome-header-title').textContent = currentConcept['concept'];
 		_.f('#welcome-btn').setAttribute('data-id',currentConcept['concept']);
 	}
+	async fillQuizDirectionsSection({item}){
+		const _ = this;
+		let
+			title = item.getAttribute('data-id'),
+			num = item.getAttribute('data-num'),
+			subject = item.getAttribute('data-subject');
+		_.currentTestType = 'quiz';
+		_.currentQuizNum = num;
+		_.currentQuizSubject = subject;
+		_.f('#directions-header-title').textContent = title;
+		_.f('#directions-btn').setAttribute('data-id',title);
+		_.f('#directions-btn').setAttribute('section','quizQuestions');
+		
+		
+	
+	}
 	async fillDirectionsSection({item}){
 		const _ = this;
 		let
@@ -124,12 +154,23 @@ export class PracticeModule extends StudentPage{
 		_.f('#directions-btn').setAttribute('data-id',currentConcept['concept']);
 		_.f('#directions-btn').setAttribute('data-category',currentConcept['category']);
 	}
+	async fillQuizQuestionSection({item}){
+		const _ = this;
+		let currentQuiz = await Model.getCurrentQuiz(_.currentQuizSubject,_.currentQuizNum);
+		_.skillTests = currentQuiz['tests'];
+		
+		_.f('#question-header-title').textContent = _.currentQuizSubject;
+		_.f('.questions-length').textContent = _.questionsLength;
+		_.f('#question-pagination').append(_.markup(_.questionNavigation()));
+		
+		_._$.currentQuestion =_.skillTests[_.questionPos];
+	}
 	async fillQuestionSection({item}){
 		const _ = this;
 		let
 			conceptName = item.getAttribute('data-id'),
 			{currentConcept,currentCategory} = Model.getCurrentConcept(conceptName);
-		
+		_.currentTestType = 'skill';
 		let response = await Model.start(currentConcept['concept'],currentCategory);
 
 		
@@ -156,7 +197,9 @@ export class PracticeModule extends StudentPage{
 			if(_.f(`#explanation-field-${question['_id']}`))	_.f(`#explanation-field-${question['_id']}`).append(_.markup(await _.explanationAnswer(question)));
 		});
 	}
-	
+	fillSummary(){
+		const _ = this;
+	}
 	async fillCheckedAnswers(){
 		const _ = this;
 		let test = await Model.getTestResults();
@@ -177,14 +220,32 @@ export class PracticeModule extends StudentPage{
 		}
 		_.setActions(['bookmark','note']);
 	}
-	async rcQuizFill(){
+	async rcQuizFill(subject='math'){
 		const _ = this;
-		let quizData = await Model.getQuizInfo();
-		let cont = _.f('.practice-task-list');
-		let itemsTpl = _.taskItemsTpl(quizData);
+		let
+			inner = _.f('#bodyInner'),
+			headerData = {
+				title: 'Your Diagnostics Recomendations',
+				subtitle: ['Skills recommended for you based on your past practice and frequency on the exam','Today’s schedule: 5 / 10 questions completed'],
+				gap: false,
+				icon: {
+					href:'graphic-2',
+					color: '0,175,175',
+				},
+				titlesData: {
+					titleCls: 'practice-title practice-block-title',
+					subtitleCls: 'practice-block-subtitle'
+				}
+		}
+		inner.prepend(_.markup(_.quizessTasksTpl(headerData)));
+		let
+			quizData = await Model.getQuizess(subject),
+			cont = _.f('.quizess-task-list'),
+			itemsTpl = _.taskItemsTpl(quizData);
 		_.clear(cont);
 		if (!itemsTpl.length) return;
 		cont.append(...itemsTpl);
+		
 	}
 	async rcPracticeFill(){
 		const _ = this;
@@ -198,8 +259,8 @@ export class PracticeModule extends StudentPage{
 	async rcAchievementFill(achieveData){
 		const _ = this;
 		//let achieveData = await Model.getAchievementInfo();
-		let cont = _.f('.practice-task-list');
-		_.clear(cont)
+		let cont = _.f('.practices-task-list');
+	//	_.clear(cont)
 		for (let item of achieveData) {
 			let listTpl = _.achievementItemsTpl(item);
 			if (!listTpl) continue;
@@ -330,65 +391,6 @@ export class PracticeModule extends StudentPage{
 		if(cont.querySelector('.active'))	cont.querySelector('.active').classList.remove('active');
 		cont.querySelector(`[section="${_.subSection}"]`).classList.add('active')
 	}
-	async changePracticeTabsssss({item}) {
-		const _ = this;
-		_.activeTab = item.getAttribute('data-pos');
-		item.parentNode.querySelector('.active').classList.remove('active');
-		item.classList.add('active');
-		let inner = _.f('#bodyInner');
-		if (_.activeTab == 0){
-			_.clear(inner)
-		}
-		else if (_.activeTab == 2){
-			_.clear(inner)
-			let headerData = {
-				title: 'Your Diagnostics Recomendations',
-				subtitle: ['Take these 4 quizzes or a full test to unlock your practice recommendations','Today’s schedule: 5 / 10 questions completed'],
-				gap: false,
-				titlesData: {
-					titleCls: 'practice-title practice-block-title',
-					subtitleCls: 'practice-block-subtitle'
-				}
-			}
-			inner.append(_.markup(_.practiceTasksTpl(headerData)))
-			_.rcQuizFill();
-		}
-		else if (_.activeTab == 3){
-			_.clear(inner)
-			let headerData = {
-				title: 'Your Diagnostics Recomendations',
-				subtitle: ['Skills recommended for you based on your past practice and frequency on the exam','Today’s schedule: 5 / 10 questions completed'],
-				gap: false,
-				icon: {
-					href:'graphic-2',
-					color: '0,175,175',
-				},
-				titlesData: {
-					titleCls: 'practice-title practice-block-title',
-					subtitleCls: 'practice-block-subtitle'
-				}
-			}
-			inner.append(_.markup(_.practiceTasksTpl(headerData)))
-			_.rcPracticeFill();
-			inner.append(_.markup(_.practiceAchievementTpl()));
-			_.rcAchievementFill();
-		}
-		else if (_.activeTab == 7){
-			_.clear(inner);
-			inner.append(_.markup(_.reportsAchievemntTpl()));
-
-			let summaryInfo = await Model.getSummaryInfo();
-			let summaryBlock = inner.querySelector('#summaryList');
-			_.clear(summaryBlock)
-			summaryBlock.append(_.markup(_.summaryBlockFill(summaryInfo)));
-
-			let reportsInfo = Model.getReports();
-			let reportsCont = inner.querySelector('#reports-table');
-			_.clear(reportsCont);
-			reportsCont.append(_.markup(_.reportsTableFill(reportsInfo)))
-
-		}
-	}
 	async changePracticeTab({item}){
 		const _ = this;
 		let pos = item.getAttribute('data-pos');
@@ -421,6 +423,7 @@ export class PracticeModule extends StudentPage{
 	jumpToQuestion({item}){
 		const _ = this;
 		let questionPos = item.getAttribute('data-pos');
+		_.questionPos = questionPos;
 		_._$.currentQuestion =  Model.skillTest[questionPos];// Model.allquestions[questionPos];//['questions'][0];
 		_.f('.pagination-link.active').classList.remove('active');
 		item.classList.add('active');
@@ -429,6 +432,27 @@ export class PracticeModule extends StudentPage{
 
 
 	//change methods
+	changeAnswerButtonToNext(){
+		const _ = this;
+		_.f('#check-answer-btn').textContent = 'Next to question';
+		let btn = _.f('#check-answer-btn');
+		btn.className= 'skip-to-question-button button-blue';
+		btn.setAttribute('data-click',`${this.componentName}:changeQuestion`);
+	}
+	changeNextButtonToAnswer(){
+		const _ = this;
+		_.f('#check-answer-btn').textContent = 'Check answer';
+		let btn = _.f('#check-answer-btn');
+		btn.className= 'skip-to-question-button button-blue';
+		if(_.currentTestType == 'quiz'){
+			btn.setAttribute('data-click',`${_.componentName}:checkQuizAnswer`);
+		}else{
+			btn.setAttribute('data-click',`${this.componentName}:checkAnswer`);
+		}
+		
+	}
+	
+	
 	changeInnerQuestionId({item}){
 		const _ = this;
 		_.innerQuestionId = item.getAttribute('data-question-id');
@@ -439,10 +463,28 @@ export class PracticeModule extends StudentPage{
 		let struct = _.flexible();
 		await _.render(struct,{item});
 	}
+	changeQuestion({item,event}){
+		const _ = this;
+		let
+			innerItem = _.f('.pagination-link.active'),
+			pos = parseInt(innerItem.nextElementSibling.getAttribute('data-pos'));
+		_.questionPos = pos;
+		_._$.currentQuestion =  Model.skillTest[pos];
+		innerItem.classList.remove('active');
+		innerItem.nextElementSibling.classList.add('active');
+	}
+	
 	// end change methods
 	
 	
 	// Show / hide / enter
+	async viewResult(){
+		const _ = this;
+		let
+			summary = await Model.getSummary(),
+			questionBody = _.f('#question-inner-body');
+		questionBody.innerHTML = await _.skillSummary(summary,	Model.currentCategory,Model.currentConcept['concept']);
+	}
 	enterGridAnswer({item,event}){
 		const _ = this;
 		let btn = event.target;
@@ -594,10 +636,17 @@ export class PracticeModule extends StudentPage{
 		target = btn.nextElementSibling;
 		target.classList.toggle('active')
 	}
+	setSummaryBtn(){
+		const _ = this;
+		let btn = _.f('#check-answer-btn');
+		btn.setAttribute('data-click',`${_.componentName}:viewResult`);
+		btn.textContent = 'View my results';
+	}
 	setAvailableCheckBtn(){
 		const _ = this;
 		_.f('#check-answer-btn').removeAttribute('disabled');
 	}
+	
 	setDisableCheckBtn(){
 		const _ = this;
 		_.f('#check-answer-btn').setAttribute('disabled','disabled');
@@ -622,7 +671,7 @@ export class PracticeModule extends StudentPage{
 				'body': 'practiceBody'
 			}
 		}
-		if(_.subSection === 'welcome') {
+		if( (_.subSection === 'welcome')) {
 			return {
 				'header':'simpleHeader',
 				'header-tabs':null,
@@ -630,12 +679,18 @@ export class PracticeModule extends StudentPage{
 				'body': 'welcomeCarcass'
 			}
 		}
-		if(_.subSection === 'directions') {
+		if(_.subSection === 'directions' || ( _.subSection === 'quizDirections')) {
 			return {
 				'body': 'directionsCarcass'
 			}
 		}
-		if(_.subSection === 'questions') {
+
+		if(_.subSection === 'summary') {
+			return {
+				'body': 'skillSummary'
+			}
+		}
+		if( (_.subSection === 'questions') || (_.subSection === 'quizQuestions')) {
 			return {
 				'body': 'questionsCarcass'
 			}
@@ -651,35 +706,47 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		return _._$.currentQuestion.type == 'grid-in';
 	}
+	async checkQuizAnswer({item}){
+		const _ = this;
+		if(_.isLastQuestion){
+			fullAnswer['status'] = 'finished';
+		}else{
+			_.changeAnswerButtonToNext();
+		}
+	}
 	async checkAnswer({item}){
 		const _ = this;
 		for(let id in _.answerVariant){
-			let answerObj = {
+			let
+				answerObj = {
 				"questionId": id,
 				"questionDatasId": _._$.currentQuestion['_id'],
 				"answer": _.answerVariant[id]['answer'],
-			};
+			},
+				fullAnswer = {
+					"answer": answerObj,
+					"category": Model.currentCategory,
+					"concept": Model.currentConcept['concept']
+				}
+			if(_.isLastQuestion){
+				fullAnswer['status'] = 'finished';
+			}else{
+				_.changeAnswerButtonToNext();
+			}
 			if(_.answerVariant[id]['note']){
 				answerObj['note'] = _.answerVariant[id]['note'];
 			}
 			if(_.answerVariant[id]['bookmark']){
 				answerObj['bookmark'] = _.answerVariant[id]['bookmark'];
 			}
-			let response = await Model.saveAnswer({
-				"answer": answerObj,
-				"category": Model.currentCategory,
-				"concept": Model.currentConcept['concept']
-			});
-			
-			_.setDisableCheckBtn();
-			
+	
+			let response = await Model.saveAnswer(fullAnswer);
 			_._$.currentQuestion['questions'].forEach( question => {
 				let ans =   _.answerVariant[id]['answer'];
 				if(_.isGrid()){
 					ans =   _.answerVariant[id]['answer'].join('');
 					ans = ans.replaceAll('_','');
 				}
-			
 				if(question['correctAnswer'] == ans){
 					_.f('#question-pagination .active').classList.add('done');
 					if( _.isGrid()){
@@ -695,9 +762,11 @@ export class PracticeModule extends StudentPage{
 					
 				}
 			});
-			
+			if(_.isLastQuestion){
+				_.setSummaryBtn();
+				_.testFinished = true;
+			}
 		}
-		
 	}
 	async startTest({item}){
 		const _ = this;
@@ -755,6 +824,16 @@ export class PracticeModule extends StudentPage{
 			}
 		});
 	}
+	async startQuiz({item}){
+		const _ = this;
+		let
+			num= item.getAttribute('data-num'),
+			subject= item.getAttribute('data-subject'),
+			quiz = await Model.getCurrentQuiz(subject,num);
+		console.log(quiz);
+	}
+	
+	
 	/* Work with note */
 	editNote({item}){
 		const _ = this;
@@ -778,19 +857,33 @@ export class PracticeModule extends StudentPage{
 	/* Work with note end */
 	
 	// inited methods
-	async init() {
+	async init(){
 		const _ = this;
 		
 		_._( async ({currentQuestion})=>{
 			if( !_.initedUpdate ){
 				return void 'not inited yet';
 			}
+			if( _.testFinished ){
+				_.changeAnswerButtonToNext();
+			}else{
+				_.changeNextButtonToAnswer();
+			}
 			_.answerVariant = {};
+			if(_.questionPos == _.questionsLength-1){
+				//_.setSummaryBtn();
+				_.isLastQuestion = true;
+			}
 			let questionBody = _.f('#question-inner-body');
 			questionBody.innerHTML = await _.getQuestionTpl();
-			let
-				rawAnswers = await Model.getTestResults(),
-				placedAnswers = {};
+			let rawAnswers = [];
+			if(_.currentTestType == 'quiz'){
+			
+			}else{
+				rawAnswers = await Model.getTestResults();
+			}
+			
+			let	placedAnswers = {};
 			if(!rawAnswers.length) return void  'No answers from Server';
 
 			rawAnswers.forEach( (item) => {
@@ -817,11 +910,15 @@ export class PracticeModule extends StudentPage{
 			
 			_.fillExplanation(currentQuestion);
 			_.fillNote(currentAnswers);
-			_.setBookmark(currentAnswers)
-			_.setDisableCheckBtn();
-			
+			_.setBookmark(currentAnswers);
+			if(!_.testFinished ){
+				_.setDisableCheckBtn();
+			}else{
+				//_.setNextButton();
+			}
 		})
-	
+		
+		
 	}
 	
 	

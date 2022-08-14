@@ -78,8 +78,9 @@ export class TestsModule extends StudentPage{
 	
 	async fillTestsBody(){
 		const _ = this;
-		let pickList = _.f('#testPickList'),
-		buttonCont = _.f('#test-pick-button-cont');
+		let
+			pickList = _.f('#testPickList'),
+			buttonCont = _.f('#test-pick-button-cont');
 		pickList.innerHTML = '<img src="/img/loader.gif" alt="Loading...">';
 	//	buttonCont.innerHTML =  '<img src="/img/loader.gif" alt="Loading...">';
 		
@@ -91,9 +92,9 @@ export class TestsModule extends StudentPage{
 			_.clear(pickList);
 			pickList.append(_.markup(_.testPickTpl()));
 		}
-		
-		if(!Model.test['resultId']) return void 0;
 		_.clear(buttonCont);
+		if(!Model.test['resultId']) return void 0;
+		
 		buttonCont.append(_.markup(_.resetButtonTpl()));
 	}
 	async fillTestsList(){
@@ -223,14 +224,15 @@ export class TestsModule extends StudentPage{
 		}
 		_.isJump = false;
 	}
-	jumpToQuestion({item,event}){
+	async jumpToQuestion({item,event}){
 		const _ = this;
 		_.isJump = true;
+		
 		let
 			jumpQuestionPos = Model.currentQuestionPosById(item.parentNode.getAttribute('data-question-id')),
 			questionPageId = item.parentNode.getAttribute('data-questionpage-id');
 		if( _.questionPos == jumpQuestionPos ) return void 0;
-	
+		await _.saveAnswerToDB();
 		
 		if(questionPageId !== '-1'){
 			jumpQuestionPos = Model.currentQuestionDataPosById(questionPageId);
@@ -468,7 +470,11 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		//_.currentQuestion = _._$.currentQuestion['questions'][0];// Model.innerQuestion(_.questionPos);
 		return new Promise(  async (resolve) => {
+			if(_.isJump){
+				_.questionPos = Model.currentQuestionDataPosById(_._$.currentQuestion['_id'])
+			}
 			let questionData = Model.currentQuestionData(_.questionPos);
+
 			let handle = async (answer)=>{
 				return await Model.saveAnswer({
 					answer:{
@@ -859,5 +865,7 @@ export class TestsModule extends StudentPage{
 				}
 			}
 		},['currentQuestion']);
+		
+		
 	}
 }
