@@ -10,7 +10,10 @@ export class _Model {
 			skillPractice: `${env.backendUrl}/student/skill-practice`,
 			sectionCategories: `${env.backendUrl}/student/current-course/skill`,
 			create: `${env.backendUrl}/skill-results/create`,
-			results: `${env.backendUrl}/skill-results`
+			results: `${env.backendUrl}/skill-results`,
+			quizess: `${env.backendUrl}/student/current-course/quiz`,
+			quiz: `${env.backendUrl}/student/diagnostic-quiz`,
+			summary: `${env.backendUrl}/skill-results`
 		};
 	}
 	
@@ -415,6 +418,48 @@ export class _Model {
 		_.currentConcept = currentConcept;
 		return { currentCategory, currentConcept};
 	}
+	getQuizess(subject='math'){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['quizess']}/${subject}`,{
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				_.skillTest = response['response']['tests'];
+				resolve(response['response']);
+			}
+		});
+	}
+	getCurrentQuiz(subject,num){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['quiz']}/?subject=${subject}&num=${num}`,{
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				_.skillTest = response['response']['tests'];
+				resolve(response['response']);
+			}
+		});
+	}
+	getSummary(){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['summary']}/${_.resultId}/summary`,{
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				console.log(response);
+				resolve(response['response']);
+			}
+		});
+	}
 	
 	
 	hasTestFromStorage(){
@@ -498,9 +543,10 @@ export class _Model {
 	async saveAnswer(answer){
 		// Save choosed answer in server
 		const _ = this;
-		if(answer){
+		if(!answer['status']){
 			answer['status'] = 'in progress';
 		}
+	//	answer['status'] = 'finished';
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['results']}/${_.resultId}`,{
 				method: 'PUT',
@@ -518,6 +564,7 @@ export class _Model {
 		});
 	}
 	
+
 	
 }
 

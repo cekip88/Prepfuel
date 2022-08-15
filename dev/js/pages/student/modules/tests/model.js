@@ -13,6 +13,7 @@ class _Model{
 			results: `${env.backendUrl}/tests-results`,
 			resultsBy: `${env.backendUrl}/tests/test-by-result`,
 			reset: `${env.backendUrl}/tests-results/reset/`,
+	
 		};
 		_.testStatus = 'in progress';
 		_.currentSectionPos = 0; // Section position in array section list
@@ -416,6 +417,9 @@ class _Model{
 		}
 		localStorage.setItem('test',JSON.stringify(test));
 	}
+	
+
+	
 	
 	isFinished(){
 		return this.testStatus == 'finished';

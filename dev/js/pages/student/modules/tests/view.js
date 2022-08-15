@@ -428,7 +428,8 @@ export const view = {
 				<h5 class="block-title test-title"><span>Question ${_.questionPos+1} of ${_.questionsLength}</span></h5>
 				${_.actionsTpl(_._$.currentQuestion)}
 			</div>
-			<div class="test-inner test-row">
+			<div class="test-inner ">
+			<div class="test-row">
 				<div class="test-col wide">
 					`;
 		if(currentQuestion['questionImages']){
@@ -493,9 +494,12 @@ export const view = {
 					</div>
 					</div>
 				</div>
+				</div>
+				${_.noteTpl(currentQuestion)}
+				${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
 			</div>
-			${_.noteTpl(currentQuestion)}
-			${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
+			
+		
 		`;
 		return tpl;
 	},
@@ -811,7 +815,7 @@ export const view = {
 			<p class="test-text">
 				<span>After completing a section, you can stop or review</span>
 			</p>
-			<ul class="test-pick-list shsat loader-parent" >
+			<ul class="test-pick-list shsat " >
 			<li class="test-pick-item green">
 				<div class="test-pick-time"><span id="testTime">180</span><span>min</span></div>
 				<ul class="test-pick-desc">
@@ -835,8 +839,6 @@ export const view = {
 			</li>
 			</ul>
 		`;
-			
-			
 			return tpl;
 	},
 	resetButtonTpl(){
