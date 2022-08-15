@@ -96,6 +96,10 @@ export class DashboardModule extends ParentPage{
 		_.previousSection = _.subSection;
 		let section = item.getAttribute('section');
 		_.subSection = section;
+		if (item.getAttribute('data-clear')) {
+			_.studentInfo = {};
+			_.metaInfo = {};
+		}
 
 		if (section == 'welcome') {
 			_.moduleStructure = {
@@ -758,10 +762,12 @@ export class DashboardModule extends ParentPage{
 			inputDate = cont.querySelector('g-input');
 		if (item.id == "have_yet") {
 			_.studentInfo.testDate = null;
+			_.studentInfo.testDatePicked = false;
 			inputDate.setAttribute('disabled',true);
 			inputDate.value = '';
 		} else {
-			inputDate.removeAttribute('disabled')
+			inputDate.removeAttribute('disabled');
+			_.studentInfo.testDatePicked = true;
 		}
 	}
 	dateToFormat( date, format ){

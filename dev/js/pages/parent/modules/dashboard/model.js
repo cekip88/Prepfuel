@@ -59,6 +59,7 @@ export class _Model{
 	}
 	updateStudent(studentData) {
 		const _ = this;
+		console.log(studentData)
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.getEndpoint('updateStudent')}/${studentData['studentId']}`, {
 				method: 'PUT',

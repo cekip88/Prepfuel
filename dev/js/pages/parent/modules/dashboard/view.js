@@ -1621,7 +1621,7 @@ export const view = {
 					</div>
 					<div class="student-profile-footer">
 						<div class="student-profile-actions">
-							<button class="test-footer-back" data-click="${_.componentName}:changeSection" section="dashboard">
+							<button class="test-footer-back" data-clear="true" data-click="${_.componentName}:changeSection" section="dashboard">
 								<span>Discard</span>
 							</button>
 							<button class="button-blue" data-click="${_.componentName}:updateStudent">

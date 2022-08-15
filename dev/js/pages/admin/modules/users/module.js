@@ -313,6 +313,7 @@ export class UsersModule extends AdminPage {
 			inputDate = cont.querySelector('g-input');
 		if (item.id == "have_yet") {
 			_.studentInfo.testDatePicked = false;
+			_.studentInfo.testDate = null;
 			inputDate.setAttribute('disabled',true);
 			inputDate.value = '';
 		} else {
