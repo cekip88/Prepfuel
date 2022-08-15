@@ -14,6 +14,7 @@ class _loginModel{
 			'register': `${env.backendUrl}/auth/register`,
 			'forgot': `${env.backendUrl}/auth/forgot-password`,
 			'reset': `${env.backendUrl}/auth/reset-password`,
+			'wizardData': `${env.backendUrl}/user/wizard-data`,
 		};
 		
 		this.dashboards = {
@@ -47,6 +48,9 @@ class _loginModel{
 				await G_Bus.trigger(_.componentName,'loginSuccess',response);
 				localStorage.setItem('me',JSON.stringify(user));
 				await G_Bus.trigger('router','changePage',`/${user['role']}/dashboard`);
+
+				let wizardData = await _.getWizardData();
+				localStorage.setItem('wizardData',JSON.stringify(wizardData));
 			}else{
 				G_Bus.trigger(_.componentName,'loginFail',{
 					"response": response,
@@ -125,6 +129,24 @@ class _loginModel{
 			}
 			resolve(false);
 		})
+	}
+
+	async getWizardData(){
+		const _ = this;
+		return new Promise(async resolve => {
+
+			let rawResponse = await fetch(`${_.endpoints['wizardData']}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				}
+			}
+			resolve(null);
+		});
 	}
 }
 export const loginModel = new _loginModel();

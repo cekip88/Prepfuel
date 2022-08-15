@@ -272,7 +272,7 @@ export class UsersModule extends AdminPage {
 		let response = await Model.updateStudentPassword(passwords);
 		if (response) {
 			G_Bus.trigger('modaler','closeModal')
-			_.showSuccessPopup('Password has bben changed');
+			_.showSuccessPopup('Password has been changed');
 		}
 	}
 	// Update methods
@@ -1028,7 +1028,7 @@ export class UsersModule extends AdminPage {
 		let response = await Model.checkEmail(value);
 		if (response.substr(response.length - 4) !== 'free') {
 			item.setMarker('red');
-			text.textContent = 'User with this email is already exists';
+			text.textContent = 'User with this email address already exists';
 			text.style = 'color: red;'
 		} else {
 			item.setMarker();

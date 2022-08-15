@@ -42,17 +42,26 @@ class HeaderBlock extends G{
 		let courses = localStorage.getItem('courses');
 		if (courses) {
 			courses = JSON.parse(courses);
-			if (courses.length > 1) {
-				let i = false;
+			let coursesArr = [],index = 0;
+			for (let course of courses) {
+				let data = {
+					text: `${course.course.title} ${course.level.title}`,
+					value: course.level._id
+				};
+				if (!index) {
+					data.active = true;
+					index++;
+				}
+				coursesArr.push(data);
+			}
+			if (coursesArr.length > 1) {
 				tpl += `
 					<div class="head-select-block"><span>Course</span>
-						<g-select class="g-select select head-select" classname="head-select" items='[`;
-				for (let course of courses) {
-					tpl += `{"text":"${course.course.title}","value":"${course.course._id}","active":${!i}}`
-					i = true;
-				}
-				tpl += `
-						]'><input type="hidden" name="null" slot="value" value="isee"></g-select>
+						<g-select 
+							class="g-select select head-select" 
+							classname="head-select" 
+							items='${JSON.stringify(coursesArr)}'
+						></g-select>
 					</div>
 				`;
 			}

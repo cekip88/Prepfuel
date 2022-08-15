@@ -15,6 +15,7 @@ export class _Model{
 			updateStudent: `/user/update-student`,
 			removeCourse: `/user/remove-plan`,
 			assignCourse: `/user/assign-plan`,
+			updateCourse: `/user/update-plan`,
 		};
 	}
 	getEndpoint(endpoint) {
@@ -59,7 +60,6 @@ export class _Model{
 	}
 	updateStudent(studentData) {
 		const _ = this;
-		console.log(studentData)
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.getEndpoint('updateStudent')}/${studentData['studentId']}`, {
 				method: 'PUT',
@@ -292,6 +292,27 @@ export class _Model{
 				method: 'POST',
 				headers: _.baseHeaders,
 				body: JSON.stringify(assignData)
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('assignCourse', response);
+				}
+			} else {
+				_.wrongRequest('assignCourse', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+	updateCourse(updateData) {
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('updateCourse')}/${updateData._id}`, {
+				method: 'PUT',
+				headers: _.baseHeaders,
+				body: JSON.stringify(updateData)
 			});
 			if(rawResponse.status < 210) {
 				let response = await rawResponse.json();

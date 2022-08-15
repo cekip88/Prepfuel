@@ -725,7 +725,6 @@ export default class GSelect extends GComponent {
 				color: #fff;
 			}
 			.head-select .g-select-body {
-				width: 92px;
 				padding: 0 12px;
 				background-color: #fff;
 				align-items: center;

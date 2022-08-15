@@ -57,7 +57,7 @@ export class DashboardModule extends ParentPage{
 			'skipTestDate',
 			'showAddCard','showAddBillingAddress',
 			'hideProfile','showHiddenScores',
-			'fillProfile','showRemovePopup','removeCourse','assignCourse',
+			'fillProfile','showRemovePopup','removeCourse','assignCourse','inputCourseData','updateCourse',
 		]);
 	}
 	async domReady() {
@@ -99,6 +99,7 @@ export class DashboardModule extends ParentPage{
 		if (item.getAttribute('data-clear')) {
 			_.studentInfo = {};
 			_.metaInfo = {};
+			_.courseData = {};
 		}
 
 		if (section == 'welcome') {
@@ -149,7 +150,6 @@ export class DashboardModule extends ParentPage{
 		if(_.currentStudent === _.me['parent']['students'][index]) return void 0;
 
 		_.currentStudent = _.me['parent']['students'][index];
-		console.log(_.currentStudent.currentPlan)
 		let activeButton = item.closest('.section').querySelector('.active');
 		activeButton.classList.remove('active');
 		item.classList.add('active');
@@ -173,7 +173,7 @@ export class DashboardModule extends ParentPage{
 
 		_.body.append( _.markup( _.personalInfo()));
 
-		if (_.currentStudent['currentPlan']){
+		if (!_.isEmpty(_.currentStudent['currentPlan'])){
 			if (_.currentStudent['currentPlan']['firstSchool']) {
 				_.studentInfo['firstSchool'] = _.currentStudent['currentPlan']['firstSchool']['_id'] ?? _.currentStudent['currentPlan']['firstSchool'];
 			}
@@ -208,17 +208,17 @@ export class DashboardModule extends ParentPage{
 			if (_.currentStudent['currentPlan']['_id'] == item['_id']) curPlanIndex = index;
 		})
 		_.currentStudent['plans'].splice(curPlanIndex,curPlanIndex + 1);
-		_.updateMe();
-
 		_.currentStudent['currentPlan'] = {};
+		_.updateMe();
 		_.studentInfo.firstSchool = null;
 		_.studentInfo.secondSchool = null;
 		_.studentInfo.thirdSchool = null;
 		_.studentInfo.testDate = null;
 		_.studentInfo.testDatePicked = false;
 
+		_.showSuccessPopup('Course has been successfully removed');
 
-		_.showSuccessPopup('Course has been successfully removed')
+		console.log(_.me,_.currentStudent,_.studentInfo)
 	}
 	async assignCourse() {
 		const _ = this;
@@ -226,12 +226,45 @@ export class DashboardModule extends ParentPage{
 		if(!response)	return void 0;
 		_.currentStudent['currentPlan'] = response['currentPlan'];
 		_.currentStudent['plans'].push(response['currentPlan']);
-		console.log(_.currentStudent)
 		_.updateMe();
 
 		let btn = _.markupElement(`<button section="profile"></button>`)
 		_.changeSection({item:btn})
 		_.showSuccessPopup('Course has been successfully assigned');
+	}
+	async updateCourse(){
+		const _ = this;
+		for (let key in _.courseData) {
+			let response = await Model.updateCourse(_.courseData[key]);
+			if (_.courseData[key]['_id'] == _.currentStudent['currentPlan']['_id']) {
+				_.currentStudent['currentPlan'] = response;
+			}
+			_.currentStudent['plans'].find((item,index)=>{
+				if (item['_id'] == _.courseData[key]['_id']) {
+					_.currentStudent['plans'][index] = response;
+				}
+			})
+		}
+		_.updateMe();
+	}
+	inputCourseData({item}){
+		const _ = this;
+		if (!_.courseData) _.courseData = {};
+
+		let curPlanId = _.currentStudent['currentPlan']['_id'];
+		if (!_.courseData[curPlanId]) _.courseData[curPlanId] = {_id: curPlanId, studentId:_.currentStudent['_id']};
+
+		let
+			fstSchool = _.currentStudent['currentPlan']['firstSchool'],
+			sndSchool = _.currentStudent['currentPlan']['secondSchool'],
+			trdSchool = _.currentStudent['currentPlan']['thirdSchool'],
+			testDate = _.currentStudent['currentPlan']['testDate'];
+		if (fstSchool) _.courseData[curPlanId]['firstSchool'] = fstSchool['_id'] ?? fstSchool;
+		if (sndSchool) _.courseData[curPlanId]['secondSchool'] = sndSchool['_id'] ?? sndSchool;
+		if (trdSchool) _.courseData[curPlanId]['thirdSchool'] = trdSchool ?? trdSchool;
+		if (testDate) _.courseData[curPlanId]['testDate'] = testDate;
+
+		_.courseData[curPlanId][item.getAttribute('name')] = item.value;
 	}
 
 	//dashboard
@@ -537,6 +570,8 @@ export class DashboardModule extends ParentPage{
 		_.currentStudent = response;
 		_.updateMe()
 
+		if (!_.isEmpty(_.courseData)) await _.updateCourse();
+
 		item.setAttribute('rerender',true);
 		item.setAttribute('section','dashboard');
 		G_Bus.trigger(_.componentName,'changeSection',{item})
@@ -748,7 +783,7 @@ export class DashboardModule extends ParentPage{
 		}
 		if (response.substr(response.length - 4) !== 'free') {
 			item.setMarker('red');
-			text.textContent = 'User with this email is already exists';
+			text.textContent = 'User with this email address already exists';
 			text.style = 'color: red;'
 		} else {
 			item.setMarker();

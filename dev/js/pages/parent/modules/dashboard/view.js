@@ -616,21 +616,40 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">First choice</label>
 						</div>
-						<g-select class="select adding-select" name="firstSchool" data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
-						items='${JSON.stringify(firstItems)}'></g-select>
+						<g-select 
+							class="select adding-select" 
+							name="firstSchool" 
+							data-change="${_.componentName}:inputCourseData" 
+							classname="adding-select" 
+							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
+							title=""
+							items='${JSON.stringify(firstItems)}'
+						></g-select>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
 							<label class="form-label">Second choice</label>
 						</div>
-						<g-select class="select adding-select" name="secondSchool" data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
+						<g-select 
+							class="select adding-select" 
+							name="secondSchool"
+							data-change="${_.componentName}:inputCourseData" 
+							classname="adding-select" 
+							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
+							title=""
 						items='${JSON.stringify(secondItems)}'></g-select>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
 							<label class="form-label">Third choice</label>
 						</div>
-						<g-select class="select adding-select" name="thirdSchool" data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
+						<g-select 
+							class="select adding-select" 
+							name="thirdSchool" 
+							data-change="${_.componentName}:inputCourseData" 
+							classname="adding-select" 
+							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
+							title=""
 						items='${JSON.stringify(thirdItems)}'></g-select>
 					</div>
 				</div>
@@ -1624,7 +1643,7 @@ export const view = {
 							<button class="test-footer-back" data-clear="true" data-click="${_.componentName}:changeSection" section="dashboard">
 								<span>Discard</span>
 							</button>
-							<button class="button-blue" data-click="${_.componentName}:updateStudent">
+							<button class="button-blue" data-clear="true" data-click="${_.componentName}:updateStudent">
 								<span>Save Changes</span>
 							</button>
 						</div>
@@ -1653,7 +1672,16 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Official test date</label>
 					</div>
-					<g-input type="date" name="testDate" format="month DD, YYYY" icon="false" value="${testDate}" class="g-form-item" classname="form-input adding-inpt"></g-input>
+					<g-input 
+						type="date" 
+						name="testDate" 
+						format="month DD, YYYY" 
+						icon="false" 
+						value="${testDate}" 
+						class="g-form-item" 
+						classname="form-input adding-inpt"
+						data-change="${_.componentName}:inputCourseData"
+					></g-input>
 					</div>
 			</div>
 			${_.choiseSelectStudent(choiceData,'Application School List')}
