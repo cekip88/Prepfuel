@@ -612,7 +612,7 @@ export class TestsModule extends StudentPage{
 	}
 	changeSkipButtonToFinish(pos){
 		const _ = this;
-		_.f('.skip-to-question-title').textContent = 'Finish this section';
+		_.f('.skip-to-question-title').textContent = 'Next section';
 		_.f('.skip-to-question').textContent = '';
 		let btn = _.f('.skip-to-question-button');
 		btn.classList.add('button-blue');

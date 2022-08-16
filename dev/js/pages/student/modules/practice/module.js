@@ -164,7 +164,6 @@ export class PracticeModule extends StudentPage{
 		_.f('#question-pagination').append(_.markup(_.questionNavigation()));
 		
 		let quizObj = await Model.startQuiz();
-		console.log(quizObj);
 		
 		_._$.currentQuestion =_.skillTests[_.questionPos];
 	}
@@ -444,10 +443,13 @@ export class PracticeModule extends StudentPage{
 	}
 	changeNextButtonToAnswer(){
 		const _ = this;
-		_.f('#check-answer-btn').textContent = 'Check answer';
+		
+	
 		let btn = _.f('#check-answer-btn');
+		btn.textContent = 'Check answer';
 		btn.className= 'skip-to-question-button button-blue';
 		if(_.currentTestType == 'quiz'){
+			btn.textContent = 'Next to question';
 			btn.setAttribute('data-click',`${_.componentName}:checkQuizAnswer`);
 		}else{
 			btn.setAttribute('data-click',`${this.componentName}:checkAnswer`);
@@ -736,7 +738,8 @@ export class PracticeModule extends StudentPage{
 			}
 			
 			let response = await Model.saveQuizAnswer(fullAnswer);
-			_._$.currentQuestion['questions'].forEach( question => {
+			console.log(response);
+	/*		_._$.currentQuestion['questions'].forEach( question => {
 				let ans =   _.answerVariant[id]['answer'];
 				if(_.isGrid()){
 					ans =   _.answerVariant[id]['answer'].join('');
@@ -756,7 +759,10 @@ export class PracticeModule extends StudentPage{
 					}
 					
 				}
-			});
+			});*/
+			
+			_.changeQuestion({item});
+			
 			if(_.isLastQuestion){
 				_.setSummaryBtn();
 				_.testFinished = true;
@@ -819,7 +825,6 @@ export class PracticeModule extends StudentPage{
 	}
 	async startTest({item}){
 		const _ = this;
-		console.log(item);
 		let
 			concept = item.getAttribute('data-id'),
 			category = item.getAttribute('data-category');
@@ -928,7 +933,6 @@ export class PracticeModule extends StudentPage{
 			questionBody.innerHTML = await _.getQuestionTpl();
 			let rawAnswers = [];
 			if(_.currentTestType == 'quiz'){
-			
 			}else{
 				rawAnswers = await Model.getTestResults();
 			}
