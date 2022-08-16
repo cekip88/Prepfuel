@@ -52,12 +52,13 @@ export class DashboardModule extends ParentPage{
 			'generatePassword','validatePassword','checkEmail','fillStudentInfo',
 			'addingStep','assignStep',
 			'changeStudentLevel','changeTestType','changePayMethod',
-			'updateStudent',
+			'updateStudent','showRemoveUserPopup','removeUser',
 			'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
 			'skipTestDate',
 			'showAddCard','showAddBillingAddress',
 			'hideProfile','showHiddenScores',
 			'fillProfile','showRemovePopup','removeCourse','assignCourse','inputCourseData','updateCourse',
+			'showCancelMembership',
 		]);
 	}
 	async domReady() {
@@ -84,13 +85,12 @@ export class DashboardModule extends ParentPage{
 			_.fillDashboardTabs();
 			_.fillStudentProfile();
 		}
-		if ( _.subSection == 'profile' ) {
+		if ( _.subSection == 'profile' ){
 			_.body = _.f("g-body");
 			_.clear( _.body );
 			_.fillProfile();
 		}
 	}
-
 	async changeSection({item, event}) {
 		const _ = this;
 		_.previousSection = _.subSection;
@@ -166,13 +166,12 @@ export class DashboardModule extends ParentPage{
 		const _ = this;
 		_.studentInfo = Object.assign({},_.currentStudent['user']);
 		_.metaInfo = {};
-		_.studentInfo['currentSchool'] = _.currentStudent['currentSchool'];
+		_.studentInfo['currentSchool'] = _.currentStudent['currentSchool'] ?? '';
 		_.studentInfo['currentPlan'] = _.currentStudent['currentPlan'];
-		_.studentInfo['grade'] = _.currentStudent['grade']['_id'];
+		_.studentInfo['grade'] = _.currentStudent['grade'] ? _.currentStudent['grade']['_id'] : null;
 		_.studentInfo['studentId'] = _.currentStudent['_id'];
 
 		_.body.append( _.markup( _.personalInfo()));
-
 		if (!_.isEmpty(_.currentStudent['currentPlan'])){
 			if (_.currentStudent['currentPlan']['firstSchool']) {
 				_.studentInfo['firstSchool'] = _.currentStudent['currentPlan']['firstSchool']['_id'] ?? _.currentStudent['currentPlan']['firstSchool'];
@@ -186,7 +185,10 @@ export class DashboardModule extends ParentPage{
 			_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.getWizardData());
 		} else _.f('.student-profile-course-info').innerHTML = _.emptyCourseInfo();
 	}
-
+	showCancelMembership({item}) {
+		const _ = this;
+		G_Bus.trigger('modaler','showModal', {type:'html',target:'#cancelForm','closeBtn':'hide'});
+	}
 	showRemovePopup({item}) {
 		const _ = this;
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#removeForm','closeBtn':'hide'});
@@ -266,6 +268,33 @@ export class DashboardModule extends ParentPage{
 
 		_.courseData[curPlanId][item.getAttribute('name')] = item.value;
 	}
+	async removeUser({item}){
+		const _ = this;
+		let response = await Model.removeStudent(_.studentInfo['studentId']);
+		if (!response) return;
+
+		_.me['parent']['students'].find((student,index)=>{
+			if (student['_id'] === _.currentStudent['_id']) {
+				_.me['parent']['students'].splice(index,1);
+				localStorage.setItem('me',JSON.stringify(_.me));
+				_.currentStudent = {};
+			}
+		})
+
+		if (_.me['parent']['students'].length) {
+			_.currentStudent = _.me['parent']['students'][0];
+			item.setAttribute('section','dashboard');
+		} else {
+			item.setAttribute('section','welcome');
+		}
+
+		item.setAttribute('rerender',true);
+		item.setAttribute('data-clear',true);
+		G_Bus.trigger(_.componentName,'changeSection',{item});
+		G_Bus.trigger('modaler','closeModal');
+		_.showSuccessPopup('Student profile deleted');
+	}
+
 
 	//dashboard
 	async fillDashboardTabs(){
@@ -524,10 +553,7 @@ export class DashboardModule extends ParentPage{
 		let registerData = Object.assign({},_.studentInfo);
 		_.studentInfo = {};
 		_.metaInfo = {};
-
 		let resp = await Model.createStudent(registerData);
-		console.log(registerData,resp)
-
 		if (resp.status == "success") {
 			G_Bus.trigger('modaler','showModal',{
 				target: '#congratulationsPopup',
@@ -572,10 +598,44 @@ export class DashboardModule extends ParentPage{
 
 		if (!_.isEmpty(_.courseData)) await _.updateCourse();
 
+		let
+			passwords = item.closest('.parent').querySelector('.passwords'),
+			passInput = passwords.querySelector('g-input');
+		if (passInput.value) await _.saveChangePassword({item:passInput});
+
 		item.setAttribute('rerender',true);
 		item.setAttribute('section','dashboard');
 		G_Bus.trigger(_.componentName,'changeSection',{item})
 		_.showSuccessPopup('Student profile updated')
+	}
+	showRemoveUserPopup({item}){
+		const _ = this;
+		_.studentInfo['studentId'] = item.getAttribute('data-id');
+		G_Bus.trigger('modaler','showModal', {item:item,type:'html',target:'#removeUserForm','closeBtn':'hide'});
+	}
+	async saveChangePassword({item}){
+		const _ = this;
+		let
+			form = item.closest('.passwords'),
+			inputs = form.querySelectorAll('G-INPUT[type="password"]'),
+			role = form.getAttribute('data-role') ?? 'student';
+
+		let passwords = {
+			'_id': _[`${role}Info`].outerId ?? _[`${role}Info`]._id
+		};
+
+		for (let input of inputs) {
+			let name = input.getAttribute('name');
+			_[`${role}Info`][name] = input.value;
+			passwords[name] = input.value;
+		}
+
+		let response = await Model.updateStudentPassword(passwords);
+		if (response) {
+			_.showSuccessPopup('Password has been changed');
+		} else {
+			_.showErrorPopup('Password has been changed');
+		}
 	}
 
 	//avatar methods

@@ -164,13 +164,6 @@
 		white-space: nowrap
 
 
-.student
-	&-main
-		padding: 40px calc(50% + 12px) 40px 102px
-		background-size: 510px auto
-		background-position: calc(100% - 102px) 50%
-
-
 .upcoming
 	&-instructor
 		.info-button
@@ -574,6 +567,10 @@
 
 
 .student
+	&-main
+		padding: 40px calc(50% + 12px) 40px 102px
+		background-size: 510px auto
+		background-position: calc(100% - 102px) 50%
 	&-profile
 		&-row
 			+w(100%)
@@ -585,7 +582,7 @@
 			position: relative
 			&:after
 				+af
-				+wh(1px,860px)
+				+wh(1px,calc(100% - 20px))
 				position: absolute
 				top: 15px
 				right: 0

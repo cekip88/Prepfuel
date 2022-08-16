@@ -406,7 +406,7 @@ export const view = {
 		`;
 	},
 	
-	choiseSelectStudent(choiceData,title='School you are interested in applying to'){
+	choiceSelectStudent(choiceData,title='School you are interested in applying to'){
 		const _ = this;
 		let activeFirst,activeSecond,activeThird;
 
@@ -483,7 +483,7 @@ export const view = {
 		return `
 			<div class="adding-center">
 				<h3 class="adding-title">Application School List</h3>
-				${_.choiseSelectStudent(stepData)}
+				${_.choiceSelectStudent(stepData)}
 			</div>
 		`;
 	},
@@ -947,7 +947,7 @@ export const view = {
 						 items='${JSON.stringify(gradeItems)}'></g-select>
 					</div>
 				</div>
-				${_.choiseSelectStudent(stepData)}
+				${_.choiceSelectStudent(stepData)}
 			</div>
 		`;
 	},
@@ -1509,7 +1509,7 @@ export const view = {
 					<g-input type="date" name="testDate" format="month DD, YYYY" icon="false" value="${testDate}" class="g-form-item" classname="form-input adding-inpt"></g-input>
 					</div>
 			</div>
-			${_.choiseSelectStudent(choiceData,'Application School List')}
+			${_.choiceSelectStudent(choiceData,'Application School List')}
 			<div class="adding-section">
 				<h4 class="adding-subtitle withmar">Membership Plan</h4>
 				<div class="student-profile-plan">

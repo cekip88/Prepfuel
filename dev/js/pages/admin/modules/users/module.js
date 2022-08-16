@@ -395,11 +395,12 @@ export class UsersModule extends AdminPage {
 			studentId = profileData['studentId'];
 		}
 		let currentStudent = Model.studentsData.response.filter( student => student['_id'] == studentId )[0];
+		console.log(currentStudent)
 		_.studentInfo = Object.assign({},currentStudent['user']);
 		_.metaInfo = {};
-		_.studentInfo['currentSchool'] = currentStudent['currentSchool'];
+		_.studentInfo['currentSchool'] = currentStudent['currentSchool'] ?? '';
 		_.studentInfo['currentPlan'] = currentStudent['currentPlan'];
-		_.studentInfo['grade'] = currentStudent['grade']['_id'];
+		_.studentInfo['grade'] = currentStudent['grade'] ? currentStudent['grade']['_id'] : '';
 		_.studentInfo['studentId'] = currentStudent['_id'];
 		
 		_.f('.student-profile-inner').innerHTML = _.personalInfo();
