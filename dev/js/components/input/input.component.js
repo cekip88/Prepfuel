@@ -1075,7 +1075,7 @@ export default class GInput extends GComponent {
 		}
 		.inpt-checkbox-label-text {
 		  color: #5e6278;
-		  font-family: "Roboto-Medium";
+		  font-family: "Roboto-Regular";
 		}
 		.inpt-checkbox-label:after, .inpt-checkbox-label:before {
 		  content: "";

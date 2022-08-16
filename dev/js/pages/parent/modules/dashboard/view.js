@@ -61,6 +61,8 @@ export const view = {
 				${_.addBillingAddress()}
 				${_.registerSuccessPopup()}
 				${_.removeCourseTpl()}
+				${_.removeUserTpl()}
+				${_.cancelMembershipTpl()}
 			</div>
 		`;
 	},
@@ -371,11 +373,17 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">Grade</label>
 						</div>
-						<g-select class="select adding-select" name="grade" classname="adding-select" data-change="${_.componentName}:fillStudentInfo" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
-						 items='${JSON.stringify(gradeItems)}'></g-select>
+						<g-select 
+							class="select adding-select" 
+							name="grade" 
+							classname="adding-select" 
+							data-change="${_.componentName}:fillStudentInfo" 
+							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
+							title=""
+							items='${JSON.stringify(gradeItems)}'></g-select>
 					</div>
 				</div>
-				${_.choiseSelectStudent(_.wizardData)}
+				${_.choiceSelectStudent(_.wizardData)}
 			</div>
 		`;
 	},
@@ -598,7 +606,7 @@ export const view = {
 		}
 		return outItems;
 	},
-	choiseSelectStudent(choiceData,title='School you are interested in applying to'){
+	choiceSelectStudent(choiceData,title='School you are interested in applying to'){
 		const _ = this;
 		let activeFirst,activeSecond,activeThird;
 
@@ -606,9 +614,9 @@ export const view = {
 		if(_.studentInfo.secondSchool) activeSecond = `_id:${_.studentInfo.secondSchool}`;
 		if(_.studentInfo.thirdSchool) activeThird = `_id:${_.studentInfo.thirdSchool}`;
 		let
-			firstItems = _.createSelectItems(choiceData['schools'],"value:_id;text:school",activeFirst),
-			secondItems = _.createSelectItems(choiceData['schools'],"value:_id;text:school",activeSecond),
-			thirdItems = _.createSelectItems(choiceData['schools'],"value:_id;text:school",activeThird);
+			firstItems = _.createSelectItems(choiceData['schools'],"value:_id;text:school",activeFirst ?? ''),
+			secondItems = _.createSelectItems(choiceData['schools'],"value:_id;text:school",activeSecond ?? ''),
+			thirdItems = _.createSelectItems(choiceData['schools'],"value:_id;text:school",activeThird ?? '');
 		return `
 			<div class="adding-section">
 					<h4 class="adding-subtitle withmar">${title}</h4>
@@ -619,7 +627,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="firstSchool" 
-							data-change="${_.componentName}:inputCourseData" 
+							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
 							title=""
@@ -633,7 +641,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="secondSchool"
-							data-change="${_.componentName}:inputCourseData" 
+							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
 							title=""
@@ -646,7 +654,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="thirdSchool" 
-							data-change="${_.componentName}:inputCourseData" 
+							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
 							title=""
@@ -1053,15 +1061,21 @@ export const view = {
 						<div class="item">
 							<span class="strong">${studentInfo['user']['firstName']} ${studentInfo['user']['lastName']}</span>
 							<span class="text">${studentInfo['user']['email']}</span>
-						</div>
-						<div class="item">
-							<span class="strong">${studentInfo['currentSchool']}</span>
-							<span class="text">School</span>
-						</div>
-						<div class="item">
-							<span class="strong">${studentInfo['grade']['grade']}</span>
-							<span class="text">Grade</span>
 						</div>`;
+		if (studentInfo['currentSchool']) {
+			tpl += `
+			<div class="item">
+				<span class="strong">${studentInfo['currentSchool']}</span>
+				<span class="text">School</span>
+			</div>`;
+		}
+		if (studentInfo['grade']) {
+			tpl += `
+			<div class="item">
+				<span class="strong">${studentInfo['grade']['grade']}</span>
+				<span class="text">Grade</span>
+			</div>`;
+		}
 		if (studentInfo['currentPlan']) {
 			tpl += `
 				<div class="item">
@@ -1564,11 +1578,10 @@ export const view = {
 		let gradeActive;
 		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade}`;
 		let gradeItems = _.createSelectItems(_.wizardData.grades, 'value:_id;text:grade', gradeActive);
-		//<button class="student-profile-delete" data-click="${_.componentName}:showRemoveUserPopup" data-id="${_.studentInfo['studentId']}">Delete User Profile</button>
 		return `
-			<div class="section">
+			<div class="section parent">
 				<div class="block">
-					<div class="student-profile-row">
+					<div class="student-profile-row student-profile-body">
 						<div class="student-profile-left">
 							<h4 class="admin-block-graytitle">Student Personal Info</h4>
 							<div class="adding-avatar">
@@ -1606,10 +1619,37 @@ export const view = {
 									</div>
 							</div>
 							<div class="adding-section">
-								<h4 class="adding-subtitle">Password</h4>
-								<p class="adding-text">Students' password can be changed by a linked parent or by admin manually</p>
-								<button class="adding-generate student-profile-send">Send Link To A Parent To Reset Password</button>
-								<button class="student-profile-change" data-click="${_.componentName}:showChangePassword">Change Manually</button>
+								<div class="password-inner passwords">
+									<h6 class="password-title">Password</h6>
+									<div class="adding-inpt">
+										<div class="form-label-row">
+											<label class="form-label">New Password</label>
+										</div>
+										<g-input 
+											type="password" 
+											name="password" 
+											match="changePassword"
+											class="g-form-item" 
+											data-outfocus="${_.componentName}:validatePassword"
+											className="form-input adding-inpt"
+										></g-input>
+										<span class="form-label-desc">8+ characters, with min. one number, one uppercase letter and one special character</span>
+									</div>
+									<div class="adding-inpt">
+										<div class="form-label-row">
+											<label class="form-label">Repeat password</label>
+										</div>
+										<g-input 
+											type="password" 
+											name="confirm_password" 
+											match="changePassword"
+											class="g-form-item" 
+											data-outfocus="${_.componentName}:validatePassword" 
+											className="form-input adding-inpt"
+										></g-input>
+										<span class="form-label-desc" style="display:none;">Password does not match</span>
+									</div>
+								</div>
 							</div>
 							<div class="adding-section">
 								<h4 class="adding-subtitle withmar">Your current school</h4>
@@ -1617,30 +1657,54 @@ export const view = {
 									<div class="form-label-row">
 										<label class="form-label">Current school</label>
 									</div>
-									<g-input type="text" name="currentSchool"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["currentSchool"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+									<g-input 
+										type="text" 
+										name="currentSchool" 
+										data-input="${_.componentName}:fillStudentInfo" 
+										value='${_.studentInfo["currentSchool"] ?? ''}' 
+										class="g-form-item" 
+										classname="form-input adding-inpt"
+									></g-input>
 								</div>
 								<div class="adding-inpt">
 									<div class="form-label-row">
 										<label class="form-label">Grade</label>
 									</div>
-									<g-select class="select adding-select" name="grade"  data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course"
-									items=${JSON.stringify(gradeItems)}></g-select>
+									<g-select 
+										class="select adding-select" 
+										name="grade" 
+										data-change="${_.componentName}:fillStudentInfo" 
+										classname="adding-select" 
+										arrowsvg="/img/sprite.svg#select-arrow-bottom" 
+										title="Course"
+										items=${JSON.stringify(gradeItems)}
+									></g-select>
 								</div>
 							</div>
 						</div>
 						<div class="student-profile-right">
 							<h4 class="admin-block-graytitle">Courses & Plans</h4>
 							<div class="student-profile-courses-btns">
-								<button class="student-profile-courses-btn">ISEE</button>
-								<button class="student-profile-courses-btn">SSAT</button>
-								<button class="student-profile-courses-btn active">SHSAT</button>
+								<button class="student-profile-courses-btn${(!_.isEmpty(_.studentInfo['currentPlan']) && _.studentInfo['currentPlan']['course']['title'] == 'ISEE') ? ' active' : ''}">ISEE</button>
+								<button class="student-profile-courses-btn${_.isEmpty(_.studentInfo['currentPlan']) ? ' active' : _.studentInfo['currentPlan']['course']['title'] == 'SSAT' ? ' active' : ''}">SSAT</button>
+								<button class="student-profile-courses-btn${(!_.isEmpty(_.studentInfo['currentPlan']) && _.studentInfo['currentPlan']['course']['title'] == 'SHSAT') ? ' active' : ''}">SHSAT</button>
 							</div>
-							<div class="student-profile-course-info loader-parent"><img src='/img/loader.gif' class='loader'></div>
+							<div class="student-profile-course-info loader-parent">
+								<img src='/img/loader.gif' class='loader'>
+							</div>
 						</div>
 					</div>
 					<div class="student-profile-footer">
+						<!--<button class="student-profile-delete" 
+							data-click="${_.componentName}:showRemoveUserPopup" 
+							data-id="${_.studentInfo['studentId']}"
+						>Delete User Profile</button>-->
 						<div class="student-profile-actions">
-							<button class="test-footer-back" data-clear="true" data-click="${_.componentName}:changeSection" section="dashboard">
+							<button class="test-footer-back" 
+								data-clear="true" 
+								data-click="${_.componentName}:changeSection" 
+								section="dashboard"
+							>
 								<span>Discard</span>
 							</button>
 							<button class="button-blue" data-clear="true" data-click="${_.componentName}:updateStudent">
@@ -1684,16 +1748,24 @@ export const view = {
 					></g-input>
 					</div>
 			</div>
-			${_.choiseSelectStudent(choiceData,'Application School List')}
+			${_.choiceSelectStudent(choiceData,'Application School List')}
 			<div class="adding-section">
 				<h4 class="adding-subtitle withmar">Membership Plan</h4>
 				<div class="student-profile-plan">
-					<h5 class="student-profile-plan-title">Free</h5>
-					<div class="student-profile-plan-price">$0.00 per month</div>
-					<button class="student-profile-plan-edit">Edit</button>
+					<h5 class="student-profile-plan-title">${course}</h5>
+					<div class="student-profile-plan-edit">
+						<button class="button-blue">Edit</button>
+						<button 
+							class="button-white"
+							data-click="${_.componentName}:showCancelMembership"
+						>Cancel</button>
+					</div>
+					<div class="student-profile-plan-price">$20.00 per month</div>
+					<span>Your plan renews on April 21, 2022</span>
 				</div>
+				<button class="button student-profile-refund">Request Refund</button>
 			</div>
-			<button class="student-profile-remove" data-click="${_.componentName}:showRemovePopup">Remove This Course</button>
+			<!--<button class="student-profile-remove" data-click="${_.componentName}:showRemovePopup">Remove This Course</button>-->
 		`;
 	},
 	emptyCourseInfo(){
@@ -1704,8 +1776,47 @@ export const view = {
 				<svg class="button-icon">
 					<use xlink:href="#plus"></use>
 				</svg>
-				<span>Assign SHSAT Course</span>
+				<span>Add Course</span>
 			</button>
+		`;
+	},
+	removeUserTpl(){
+		const _ = this;
+		return `
+			<div class="modal-block student-profile-remove-popup" id="removeUserForm">
+				<h6 class="modal-title">
+					<span>Delete student profile</span>
+				</h6>
+				<p class="modal-text">Are you sure you want to delete this student profile?</p>
+				<div class="modal-row">
+					<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
+					<button class="button-red" data-click="${_.componentName}:removeUser"><span>Remove</span></button>
+				</div>
+			</div>
+		`;
+	},
+	cancelMembershipTpl(){
+		const _ = this;
+		let reasons = [
+			{text: 'Techical issues'},
+			{text: 'Too expensive'},
+			{text: 'Switching to another product'},
+			{text: 'Not sure how to use the data & tools'},
+			{text: 'Missing features I need'},
+			{text: 'Other (please explain below)'}
+		]
+		return `
+			<div class="modal-block student-profile-remove-popup" id="cancelForm">
+				<h6 class="modal-title">
+					<span>We’re sorry to see you go</span>
+				</h6>
+				<p class="modal-text">Before you cancel, we are interested in a learning more about why you decide to cancel your membership, please let us know the reason you are leaving.</p>
+				<p class="modal-text">Your responses will be kept confidential and will not be used for any purpose other than research conducted by our company.</p>
+				<g-input type="radio" name="reason" items='${JSON.stringify(reasons)}'></g-input>
+				<textarea class="modal-area modal-cancel-area" name="cancel_desc" placeholder="Anything you want to share? (Optional)"></textarea>
+				<button class="button-red modal-cancel-button"><span>Cancel Membership</span></button>
+				<button class="button modal-cancel-button" type="button" data-click="modaler:closeModal"><span>I don’t want to cancel</span></button>
+			</div>
 		`;
 	},
 }

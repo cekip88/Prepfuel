@@ -13,9 +13,11 @@ export class _Model{
 			checkEmail: `/user/check-email/`,
 			createStudent: `/user/create-student`,
 			updateStudent: `/user/update-student`,
+			removeStudent: `/user/delete-student`,
 			removeCourse: `/user/remove-plan`,
 			assignCourse: `/user/assign-plan`,
 			updateCourse: `/user/update-plan`,
+			changePassword: `/user/change-password`,
 		};
 	}
 	getEndpoint(endpoint) {
@@ -75,6 +77,51 @@ export class _Model{
 				}
 			} else {
 				_.wrongRequest('updateStudent', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+	removeStudent(studentId){
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('removeStudent')}/${studentId}`, {
+				method: 'DELETE',
+				headers: _.baseHeaders
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('removeStudent', response);
+				}
+			} else {
+				_.wrongRequest('removeStudent', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+	updateStudentPassword(passwordData){
+		const _ = this;
+		let data = {
+			password: passwordData['password'],
+			repeatPassword: passwordData['confirm_password'],
+		};
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('changePassword')}/${passwordData['_id']}`, {
+				method: 'PUT',
+				headers: _.baseHeaders,
+				body: JSON.stringify(data)
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('updateStudentPassword', response);
+				}
+			} else {
+				_.wrongRequest('updateStudentPassword', rawResponse)
 			}
 			resolve(null);
 		});

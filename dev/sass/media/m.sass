@@ -466,21 +466,24 @@ g-modaler
 				font: 20px $p_semi
 				text-transform: uppercase
 				color: #464E5F
-			&-price
-				margin-top: 5px
+			&-price,span
 				font: 14px $p_medium
 				color: #B5B5C3
+			&-price
+				margin-top: 5px
 				border-bottom: 1px solid  #EBEDF3
 				padding-bottom: 16px
+			span
+				padding-top: 16px
+				display: block
 			&-edit
-				border-radius: 6px
-				font: 12px $f_medium
-				position: absolute
-				top: 16px
-				right: 16px
-				padding: 9px 12px
-				background-color: #E1F0FF
-				color: rgb($blue-text)
+				@extend %dfa
+				button
+					margin-left: 16px
+					padding: 9px 19px
+					font: $fz12 $f_reg
+		&-refund
+			margin-top: 16px
 		&-remove,&-delete
 			font: 16px $f_bold
 			line-height: 20px
@@ -592,6 +595,12 @@ g-modaler
 					height: 112px
 				&:nth-child(7)
 					height: 97px
+button.student-profile-plan-edit
+	padding: 9px 12px
+	border-radius: 6px
+	font: 12px $f_medium
+	background-color: #E1F0FF
+	color: rgb($blue-text)
 
 
 .notifications
@@ -2594,6 +2603,17 @@ g-modaler
 				top: 25px
 	&-block
 		padding: 24px
+	&-cancel
+		&-area
+			margin-top: 24px
+			border-radius: 9px
+		&-button
+			margin: 0 auto 8px
+			&:last-child
+				margin-bottom: 0
+			&.button
+				color: rgb($neutral-400)
+				background-color: transparent
 .modaler
 	&-content
 		max-width: 80vw
