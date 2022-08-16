@@ -13,7 +13,9 @@ export class _Model {
 			results: `${env.backendUrl}/skill-results`,
 			quizess: `${env.backendUrl}/student/current-course/quiz`,
 			quiz: `${env.backendUrl}/student/diagnostic-quiz`,
-			summary: `${env.backendUrl}/skill-results`
+			summary: `${env.backendUrl}/skill-results`,
+			quizResults: `${env.backendUrl}/quiz-results`,
+			startQuiz: `${env.backendUrl}/quiz-results/create`
 		};
 	}
 	
@@ -460,6 +462,45 @@ export class _Model {
 			}
 		});
 	}
+	async getQuizResults(){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['quizResults']}`,{
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status == 200){
+				let
+					response = await rawResponse.json(),
+					answers = response['response']['answers'];
+				_.testServerAnswers = answers;
+				_.testStatus = response['response']['status'];
+				resolve(_.testServerAnswers);
+			}
+		});
+	}
+	async startQuiz(){
+		const _ =this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['startQuiz']}`,{
+				'method': 'POST',
+				headers:_.baseHeaders
+			});
+			if(rawResponse.status < 206){
+				let response = await rawResponse.json();
+				if(response['status'] == 'success'){
+					let resultId = response['response']['resultId'];
+					_.quizResultId =  resultId;
+					resolve( resultId);
+				}
+			}else{
+				resolve(false);
+			}
+			
+		});
+	}
+	
+	
 	
 	
 	hasTestFromStorage(){
@@ -531,7 +572,6 @@ export class _Model {
 				if(response['status'] == 'success'){
 					let resultId = response['response']['resultId'];
 					_.resultId = resultId;
-			
 					resolve(resultId);
 				}
 			}else{
@@ -563,7 +603,30 @@ export class _Model {
 			}
 		});
 	}
-	
+	async saveQuizAnswer(answer){
+		// Save choosed answer in server
+		const _ = this;
+		if(!answer['status']){
+			answer['status'] = 'in progress';
+		}
+		//	answer['status'] = 'finished';
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['quizResults']}`,{
+				method: 'PUT',
+				headers:_.baseHeaders,
+				body: JSON.stringify(answer)
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				console.log(response);
+				if(response['status'] == 'success'){
+					resolve(response);
+				}
+			}else{
+				console.log(rawResponse);
+			}
+		});
+	}
 
 	
 }

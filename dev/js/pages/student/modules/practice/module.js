@@ -163,6 +163,9 @@ export class PracticeModule extends StudentPage{
 		_.f('.questions-length').textContent = _.questionsLength;
 		_.f('#question-pagination').append(_.markup(_.questionNavigation()));
 		
+		let quizObj = await Model.startQuiz();
+		console.log(quizObj);
+		
 		_._$.currentQuestion =_.skillTests[_.questionPos];
 	}
 	async fillQuestionSection({item}){
@@ -708,10 +711,56 @@ export class PracticeModule extends StudentPage{
 	}
 	async checkQuizAnswer({item}){
 		const _ = this;
-		if(_.isLastQuestion){
-			fullAnswer['status'] = 'finished';
-		}else{
-			_.changeAnswerButtonToNext();
+		for(let id in _.answerVariant){
+			let
+			answerObj = {
+				"questionId": id,
+				"questionDatasId": _._$.currentQuestion['_id'],
+				"answer": _.answerVariant[id]['answer'],
+			},
+			fullAnswer = {
+				"answer": answerObj,
+				"subject": _.currentQuizSubject,
+				"testNumber": _.currentQuizNum
+			}
+			if(_.isLastQuestion){
+				fullAnswer['status'] = 'finished';
+			}else{
+				_.changeAnswerButtonToNext();
+			}
+			if(_.answerVariant[id]['note']){
+				answerObj['note'] = _.answerVariant[id]['note'];
+			}
+			if(_.answerVariant[id]['bookmark']){
+				answerObj['bookmark'] = _.answerVariant[id]['bookmark'];
+			}
+			
+			let response = await Model.saveQuizAnswer(fullAnswer);
+			_._$.currentQuestion['questions'].forEach( question => {
+				let ans =   _.answerVariant[id]['answer'];
+				if(_.isGrid()){
+					ans =   _.answerVariant[id]['answer'].join('');
+					ans = ans.replaceAll('_','');
+				}
+				if(question['correctAnswer'] == ans){
+					_.f('#question-pagination .active').classList.add('done');
+					if( _.isGrid()){
+						_.f('.grid.empty').setAttribute('hidden','hidden');
+						_.f('.grid.correct').removeAttribute('hidden');
+					}
+				}else{
+					_.f('#question-pagination .active').classList.add('error');
+					if( _.isGrid()){
+						_.f('.grid.empty').setAttribute('hidden','hidden');
+						_.f('.grid.incorrect').removeAttribute('hidden');
+					}
+					
+				}
+			});
+			if(_.isLastQuestion){
+				_.setSummaryBtn();
+				_.testFinished = true;
+			}
 		}
 	}
 	async checkAnswer({item}){
@@ -770,6 +819,7 @@ export class PracticeModule extends StudentPage{
 	}
 	async startTest({item}){
 		const _ = this;
+		console.log(item);
 		let
 			concept = item.getAttribute('data-id'),
 			category = item.getAttribute('data-category');
@@ -829,8 +879,8 @@ export class PracticeModule extends StudentPage{
 		let
 			num= item.getAttribute('data-num'),
 			subject= item.getAttribute('data-subject'),
-			quiz = await Model.getCurrentQuiz(subject,num);
-		console.log(quiz);
+			quizObj = await Model.startQuiz();
+		console.log(quizObj);
 	}
 	
 	
