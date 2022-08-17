@@ -122,7 +122,7 @@ export const view = {
 				<div class="section-header">
 					<h1 class="title">${Model.currentSection['directions'].headerTitle}</h1>
 					<div class="test-timer"><span class="test-timer-value">${Model.test.testTime}</span> minutes left</div>
-					<button class="button-white"	data-click="${this.componentName}:changeSection" section="score"><span>Finish this section</span></button>
+					<button class="button-white"	data-click="${this.componentName}:changeSection" section="score"><span>Finish this test</span></button>
 				</div>
 			</div>
 			<div class="section row">
@@ -317,7 +317,7 @@ export const view = {
 				<div class="section-header">
 					<h1 class="title">Practice test ${Model.test['testNumber']} &mdash; <strong id="test-section-name">${Model.currentSection.sectionName}</strong></h1>
 					<div class="test-timer"><span class="test-timer-value">${Model.test.testTime}</span> minutes left</div>
-					<button class="button-white" data-click="${this.componentName}:changeSection" section="score"><span>Finish this section</span></button>
+					<button class="button-white" data-click="${this.componentName}:changeSection" section="score"><span>Finish this test</span></button>
 				</div>
 			</div>
 	`)});
