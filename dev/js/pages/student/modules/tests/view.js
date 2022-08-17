@@ -1,6 +1,31 @@
 import	{ Model } from "./model.js";
 import {G_Bus} from "../../../../libs/G_Bus.js";
 export const view = {
+	noteTplFromForm(question){
+		const _ = this;
+		let tpl = `<div class="test-label-block note-block">
+				<div class="test-label-icon">
+					<svg>
+						<use xlink:href="#edit-transparent"></use>
+					</svg>
+				</div>
+				<div class="test-label-text">
+					<p>
+						${question.text}
+					</p>
+				</div>
+				<button class="test-label-button" data-click="${this.componentName}:showTestLabelModal">
+					<svg>
+						<use xlink:href="#three-dots"></use>
+					</svg>
+				</button>
+				<div class="test-label-modal">
+					<button class="test-label-modal-button" data-click="${this.componentName}:editNote;${this.componentName}:changeInnerQuestionId" data-question-id="${question['_id']}"><span>Edit</span></button>
+					<button class="test-label-modal-button" data-click="${this.componentName}:deleteNote;${this.componentName}:changeInnerQuestionId" data-question-id="${question['_id']}"><span>Delete</span></button>
+				</div>
+			</div>`;
+		return tpl;
+	},
 	noteTpl(question){
 		const _ = this;
 		let tpl = ``;
@@ -23,8 +48,8 @@ export const view = {
 					</svg>
 				</button>
 				<div class="test-label-modal">
-					<button class="test-label-modal-button" data-click="${this.componentName}:editNote" data-question-id="${question['_id']}"><span>Edit</span></button>
-					<button class="test-label-modal-button" data-click="${this.componentName}:deleteNote" data-question-id="${question['_id']}"><span>Delete</span></button>
+					<button class="test-label-modal-button" data-click="${this.componentName}:editNote;${this.componentName}:changeInnerQuestionId" data-question-id="${question['_id']}"><span>Edit</span></button>
+					<button class="test-label-modal-button" data-click="${this.componentName}:deleteNote;${this.componentName}:changeInnerQuestionId" data-question-id="${question['_id']}"><span>Delete</span></button>
 				</div>
 			</div>`;
 		}
@@ -495,11 +520,9 @@ export const view = {
 					</div>
 				</div>
 				</div>
-				${_.noteTpl(currentQuestion)}
+				<div class="answer-block" data-question-id="${currentQuestion['_id']}">${_.noteTpl(currentQuestion)}</div>
 				${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
 			</div>
-			
-		
 		`;
 		return tpl;
 	},
@@ -531,7 +554,7 @@ export const view = {
 		}
 		
 		tpl+=`</ul>
-			${_.noteTpl(currentQuestion)}
+			<div class="answer-block" data-question-id="${currentQuestion['_id']}">${_.noteTpl(currentQuestion)}</div>
 			${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
 			</div>
 		`;
@@ -605,7 +628,7 @@ export const view = {
 		}
 		tpl+=`
 					</ul>
-					${_.noteTpl(currentQuestion)}
+					<div class="answer-block" data-question-id="${currentQuestion['_id']}">${_.noteTpl(currentQuestion)}</div>
 					${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
 				</div>
 			</div>`;
@@ -613,45 +636,45 @@ export const view = {
 	},
 	async passageQuestion(){
 		const _ = this;
-		/*<p class="test-text"><span>${question['title']}</span></p>*/
+		/*<p class="test-text"><span>${question['title']}</span></p>
+		* <p class="test-left-text">${_._$.currentQuestion['passageType'}</p>
+		* */
 		let tpl= `
 			<div class="test-inner test-row">
 				<div class="test-col">
 					<div class="test-left">
-						<p class="test-left-text">${_._$.currentQuestion['passageType']}</p>
 						<p class="test-left-text">${_._$.currentQuestion['passageText']}</p>
 					</div>
 				</div>
 				<div class="test-col">
 					<div class="test-right" >
-						<p class="test-text">${_._$.currentQuestion['passageType']}</p>
-				`;
-		let cnt = 0;
+				`,
+		cnt = 0;
 		for(let question of _._$.currentQuestion['questions']){
 			tpl+= `
-					<div class="test-sec" id="${question['_id']}">
-					<div class="test-header">
-						<h5 class="block-title test-title"><span>Question ${cnt+1} of ${_._$.currentQuestion['questions'].length}</span>
-						<strong style="font-size:10px;margin-left: 15px">${question['questionId']}</strong>
-						</h5>
-						${_.actionsTpl(question)}
-					</div>
-					
-					<p class="test-text"><span>${question['questionText']}</span></p>
-					<ul class="answer-list" data-question-id="${question['_id']}" >`;
+				<div class="test-sec" id="${question['_id']}">
+				<div class="test-header">
+					<h5 class="block-title test-title"><span>Question ${cnt+1} of ${_._$.currentQuestion['questions'].length}</span>
+					<strong style="font-size:10px;margin-left: 15px">${question['questionId']}</strong>
+					</h5>
+					${_.actionsTpl(question)}
+				</div>
+				<p class="test-text"><span>${question['questionText']}</span></p>
+				<ul class="answer-list" data-question-id="${question['_id']}" >
+			`;
 			for(let answer in question['answers']){
 				let ans = question['answers'][answer];
 				tpl+= await _.answerTpl(question,answer);
 			}
 			tpl+=`</ul>
-				${_.noteTpl(question)}
+				<div class="answer-block" data-question-id="${question['_id']}">${_.noteTpl(question)}</div>
 				${Model.isFinished() ? await _.explanationAnswer(question) : ''}
 			</div>`;
 			cnt++;
 		}
 		tpl+=`</div>
-				</div>
-			</div>`;
+			</div>
+		</div>`;
 		return tpl;
 	},
 	async standartQuestion(){
@@ -687,7 +710,7 @@ export const view = {
 		}
 		tpl+=`
 			</ul>
-			${_.noteTpl(currentQuestion)}
+			<div class="answer-block" data-question-id="${currentQuestion['_id']}">${_.noteTpl(currentQuestion)}</div>
 			${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
 		</div>`;
 		return tpl;
@@ -733,7 +756,6 @@ export const view = {
 			</div>
 		`;
 	},
-	
 	resultsAsideButtonsTpl(resultsInfo){
 		const _ = this;
 		let tpl = ``

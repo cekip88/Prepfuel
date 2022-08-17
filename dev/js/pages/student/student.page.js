@@ -66,7 +66,6 @@ class StudentPage extends G{
 		let
 			section = item.getAttribute('section'),
 			tpl = section.split('/')[2];
-	//	if(_.currentSection == section) return void 0;
 		if(section) history.pushState(null, null, section);
 		_.moduleRender([tpl]);
 		_.currentSection = section;

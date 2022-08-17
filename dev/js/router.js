@@ -6,6 +6,7 @@ export class router {
 		const _ = this;
 		_.componentName = 'router';
 		_.pages = new Map();
+		
 		_.systemComponents = ['router'];
 		this.baseHeaders = {
 			headers:{
@@ -40,6 +41,7 @@ export class router {
 	}
 	async changePage(route){
 		const _ = this;
+		//if(_.user['role'] == 'guest')
 		await _.getMe();
 		
 		_.currentPageRoute = await _.definePageRoute(route);
@@ -47,7 +49,6 @@ export class router {
 		_.clearComponents();
 	
 		await _.includePage(_.currentPageRoute);
-		
 	}
 	async definePageRoute(route){
 		const _ = this;
@@ -57,9 +58,10 @@ export class router {
 			pathParts = pathName.split('/').splice(1),
 			module = pathParts.splice(0,1)[0],
 			params = pathParts;
-		let role = _.role;
-		let middles = Object.keys(_.middleware),
-				currentMiddleware = [];
+		let
+			role = _.role,
+			middles = Object.keys(_.middleware),
+			currentMiddleware = [];
 		if(middles){
 			for(let middle of middles){
 				if(middle.indexOf(role) > -1){

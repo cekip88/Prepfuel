@@ -212,6 +212,7 @@ class _Model{
 						}
 					}
 				}
+				//console.log(_.testServerAnswers);
 				//_.testServerAnswers = response['response']['sections'][_.currentSectionPos]['subSections'][_.currentSubSectionPos]['answers'];
 				_.testStatus = response['response']['status'];
 				resolve(_.testServerAnswers);
@@ -353,7 +354,6 @@ class _Model{
 		let pos = _.questions.findIndex( question => {
 			return question['_id'] == questionId
 		} );
-		
 		if(pos >= 0)	return pos;
 		return null;
 	}
