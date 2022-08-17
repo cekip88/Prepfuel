@@ -150,7 +150,7 @@ export default class GComponent extends HTMLElement {
 			:host {
 			  --animation-time: .35s;
 			  --input-blue: 80, 104, 226;
-			  --input-red: 241, 65, 108;
+			  --input-red: 255, 0, 0;
 			  --green: 131, 191, 110;
 			  --gap: 10px;
 			}

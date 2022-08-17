@@ -31,9 +31,10 @@ export default class GSelect extends GComponent {
 			_.setProperty('--body-max-height','280px');
 			_.opened = true;
 			_.shadow.querySelector('.g-select').classList.add('active');
-		}	else{
+		}else{
 			_.close();
 		}
+		if (_.tipTpl) _.tipTpl.remove();
 	}
 	close(){
 		const _ = this;
@@ -63,6 +64,39 @@ export default class GSelect extends GComponent {
 				if (val.indexOf(option.textContent) >= 0) _.choose({fakeItem:option})
 			}
 		});
+	}
+
+	doValidate(msg){
+		const _ = this;
+		if (!_.value.length) {
+			if (msg) {
+				_.setError(msg,false);
+			}
+			_.setMarker('red');
+			return false;
+		}
+		return true;
+	}
+	setError(type){
+		const _ = this;
+		let inpt = _.shadow.querySelector('.g-select');
+		let parser = new DOMParser().parseFromString(`<span class="inpt-tip">${type}</span>`,'text/html');
+		_.tipTpl = parser.body.children[0];
+		inpt.append(_.tipTpl);
+		setTimeout( ()=>{
+			inpt.classList.add('error');
+		});
+	}
+	setMarker(color = null){
+		const _ = this;
+		let label = _.shadow.querySelector('.g-select-head');
+		if (!color) {
+			label.removeAttribute('style');
+			_.tipTpl ? _.tipTpl.removeAttribute('style') : '';
+		} else {
+			label.style = `border: 1px solid ${color}`
+			_.tipTpl ? _.tipTpl.style = `color: ${color}` : '';
+		}
 	}
 
 	hasOption(prop,option){
@@ -325,7 +359,6 @@ export default class GSelect extends GComponent {
 		if (!_.shadow)_.shadow = this.attachShadow({mode: 'open'});
 		_.mainTpl = _.getTpl('select');
 		_.baseTitle = this.getAttribute('title');
-		
 		_.shadow.innerHTML = _.mainTpl({
 			items: items,
 			title: this.getAttribute('title'),
@@ -502,6 +535,11 @@ export default class GSelect extends GComponent {
 			.g-select.active .g-select-head:after {
 			  transform: rotate(-45deg);
 			}
+			.inpt-tip {
+				font-size: 12px;
+				display: block;
+				margin: 10px 0 0 10px;
+			}
 			.g-select-option {
 			  width: 100%;
 			  min-width: 150px;
@@ -629,7 +667,8 @@ export default class GSelect extends GComponent {
 			.filter-select, .adding-select {
 			  width: 100%;
 			  height: initial;
-			  border: none;
+			  border-radius: 8px;
+			  border-color: transparent;
 			}
 			.filter-select .g-select-head, .adding-select .g-select-head {
 			  height: 34px;
