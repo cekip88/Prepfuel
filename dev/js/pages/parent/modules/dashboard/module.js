@@ -36,6 +36,7 @@ export class DashboardModule extends ParentPage{
 	define() {
 		const _ = this;
 		_.componentName = 'Dashboard';
+		_.currentStep = 1;
 		_.scheduleColors = {
 			"skill test":'#FFA621',
 			"practice test":'#009EF6',
@@ -533,6 +534,11 @@ export class DashboardModule extends ParentPage{
 	// add student methods
 	fillStudentInfo({item}){
 		const _ = this;
+		if (item.value) {
+			item.setMarker('transparent');
+		} else {
+			item.setMarker('red')
+		}
 		_.studentInfo[item.getAttribute('name')] = item.value;
 	}
 	fillAddingStudent(){
@@ -546,6 +552,7 @@ export class DashboardModule extends ParentPage{
 		let btn = document.createElement('BUTTON');
 		if (_.previousSection === 'profile') _.previousSection = 'dashboard'
 		btn.setAttribute('section',_.previousSection);
+		btn.setAttribute('data-clear','true');
 		_.changeSection({item:btn});
 	}
 	async createStudent(){
@@ -804,12 +811,13 @@ export class DashboardModule extends ParentPage{
 		let
 			cont = item.closest('.passwords'),
 			inputs = cont.querySelectorAll('G-INPUT[type="password"]'),
-			text = item.nextElementSibling;
+			text = item.nextElementSibling,
+			validate = true;
 		if (item == inputs[0]) {
 			if (item.value.length < 8) {
-				console.log(item.value,item.value.length)
 				item.setMarker('red');
-				text.style = 'color: red;'
+				text.style = 'color: red;';
+				validate = false;
 			} else {
 				item.setMarker();
 				text.removeAttribute('style')
@@ -818,6 +826,7 @@ export class DashboardModule extends ParentPage{
 			if (item.value !== inputs[0].value) {
 				item.setMarker('red');
 				text.style = 'color: red;'
+				validate = false;
 			} else {
 				item.setMarker();
 				text.style = 'display:none;'
@@ -829,26 +838,20 @@ export class DashboardModule extends ParentPage{
 			let callBackDetails = callback.split(':');
 			G_Bus.trigger(callBackDetails[0],callBackDetails[1],{item});
 		}
+		return validate;
 	}
 	async checkEmail({item}){
 		const _ = this;
-		let
-			value = item.value,
-			text = item.nextElementSibling;
+		let value = item.value;
 		let response = await Model.checkEmail(value);
 		if (!response) {
-			item.setMarker('red');
-			text.textContent = "Email can't be empty";
-			text.style = 'color: red;'
+			item.doValidate("Email can't be empty");
+			return false;
+		} else if (response.substr(response.length - 4) !== 'free') {
+			item.doValidate('User with this email address already exists')
+			return false;
 		}
-		if (response.substr(response.length - 4) !== 'free') {
-			item.setMarker('red');
-			text.textContent = 'User with this email address already exists';
-			text.style = 'color: red;'
-		} else {
-			item.setMarker();
-			text.style = 'display:none;'
-		}
+		return true;
 	}
 	skipTestDate({item}){
 		const _ = this;
@@ -859,9 +862,11 @@ export class DashboardModule extends ParentPage{
 			_.studentInfo.testDate = null;
 			_.studentInfo.testDatePicked = false;
 			inputDate.setAttribute('disabled',true);
+			inputDate.removeAttribute('data-required');
 			inputDate.value = '';
 		} else {
 			inputDate.removeAttribute('disabled');
+			inputDate.setAttribute('data-required','');
 			_.studentInfo.testDatePicked = true;
 		}
 	}
@@ -926,9 +931,17 @@ export class DashboardModule extends ParentPage{
 		}
 	}
 
-	addingStep({item}){
+	async addingStep({item}){
 		const _ = this;
-		_._$.addingStep = parseInt(item.getAttribute('step'));
+
+		let cont = item.closest('#parent');
+		let targetStep = item.getAttribute('step');
+		if (targetStep > _.currentStep) {
+			let validate = await _.addingStepValidate(cont);
+			if (!validate) return;
+		}
+
+		_._$.addingStep = parseInt(targetStep);
 	}
 	assignStep({item}){
 		const _ = this;
@@ -964,6 +977,7 @@ export class DashboardModule extends ParentPage{
 			_[_.addingSteps[addingStep]]();
 			return void 0;
 		}
+		_.currentStep = addingStep;
 
 		let addingFooter = _.f('.parent-adding-body .test-footer');
 		if (addingStep >= 2) addingFooter.classList.add('narrow');
@@ -1090,6 +1104,28 @@ export class DashboardModule extends ParentPage{
 		const _ = this;
 		_.body.append( _.markup( _.assignCourseTpl()));
 		_.handleAssignSteps(1);
+	}
+
+	async addingStepValidate(cont){
+		const _ = this;
+		let inputs = cont.querySelectorAll(`[data-required]`);
+		let validate = true;
+
+		for (let item of inputs) {
+			if (item.hasAttribute('data-outfocus')) {
+				let rawvalidate = await _[item.getAttribute('data-outfocus').split(':')[1]]({item});
+				if (!rawvalidate) validate = false;
+			} else if (item.tagName == 'G-SELECT') {
+				if (!item.value.length) {
+					validate = false;
+					item.doValidate("This field can't be empty");
+				}
+			} else if (!item.value) {
+				validate = false;
+				item.doValidate("This field can't be empty");
+			}
+		}
+		return validate;
 	}
 
 	async init() {

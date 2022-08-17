@@ -130,7 +130,10 @@ export const view = {
 						<div class="block parent-adding-body">
 							<div id="assign-body"><img src="/img/loader.gif"></div>
 							<div class="test-footer" id="assign-footer">
-								<button class="button back" data-click="${_.componentName}:assignStep" step="0">
+								<button class="button back" 
+									data-click="${_.componentName}:assignStep"
+									step="0"
+								>
 									<span>Back</span>
 								</button>
 								<button class="button-blue step-next-btn" data-click="${_.componentName}:assignStep" step="2">
@@ -201,10 +204,18 @@ export const view = {
 						<div class="block parent-adding-body">
 							<div id="parent-adding-body"><img src="/img/loader.gif"></div>
 							<div class="test-footer">
-								<button class="button back" data-click="${_.componentName}:addingStep" step="0">
+								<button 
+									class="button back" 
+									data-click="${_.componentName}:addingStep" 
+									step="0"
+								>
 									<span>Back</span>
 								</button>
-								<button class="button-blue step-next-btn" data-click="${_.componentName}:addingStep" step="2">
+								<button 
+									class="button-blue step-next-btn" 
+									data-click="${_.componentName}:addingStep" 
+									step="2"
+								>
 									<span>Next</span>
 								</button>
 							</div>
@@ -286,7 +297,9 @@ export const view = {
 					<h4 class="adding-subtitle">Student Personal Info</h4>
 					<div class="adding-avatar">
 						<button data-click="${_.componentName}:selectAvatar">
-							<strong class="adding-avatar-letter">${_.studentInfo.avatarName ? '<img src="/img/' + _.studentInfo.avatarName + '.svg">' : 'K'}</strong>
+							<strong class="adding-avatar-letter">
+								${_.studentInfo.avatarName ? '<img src="/img/' + _.studentInfo.avatarName + '.svg">' : 'K'}
+							</strong>
 							<span class="adding-avatar-link">Select Avatar</span>
 						</button>
 					</div>
@@ -297,20 +310,44 @@ export const view = {
 							<div class="form-label-row">
 								<label class="form-label">First name</label>
 							</div>
-							<g-input type="text" value="${_.studentInfo['firstName'] ?? ''}" name="firstName" class="g-form-item" classname="form-input adding-inpt" data-input="${_.componentName}:fillStudentInfo"></g-input>
+							<g-input 
+								type="text" 
+								value="${_.studentInfo['firstName'] ?? ''}" 
+								name="firstName" class="g-form-item"
+								classname="form-input adding-inpt" 
+								data-required
+								data-input="${_.componentName}:fillStudentInfo"
+							></g-input>
 						</div>
 						<div class="adding-inpt small">
 							<div class="form-label-row">
 								<label class="form-label">Last name</label>
 							</div>
-							<g-input type="text" value="${_.studentInfo['lastName'] ?? ''}" name="lastName" class="g-form-item" data-input="${_.componentName}:fillStudentInfo" classname="form-input adding-inpt"></g-input>
+							<g-input 
+								type="text" 
+								value="${_.studentInfo['lastName'] ?? ''}" 
+								name="lastName" 
+								class="g-form-item" 
+								data-required
+								data-input="${_.componentName}:fillStudentInfo" 
+								classname="form-input adding-inpt"
+							></g-input>
 						</div>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
 							<label class="form-label">Email</label>
 						</div>
-							<g-input type="text" name="email" value="${_.studentInfo['email'] ?? ''}" class="g-form-item" data-outfocus="${_.componentName}:checkEmail" data-input="${_.componentName}:fillStudentInfo" classname="form-input adding-inpt"></g-input>
+							<g-input 
+								type="text" 
+								name="email" 
+								value="${_.studentInfo['email'] ?? ''}"
+								class="g-form-item" 
+								data-required
+								data-outfocus="${_.componentName}:checkEmail" 
+								data-input="${_.componentName}:fillStudentInfo" 
+								classname="form-input adding-inpt"
+							></g-input>
 							<span class="form-label-desc" style="display:none;">Email is not free</span>
 						</div>
 				</div>
@@ -325,6 +362,7 @@ export const view = {
 							type="password" 
 							name="password" 
 							match="addingStepTwo"
+							data-required
 							value="${_.studentInfo['password'] ?? ''}" 
 							data-outfocus="${_.componentName}:validatePassword" 
 							data-input="${_.componentName}:fillStudentInfo" 
@@ -341,6 +379,7 @@ export const view = {
 							type="password" 
 							name="cpass"  
 							match="addingStepTwo"
+							data-required
 							value="${_.studentInfo['cpass'] ?? ''}" 
 							data-outfocus="${_.componentName}:validatePassword" 
 							data-input="${_.componentName}:fillStudentInfo" 
@@ -357,7 +396,10 @@ export const view = {
 		const _ = this;
 		let gradeActive;
 		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade}`;
-		let gradeItems = _.createSelectItems(_.wizardData['grades'], 'value:_id;text:grade', gradeActive);
+		let gradeItems = _.createSelectItems(
+			_.wizardData['grades'],
+			'value:_id;text:grade',
+			gradeActive);
 		return `
 			<div class="adding-center">
 				<h3 class="adding-title">School Information</h3>
@@ -367,7 +409,14 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">Current school</label>
 						</div>
-						<g-input type="text" value="${_.studentInfo.currentSchool ?? ''}" name="currentSchool" data-input="${_.componentName}:fillStudentInfo" class="g-form-item" classname="form-input adding-inpt"></g-input>
+						<g-input 
+							type="text" 
+							value="${_.studentInfo.currentSchool ?? ''}" 
+							name="currentSchool" 
+							data-required
+							data-input="${_.componentName}:fillStudentInfo" 
+							class="g-form-item" 
+							classname="form-input adding-inpt"></g-input>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
@@ -377,6 +426,7 @@ export const view = {
 							class="select adding-select" 
 							name="grade" 
 							classname="adding-select" 
+							data-required
 							data-change="${_.componentName}:fillStudentInfo" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
 							title=""
@@ -396,14 +446,37 @@ export const view = {
 					<h4 class="adding-subtitle withmar">Registered Official Test Date</h4>
 					<div class="adding-inpt adding-radio-row">
 						<div class="form-label-row">
-							<input type="radio" id="have_registered" class="adding-radio" name="registered" data-change="${_.componentName}:skipTestDate" ${_.studentInfo.testDatePicked ? 'checked' : ''}>
+							<input 
+								type="radio" 
+								id="have_registered" 
+								class="adding-radio" 
+								name="registered" 
+								data-change="${_.componentName}:skipTestDate" 
+								${_.studentInfo.testDatePicked ? 'checked' : ''}>
 							<label class="form-label adding-label-have" for="have_registered">Have registered</label>
 						</div>
-						<g-input disabled type='date' format="month DD, YYYY" value="${_.studentInfo.testDate ?? ''}" data-change="${_.componentName}:fillStudentInfo" class="select adding-select" name="testDate" classname="adding-select" icon="false" xlink="select-arrow-bottom" placeholder="Press to choose your official test date"></g-input>
+						<g-input 
+							disabled 
+							type='date' 
+							format="month DD, YYYY" 
+							value="${_.studentInfo.testDate ?? ''}" 
+							data-change="${_.componentName}:fillStudentInfo" 
+							class="select adding-select" 
+							name="testDate" 
+							classname="adding-select" 
+							icon="false" 
+							xlink="select-arrow-bottom" 
+							placeholder="Press to choose your official test date"></g-input>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
-							<input type="radio" id="have_yet" class="adding-radio" name="registered" data-change="${_.componentName}:skipTestDate" ${!_.studentInfo.testDatePicked ? 'checked' : ''}>
+							<input 
+								type="radio" 
+								id="have_yet" 
+								class="adding-radio" 
+								name="registered" 
+								data-change="${_.componentName}:skipTestDate" 
+								${!_.studentInfo.testDatePicked ? 'checked' : ''}>
 							<label class="form-label adding-label-have" for="have_yet">Have not registered yet</label>
 						</div>
 					</div>
@@ -627,6 +700,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="firstSchool" 
+							data-required
 							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
@@ -641,6 +715,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="secondSchool"
+							data-required
 							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
@@ -654,6 +729,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="thirdSchool" 
+							data-required
 							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 

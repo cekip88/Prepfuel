@@ -109,8 +109,13 @@ export default class GInput extends GComponent {
 	
 	/* Outside methods*/
 	
-	doValidate(){
+	doValidate(msg){
 		const _ = this;
+		if (msg) {
+			_.setError(msg,false);
+			//_.setMarker('red');
+			return false;
+		}
 		let isValidate = true;
 		if(!_.checkMatch()){
 			_.setError('match',true);
@@ -128,12 +133,21 @@ export default class GInput extends GComponent {
 				_.setError('phone',true);
 			}
 			isValidate = _.checkPhone();
+		} else if (_.isDate()) {
+			if (!_.value) {
+				_.setError('required',true)
+			};
+			isValidate = _.value ? true : false;
 		}
+
+		if (!isValidate) _.setMarker('red');
+		//else _.setMarker()
 		return isValidate;
 	}
 	setMarker(color = null){
 		const _ = this;
 		let label = _.shadow.querySelector('.form-input');
+		if (!label) return;
 		if (!color) label.removeAttribute('style');
 		else label.style = `border: 1px solid ${color}`
 	}
@@ -261,6 +275,8 @@ export default class GInput extends GComponent {
 
 	datePick({value}) {
 		const _ = this;
+		_.removeError()
+
 		let input = _.shadow.querySelector('.inpt-value');
 		if (_.hasAttribute('disabled')) {
 			input.setAttribute('disabled',true);
@@ -833,7 +849,7 @@ export default class GInput extends GComponent {
 		if(!tip){
 			let tipTpl;
 			if(inner){
-				tipTpl = _.markup(_.tipTpl(_.validations[type]));
+				tipTpl = _.markupElement(_.tipTpl(_.validations[type]));
 			}else{
 				tipTpl = _.markup(_.tipTpl(type));
 			}
@@ -1002,9 +1018,15 @@ export default class GInput extends GComponent {
 		  font-size: 12px;
 		  transform: scale(0.95);
 		}
+		.inpt-tip {
+		  margin: 10px 0 0 10px;
+		  display: block;
+		}
 		.inpt-mask, .inpt-tip, .inpt-mask-placeholder, .inpt-date-img {
 		  transition: var(--animation-time) ease;
-		  position: absolute;
+		}
+		.inpt-mask, .inpt-mask-placeholder, .inpt-date-img {
+			position: absolute;
 		}
 		.inpt-mask-date {
 		  opacity: 0;
@@ -1180,6 +1202,9 @@ export default class GInput extends GComponent {
 		  z-index: 1;
 		  top: 40px;
 		  right: 0;
+		}
+		.date-cont {
+			display: flex;
 		}
 		.date-picker:not(.range) {
 		  padding: 16px;

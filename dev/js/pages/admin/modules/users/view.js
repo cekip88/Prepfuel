@@ -424,22 +424,43 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">First choice</label>
 						</div>
-						<g-select class="select adding-select" name="firstSchool" data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
-						items='${JSON.stringify(firstItems)}'></g-select>
+						<g-select 
+							class="select adding-select" 
+							name="firstSchool" 
+							data-change="${_.componentName}:fillStudentInfo" 
+							data-required
+							classname="adding-select" 
+							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
+							title=""
+							items='${JSON.stringify(firstItems)}'></g-select>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
 							<label class="form-label">Second choice</label>
 						</div>
-						<g-select class="select adding-select" name="secondSchool" data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
-						items='${JSON.stringify(secondItems)}'></g-select>
+						<g-select 
+							class="select adding-select" 
+							name="secondSchool" 
+							data-required
+							data-change="${_.componentName}:fillStudentInfo" 
+							classname="adding-select" 
+							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
+							title=""
+							items='${JSON.stringify(secondItems)}'></g-select>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
 							<label class="form-label">Third choice</label>
 						</div>
-						<g-select class="select adding-select" name="thirdSchool" data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
-						items='${JSON.stringify(thirdItems)}'></g-select>
+						<g-select 
+							class="select adding-select" 
+							name="thirdSchool" 
+							data-required
+							data-change="${_.componentName}:fillStudentInfo" 
+							classname="adding-select" 
+							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
+							title=""
+							items='${JSON.stringify(thirdItems)}'></g-select>
 					</div>
 				</div>
 		`;
@@ -838,20 +859,42 @@ export const view = {
 							<div class="form-label-row">
 								<label class="form-label">First name</label>
 							</div>
-							<g-input type="text" value="${_.studentInfo['firstName'] ?? ''}" name="firstName" class="g-form-item" classname="form-input adding-inpt" data-input="${_.componentName}:fillStudentInfo"></g-input>
+							<g-input 
+								type="text" 
+								value="${_.studentInfo['firstName'] ?? ''}" 
+								name="firstName" 
+								class="g-form-item" 
+								data-required
+								classname="form-input adding-inpt" 
+								data-input="${_.componentName}:fillStudentInfo"></g-input>
 						</div>
 						<div class="adding-inpt small">
 							<div class="form-label-row">
 								<label class="form-label">Last name</label>
 							</div>
-							<g-input type="text" value="${_.studentInfo['lastName'] ?? ''}" name="lastName" class="g-form-item" data-input="${_.componentName}:fillStudentInfo" classname="form-input adding-inpt"></g-input>
+							<g-input 
+								type="text" 
+								value="${_.studentInfo['lastName'] ?? ''}" 
+								name="lastName"
+								data-required 
+								class="g-form-item" 
+								data-input="${_.componentName}:fillStudentInfo" 
+								classname="form-input adding-inpt"></g-input>
 						</div>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
 							<label class="form-label">Email</label>
 						</div>
-							<g-input type="email" name="email" value="${_.studentInfo['email'] ?? ''}" class="g-form-item" data-outfocus="${_.componentName}:checkEmail" data-input="${_.componentName}:fillStudentInfo" classname="form-input adding-inpt"></g-input>
+							<g-input 
+								type="email"
+								data-required 
+								name="email" 
+								value="${_.studentInfo['email'] ?? ''}" 
+								class="g-form-item" 
+								data-outfocus="${_.componentName}:checkEmail" 
+								data-input="${_.componentName}:fillStudentInfo"
+								classname="form-input adding-inpt"></g-input>
 							<span class="form-label-desc" style="display:none;">Email is not free</span>
 						</div>
 				</div>
@@ -865,6 +908,7 @@ export const view = {
 						<g-input 
 							type="password" 
 							name="password" 
+							data-required
 							match="addingStepTwo"
 							value="${_.studentInfo['password'] ?? ''}" 
 							data-outfocus="${_.componentName}:validatePassword" 
@@ -880,7 +924,8 @@ export const view = {
 						</div>
 						<g-input 
 							type="password" 
-							name="cpass"  
+							name="cpass"
+							data-required
 							match="addingStepTwo"
 							value="${_.studentInfo['cpass'] ?? ''}" 
 							data-outfocus="${_.componentName}:validatePassword" 
@@ -890,7 +935,9 @@ export const view = {
 						<span class="form-label-desc" style="display:none;">Password does not match</span>
 					</div>
 				</div>
-				<button class="adding-generate" data-click="${_.componentName}:generatePassword">Generate Password</button>
+				<button 
+					class="adding-generate" 
+					data-click="${_.componentName}:generatePassword">Generate Password</button>
 			</div>
 		`;
 	},
@@ -907,7 +954,6 @@ export const view = {
 				<div class="adding-buttons">
 					<button class="adding-button ${_.metaInfo && _.metaInfo.parentAddType == 'assign' ? 'active' : ''}" data-click="${_.componentName}:assignParent">Assign from the base</button>
 					<button class="adding-button ${(_.metaInfo && _.metaInfo.parentAddType == 'adding') || !_.metaInfo || !_.metaInfo.parentAddType ? 'active' : ''}" data-click="${_.componentName}:addNewParent">Add new parent</button>
-					
 				</div>
 			</div>
 			<div class="adding-assign-body ${width} parent-adding-table">`;
@@ -937,14 +983,28 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">Current school</label>
 						</div>
-						<g-input type="text" value="${_.studentInfo.currentSchool ?? ''}" name="currentSchool" data-input="${_.componentName}:fillStudentInfo" class="g-form-item" classname="form-input adding-inpt"></g-input>
+						<g-input
+							type="text" 
+							value="${_.studentInfo.currentSchool ?? ''}" 
+							name="currentSchool"
+							data-required 
+							data-input="${_.componentName}:fillStudentInfo" 
+							class="g-form-item" 
+							classname="form-input adding-inpt"></g-input>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
 							<label class="form-label">Grade</label>
 						</div>
-						<g-select class="select adding-select" name="grade" classname="adding-select" data-change="${_.componentName}:fillStudentInfo" arrowsvg="/img/sprite.svg#select-arrow-bottom" title=""
-						 items='${JSON.stringify(gradeItems)}'></g-select>
+						<g-select 
+							class="select adding-select" 
+							name="grade" 
+							classname="adding-select" 
+							data-required
+							data-change="${_.componentName}:fillStudentInfo" 
+							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
+							title=""
+							items='${JSON.stringify(gradeItems)}'></g-select>
 					</div>
 				</div>
 				${_.choiceSelectStudent(stepData)}
@@ -1357,20 +1417,41 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">First name</label>
 					</div>
-					<g-input type="text" name="firstName" value="${parentInfo.firstName ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input 
+						type="text" 
+						name="firstName"
+						data-required
+						value="${parentInfo.firstName ?? ''}" 
+						data-input="${_.componentName}:fillParentInfo" 
+						class="g-form-item" 
+						classname="form-input profile-form-input"></g-input>
 				</div>
 				<div class="profile-form-row">
 					<div class="form-label-row">
 						<label class="form-label">Last name</label>
 					</div>
-					<g-input type="text" name="lastName" value="${parentInfo.lastName ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input 
+						type="text" 
+						name="lastName"
+						data-required 
+						value="${parentInfo.lastName ?? ''}" 
+						data-input="${_.componentName}:fillParentInfo" 
+						class="g-form-item" 
+						classname="form-input profile-form-input"></g-input>
 				</div>
 				<div class="profile-form-row">
 					<div class="form-label-row">
 						<label class="form-label">Email</label>
 					</div>
 					<div class="profile-form-row-input">
-						<g-input type="email" data-outfocus="${_.componentName}:checkEmail" name="email" value="${parentInfo.email ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+						<g-input 
+							type="email" 
+							data-required
+							data-outfocus="${_.componentName}:checkEmail" 
+							name="email" value="${parentInfo.email ?? ''}" 
+							data-input="${_.componentName}:fillParentInfo" 
+							class="g-form-item" 
+							classname="form-input profile-form-input"></g-input>
 						<span class="form-label-desc" style="display:none;">Email is not free</span>
 					</div>
 				</div>
@@ -1378,7 +1459,14 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Phone Number</label>
 					</div>
-					<g-input type="text" name="phone" value="${parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input 
+						type="text" 
+						name="phone" 
+						data-required
+						value="${parentInfo.phone ?? ''}" 
+						data-input="${_.componentName}:fillParentInfo" 
+						class="g-form-item" 
+						classname="form-input profile-form-input"></g-input>
 				</div>
 			</div>
 			<div class="adding-section passwords">
@@ -1391,6 +1479,7 @@ export const view = {
 					<g-input 
 						type="password" 
 						name="password" 
+						data-required
 						match="assignNewParent"
 						value="${parentInfo.password ?? ''}" 
 						data-outfocus="${_.componentName}:validatePassword" 
@@ -1408,6 +1497,7 @@ export const view = {
 						type="password" 
 						name="cpass" 
 						match="assignNewParent"
+						data-required
 						value="${parentInfo.cpass ?? ''}" 
 						data-outfocus="${_.componentName}:validatePassword" 
 						data-callback="${_.componentName}:fillParentInfo"

@@ -312,13 +312,15 @@ export class UsersModule extends AdminPage {
 			cont = item.closest('.adding-section'),
 			inputDate = cont.querySelector('g-input');
 		if (item.id == "have_yet") {
-			_.studentInfo.testDatePicked = false;
 			_.studentInfo.testDate = null;
+			_.studentInfo.testDatePicked = false;
 			inputDate.setAttribute('disabled',true);
+			inputDate.removeAttribute('data-required');
 			inputDate.value = '';
 		} else {
+			inputDate.removeAttribute('disabled');
+			inputDate.setAttribute('data-required','');
 			_.studentInfo.testDatePicked = true;
-			inputDate.removeAttribute('disabled')
 		}
 	}
 	fillDataByClass({className,data}){
@@ -952,25 +954,6 @@ export class UsersModule extends AdminPage {
 	// Show methods end
 	
 	// Validation methods
-	nextStepBtnValidation(){
-		const _ = this;
-		let stepBtn = _.f(`#addingForm .step-next-btn`);
-		if (_.validationsSteps.indexOf(_._$.addingStep) >= 0) {
-			if (!_.stepValidation()) {
-				stepBtn.setAttribute('disabled',true);
-				return void 0;
-			}
-		}
-		stepBtn.removeAttribute('disabled')
-	}
-	stepValidation(){
-		const _ = this;
-		if (_._$.addingStep == 2) {
-			return _.stepTwoValidation();
-		} else if (_._$.addingStep == 3) {
-			return _.stepThreeValidation();
-		}
-	}
 	stepTwoValidation(){
 		const _ = this;
 		let props = ['firstName','lastName','email','avatar','password','cpass'];
@@ -994,24 +977,25 @@ export class UsersModule extends AdminPage {
 		let
 			cont = item.closest('.passwords'),
 			inputs = cont.querySelectorAll('G-INPUT[type="password"]'),
-			text = item.nextElementSibling;
-
-
+			text = item.nextElementSibling,
+			validate = true;
 		if (item == inputs[0]) {
 			if (item.value.length < 8) {
 				item.setMarker('red');
 				text.style = 'color: red;';
+				validate = false;
 			} else {
 				item.setMarker();
-				text.removeAttribute('style');
+				text.removeAttribute('style')
 			}
 		} else {
 			if (item.value !== inputs[0].value) {
 				item.setMarker('red');
-				text.style = 'color: red;';
+				text.style = 'color: red;'
+				validate = false;
 			} else {
 				item.setMarker();
-				text.style = 'display:none;';
+				text.style = 'display:none;'
 			}
 		}
 
@@ -1020,21 +1004,20 @@ export class UsersModule extends AdminPage {
 			let callBackDetails = callback.split(':');
 			G_Bus.trigger(callBackDetails[0],callBackDetails[1],{item});
 		}
+		return validate;
 	}
 	async checkEmail({item}){
 		const _ = this;
-		let
-			value = item.value,
-			text = item.nextElementSibling;
+		let value = item.value;
 		let response = await Model.checkEmail(value);
-		if (response.substr(response.length - 4) !== 'free') {
-			item.setMarker('red');
-			text.textContent = 'User with this email address already exists';
-			text.style = 'color: red;'
-		} else {
-			item.setMarker();
-			text.style = 'display:none;'
+		if (!response) {
+			item.doValidate("Email can't be empty");
+			return false;
+		} else if (response.substr(response.length - 4) !== 'free') {
+			item.doValidate('User with this email address already exists')
+			return false;
 		}
+		return true;
 	}
 	// Validation methods end
 
@@ -1360,12 +1343,13 @@ export class UsersModule extends AdminPage {
 		}
 		
 	}
-	changeNextStep({item}) {
+	async changeNextStep({item}) {
 		const _ = this;
 		let type = item.getAttribute('type');
 		if( type == 'adding' ) {
+			let validation = await _.nextStepBtnValidation(_.f('#addingForm'));
+			if (!validation) return;
 			if(_.maxStep > _._$.addingStep) _._$.addingStep++;
-			_.nextStepBtnValidation();
 		}else{
 			if(_.maxAssignStep > _._$.assignStep) _._$.assignStep++;
 		}
@@ -1375,10 +1359,30 @@ export class UsersModule extends AdminPage {
 		let type = item.getAttribute('type');
 		if( type == 'adding' ) {
 			if(_._$.addingStep > _.minStep) _._$.addingStep--;
-			_.nextStepBtnValidation();
 		}else{
 			if(_._$.assignStep > _.minStep) _._$.assignStep--;
 		}
+	}
+	async nextStepBtnValidation(cont){
+		const _ = this;
+		let inputs = cont.querySelectorAll(`[data-required]`);
+		let validate = true;
+
+		for (let item of inputs) {
+			if (item.hasAttribute('data-outfocus')) {
+				let rawvalidate = await _[item.getAttribute('data-outfocus').split(':')[1]]({item});
+				if (!rawvalidate) validate = false;
+			} else if (item.tagName == 'G-SELECT') {
+				if (!item.value.length) {
+					validate = false;
+					item.doValidate("This field can't be empty");
+				}
+			} else if (!item.value) {
+				validate = false;
+				item.doValidate("This field can't be empty");
+			}
+		}
+		return validate;
 	}
 	jumpToStep({item}) {
 		const _ = this;
