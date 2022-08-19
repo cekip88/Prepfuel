@@ -245,7 +245,12 @@ export const view = {
 				if(_.studentInfo['course'] == item._id) activeClass = 'active';
 			}
 			tpl += `
-				<button class="adding-button ${ activeClass }" pos="${cnt}" data-click="${_.componentName}:changeTestType" data-id="${item._id}">
+				<button 
+					class="adding-button ${ activeClass }" 
+					pos="${cnt}" 
+					data-click="${_.componentName}:changeTestType" 
+					data-id="${item._id}"
+				>
 					<span>${item.title}</span>
 				</button>
 			`;
@@ -254,7 +259,9 @@ export const view = {
 				</div>
 			</div>
 			<div class="adding-section">
-				<div class="adding-label">What level of the test student plan to take?</div>
+				<div class="adding-label">
+					What level of the test student plan to take?
+				</div>
 				<div class="adding-buttons level-buttons loader-parent">
 					${_.levelButtons(courses[_.coursePos])}
 				</div>
@@ -262,8 +269,16 @@ export const view = {
 			<div class="adding-section">
 				<div class="adding-label">Type of membership?</div>
 				<div class="adding-buttons">
-					<button class="adding-button active" data-type="monthly" data-click="${_.componentName}:changePayMethod">Pay Monthly</button>
-					<button class="adding-button" data-type="yearly" data-click="${_.componentName}:changePayMethod">Pay Yearly</button>
+					<button 
+						class="adding-button active" 
+						data-type="monthly" 
+						data-click="${_.componentName}:changePayMethod"
+					>Pay Monthly</button>
+					<button 
+						class="adding-button" 
+						data-type="yearly" 
+						data-click="${_.componentName}:changePayMethod"
+					>Pay Yearly</button>
 				</div>
 			</div>
 			<div class="adding-section parent-adding-section">
@@ -348,12 +363,16 @@ export const view = {
 								data-input="${_.componentName}:fillStudentInfo" 
 								classname="form-input adding-inpt"
 							></g-input>
-							<span class="form-label-desc" style="display:none;">Email is not free</span>
+							<span class="form-label-desc" style="display:none;">
+								Email is not free
+							</span>
 						</div>
 				</div>
 				<div class="adding-section">
 					<h4 class="adding-subtitle">Password</h4>
-					<p class="adding-text">Password will be sent to a student via email invitation to the platform</p>
+					<p class="adding-text">
+						Password will be sent to a student via email invitation to the platform
+					</p>
 					<div class="adding-inpt small">
 						<div class="form-label-row">
 							<label class="form-label">Password</label>
@@ -369,7 +388,9 @@ export const view = {
 							class="g-form-item" 
 							classname="form-input"
 						></g-input>
-						<span class="form-label-desc">8+ characters, with min. one number, one uppercase letter and one special character</span>
+						<span class="form-label-desc">
+							8+ characters, with min. one number, one uppercase letter and one special character
+						</span>
 					</div>
 					<div class="adding-inpt small">
 						<div class="form-label-row">
@@ -385,10 +406,15 @@ export const view = {
 							data-input="${_.componentName}:fillStudentInfo" 
 							class="g-form-item" classname="form-input"
 						></g-input>
-						<span class="form-label-desc" style="display:none;">Password does not match</span>
+						<span class="form-label-desc" style="display:none;">
+							Password does not match
+						</span>
 					</div>
 				</div>
-				<button class="adding-generate" data-click="${_.componentName}:generatePassword">Generate Password</button>
+				<button 
+					class="adding-generate" 
+					data-click="${_.componentName}:generatePassword"
+				>Generate Password</button>
 			</div>
 		`;
 	},
@@ -699,7 +725,7 @@ export const view = {
 						</div>
 						<g-select 
 							class="select adding-select" 
-							name="firstSchool" 
+							name="firstSchool"
 							data-required
 							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 

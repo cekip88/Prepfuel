@@ -161,8 +161,8 @@ export default class GInput extends GComponent {
 		let curDate = new Date();
 		let timeSkip = item.getAttribute('data-range');
 
-
 		let startEndInfo = _.getTargetDate(curDate,timeSkip);
+		console.log(startEndInfo)
 		let start = startEndInfo.start;
 		let end = startEndInfo.end;
 
@@ -234,6 +234,15 @@ export default class GInput extends GComponent {
 	}
 	dateCorrect({day,month,year}){
 		const _ = this;
+		if (day < 1) {
+			month--;
+			if (month < 1) {
+				month = 12;
+				year--;
+			}
+			day = _.getMonthLenth(month,year);
+		}
+
 		let lens = _.getMonthLenth(month,year);
 		let lastDay = day === 999 ? true : false;
 		if (!lastDay) {

@@ -53,7 +53,6 @@ class _loginModel{
 				localStorage.setItem('wizardData',JSON.stringify(wizardData));
 			}
 		}else{
-			console.log(response)
 			G_Bus.trigger(_.componentName,'loginFail',{
 				"response": response,
 				"formData": formData

@@ -35,6 +35,7 @@ export default class GSelect extends GComponent {
 			_.close();
 		}
 		if (_.tipTpl) _.tipTpl.remove();
+		_.setMarker()
 	}
 	close(){
 		const _ = this;
@@ -709,7 +710,7 @@ export default class GSelect extends GComponent {
 			  margin-left: 5px;
 			  border-top: 2px solid #000;
 			  border-right: 2px solid #000;
-			  transform: rotate(135deg);
+			  transform: rotate(135deg) translate(-2px,0);
 			  transition: 0.35s ease;
 			}
 			

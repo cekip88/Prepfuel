@@ -88,7 +88,7 @@ export class ScheduleModule extends StudentPage{
 	changeSchedulePage({item}){
 		const _ = this;
 		let direction = item.getAttribute('direction');
-		
+
 		if(direction === 'next'){
 			if(_._$.currentStep < _.maxStep){
 				_._$.currentStep++;
@@ -97,7 +97,6 @@ export class ScheduleModule extends StudentPage{
 			if(_._$.currentStep > _.minStep){
 				_._$.currentStep--;
 			}
-			
 		}
 	}
 	changeScheduleDate({item}){

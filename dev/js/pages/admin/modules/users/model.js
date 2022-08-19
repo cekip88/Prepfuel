@@ -25,6 +25,7 @@ class _Model {
 			assignStudentToParent: `/admin/assign/student-to-parent`,
 			changePassword: `/user/change-password`,
 			checkEmail: `/user/check-email/`,
+			updateCourse: `/user/update-plan`,
 		};
 	}
 	
@@ -115,7 +116,9 @@ class _Model {
 	}
 	getUsers({role,update,searchInfo= {page: 1}}) {
 		const _ = this;
-		if(!update)	if(_[`${role}sData`]) return Promise.resolve(_[`${role}sData`]);
+		/*if(!update){
+			if(_[`${role}sData`]) return Promise.resolve(_[`${role}sData`]);
+		}*/
 		let request = `?role=${role}`;
 		for (let key in searchInfo) {
 			if (key === 'dates' || searchInfo[key] == 'undefined') continue;
@@ -191,6 +194,7 @@ class _Model {
 	}
 	createParent(studentData) {
 		const _ = this;
+		console.log(studentData)
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.getEndpoint('createParent')}`, {
 				method: 'POST',
@@ -578,7 +582,27 @@ class _Model {
 			resolve(null);
 		});
 	}
-
+	updateCourse(updateData) {
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('updateCourse')}/${updateData._id}`, {
+				method: 'PUT',
+				headers: _.baseHeaders,
+				body: JSON.stringify(updateData)
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('assignCourse', response);
+				}
+			} else {
+				_.wrongRequest('assignCourse', rawResponse)
+			}
+			resolve(null);
+		});
+	}
 	checkEmail(email){
 		const _ = this;
 		return new Promise(async resolve => {

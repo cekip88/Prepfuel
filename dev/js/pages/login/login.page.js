@@ -126,7 +126,6 @@ class LoginPage extends G{
 	loginFail({response,formData}){
 		const _ = this;
 		let msg = response['error'];
-		console.log(msg)
 		_.f('g-input[name="email"]').doValidate(msg);
 		_.f('g-input[name="password"]').doValidate(msg);
 	}

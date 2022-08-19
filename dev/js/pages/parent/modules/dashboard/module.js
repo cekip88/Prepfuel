@@ -255,7 +255,10 @@ export class DashboardModule extends ParentPage{
 		if (!_.courseData) _.courseData = {};
 
 		let curPlanId = _.currentStudent['currentPlan']['_id'];
-		if (!_.courseData[curPlanId]) _.courseData[curPlanId] = {_id: curPlanId, studentId:_.currentStudent['_id']};
+		if (!_.courseData[curPlanId]) _.courseData[curPlanId] = {
+			_id: curPlanId,
+			studentId:_.currentStudent['_id']
+		};
 
 		let
 			fstSchool = _.currentStudent['currentPlan']['firstSchool'],
@@ -535,7 +538,7 @@ export class DashboardModule extends ParentPage{
 	fillStudentInfo({item}){
 		const _ = this;
 		if (item.value) {
-			item.setMarker('transparent');
+			item.setMarker();
 		} else {
 			item.setMarker('red')
 		}
@@ -779,13 +782,26 @@ export class DashboardModule extends ParentPage{
 		let
 			len = Math.ceil((Math.random() * 8)) + 8,
 			inputs = item.closest('.passwords').querySelectorAll('G-INPUT[type="password"]'),
-			symbols = ['!','#', '$', '&', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
+			symbols = {
+				specials:['!','@','#','$','%','^','&','*'],
+				numbers:['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+				uppers:['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+				lowers:['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+			},
+			rawPassword = {},
 			password = '',
 			input;
 
-		for (let i = 0; i < len; i++) {
-			let number = Math.ceil(Math.random() * 65);
-			password += symbols[number];
+		for (let key in symbols) {
+			rawPassword[key] = [];
+			for (let i = 0; i < Math.ceil(len / 4); i++) {
+				let number = Math.ceil(Math.random() * symbols[key].length - 1);
+				rawPassword[key].push(symbols[key][number])
+			}
+		}
+		let newRawPassword = rawPassword['specials'].concat(rawPassword['numbers'],rawPassword['uppers'],rawPassword['lowers']);
+		while(newRawPassword.length) {
+			password += newRawPassword.splice([Math.random() * (newRawPassword.length - 1)],1);
 		}
 
 		for (let i = 0; i < inputs.length; i++) {
@@ -813,24 +829,31 @@ export class DashboardModule extends ParentPage{
 			inputs = cont.querySelectorAll('G-INPUT[type="password"]'),
 			text = item.nextElementSibling,
 			validate = true;
+
+		function setFalse(){
+			item.setMarker('red');
+			text.style = 'color: red;';
+			validate = false;
+		}
+
 		if (item == inputs[0]) {
-			if (item.value.length < 8) {
-				item.setMarker('red');
-				text.style = 'color: red;';
-				validate = false;
-			} else {
-				item.setMarker();
-				text.removeAttribute('style')
-			}
+			let regEx = /(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{8,}/g;
+			validate = regEx.test(item.value);
 		} else {
 			if (item.value !== inputs[0].value) {
 				item.setMarker('red');
 				text.style = 'color: red;'
 				validate = false;
-			} else {
-				item.setMarker();
-				text.style = 'display:none;'
 			}
+		}
+
+		if (validate) {
+			for (let input of inputs) {
+				input.setMarker();
+				input.nextElementSibling.removeAttribute('style');
+			}
+		} else {
+			setFalse();
 		}
 
 		let callback = item.getAttribute('data-callback');
@@ -843,11 +866,23 @@ export class DashboardModule extends ParentPage{
 	async checkEmail({item}){
 		const _ = this;
 		let value = item.value;
+		if (!value) {
+			item.doValidate("Email can't be empty");
+			return false;
+		}
+		let
+			dogPos = value.indexOf('@'),
+			dotPos = value.lastIndexOf('.');
+		if (dogPos <= 0 || dotPos <= 0 || dogPos > dotPos || dotPos == value.length - 1) {
+			item.doValidate("Incorrect email");
+			return false;
+		}
 		let response = await Model.checkEmail(value);
 		if (!response) {
 			item.doValidate("Email can't be empty");
 			return false;
-		} else if (response.substr(response.length - 4) !== 'free') {
+		}
+		if (response.substr(response.length - 4) !== 'free') {
 			item.doValidate('User with this email address already exists')
 			return false;
 		}

@@ -427,7 +427,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="firstSchool" 
-							data-change="${_.componentName}:fillStudentInfo" 
+							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							data-required
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
@@ -442,7 +442,7 @@ export const view = {
 							class="select adding-select" 
 							name="secondSchool" 
 							data-required
-							data-change="${_.componentName}:fillStudentInfo" 
+							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
 							title=""
@@ -456,7 +456,7 @@ export const view = {
 							class="select adding-select" 
 							name="thirdSchool" 
 							data-required
-							data-change="${_.componentName}:fillStudentInfo" 
+							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
 							title=""
@@ -1462,7 +1462,6 @@ export const view = {
 					<g-input 
 						type="text" 
 						name="phone" 
-						data-required
 						value="${parentInfo.phone ?? ''}" 
 						data-input="${_.componentName}:fillParentInfo" 
 						class="g-form-item" 
@@ -1596,7 +1595,16 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Official test date</label>
 					</div>
-					<g-input type="date" name="testDate" format="month DD, YYYY" icon="false" value="${testDate}" class="g-form-item" classname="form-input adding-inpt"></g-input>
+					<g-input 
+						type="date" 
+						name="testDate" 
+						format="month DD, YYYY" 
+						icon="false" 
+						value="${testDate}" 
+						class="g-form-item" 
+						classname="form-input adding-inpt"
+						data-change="${_.componentName}:inputCourseData"
+					></g-input>
 					</div>
 			</div>
 			${_.choiceSelectStudent(choiceData,'Application School List')}
@@ -2610,7 +2618,7 @@ export const view = {
 		let tpl = `
 			<div class="adding-center wide">
 				<div class="adding-section">
-					<h4 class="adding-subtitle">Admin Personal  Info</h4>
+					<h4 class="adding-subtitle">${_.subSection === 'parentProfile' ? 'Parent' : 'Admin'} Personal  Info</h4>
 					<div class="adding-avatar">
 						<div class="profile-img-row">
 							<div class="profile-img">

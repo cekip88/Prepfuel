@@ -66,7 +66,7 @@ export class UsersModule extends AdminPage {
 				'assignParent','addNewParent','assignCourse','skipParent','updateParent',
 				'changeTestType','changeStudentLevel','changeSection',
 				'fillAdminInfo',
-				'fillStudentInfo','createStudent','skipTestDate',
+				'fillStudentInfo','createStudent','skipTestDate','inputCourseData',
 				'fillParentInfo','assignStudentToParent','removeAssignedParent',
 				'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
 				'showSuccessPopup','showErrorPopup','closePopup',
@@ -154,8 +154,12 @@ export class UsersModule extends AdminPage {
 	}
 
 	// Create methods
-	async createNewParent(){
+	async createNewParent({item}){
 		const _ = this;
+		let cont = item.closest('#add-parent');
+		let formValidation = await _.nextStepBtnValidation(cont);
+		if (!formValidation) return;
+
 
 		let response = await Model.createParent(_.parentInfo);
 		if(!response) return void 0;
@@ -215,6 +219,12 @@ export class UsersModule extends AdminPage {
 		});
 		if(!response) return void 0;
 
+		if (!_.isEmpty(_.courseData)) {
+			for (let key in _.courseData) {
+				await Model.updateCourse(_.courseData[key]);
+			}
+		}
+
 		item.setAttribute('rerender',true);
 		item.setAttribute('section','student');
 		G_Bus.trigger(_.componentName,'changeSection',{item})
@@ -243,6 +253,7 @@ export class UsersModule extends AdminPage {
 			'firstName': _.parentInfo['firstName'],
 			"lastName": _.parentInfo['lastName'],
 			"email": _.parentInfo['email'],
+			"phone": _.parentInfo['phone'],
 			"role": _.parentInfo['role'][0],
 		});
 		if(!response) return void 0;
@@ -277,7 +288,6 @@ export class UsersModule extends AdminPage {
 	}
 	// Update methods
 	
-	
 	// Fill methods
 	fillParentInfo({item}){
 		const _ = this;
@@ -301,6 +311,26 @@ export class UsersModule extends AdminPage {
 			_.metaInfo[prop] = item.textContent;
 		}
 		_['studentInfo'][prop] = value;
+	}
+	inputCourseData({item}){
+		const _ = this;
+		let courseId = _.studentInfo['currentPlan']['_id'];
+		if (!_.courseData) _.courseData = {};
+		if (!_.courseData[courseId]) {
+			_.courseData[courseId] = {
+				'_id': courseId,
+				'studentId':_.studentInfo['_id'],
+				'firstSchool': _.studentInfo['currentPlan']['firstSchool']['_id'],
+				'secondSchool': _.studentInfo['currentPlan']['secondSchool']['_id'],
+				'thirdSchool': _.studentInfo['currentPlan']['thirdSchool']['_id'],
+				'testDate': _.studentInfo['currentPlan']['testDate']
+			}
+		}
+
+		let
+			prop = item.getAttribute('name'),
+			value = item.value;
+		_.courseData[courseId][prop] = value;
 	}
 	fillAdminInfo({item}){
 		const _ = this;
@@ -397,7 +427,6 @@ export class UsersModule extends AdminPage {
 			studentId = profileData['studentId'];
 		}
 		let currentStudent = Model.studentsData.response.filter( student => student['_id'] == studentId )[0];
-		console.log(currentStudent)
 		_.studentInfo = Object.assign({},currentStudent['user']);
 		_.metaInfo = {};
 		_.studentInfo['currentSchool'] = currentStudent['currentSchool'] ?? '';
@@ -444,8 +473,8 @@ export class UsersModule extends AdminPage {
 		}
 		let
 			currentParent = Model.parentsData.response.filter( parent => parent['_id'] == parentId )[0];
-		//console.log(currentParent)
 		_.parentInfo = Object.assign({},currentParent['user']);
+		_.parentInfo['phone'] = currentParent['phone'];
 		_.parentInfo['outerId'] = _.parentInfo['_id'];
 		_.parentInfo['_id'] = currentParent['_id'];
 
@@ -954,24 +983,6 @@ export class UsersModule extends AdminPage {
 	// Show methods end
 	
 	// Validation methods
-	stepTwoValidation(){
-		const _ = this;
-		let props = ['firstName','lastName','email','avatar','password','cpass'];
-		for (let prop of props) if (!_.studentInfo[prop]) return false;
-
-		if (_.searchInfo.cpass !== _.studentInfo.password) {
-			_.showErrorPopup('Password and Repeat password must match');
-			return false;
-		}
-
-		return true;
-	}
-	stepThreeValidation(){
-		const _ = this;
-		if (_.metaInfo && _.metaInfo.parentAddType == 'addNewParent') {
-		
-		}
-	}
 	validatePassword({item}){
 		const _ = this;
 		let
@@ -979,24 +990,22 @@ export class UsersModule extends AdminPage {
 			inputs = cont.querySelectorAll('G-INPUT[type="password"]'),
 			text = item.nextElementSibling,
 			validate = true;
+
+
+
 		if (item == inputs[0]) {
-			if (item.value.length < 8) {
-				item.setMarker('red');
-				text.style = 'color: red;';
-				validate = false;
-			} else {
-				item.setMarker();
-				text.removeAttribute('style')
-			}
+			validate = /(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{8,}/g.test(item.value);
 		} else {
-			if (item.value !== inputs[0].value) {
-				item.setMarker('red');
-				text.style = 'color: red;'
-				validate = false;
-			} else {
-				item.setMarker();
-				text.style = 'display:none;'
-			}
+			validate = (item.value === inputs[0].value);
+		}
+
+		if (validate) {
+			item.setMarker();
+			text.removeAttribute('style');
+			if (item == inputs[0]) text.setAttribute('style','display:none;')
+		} else {
+			item.setMarker('red');
+			text.style = 'color: red;';
 		}
 
 		let callback = item.getAttribute('data-callback');
@@ -1009,11 +1018,23 @@ export class UsersModule extends AdminPage {
 	async checkEmail({item}){
 		const _ = this;
 		let value = item.value;
+		if (!value) {
+			item.doValidate("Email can't be empty");
+			return false;
+		}
+		let
+			dogPos = value.indexOf('@'),
+			dotPos = value.lastIndexOf('.');
+		if (dogPos <= 0 || dotPos <= 0 || dogPos > dotPos || dotPos == value.length - 1) {
+			item.doValidate("Incorrect email");
+			return false;
+		}
 		let response = await Model.checkEmail(value);
 		if (!response) {
 			item.doValidate("Email can't be empty");
 			return false;
-		} else if (response.substr(response.length - 4) !== 'free') {
+		}
+		if (response.substr(response.length - 4) !== 'free') {
 			item.doValidate('User with this email address already exists')
 			return false;
 		}
@@ -1066,13 +1087,26 @@ export class UsersModule extends AdminPage {
 		let
 			len = Math.ceil((Math.random() * 8)) + 8,
 			inputs = item.closest('.passwords').querySelectorAll('G-INPUT[type="password"]'),
-			symbols = ['!','#', '$', '&', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
+			symbols = {
+				specials:['!','@','#','$','%','^','&','*'],
+				numbers:['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+				uppers:['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+				lowers:['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+			},
+			rawPassword = {},
 			password = '',
 			input;
-		
-		for (let i = 0; i < len; i++) {
-			let number = Math.ceil(Math.random() * 65);
-			password += symbols[number];
+
+		for (let key in symbols) {
+			rawPassword[key] = [];
+			for (let i = 0; i < Math.ceil(len / 4); i++) {
+				let number = Math.ceil(Math.random() * symbols[key].length - 1);
+				rawPassword[key].push(symbols[key][number])
+			}
+		}
+		let newRawPassword = rawPassword['specials'].concat(rawPassword['numbers'],rawPassword['uppers'],rawPassword['lowers']);
+		while(newRawPassword.length) {
+			password += newRawPassword.splice([Math.random() * (newRawPassword.length - 1)],1);
 		}
 
 		for (let i = 0; i < inputs.length; i++) {
@@ -1080,7 +1114,7 @@ export class UsersModule extends AdminPage {
 			let callBack = inputs[i].getAttribute('data-input');
 			if (callBack) {
 				let callBackTitle = callBack.split(':')[1];
-				G_Bus.trigger(_.componentName,callBackTitle,{item:inputs[i]})
+				G_Bus.trigger(_.componentName,callBackTitle,{item:inputs[i]});
 			}
 			if (!i) {
 				input = inputs[i].shadow.querySelector('INPUT');
@@ -1139,12 +1173,18 @@ export class UsersModule extends AdminPage {
 			usersData:_.parents
 		});
 
-		if ( _.currentParent ){
-			for ( let parent of _.currentParent['response'] ){
-				let curParentAssignBtn = cont.querySelector(`.users-btn.button-blue[data-id="${ parent['_id'] }"]`);
-				if ( !curParentAssignBtn ) continue;
-				curParentAssignBtn.closest('TR').remove();
+		if ( !_.isEmpty(_.currentParent) ){
+			if (_.currentParent['response']) {
+				for ( let parent of _.currentParent['response'] ){
+					let curParentAssignBtn = cont.querySelector(`.users-btn.button-blue[data-id="${ parent['_id'] }"]`);
+					if ( !curParentAssignBtn ) continue;
+					curParentAssignBtn.closest('TR').remove();
+				}
+			} else {
+				let curParentAssignBtn = cont.querySelector(`.users-btn.button-blue[data-id="${ _.currentParent['_id'] }"]`);
+				if ( curParentAssignBtn ) curParentAssignBtn.closest('TR').remove();
 			}
+
 		}
 
 		_.parentSkipped =  false;
@@ -1308,7 +1348,6 @@ export class UsersModule extends AdminPage {
 		_.getSearchUsers({searchInfo:_.searchInfo[role],cont,role})
 	}
 	//end search methods
-
 
 	setCancelBtn(type = 'adding') {
 		const _ = this;
@@ -1480,6 +1519,13 @@ export class UsersModule extends AdminPage {
 		_.f(`#assignForm .adding-list-item:nth-child(${ assignStep })`).classList.add('active');
 	}
 
+	isEmpty(obj){
+		const _ = this;
+		for (let key in obj) {
+			return false;
+		}
+		return true;
+	}
 
 	// Paginate
 	paginate({item}){
@@ -1562,5 +1608,4 @@ export class UsersModule extends AdminPage {
 		_._( _.handleAddingSteps.bind(_),[ 'addingStep' ] );
 		_._( _.handleAssignSteps.bind(_),[ 'assignStep' ] );
 	}
-	
 }
