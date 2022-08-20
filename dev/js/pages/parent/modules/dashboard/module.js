@@ -830,30 +830,21 @@ export class DashboardModule extends ParentPage{
 			text = item.nextElementSibling,
 			validate = true;
 
-		function setFalse(){
-			item.setMarker('red');
-			text.style = 'color: red;';
-			validate = false;
-		}
+
 
 		if (item == inputs[0]) {
-			let regEx = /(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{8,}/g;
-			validate = regEx.test(item.value);
+			validate = /(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{8,}/g.test(item.value);
 		} else {
-			if (item.value !== inputs[0].value) {
-				item.setMarker('red');
-				text.style = 'color: red;'
-				validate = false;
-			}
+			validate = (item.value === inputs[0].value);
 		}
 
 		if (validate) {
-			for (let input of inputs) {
-				input.setMarker();
-				input.nextElementSibling.removeAttribute('style');
-			}
+			item.setMarker();
+			text.removeAttribute('style');
+			if (item == inputs[1]) text.setAttribute('style','display:none;')
 		} else {
-			setFalse();
+			item.setMarker('red');
+			text.style = 'color: red;';
 		}
 
 		let callback = item.getAttribute('data-callback');

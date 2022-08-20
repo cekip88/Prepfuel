@@ -134,7 +134,7 @@ export const loginView = {
 	},
 	forgotTpl(){
 		const _ = this;
-		//data-click="${_.componentName}:changeSection" section="reset"
+		//
 		return `<div class="login-right">
 				<form class="login-form" data-submit="${_.componentName}:doFormAction" data-handle="doForgot">
 					<h2 class="login-title">
@@ -148,13 +148,20 @@ export const loginView = {
 						<div class="form-label-row">
 							<label class="form-label">Email</label>
 						</div>
-						<g-input class="g-form-item" type="email" name="email" className="form-input" required></g-input>
+						<g-input 
+							class="g-form-item" 
+							type="email" 
+							name="email" 
+							className="form-input" 
+							data-outfocus="${_.componentName}:checkEmail"
+							required
+						></g-input>
 					</div>
 					<div class="form-block row">
 						<a class="button-lightblue" data-click="${_.componentName}:changeSection" section="login">
 							<span>Back</span>
 						</a>
-						<button class="button-blue" >
+						<button class="button-blue" data-click="${_.componentName}:changeSection" section="reset">
 							<span>Reset Password</span>
 						</button>
 					</div>

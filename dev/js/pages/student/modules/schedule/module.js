@@ -77,6 +77,9 @@ export class ScheduleModule extends StudentPage{
 			_.practiceRowsCnt = 4;
 			return void 0;
 		}
+		if(_.practiceRowsCnt === 4){
+			item.setAttribute('style','display:none;')
+		}
 		let
 			rowsCont = _.f('#shedule-rows');
 		rowsCont.append(_.markup(_.practiceTestRow()));

@@ -15,6 +15,7 @@ class _loginModel{
 			'forgot': `${env.backendUrl}/auth/forgot-password`,
 			'reset': `${env.backendUrl}/auth/reset-password`,
 			'wizardData': `${env.backendUrl}/user/wizard-data`,
+			'checkEmail': `${env.backendUrl}/user/check-email/`,
 		};
 		
 		this.dashboards = {
@@ -144,6 +145,27 @@ class _loginModel{
 				if(response['status'] == 'success') {
 					resolve(response['response']);
 				}
+			}
+			resolve(null);
+		});
+	}
+
+	checkEmail(email){
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['checkEmail']}${email}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('checkEmail', response);
+				}
+			} else {
+				_.wrongRequest('checkEmail', rawResponse)
 			}
 			resolve(null);
 		});

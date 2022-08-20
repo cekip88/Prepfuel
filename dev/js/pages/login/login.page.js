@@ -50,7 +50,8 @@ class LoginPage extends G{
 				'resetFail',
 				'changeSection',
 				'changeAgree',
-				'formInputHandle'
+				'formInputHandle',
+				'checkEmail',
 		]);
 	}
 
@@ -61,6 +62,32 @@ class LoginPage extends G{
 			let form = item.closest('FORM');
 			G_Bus.trigger(_.componentName,'doFormAction',{item:form})
 		}
+	}
+
+	async checkEmail({item}){
+		const _ = this;
+		let value = item.value;
+		if (!value) {
+			item.doValidate("Email can't be empty");
+			return false;
+		}
+		let
+			dogPos = value.indexOf('@'),
+			dotPos = value.lastIndexOf('.');
+		if (dogPos <= 0 || dotPos <= 0 || dogPos > dotPos || dotPos == value.length - 1) {
+			item.doValidate("Incorrect email");
+			return false;
+		}
+		let response = await loginModel.checkEmail(value);
+		if (!response) {
+			item.doValidate("Email can't be empty");
+			return false;
+		}
+		if (response.substr(response.length - 4) !== 'free') {
+			item.doValidate('User with this email address already exists')
+			return false;
+		}
+		return true;
 	}
 	
 	async doFormAction({item:form,event:e}){

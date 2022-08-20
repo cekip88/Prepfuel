@@ -19,7 +19,7 @@ export const view = {
 						<div class="test-header">
 							<h3 class="block-title test-title"><span>Step <i id="step-item">1</i> of 3 - Choose your test date</span></h3>
 						</div>
-						<div class="test-inner narrow visible">
+						<div class="test-inner narrow">
 								${_.stepOneTpl()}
 						</div>
 					<div class="test-footer">

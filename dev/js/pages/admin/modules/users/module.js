@@ -616,6 +616,7 @@ export class UsersModule extends AdminPage {
 	}
 	addNewParent(clickData) {
 		const _ = this;
+		_.parentInfo = {};
 		let container;
 		if (clickData) {
 			let item = clickData.item;
@@ -1002,7 +1003,7 @@ export class UsersModule extends AdminPage {
 		if (validate) {
 			item.setMarker();
 			text.removeAttribute('style');
-			if (item == inputs[0]) text.setAttribute('style','display:none;')
+			if (item == inputs[1]) text.setAttribute('style','display:none;')
 		} else {
 			item.setMarker('red');
 			text.style = 'color: red;';
@@ -1131,8 +1132,8 @@ export class UsersModule extends AdminPage {
 	// Assign methods
 	async assignParent(clickData = null) {
 		const _ = this;
-
 		let container;
+		_.parentInfo = {};
 		if ( clickData ) {
 			let item = clickData.item;
 			item.parentElement.querySelector('.active').classList.remove( 'active' );
@@ -1184,7 +1185,6 @@ export class UsersModule extends AdminPage {
 				let curParentAssignBtn = cont.querySelector(`.users-btn.button-blue[data-id="${ _.currentParent['_id'] }"]`);
 				if ( curParentAssignBtn ) curParentAssignBtn.closest('TR').remove();
 			}
-
 		}
 
 		_.parentSkipped =  false;
@@ -1192,7 +1192,6 @@ export class UsersModule extends AdminPage {
 	}
 	async assignStudentToParent({item}) {
 		const _ = this;
-
 		let parentId = item.getAttribute('data-id');
 
 		if ( _.subSection === 'profile' && _.studentInfo['studentId'] ){
@@ -1407,19 +1406,23 @@ export class UsersModule extends AdminPage {
 		let inputs = cont.querySelectorAll(`[data-required]`);
 		let validate = true;
 
-		for (let item of inputs) {
-			if (item.hasAttribute('data-outfocus')) {
-				let rawvalidate = await _[item.getAttribute('data-outfocus').split(':')[1]]({item});
-				if (!rawvalidate) validate = false;
-			} else if (item.tagName == 'G-SELECT') {
-				if (!item.value.length) {
+		if (inputs.length) {
+			for (let item of inputs) {
+				if (item.hasAttribute('data-outfocus')) {
+					let rawvalidate = await _[item.getAttribute('data-outfocus').split(':')[1]]({item});
+					if (!rawvalidate) validate = false;
+				} else if (item.tagName == 'G-SELECT') {
+					if (!item.value.length) {
+						validate = false;
+						item.doValidate("This field can't be empty");
+					}
+				} else if (!item.value) {
 					validate = false;
 					item.doValidate("This field can't be empty");
 				}
-			} else if (!item.value) {
-				validate = false;
-				item.doValidate("This field can't be empty");
 			}
+		} else if (_._$.addingStep == 3) {
+			if (!_.studentInfo['parentId'] && !_.parentInfo['email']) validate = false;
 		}
 		return validate;
 	}
@@ -1448,8 +1451,7 @@ export class UsersModule extends AdminPage {
 			};
 			return void 0;
 		}
-		let
-			addingBody = _.f('#addingForm .adding-body');
+		let addingBody = _.f('#addingForm .adding-body');
 		if (!addingBody) return void 0;
 		addingBody.innerHTML = '<img src="/img/loader.gif">';
 		_.clear(addingBody);

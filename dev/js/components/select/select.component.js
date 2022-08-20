@@ -80,6 +80,7 @@ export default class GSelect extends GComponent {
 	}
 	setError(type){
 		const _ = this;
+		if (_.tipTpl) return
 		let inpt = _.shadow.querySelector('.g-select');
 		let parser = new DOMParser().parseFromString(`<span class="inpt-tip">${type}</span>`,'text/html');
 		_.tipTpl = parser.body.children[0];

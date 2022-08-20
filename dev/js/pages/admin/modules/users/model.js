@@ -194,7 +194,6 @@ class _Model {
 	}
 	createParent(studentData) {
 		const _ = this;
-		console.log(studentData)
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.getEndpoint('createParent')}`, {
 				method: 'POST',
