@@ -119,10 +119,10 @@ class LoginPage extends G{
 	}
 	changeSection({item,event}){
 		const _ = this;
-		let section = item.getAttribute('section'),
-				part = (section == 'reset') ? 'row' : 'right';
-		
-		
+		let
+			section = item.getAttribute('section'),
+			part = (section == 'reset') ? 'row' : 'right';
+
 		if(section == 'welcome'){
 			//_.welcomeTpl();
 		}else{

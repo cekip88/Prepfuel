@@ -462,7 +462,7 @@ export class _Model {
 			}
 		});
 	}
-	async getQuizResults(){
+	async getQuizResults(subject,num){
 		const _ = this;
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['quizResults']}`,{
@@ -472,8 +472,17 @@ export class _Model {
 			if(rawResponse.status == 200){
 				let
 					response = await rawResponse.json(),
-					answers = response['response']['answers'];
-				_.testServerAnswers = answers;
+					tests = response['response']['tests'];
+				let t = tests.filter( test =>{
+					if(test['subject'] == subject && test['number'] == num){
+						return test;
+					}
+				});
+				if(t.length > 0) {
+					_.testServerAnswers = t[0]['answers'];
+				}else{
+					_.testServerAnswers = [];
+				}
 				_.testStatus = response['response']['status'];
 				resolve(_.testServerAnswers);
 			}
@@ -618,12 +627,11 @@ export class _Model {
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
-				console.log(response);
 				if(response['status'] == 'success'){
 					resolve(response);
 				}
 			}else{
-				console.log(rawResponse);
+				resolve(false);
 			}
 		});
 	}

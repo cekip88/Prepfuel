@@ -276,7 +276,7 @@ export const view = {
 						data-id="${task.title}"
 						data-num="${task.num}"
 						section = "quizDirections"
-						data-click="${_.componentName}:changeSection"
+						data-click="${_.componentName}:changeSection;${_.componentName}:setQuizInfo"
 						style="background-color:rgb(${color});"
 					>
 						${task['status'] == 'completed' ? 'Review' : 'Start task'}
@@ -705,7 +705,7 @@ export const view = {
 		const _ = this;
 		return `
 			<div class="test-footer" style="padding-bottom: 0">
-				<a class="test-footer-button" data-click="${this.componentName}:changeSection" section="directions">
+				<a class="test-footer-button" id='directions-btn' data-click="${this.componentName}:changeSection" section="directions">
 					<span>Directions</span>
 				</a>
 				<div class="pagination pagination-top">

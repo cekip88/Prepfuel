@@ -36,7 +36,7 @@ class ParentPage extends G{
 		const _ = this;
 		_.componentName = 'ParentPage';
 		G_Bus
-		.on(_,[
+			.on(_,[
 			'changeSection','navigate',
 			'showSuccessPopup','showErrorPopup','closePopup',
 		]);
@@ -60,10 +60,10 @@ class ParentPage extends G{
 		months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 		
 		let res = format;
-		res = res.replace('DD',day)
-		res = res.replace('MM',month)
-		res = res.replace('YYYY',year)
-		res = res.replace('month',months[parseInt(month) - 1]);
+			res = res.replace('DD',day)
+			res = res.replace('MM',month)
+			res = res.replace('YYYY',year)
+			res = res.replace('month',months[parseInt(month) - 1]);
 		return res;
 	}
 	changeSection({item,event}){
@@ -84,11 +84,15 @@ class ParentPage extends G{
 	}
 	async moduleRender(params){
 		const _ = this;
+	
 		let module = await _.getModule({
 			'pageName':'parent',
 			'name': params[0],
 			'structure':_.pageStructure
 		});
+		if(params['redirect']){
+			await _.getMe();
+		}
 		if(!module._$){
 			module._$ = {};
 		}
@@ -120,7 +124,20 @@ class ParentPage extends G{
 	fullHeader(){
 		return G_Bus.trigger('header','fullHeader');
 	}
-
+	async getMe(){
+		const _ = this;
+		let rawResponse = await fetch(_.endpoints['me'],{
+			..._.baseHeaders,
+			method: 'GET'
+		});
+		if(rawResponse.status < 206){
+			let response = await rawResponse.json();
+			let user = response['user'];
+			localStorage.setItem('me',JSON.stringify(user));
+			return void 0;
+		}
+	}
+	
 	async init(blockData){
 		const _ = this;
 		let params;

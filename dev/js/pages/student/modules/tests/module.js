@@ -468,6 +468,7 @@ export class TestsModule extends StudentPage{
 	
 	changeInnerQuestionId({item}){
 		const _ = this;
+		
 		_.innerQuestionId = item.getAttribute('data-question-id');
 	}
 

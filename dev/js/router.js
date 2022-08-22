@@ -19,6 +19,7 @@ export class router {
 		};
 		G_Bus
 			.on(_,['changePage','logout'])
+		_.user = {};
 	}
 	get role(){
 		const _ = this;
@@ -41,6 +42,7 @@ export class router {
 	}
 	async changePage(route){
 		const _ = this;
+		//_.user['role'] = 'guest';
 		//if(_.user['role'] == 'guest')
 		await _.getMe();
 		
@@ -54,10 +56,16 @@ export class router {
 		const _ = this;
 		if(route) history.pushState(null, null, route);
 		let
+			params = {},
 			pathName = location.pathname+location.search,
+			rawParams = location.search.split('&'),
 			pathParts = pathName.split('/').splice(1),
-			module = pathParts.splice(0,1)[0],
-			params = pathParts;
+			module = pathParts.splice(0,1)[0];
+		rawParams[0] = rawParams[0].replace('?','');
+		rawParams.forEach( param =>{
+			let rawParam = param.split('=');
+			params[rawParam[0].toLowerCase()] = rawParam[1]
+		} );
 		let
 			role = _.role,
 			middles = Object.keys(_.middleware),
@@ -97,7 +105,7 @@ export class router {
 				history.pushState(null, null, '/login');
 				return {
 					'module': 'login',
-					'params': null
+					'params': params
 				}
 			}else{
 				pathName = difRoute;

@@ -94,7 +94,7 @@ new router().init({
   'middleware':{
 		'guest':{
 			routes:{
-				'/login': 'login',
+				'/login/': 'login',
 				'/login/forgot': 'login',
 				'/login/reset/{token}': 'login',
 			}
@@ -108,9 +108,10 @@ new router().init({
 				'/admin/courses': 'admin',
 			}
 		},
-	  'parent':{
+		'parent':{
 			routes:{
 				'/parent/dashboard': 'parent',
+				'/parent/dashboard?redirect=google': 'parent',
 			}
 	  },
 		'student':{
