@@ -144,10 +144,13 @@ class _Model{
 			if(rawResponse.status < 206){
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
+					console.log(response);
 					let resultId = response['response']['resultId'];
 					_.test['resultId'] = resultId;
 					localStorage.setItem('resultId', resultId);
-					resolve(resultId);
+					resolve({
+						resultId: resultId
+					});
 				}
 			}else{
 				resolve(false);
@@ -215,7 +218,10 @@ class _Model{
 				//console.log(_.testServerAnswers);
 				//_.testServerAnswers = response['response']['sections'][_.currentSectionPos]['subSections'][_.currentSubSectionPos]['answers'];
 				_.testStatus = response['response']['status'];
-				resolve(_.testServerAnswers);
+				resolve({
+					testResults: _.testServerAnswers,
+					resultObj: response['response'],
+				});
 			}
 		});
 	}

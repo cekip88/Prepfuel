@@ -134,7 +134,9 @@ class ParentPage extends G{
 		if(rawResponse.status < 206){
 			let response = await rawResponse.json();
 			let user = response['response'];
-			localStorage.setItem('me',JSON.stringify(user));
+			localStorage.setItem('me',JSON.stringify({
+				parent: user
+			}));
 			return void 0;
 		}
 	}
@@ -142,7 +144,6 @@ class ParentPage extends G{
 	async init(blockData){
 		const _ = this;
 		let params;
-		
 		if(blockData && blockData['params']){
 			params = blockData['params'];
 		}

@@ -24,7 +24,7 @@ export class TestsModule extends StudentPage{
 		G_Bus.on(_,[
 			'isGrid','showResults','showSummary','changeSection','setWrongAnswer','setCorrectAnswer','changeQuestion',
 			'jumpToQuestion','jumpToQuestion','saveBookmark','saveNote','changeInnerQuestionId','showForm','deleteNote',
-			'editNote','showTestLabelModal','startTimer','updateStorageTest','saveReport','changeTestSection','enterGridAnswer',
+			'editNote','showTestLabelModal','updateStorageTest','saveReport','changeTestSection','enterGridAnswer',
 			'resetTest','domReady','changePracticeTest','changeTestResultsTab',
 		]);
 		//TestModel = new TestModel();
@@ -43,7 +43,7 @@ export class TestsModule extends StudentPage{
 			'grid-in':'grid'
 		};
 		_.questionStep = 1;
-		
+		_.testTime = 180;
 		_.rawQuestionPos = 0;
 		_.questionPos = 0;
 		
@@ -162,9 +162,11 @@ export class TestsModule extends StudentPage{
 			// start of test
 
 			let started = await Model.start();
+			
+		
 			if(!started) return void 0;
 			let results = await Model.getTestResults();
-			
+			_.resultObj = results['resultObj'];
 			if(results['status'] === 'finished'){
 				section = 'score';
 				_.moduleStructure['body'] = _.flexible(section);
@@ -175,14 +177,16 @@ export class TestsModule extends StudentPage{
 		await _.render();
 		if(section == 'directions') {
 			_.f('#directionsQuestion').textContent = _.questionPos+1;
+			_.tickTimer();
 		}
 		if(section == 'questions'){
 			_.fillCheckedAnswers();
-			
+			_.tickTimer();
 			if(Model.isFinished()){
 				await Model.getTestResults();
 				_.markAnswers();
 				_.markCorrectAnswer();
+				
 			}
 		}
 		
@@ -233,6 +237,7 @@ export class TestsModule extends StudentPage{
 			_._$.currentQuestion=  Model.questions[index+1];
 		}
 		_.isJump = false;
+		_.tickTimer();
 	}
 	async jumpToQuestion({item,event}){
 		const _ = this;
@@ -243,8 +248,9 @@ export class TestsModule extends StudentPage{
 			questionPageId = item.parentNode.getAttribute('data-questionpage-id');
 		if( _.questionPos == jumpQuestionPos ) return void 0;
 		_.questionPos = jumpQuestionPos;
-		await _.saveAnswerToDB();
-		
+		if(!Model.isFinished()){
+			await _.saveAnswerToDB();
+		}
 		if(questionPageId !== '-1'){
 			jumpQuestionPos = Model.currentQuestionDataPosById(questionPageId);
 			_._$.currentQuestion = Model.questions[jumpQuestionPos];
@@ -253,7 +259,7 @@ export class TestsModule extends StudentPage{
 		}
 		
 		location.hash= item.parentNode.getAttribute('data-question-id');
-	
+		_.tickTimer();
 	}
 	changeTestSection({item}){
 		const _ = this;
@@ -269,6 +275,7 @@ export class TestsModule extends StudentPage{
 		_._$.currentQuestion = Model.currentQuestionData(_.datasPos);
 		_.isJump = false;
 		_.f('#test-section-name').textContent = Model.currentSection.sectionName;
+		_.tickTimer();
 	}
 
 	async changePracticeTest({item}){
@@ -316,9 +323,14 @@ export class TestsModule extends StudentPage{
 			target: `#${id}`
 		});
 	}
-	startTimer({item}){
+	tickTimer(){
 		const _ = this;
-		Model.start();
+		if(!_.resultObj) return void 0;
+		let createdAt = _.resultObj['testStartedAt'],
+			startTime = new Date(createdAt).getTime(),
+			nowTime =new Date().getTime(),
+			currentTime = nowTime - startTime;
+		_.f('.test-timer-value').textContent = _.testTime - Math.round(currentTime/ 60000);
 	}
 	
 	
@@ -349,7 +361,7 @@ export class TestsModule extends StudentPage{
 	async fillCheckedAnswers(){
 		const _ = this;
 		let test = await Model.getTestResults();//Model.getTestFromStorage();
-	
+		test = test['testResults'];
 		for(let t in test){
 			if( test[t]['answer'] == 'O') continue;
 			let
@@ -474,13 +486,11 @@ export class TestsModule extends StudentPage{
 
 	async saveAnswerToDB(){
 		const _ = this;
-		//_.currentQuestion = _._$.currentQuestion['questions'][0];// Model.innerQuestion(_.questionPos);
 		return new Promise(  async (resolve) => {
 			if(_.isJump){
 				_.questionPos = Model.currentQuestionDataPosById(_._$.currentQuestion['_id'])
 			}
 			let questionData = Model.currentQuestionData(_.questionPos);
-			console.log(_.questionPos,questionData);
 			if(_._$.currentQuestion['questions']) questionData = _._$.currentQuestion;
 			let handle = async (answer)=>{
 				return await Model.saveAnswer({
@@ -498,8 +508,9 @@ export class TestsModule extends StudentPage{
 				});
 			}
 			if(questionData['questions'].length > 1){
-				for(let i=0; i < questionData['questions'].length;i++){
-					let quest = questionData['questions'][i];
+				//for(let i=0; i < questionData['questions'].length;i++){
+				for(let quest of questionData['questions']){
+					//let quest = questionData['questions'][i];
 					let answer = _.storageTest[quest['_id']];
 					if(!answer){
 						let bookmarkedButton = _.f(`.bookmarked-button[data-question-id="${quest['_id']}"]`);
@@ -514,7 +525,7 @@ export class TestsModule extends StudentPage{
 				let answer = _.storageTest[_._$.currentQuestion['_id']];
 				if(answer){
 					// if user choosed answer save it to db
-					resolve(handle(answer));
+					resolve(await handle(answer));
 				}else{
 					// else set bookmarked this answer
 					_.saveBookmark({
@@ -856,6 +867,7 @@ export class TestsModule extends StudentPage{
 				_.f('#questions-length').textContent = Model.allQuestionsLength;
 				questionCont.append(_.markup(_.questionsList()));
 			}
+			
 			
 			
 			if(Model.isFinished()) {

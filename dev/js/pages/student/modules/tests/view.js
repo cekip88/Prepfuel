@@ -563,6 +563,7 @@ export const view = {
 	async markCorrectAnswer(){
 		const _ = this;
 		let isGrid = await G_Bus.trigger(_.componentName,'isGrid');
+	
 		if(isGrid){
 			return void 0;
 		}
