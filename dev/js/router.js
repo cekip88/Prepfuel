@@ -62,11 +62,11 @@ export class router {
 			pathParts = pathName.split('/').splice(1),
 			module = pathParts.splice(0,1)[0];
 		rawParams[0] = rawParams[0].replace('?','');
-
+		params['module'] = pathParts[0];
 		for(let i =0; i <pathParts.length; i++){
 			pathParts[i] = pathParts[i].substr(0,pathParts[i].indexOf('?'));
 		}
-		params['module'] = pathParts[0];
+	
 		
 		
 		

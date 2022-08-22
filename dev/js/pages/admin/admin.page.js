@@ -109,6 +109,7 @@ export class AdminPage extends G {
 	}
 	async init(blockData) {
 		const _ = this;
+		console.log(blockData);
 		let
 			params = blockData['params'];
 		_.header = await _.getBlock({name:'header'},'blocks');
