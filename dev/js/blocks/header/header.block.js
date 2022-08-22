@@ -7,9 +7,9 @@ class HeaderBlock extends G{
 		_.componentName = 'header';
 		_.me = JSON.parse(localStorage.getItem('me'));
 		_.set({
-			firstName: _.me['firstName'],
-			lastName: _.me['lastName'],
-			role: _.me['role'],
+			firstName: _.me['parent']['user']['firstName'],
+			lastName: _.me['parent']['user']['lastName'],
+			role: _.me['parent']['user']['role'],
 		});
 		G_Bus
 			.on(_,['showUserList','rerender','fullHeader'])
@@ -25,9 +25,9 @@ class HeaderBlock extends G{
 		const _ = this;
 		let header = _.f('G-HEADER');
 		_.me = JSON.parse(localStorage.getItem('me'));
-		_._$.firstName = _.me['firstName'];
-		_._$.lastName = _.me['lastName'];
-		_._$.role = _.me['role'];
+		_._$.firstName = _.me['parent']['user']['firstName'];
+		_._$.lastName = _.me['parent']['user']['lastName'];
+		_._$.role = _.me['parent']['user']['role'];
 		let tpl = _.fullHeader();
 		header.innerHTML = tpl;
 	}
