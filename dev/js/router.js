@@ -63,10 +63,6 @@ export class router {
 			module = pathParts.splice(0,1)[0];
 		rawParams[0] = rawParams[0].replace('?','');
 
-		/*for(let i =0; i <pathParts.length; i++){
-			let part = pathParts[i];
-			part = part.substr(0,part.indexOf('?'));
-		}*/
 		for(let i =0; i <pathParts.length; i++){
 			pathParts[i] = pathParts[i].substr(0,pathParts[i].indexOf('?'));
 		}

@@ -5,7 +5,7 @@ import { G_Bus }        from "../../libs/G_Control.js";
 import { G }            from "../../libs/G.js";
 import GInput           from "../../components/input/input.component.js";
 import GModaler         from "../../components/modaler/modaler.component.js";
-
+import { env } from "/env.js"
 class ParentPage extends G{
 	constructor() {
 		super();
@@ -30,6 +30,9 @@ class ParentPage extends G{
 				id:'',
 				container: document.createElement('g-footer')
 			}
+		};
+		this.endpoints = {
+			'me':`${env.backendUrl}/user/me`,
 		};
 	}
 	define(){
@@ -90,9 +93,7 @@ class ParentPage extends G{
 			'name': params['module'],
 			'structure':_.pageStructure
 		});
-		if(params['redirect']){
-			await _.getMe();
-		}
+
 		if(!module._$){
 			module._$ = {};
 		}
@@ -132,7 +133,7 @@ class ParentPage extends G{
 		});
 		if(rawResponse.status < 206){
 			let response = await rawResponse.json();
-			let user = response['user'];
+			let user = response['response']['user'];
 			localStorage.setItem('me',JSON.stringify(user));
 			return void 0;
 		}
@@ -141,8 +142,12 @@ class ParentPage extends G{
 	async init(blockData){
 		const _ = this;
 		let params;
+		
 		if(blockData && blockData['params']){
 			params = blockData['params'];
+		}
+		if(params['redirect']){
+			await _.getMe();
 		}
 		_.header = await _.getBlock({name:'header'},'blocks');
 		if(params){
