@@ -160,7 +160,6 @@ export class UsersModule extends AdminPage {
 		let formValidation = await _.nextStepBtnValidation(cont);
 		if (!formValidation) return;
 
-
 		let response = await Model.createParent(_.parentInfo);
 		if(!response) return void 0;
 		let role = _.subSection;
@@ -630,6 +629,7 @@ export class UsersModule extends AdminPage {
 	addNewParent(clickData) {
 		const _ = this;
 		_.parentInfo = {};
+		_.currentParent = {};
 		let container;
 		if (clickData) {
 			let item = clickData.item;
@@ -1212,10 +1212,10 @@ export class UsersModule extends AdminPage {
 			_.clear( cont );
 			cont.append( _.markup( `<img src="/img/loader.gif">` ));
 
-			console.log(_.studentInfo)
 			await Model.assignStudentToParent( parentId,_.studentInfo['studentId'] );
 			G_Bus.trigger('modaler','closeModal');
 			let sectionButton = _.f('g-body .section-button.active');
+
 			_.changeProfileTab({item:sectionButton});
 			return;
 		}
@@ -1436,7 +1436,7 @@ export class UsersModule extends AdminPage {
 				}
 			}
 		} else if (_._$.addingStep == 3) {
-			if (!_.studentInfo['parentId'] && !_.parentInfo['email']) validate = false;
+			if (_.metaInfo['parentAddType'] && !_.metaInfo['parentAssigned']) validate = false;
 		}
 		return validate;
 	}
