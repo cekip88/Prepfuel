@@ -859,26 +859,26 @@ export const view = {
 							<div class="form-label-row">
 								<label class="form-label">First name</label>
 							</div>
-							<g-input 
-								type="text" 
-								value="${_.studentInfo['firstName'] ?? ''}" 
-								name="firstName" 
-								class="g-form-item" 
+							<g-input
+								type="text"
+								value="${_.studentInfo['firstName'] ?? ''}"
+								name="firstName"
+								class="g-form-item"
 								data-required
-								classname="form-input adding-inpt" 
+								classname="form-input adding-inpt"
 								data-input="${_.componentName}:fillStudentInfo"></g-input>
 						</div>
 						<div class="adding-inpt small">
 							<div class="form-label-row">
 								<label class="form-label">Last name</label>
 							</div>
-							<g-input 
-								type="text" 
-								value="${_.studentInfo['lastName'] ?? ''}" 
+							<g-input
+								type="text"
+								value="${_.studentInfo['lastName'] ?? ''}"
 								name="lastName"
-								data-required 
-								class="g-form-item" 
-								data-input="${_.componentName}:fillStudentInfo" 
+								data-required
+								class="g-form-item"
+								data-input="${_.componentName}:fillStudentInfo"
 								classname="form-input adding-inpt"></g-input>
 						</div>
 					</div>
@@ -886,13 +886,13 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">Email</label>
 						</div>
-							<g-input 
+							<g-input
 								type="email"
-								data-required 
-								name="email" 
-								value="${_.studentInfo['email'] ?? ''}" 
-								class="g-form-item" 
-								data-outfocus="${_.componentName}:checkEmail" 
+								data-required
+								name="email"
+								value="${_.studentInfo['email'] ?? ''}"
+								class="g-form-item"
+								data-outfocus="${_.componentName}:checkEmail"
 								data-input="${_.componentName}:fillStudentInfo"
 								classname="form-input adding-inpt"></g-input>
 							<span class="form-label-desc" style="display:none;">Email is not free</span>
@@ -905,15 +905,15 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">Password</label>
 						</div>
-						<g-input 
-							type="password" 
-							name="password" 
+						<g-input
+							type="password"
+							name="password"
 							data-required
 							match="addingStepTwo"
-							value="${_.studentInfo['password'] ?? ''}" 
-							data-outfocus="${_.componentName}:validatePassword" 
-							data-callback="${_.componentName}:fillStudentInfo" 
-							class="g-form-item" 
+							value="${_.studentInfo['password'] ?? ''}"
+							data-outfocus="${_.componentName}:validatePassword"
+							data-callback="${_.componentName}:fillStudentInfo"
+							class="g-form-item"
 							classname="form-input"
 						></g-input>
 						<span class="form-label-desc">8+ characters, with min. one number, one uppercase letter and one special character</span>
@@ -922,21 +922,21 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">Repeat password</label>
 						</div>
-						<g-input 
-							type="password" 
+						<g-input
+							type="password"
 							name="cpass"
 							data-required
 							match="addingStepTwo"
-							value="${_.studentInfo['cpass'] ?? ''}" 
-							data-outfocus="${_.componentName}:validatePassword" 
-							data-callback="${_.componentName}:fillStudentInfo" 
+							value="${_.studentInfo['cpass'] ?? ''}"
+							data-outfocus="${_.componentName}:validatePassword"
+							data-callback="${_.componentName}:fillStudentInfo"
 							class="g-form-item" classname="form-input"
 						></g-input>
 						<span class="form-label-desc" style="display:none;">Password does not match</span>
 					</div>
 				</div>
-				<button 
-					class="adding-generate" 
+				<button
+					class="adding-generate"
 					data-click="${_.componentName}:generatePassword">Generate Password</button>
 			</div>
 		`;
@@ -946,23 +946,30 @@ export const view = {
 		const _ = this;
 		let width = '';
 		//<button class="adding-button ${_.metaInfo && _.metaInfo.parentAddType == 'skip' ? 'active' : ''}" data-click="${_.componentName}:skipParent">Skip for now</button>
+		console.log(_.metaInfo)
 		if (_.metaInfo && _.metaInfo.parentAddType && _.metaInfo.parentAddType == 'assign') width = 'full';
 		let tpl =  `
 			<h3 class="adding-title">Parent Information</h3>
 			<div class="adding-section">
 				<div class="adding-label">Select the way of adding a parent</div>
 				<div class="adding-buttons">
-					<button class="adding-button ${_.metaInfo && _.metaInfo.parentAddType == 'assign' ? 'active' : ''}" data-click="${_.componentName}:assignParent">Assign from the base</button>
-					<button class="adding-button ${(_.metaInfo && _.metaInfo.parentAddType == 'adding') || !_.metaInfo || !_.metaInfo.parentAddType ? 'active' : ''}" data-click="${_.componentName}:addNewParent">Add new parent</button>
+					<button 
+						class="adding-button 
+						${_.metaInfo && _.metaInfo.parentAddType == 'assign' ? 'active' : ''}" 
+						data-click="${_.componentName}:assignParent"
+					>Assign from the base</button>
+					<button 
+						class="adding-button 
+						${(_.metaInfo && _.metaInfo.parentAddType == 'adding') || !_.metaInfo || !_.metaInfo.parentAddType ? 'active' : ''}" 
+						data-click="${_.componentName}:addNewParent"
+					>Add new parent</button>
 				</div>
 			</div>
 			<div class="adding-assign-body ${width} parent-adding-table">`;
 		if (!_.metaInfo || !_.metaInfo.parentAddType || _.metaInfo.parentAddType == 'adding') {
 			tpl += _.assignNewParent();
 		} else if (_.metaInfo.parentAddType == 'assign') {
-			tpl += _.assignParentTpl(true);
-			} else if(_.metaInfo.parentAddType == 'assigned') {
-			tpl += _.assignedParent(_.currentParent)
+			tpl += _.metaInfo.parentAssigned ? _.assignedParent(_.currentParent) : _.assignParentTpl(true);
 		} else {
 			tpl += _.skipParentTpl();
 		}
@@ -1509,7 +1516,7 @@ export const view = {
 			</div>
 		`;
 	},
-	
+
 	createSelectItems(items,template,active){
 		const _ = this;
 		let outItems = [];
@@ -1535,7 +1542,7 @@ export const view = {
 		}
 		return outItems;
 	},
-	
+
 	parentSkippedTpl(){
 		const _ = this;
 		return `
@@ -1964,7 +1971,6 @@ export const view = {
 		let tpl = `
 			<div class="tbl">
 				<div class="tbl-head">
-						
 						<div class="tbl-item">
 							<span>USER Name</span>
 							<div class="tbl-sort-btns">
