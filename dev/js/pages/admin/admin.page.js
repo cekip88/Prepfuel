@@ -102,6 +102,11 @@ export class AdminPage extends G {
 		res = res.replace('month',months[parseInt(month) - 1]);
 		return res;
 	}
+	fullHeader(){
+		const _ = this;
+		let tpl = G_Bus.trigger('header','fullHeader');
+		return tpl;
+	}
 	async init(blockData) {
 		const _ = this;
 		let

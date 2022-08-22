@@ -25,7 +25,7 @@ export default {
 					${data['placeholder'] ? 'placeholder="'+data['placeholder']+'"' : ''}
 					${data['value'] ? 'value="'+data['value'] +'"' : ''}
 					${ (data['type']=='phone') || (data['type']=='numeric') ? 'data-keydown="doKeyDown"' : '' }
-					type="${data['type']}"
+					type="${data['type']=='phone' ? 'text' : data['type']}"
 					class="inpt-value"
 					data-input="doInput"
 					data-focusout="doFocusOut"

@@ -211,7 +211,7 @@ export default class GInput extends GComponent {
 		}
 		else if (timeSkip == 'this_month') {
 			startDate = {day:1,month,year};
-			endDate = {day:_.getMonthLenth(month,year),month,year};
+			endDate = {day:_.getMonthLength(month,year),month,year};
 		}
 		else if (timeSkip == 'last_month') {
 			startDate = _.dateCorrect({day:1,month: month - 1, year});
@@ -240,10 +240,10 @@ export default class GInput extends GComponent {
 				month = 12;
 				year--;
 			}
-			day = _.getMonthLenth(month,year);
+			day = _.getMonthLength(month,year);
 		}
 
-		let lens = _.getMonthLenth(month,year);
+		let lens = _.getMonthLength(month,year);
 		let lastDay = day === 999 ? true : false;
 		if (!lastDay) {
 			if (day > lens) {
@@ -255,7 +255,7 @@ export default class GInput extends GComponent {
 					month = 12;
 					year--;
 				}
-				lens = _.getMonthLenth(month,year);
+				lens = _.getMonthLength(month,year);
 				day = lens + day;
 			}
 		}
@@ -267,11 +267,11 @@ export default class GInput extends GComponent {
 			month = 12;
 			year--;
 		}
-		lens = _.getMonthLenth(month,year);
+		lens = _.getMonthLength(month,year);
 		if (lastDay) day = lens;
 		return {day,month,year}
 	}
-	getMonthLenth (month,year){
+	getMonthLength (month,year){
 		let lens = 31;
 		let shortMonths = [4,6,9,11];
 		if (shortMonths.indexOf(month) >= 0) lens = 30;
@@ -656,7 +656,8 @@ export default class GInput extends GComponent {
 		return pattern.test(this.value);
 	}
 	checkPhone(){
-		let pattern = /\+[0-9]{1,4}\([0-9]{3}\) *[0-9]{3}-+[0-9]{2}-[0-9]{2}/;
+		let pattern = /\[0-9]/;
+		//let pattern = /\+[0-9]{1,4}\([0-9]{3}\) *[0-9]{3}-+[0-9]{2}-[0-9]{2}/;
 		return pattern.test(this.value);
 	}
 	doFocusIn(focusData){
@@ -741,9 +742,9 @@ export default class GInput extends GComponent {
 		const _ = this;
 		let
 			cleanedValue = _.cleanValue(_.value),
-			len = cleanedValue.length,
+			//len = cleanedValue.length,
 			tempValue = cleanedValue.split('');
-		if(len > 1){
+		/*if(len > 1){
 			tempValue.splice(1,0,'(');
 		}
 		if(len > 4){
@@ -758,7 +759,7 @@ export default class GInput extends GComponent {
 		}
 		if(len >= 12) {
 			tempValue.pop();
-		}
+		}*/
 		_.attr('data-value',cleanedValue);
 		_.cursorPos = _.getCaretPosition();
 		_.value = tempValue.join('');

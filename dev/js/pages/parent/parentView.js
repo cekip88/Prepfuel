@@ -49,10 +49,6 @@ export const parentView = {
 		const _ = this;
 		return _.headerBlock.render('simple');
 	},
-	fullHeader(){
-		const _ = this;
-		return _.headerBlock.render('full');
-	},
 	studentTabs(){
 		const _ = this;
 		return `

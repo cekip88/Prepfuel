@@ -5,13 +5,14 @@ class HeaderBlock extends G{
 	define(){
 		const _ = this;
 		_.componentName = 'header';
+		_.me = JSON.parse(localStorage.getItem('me'));
 		_.set({
-			firstName: localStorage.getItem('firstName'),
-			lastName: localStorage.getItem('lastName'),
-			role: localStorage.getItem('role'),
+			firstName: _.me['firstName'],
+			lastName: _.me['lastName'],
+			role: _.me['role'],
 		});
 		G_Bus
-			.on(_,['showUserList'])
+			.on(_,['showUserList','rerender','fullHeader'])
 	}
 	showUserList({item}) {
 		const _ = this;
@@ -20,15 +21,28 @@ class HeaderBlock extends G{
 	init(){
 		const _ = this;
 	}
+	rerender(){
+		const _ = this;
+		let header = _.f('G-HEADER');
+		_.me = JSON.parse(localStorage.getItem('me'));
+		_._$.firstName = _.me['firstName'];
+		_._$.lastName = _.me['lastName'];
+		_._$.role = _.me['role'];
+		let tpl = _.fullHeader();
+		header.innerHTML = tpl;
+	}
 	fullHeader(){
 		const _ = this;
 		let tpl = `<header class="head">
 			<div class="section">
 				<div class="head-row">
-					<a class="head-logo" href="/">
+					<a class="head-logo">
 						<img src="/img/logo.svg" alt="">
 					</a>
 					<div class="head-control">
+					`;
+		if (_._$.role === 'student') {
+			tpl += `
 						<a class="head-button" href="./studentDashboard.html">
 							<svg>
 								<use xlink:href="/img/sprite.svg#bell"></use>
@@ -36,9 +50,10 @@ class HeaderBlock extends G{
 						</a>
 						<button class="head-button">
 							<svg>
-								<use xlink:href="/img/sprite.svg#chat"></use>
+								<use xlink:href="#chat"></use>
 							</svg>
 						</button>`;
+		}
 		let courses = localStorage.getItem('courses');
 		if (courses) {
 			courses = JSON.parse(courses);
@@ -92,7 +107,7 @@ class HeaderBlock extends G{
 		return `<header class="head">
 			<div class="section">
 				<div class="head-row">
-					<a class="head-logo" href="/" style="margin: auto">
+					<a class="head-logo" style="margin: auto">
 						<img src="/img/logo.svg" alt="">
 					</a>
 				</div>

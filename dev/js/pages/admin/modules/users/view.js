@@ -1460,7 +1460,7 @@ export const view = {
 						<label class="form-label">Phone Number</label>
 					</div>
 					<g-input 
-						type="text" 
+						type="phone" 
 						name="phone" 
 						value="${parentInfo.phone ?? ''}" 
 						data-input="${_.componentName}:fillParentInfo" 
@@ -2321,7 +2321,7 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Phone Number</label>
 					</div>
-					<g-input type="text" name="phone" value="${_.parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input type="phone" name="phone" value="${_.parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 			</div>
 		`;

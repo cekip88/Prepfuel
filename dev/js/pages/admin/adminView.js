@@ -76,31 +76,7 @@ export const adminView = {
 		const _ = this;
 		return _.headerBlock.render('simple');
 	},
-	fullHeader(){
-		const _ = this;
-		return `<header class="head">
-			<div class="section">
-				<div class="head-row">
-					<a class="head-logo" href="/">
-						<img src="/img/logo.svg" alt="">
-					</a>
-					<div class="head-control">
-						<div class="head-info">
-							<span class="head-name">${this.super_$.firstName}</span>
-							<span class="head-position">${this.super_$.role}</span>
-						</div>
-						<button class="head-user" data-click="AdminPage:showUserList">
-							<span class="head-user-letter">${this.super_$.firstName[0].toUpperCase()}</span>
-							<span class="head-user-list">
-								<strong data-click="AdminPage:changeSection" section="/admin/profile">Profile</strong>
-								<strong data-click="router:logout">Log Out</strong>
-							</span>
-						</button>
-					</div>
-				</div>
-			</div>
-		</header>`;
-	},
+
 	adminTabs(){
 		const _ = this;
 		return `

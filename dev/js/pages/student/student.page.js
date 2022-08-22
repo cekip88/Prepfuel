@@ -88,6 +88,9 @@ class StudentPage extends G{
 		module.headerBlock = _.header;
 		return Promise.resolve(module.render());
 	}
+	fullHeader(){
+		return G_Bus.trigger('header','fullHeader');
+	}
 	async init(blockData){
 		const _ = this;
 		let params;

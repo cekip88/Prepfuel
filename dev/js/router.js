@@ -22,8 +22,8 @@ export class router {
 	}
 	get role(){
 		const _ = this;
-		if(_.user['role']) 	return _.user['role'];
-		else 	return _.user['user']['role'];
+		if(_.user['role']) return _.user['role'];
+		else return _.user['user']['role'];
 	}
 	async getMe(){
 		const _ = this;

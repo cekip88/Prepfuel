@@ -117,6 +117,10 @@ class ParentPage extends G{
 		if (label) label.remove();
 	}
 
+	fullHeader(){
+		return G_Bus.trigger('header','fullHeader');
+	}
+
 	async init(blockData){
 		const _ = this;
 		let params;

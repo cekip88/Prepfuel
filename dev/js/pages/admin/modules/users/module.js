@@ -232,6 +232,7 @@ export class UsersModule extends AdminPage {
 	}
 	async updateAdmin({item}){
 		const _ = this;
+		let me = JSON.parse(localStorage.getItem('me'));
 		let response = await Model.updateAdmin({
 			'_id': _.adminInfo['_id'],
 			'firstName': _.adminInfo['firstName'],
@@ -240,6 +241,18 @@ export class UsersModule extends AdminPage {
 			"role": _.adminInfo['role'][0],
 		});
 		if(!response) return void 0;
+
+		if (me['admin']['_id'] == _.adminInfo['_id']) {
+			me = response['user'];
+			me['admin'] = {
+				createdAt: response['createdAt'],
+				updatedAt: response['updatedAt'],
+				_id: response['_id'],
+				user: response['user']['_id'],
+			}
+			localStorage.setItem('me',JSON.stringify(me));
+			G_Bus.trigger('header','rerender');
+		}
 
 		item.setAttribute('rerender',true);
 		item.setAttribute('section','admin');
@@ -1199,6 +1212,7 @@ export class UsersModule extends AdminPage {
 			_.clear( cont );
 			cont.append( _.markup( `<img src="/img/loader.gif">` ));
 
+			console.log(_.studentInfo)
 			await Model.assignStudentToParent( parentId,_.studentInfo['studentId'] );
 			G_Bus.trigger('modaler','closeModal');
 			let sectionButton = _.f('g-body .section-button.active');
