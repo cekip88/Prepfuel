@@ -70,7 +70,7 @@ export class AdminPage extends G {
 			tpl = section.split('/')[2];
 		if(_.currentSection == section) return void 0;
 		if(section) history.pushState(null, null, section);
-		_.moduleRender([tpl]);
+		_.moduleRender({module:tpl});
 		_.currentSection = section;
 	}
 	async moduleRender(params){
@@ -109,7 +109,6 @@ export class AdminPage extends G {
 	}
 	async init(blockData) {
 		const _ = this;
-		console.log(blockData);
 		let
 			params = blockData['params'];
 		_.header = await _.getBlock({name:'header'},'blocks');

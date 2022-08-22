@@ -103,6 +103,7 @@ new router().init({
 			routes:{
 				'/admin': 'admin',
 				'/admin/dashboard': 'admin',
+				'/admin/dashboard?test=10': 'admin',
 				'/admin/profile': 'admin',
 				'/admin/users': 'admin',
 				'/admin/courses': 'admin',

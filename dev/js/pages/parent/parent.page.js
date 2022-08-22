@@ -76,7 +76,7 @@ class ParentPage extends G{
 		tpl = section.split('/')[2];
 		//	if(_.currentSection == section) return void 0;
 		if(section) history.pushState(null, null, section);
-		_.moduleRender([tpl]);
+		_.moduleRender({module:tpl});
 		_.currentSection = section;
 	}
 	showForm(id){
@@ -133,7 +133,7 @@ class ParentPage extends G{
 		});
 		if(rawResponse.status < 206){
 			let response = await rawResponse.json();
-			let user = response['response']['user'];
+			let user = response['response'];
 			localStorage.setItem('me',JSON.stringify(user));
 			return void 0;
 		}

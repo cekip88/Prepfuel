@@ -67,7 +67,7 @@ class StudentPage extends G{
 			section = item.getAttribute('section'),
 			tpl = section.split('/')[2];
 		if(section) history.pushState(null, null, section);
-		_.moduleRender([tpl]);
+		_.moduleRender({module:tpl});
 		_.currentSection = section;
 	}
 	showForm(id){
