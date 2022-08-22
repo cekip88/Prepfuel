@@ -87,7 +87,7 @@ class ParentPage extends G{
 	
 		let module = await _.getModule({
 			'pageName':'parent',
-			'name': params[0],
+			'name': params['module'],
 			'structure':_.pageStructure
 		});
 		if(params['redirect']){
@@ -145,9 +145,9 @@ class ParentPage extends G{
 			params = blockData['params'];
 		}
 		_.header = await _.getBlock({name:'header'},'blocks');
-		if(params && params.length > 0){
+		if(params){
 			await _.moduleRender(params);
-			_.currentSection = '/parent/' + params[0];
+			_.currentSection = '/parent/' + params['module'];
 		}
 		setTimeout(()=>{
 			_.navigationInit();

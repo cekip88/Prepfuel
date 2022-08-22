@@ -82,7 +82,7 @@ class StudentPage extends G{
 		const _ = this;
 		let module = await _.getModule({
 			'pageName':'student',
-			'name': params[0],
+			'name': params['module'],
 			'structure':_.pageStructure
 		});
 		module.headerBlock = _.header;
@@ -93,14 +93,15 @@ class StudentPage extends G{
 	}
 	async init(blockData){
 		const _ = this;
+		console.log(blockData);
 		let params;
 		if(blockData && blockData['params']){
 			params = blockData['params'];
 		}
 		_.header = await _.getBlock({name:'header'},'blocks');
-		if(params && params.length > 0){
+		if(params){
 			await _.moduleRender(params);
-			_.currentSection = '/student/' + params[0];
+			_.currentSection = '/student/' + params['module'];
 		}
 		setTimeout(()=>{
 			_.navigationInit();

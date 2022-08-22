@@ -62,6 +62,8 @@ export class router {
 			pathParts = pathName.split('/').splice(1),
 			module = pathParts.splice(0,1)[0];
 		rawParams[0] = rawParams[0].replace('?','');
+
+		params['module'] = pathParts[0];
 		rawParams.forEach( param =>{
 			let rawParam = param.split('=');
 			params[rawParam[0].toLowerCase()] = rawParam[1]

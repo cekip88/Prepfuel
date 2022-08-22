@@ -77,7 +77,7 @@ export class AdminPage extends G {
 		const _ = this;
 		let module = await _.getModule({
 			'pageName':'admin',
-			'name': params[0],
+			'name': params['module'],
 			'structure':_.pageStructure
 		});
 		if(!module._$){
@@ -112,9 +112,9 @@ export class AdminPage extends G {
 		let
 			params = blockData['params'];
 		_.header = await _.getBlock({name:'header'},'blocks');
-		if(params.length > 0){
+		if(params){
 			await _.moduleRender(params);
-			_.currentSection = '/admin/' + params[0];
+			_.currentSection = '/admin/' + params['module'];
 		}
 
 		setTimeout(()=>{
