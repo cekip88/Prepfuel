@@ -101,16 +101,21 @@ export class UsersModule extends AdminPage {
 		_.parentInfo = {};
 		_.studentInfo = {};
 		_.wizardData = Model.wizardData ?? await Model.getWizardData();
-		if(_.subSection === 'student'){
-			let
-				item,update= true;
+		if (!_.searchInfo) _.searchInfo = {};
+		if (!_.searchInfo[_.subSection]) _.searchInfo[_.subSection] = {page:1}
+		if (_.subSection === 'student'){
+			let item,update= true;
 			if(data){
 				item = data.item;
 				update = item.hasAttribute('rerender');
 			}
 			_.fillTableFilter();
 
-			let tableData = await Model.getUsers({role:_.subSection,update: update});
+			let tableData = await Model.getUsers({
+				role:_.subSection,
+				searchInfo:_.searchInfo['student'],
+				update: update
+			});
 			_.fillUserTable({usersData:tableData,selector: '#usersBody'});
 			_.paginationFill({total:tableData.total,limit:tableData.limit});
 
@@ -128,26 +133,31 @@ export class UsersModule extends AdminPage {
 			_.fillParentProfile(data);
 		}
 		if( _.subSection === 'parent'){
-			let
-				item,update= true;
+			let item,update = true;
 			if(data){
 				item = data.item;
 				update = item.hasAttribute('rerender');
 			}
 			_.fillTableFilter();
-			let tableData = await Model.getUsers({role:_.subSection,update: update});
+			let tableData = await Model.getUsers({
+				role:_.subSection,
+				searchInfo:_.searchInfo['parent'],
+				update: update
+			});
 			_.paginationFill({total:tableData.total,limit:tableData.limit});
 			_.fillBodyParentsTable({usersData:tableData});
 		}
 		if( _.subSection === 'admin'){
-			let
-				item,update = true;
+			let item,update = true;
 			if(data){
 				item = data.item;
 				update = item.hasAttribute('rerender');
 			}
 			_.fillTableFilter();
-			let tableData = await Model.getUsers({role:_.subSection,update: update});
+			let tableData = await Model.getUsers({
+				role:_.subSection,
+				searchInfo:_.searchInfo['admin'],
+				update: update});
 			_.paginationFill({total:tableData.total,limit:tableData.limit});
 			_.fillBodyAdminsTable(tableData);
 		}

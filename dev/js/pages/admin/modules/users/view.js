@@ -2099,7 +2099,6 @@ export const view = {
 										</div>
 									</div>
 								</th>
-								<th><div class="tbl-item">Courses</div></th>
 								<th>
 									<div class="tbl-item right">
 										<span>date Registered</span>
