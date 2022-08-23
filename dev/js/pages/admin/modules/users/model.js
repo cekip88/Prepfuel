@@ -14,12 +14,13 @@ class _Model {
 			removeStudent: `/user/delete-student`,
 			removeAdmin: `/admin/admins`,
 			createParent: `/admin/create-parent`,
-			removeParent: `/admin/parents`,
 			assignCourse: `/user/assign-plan`,
 			removeCourse: `/user/remove-plan`,
 			wizardData: `/user/wizard-data`,
 			updateAdmin: `/admin/admins`,
+			getParent: `/admin/parents`,
 			updateParent: `/admin/parents`,
+			removeParent: `/admin/parents`,
 			studentParents: `/admin/student`,
 			parentStudents: `/admin/parent`,
 			assignStudentToParent: `/admin/assign/student-to-parent`,
@@ -53,6 +54,26 @@ class _Model {
 			resolve(null);
 		});
 	}
+	getParent(parentId){
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('getParent')}/${parentId}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('getParentStudents', response);
+				}
+			} else {
+				_.wrongRequest('getParentStudents', rawResponse)
+			}
+			resolve(null);
+		});
+	}
 	getParentStudents(parentId){
 		const _ = this;
 		return new Promise(async resolve => {
@@ -63,7 +84,6 @@ class _Model {
 			if(rawResponse.status < 210) {
 				let response = await rawResponse.json();
 				if(response['status'] == 'success') {
-					console.log(response);
 					resolve(response['response']);
 				} else {
 					_.wrongResponse('getParentStudents', response);
@@ -281,7 +301,6 @@ class _Model {
 	}
 	removeStudent(studentId){
 		const _ = this;
-		console.log(studentId)
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.getEndpoint('removeStudent')}/${studentId}`, {
 				method: 'DELETE',

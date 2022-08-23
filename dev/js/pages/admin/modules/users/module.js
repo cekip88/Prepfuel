@@ -531,6 +531,7 @@ export class UsersModule extends AdminPage {
 		if(!usersData) {
 			return void 'no users data';
 		}
+
 		let
 			tableData = _.usersBodyRowsTpl(usersData,'parent');
 		tbody.append(...tableData);
@@ -779,6 +780,7 @@ export class UsersModule extends AdminPage {
 				studentInner.querySelector( '.button-link.blue' ).textContent = 'Change parent';
 			}
 			_.fillParentsInfoTable( _.currentParent );
+			console.log(_.currentParent)
 		}
 		if(pos == 2){
 			studentInner.classList.remove('short')
@@ -830,12 +832,19 @@ export class UsersModule extends AdminPage {
 		if (pos == 11) {
 			let
 				cards = await Model.getCardsInfo(),
-				addresses = await Model.getBillingAddressInfo();
-			let layout = _.billingsTpl();
+				addresses = await Model.getBillingAddressInfo(),
+				layout = _.billingsTpl();
+
 			parentInner.innerHTML = layout;
 			_.fillParentCardsInfo(cards);
 			_.fillParentAddressesInfo(addresses);
-			//
+		}
+		if (pos == 12) {
+			let tableData = await Model.getParentStudents(_.parentInfo['_id']);
+			let layout = _.parentsStudentsTpl(tableData);
+			parentInner.classList.add('noScroll');
+			parentInner.innerHTML = layout;
+			_.connectTableHead('.parent-profile-inner');
 		}
 	}
 	showAddCard({item}){
@@ -877,7 +886,7 @@ export class UsersModule extends AdminPage {
 		if(pos == 1){
 			container.classList.remove('adding-center');
 			container.innerHTML = _.parentChildesInfoTpl();
-			let tableData = await  Model.getParentStudents(parentId);
+			let tableData = await Model.getParentStudents(parentId);
 			_.fillStudentsTable(tableData,'#parent-profile-popup');
 		}
 	}
@@ -954,9 +963,9 @@ export class UsersModule extends AdminPage {
 		let parentId = item.getAttribute('data-id');
 		_.f('#parent-profile-popup').setAttribute('data-id',parentId);
 
-		let tableData = await Model.getUsers({role:'parent'});
-		_.currentParent = tableData.response.filter( parent => parent['_id'] == parentId )[0];
-		_.parentInfo = _.currentParent['user'];
+		let tableData = await Model.getParent(parentId);
+		_.currentParent = tableData[0];
+		_.parentInfo = _.currentParent;
 		
 		G_Bus.trigger('modaler','closeModal');
 		_.f('.parent-popup-profile-body').innerHTML = _.parentPersonalInfoTpl();
@@ -1292,7 +1301,7 @@ export class UsersModule extends AdminPage {
 	}
 	async removeUser({item}){
 		const _ = this;
-		let response = await Model.removeStudent(_.studentInfo['studentId']);
+		let response = await Model.removeStudent(_.studentInfo['studentId'] ?? item.getAttribute('data-id'));
 		if (!response) return;
 		
 		if (_.subSection == 'profile') {
@@ -1300,7 +1309,7 @@ export class UsersModule extends AdminPage {
 			item.setAttribute('section','student');
 			G_Bus.trigger(_.componentName,'changeSection',{item})
 		} else {
-			_.f(`TR[user-id="${_.studentInfo['studentId']}"]`).remove();
+			_.f(`TR[user-id="${_.studentInfo['studentId'] ?? item.getAttribute('data-id')}"]`).remove();
 		}
 		G_Bus.trigger('modaler','closeModal',{item})
 		_.showSuccessPopup('Student profile deleted')

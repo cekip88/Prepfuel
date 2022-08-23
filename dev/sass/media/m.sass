@@ -26,6 +26,8 @@ body
 	background: rgb($neutral-500)
 #g-set
 	padding-bottom: 24px
+.noScroll
+	overflow: visible!important
 .df
 	@extend %df
 .aifs
@@ -2938,22 +2940,25 @@ div.tbl-head
 		margin-right: 8px
 		font-family: $p_medium
 		font-size: $fz12
-		&.turquoise
+		&.SSAT-Elementary,&.ISEE-Lower
+			color: rgb($orange)
+			background-color: rgb($orange-light)
+		&.SSAT-Middle
 			color: #00AFAF
 			background-color: #DCFDFD
-		&.blue
+		&.ISEE-Middle
 			color: #366CF9
 			background-color: #F1F5FF
-		&.violet
+		&.ISEE-Upper
 			color: #8950FC
 			background-color: #EEE5FF
-		&.brown
+		&.SHSAT-9th
 			color: #58244B
 			background-color: #FBF1F8
-		&.red
+		&.SHSAT-8th
 			color: #F64E60
 			background-color: #FFE2E5
-		&.gold
+		&.SSAT-Upper
 			color: #F1BC00
 			background-color: #FFF8DD
 	&-btn
@@ -3580,6 +3585,8 @@ div.tbl-head
 			&.short
 				max-width: 588px
 				margin: auto
+			&>.tbl
+				margin-top: 0
 	.test-header
 		padding-top: 24px
 	&-adding

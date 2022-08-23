@@ -39,7 +39,7 @@ export const view = {
 	},
 	usersBodyRowTpl(plan,rowData,user){
 		const _ = this;
-		let course = plan && plan['course'] ? plan['course'].title + ' ' + plan['level']['title'] : '';
+		let course = plan && plan['course'] ? plan['course'].title + ' ' + plan['level']['title'].split(' ')[0] : '';
 		let avatar = rowData.avatar ? rowData.avatar.avatar.split('.')[0] : '';
 		let tpl = `
 				<td>
@@ -55,7 +55,7 @@ export const view = {
 				</td>
 				<td>
 					<div class="tbl-item">
-						<div class="users-course brown">${course}</div>
+						<div class="users-course ${course ? plan['course'].title + '-' + plan.level.title.split(' ')[0] : ''}">${course}</div>
 				</div>
 			</td>
 			<td>
@@ -1871,7 +1871,7 @@ export const view = {
 					<button 
 						class="users-btn button profile" 
 						data-click="UsersModule:showPopupParentProfile" 
-						data-id="${rowData._id}"
+						data-id="${rowData.user._id}"
 					>Profile</button>
 					<button
 						class="users-btn button-blue profile"
@@ -2605,7 +2605,7 @@ export const view = {
 							action:`data-click="${_.componentName}:changeProfileTab"`,
 							buttons:[
 								{title:'Personal Info',active:'active',pos:6},
-								{title:'Students'},
+								{title:'Students',pos:12},
 								{title:'Billing',pos:11},
 								{title:'Billing History'},
 								{title:'Activity History',pos:9},
@@ -2939,6 +2939,100 @@ export const view = {
 				</div>
 			</div>
 		</div>
+		`;
+		return tpl;
+	},
+	parentsStudentsTpl(studentsData){
+		const _ = this;
+		let tpl = `
+			<div class="tbl">
+				<div class="tbl-head">
+					<div class="tbl-item">
+						<span>USER Name</span>
+						<div class="tbl-sort-btns">
+							<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+						</div> 
+					</div>
+					<div class="tbl-item">Courses</div>
+					<div class="tbl-item">
+						<span>date Registered</span>
+						<div class="tbl-sort-btns">
+							<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+						</div>
+					</div>
+					<div class="tbl-item right">Action</div>
+				</div>
+				<div class="table-cont table-cont-students loader-parent">
+					<table class="table">
+						<thead class="tbl-head">
+							<tr>
+								<th>
+									<div class="tbl-item">
+										<span>USER Name</span>
+										<div class="tbl-sort-btns">
+											<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+										</div> 
+									</div>
+								</th>
+								<th><div class="tbl-item">Courses</div></th>
+								<th>
+									<div class="tbl-item">
+										<span>date Registered</span>
+										<div class="tbl-sort-btns">
+											<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+										</div> 
+									</div>
+								</th>
+								<th><div class="tbl-item right">Action</div></th>
+							</tr>
+						</thead>
+						<tbody class="tbl-body">`;
+		for (let item of studentsData) {
+			tpl += `
+				<tr class="tbl-row" user-id="${item['_id']}">
+					<td>
+						<div class="tbl-item">
+							<div class="users-photo-icon">
+								<img src="${item.user.avatar ? '/img/' + item.user.avatar.avatar + '.svg' : ''}">
+							</div>
+							<div class="users-info">
+								<h6 class="users-info-name">${item.user.firstName} ${item.user.lastName}</h6>
+								<span class="users-info-email">${item.user.email}</span>
+							</div>
+						</div>
+					</td>
+					<td>
+						<div class="tbl-item">`;
+			for (let unit of item.plans) {
+				tpl += `<div class="users-course ${unit.course ? unit.course.title + '-' + unit.level.title.split(' ')[0] : ''}">${unit.course.title} ${unit.level.title.split(' ')[0]}</div>`;
+			}
+			tpl += `
+						</div>
+					</td>
+					<td>
+						<div class="tbl-item">
+							<div class="users-date">${_.createdAtFormat(item.updatedAt.split('T')[0])}</div>
+						</div>
+					</td>
+					<td>
+						<div class="tbl-item right actions">
+							<button class="users-btn button profile" data-click="UsersModule:showPopupParentProfile" data-id="${item._id}">Profile</button>
+							<button class="users-btn button-blue profile" data-id="${item._id}" data-click="UsersModule:removeUser">
+								<svg class="button-icon"><use xlink:href="#close"></use></svg>
+							</button>
+						</div>
+					</td>
+				</tr>`;
+		}
+		tpl += `
+						</tbody>
+					</table>
+				</div>
+			</div>
 		`;
 		return tpl;
 	},
