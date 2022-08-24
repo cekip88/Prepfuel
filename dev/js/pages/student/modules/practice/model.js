@@ -15,7 +15,8 @@ export class _Model {
 			quiz: `${env.backendUrl}/student/diagnostic-quiz`,
 			summary: `${env.backendUrl}/skill-results`,
 			quizResults: `${env.backendUrl}/quiz-results`,
-			startQuiz: `${env.backendUrl}/quiz-results/create`
+			startQuiz: `${env.backendUrl}/quiz-results/create`,
+			resetQuiz:`${env.backendUrl}/quiz-results/reset`,
 		};
 	}
 	
@@ -509,7 +510,20 @@ export class _Model {
 		});
 	}
 	
-	
+	deleteQuiz(){
+		const _ = this;
+		//resetQuiz
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['resetQuiz']}`,{
+				method: 'DELETE',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				console.log(response);
+			}
+		});
+	}
 	
 	
 	hasTestFromStorage(){

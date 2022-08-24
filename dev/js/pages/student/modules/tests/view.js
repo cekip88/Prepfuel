@@ -147,7 +147,7 @@ export const view = {
 				<div class="section-header">
 					<h1 class="title">${Model.currentSection['directions'].headerTitle}</h1>
 					<div class="test-timer"><span class="test-timer-value">${Model.test.testTime}</span> minutes left</div>
-					<button class="button-white"	data-click="${this.componentName}:changeSection" section="score"><span>Finish this test</span></button>
+					<button class="button-white"	data-click="${this.componentName}:showConfirmModal"><span>Finish this test</span></button>
 				</div>
 			</div>
 			<div class="section row">
@@ -169,6 +169,9 @@ export const view = {
 						</button>
 					</div>
 				</div>
+			</div>
+			<div hidden>
+				${_.confirmFinishTpl()}
 			</div>
 		`;
 	},
@@ -262,6 +265,7 @@ export const view = {
 						<button class="button-blue"><span>Save</span></button>
 					</div>
 				</form>
+				${_.confirmFinishTpl()}
 			</div>
 		`;
 	},
@@ -342,21 +346,24 @@ export const view = {
 				<div class="section-header">
 					<h1 class="title">Practice test ${Model.test['testNumber']} &mdash; <strong id="test-section-name">${Model.currentSection.sectionName}</strong></h1>
 					<div class="test-timer"><span class="test-timer-value">${Model.test.testTime}</span> minutes left</div>
-					<button class="button-white" data-click="${this.componentName}:changeSection" section="score"><span>Finish this test</span></button>
+					<button class="button-white" data-click="${this.componentName}:showConfirmModal" section="score"><span>Finish this test</span></button>
 				</div>
 			</div>
 	`)});
 	},
 	questionFooter(){
+		const _ = this;
+		let pp = _.getNextStepCnt();
 		return `
 			<div class="test-footer">
 				<button class="test-footer-button dir-button" data-click="${this.componentName}:changeSection" section="directions">
 					<span>Directions</span>
 				</button>
 				<button class="button skip-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="next">
-					<span><em class="skip-to-question-title">Skip to questions</em> <b class="skip-to-question">${Model.currentQuestionData(0)['questions'].length+1}</b></span>
+					<span><em class="skip-to-question-title">Skip to questions</em> <b class="skip-to-question">${pp[0]}-${pp[1]}</b></span>
 				</button>
-			</div>`;
+			</div>
+			`;
 	},
 
 	questionsListNavTabs(){
@@ -472,8 +479,9 @@ export const view = {
 			<p class="test-text">
 				<span>${content}</span>
 			</p>
+			${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
 			</div>
-				<div class="test-col narrow grid" data-click="TestPage:enterGridAnswer">
+				<div class="test-col narrow grid empty" data-click="${_.componentName}:enterGridAnswer">
 					<div class="grid-row">
 						<input id="grid-value" type="hidden" data-question-id="${currentQuestion['_id']}">
 						<div class="grid-input">
@@ -485,43 +493,143 @@ export const view = {
 					</div>
 					</div>
 					<div class="grid-row">
-						<div class="grid-col">
-						<button class="grid-button">-</button>
-					</div>
-						<div class="grid-col">
+						<div class="grid-col" data-col="1">
+							<button class="grid-button">-</button>
+						</div>
+						<div class="grid-col"	data-col="2">
 							<button class="grid-button">.</button>
 						</div>
-						<div class="grid-col">
+						<div class="grid-col"	data-col="3">
 							<button class="grid-button">.</button>
 						</div>
-						<div class="grid-col">
+						<div class="grid-col"	data-col="4">
 							<button class="grid-button">.</button>
 						</div>
-						<div class="grid-col">
+						<div class="grid-col"	data-col="5">
 							<button class="grid-button">.</button>
 						</div>
 					</div>
 					<div class="grid-row">
-						<div class="grid-col">
+						<div class="grid-col"	data-col="1">
+							<button class="grid-button high"> </button>
+						</div>
+						<div class="grid-col"	data-col="2">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"	data-col="3">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"	data-col="4">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"	data-col="5">
+							${_.gridDigitButtons()}
+						</div>
+					</div>
+				</div>
+				<div class="test-col narrow grid correct" hidden data-click="${_.componentName}:enterGridAnswer">
+					<div class="marker">
+						<span>Correct</span>
+						<svg><use xlink:href="#correct"></use></svg>
+					</div>
+					<div class="grid-row">
+						<input id="grid-value" type="hidden" data-question-id="${currentQuestion['_id']}">
+						<div class="grid-input">
+							<span> </span>
+							<span> </span>
+							<span> </span>
+							<span> </span>
+							<span> </span>
+						</div>
+					</div>
+					<div class="grid-row">
+						<div class="grid-col" data-col="1">
+							<button class="grid-button">-</button>
+						</div>
+						<div class="grid-col"	data-col="2">
+							<button class="grid-button">.</button>
+						</div>
+						<div class="grid-col"	data-col="3">
+							<button class="grid-button">.</button>
+						</div>
+						<div class="grid-col"	data-col="4">
+							<button class="grid-button">.</button>
+						</div>
+						<div class="grid-col"	data-col="5">
+							<button class="grid-button">.</button>
+						</div>
+					</div>
+					<div class="grid-row">
+						<div class="grid-col"	data-col="1">
 							<button class="grid-button high"></button>
 						</div>
-					<div class="grid-col">
-						${_.gridDigitButtons()}
-					</div>
-					<div class="grid-col">
-						${_.gridDigitButtons()}
-					</div>
-					<div class="grid-col">
-						${_.gridDigitButtons()}
-					</div>
-					<div class="grid-col">
-						${_.gridDigitButtons()}
-					</div>
+						<div class="grid-col"	data-col="2">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"	data-col="3">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"	data-col="4">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"	data-col="5">
+							${_.gridDigitButtons()}
+						</div>
 					</div>
 				</div>
+				<div class="test-col narrow grid incorrect" hidden data-click="${_.componentName}:enterGridAnswer">
+					<div class="marker">
+						<span>Incorrect</span>
+						<svg><use xlink:href="#incorrect"></use></svg>
+					</div>
+					<div class="grid-row">
+						<input id="grid-value" type="hidden" data-question-id="${currentQuestion['_id']}">
+						<div class="grid-input">
+							<span> </span>
+							<span> </span>
+							<span> </span>
+							<span> </span>
+							<span> </span>
+						</div>
+					</div>
+					<div class="grid-row">
+						<div class="grid-col" data-col="1">
+							<button class="grid-button">-</button>
+						</div>
+						<div class="grid-col"	data-col="2">
+							<button class="grid-button">.</button>
+						</div>
+						<div class="grid-col"	data-col="3">
+							<button class="grid-button">.</button>
+						</div>
+						<div class="grid-col"	data-col="4">
+							<button class="grid-button">.</button>
+						</div>
+						<div class="grid-col"	data-col="5">
+							<button class="grid-button">.</button>
+						</div>
+					</div>
+					<div class="grid-row last">
+						<div class="grid-col"	data-col="1">
+							<button class="grid-button high"></button>
+						</div>
+						<div class="grid-col"	data-col="2">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"	data-col="3">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"	data-col="4">
+							${_.gridDigitButtons()}
+						</div>
+						<div class="grid-col"	data-col="5">
+							${_.gridDigitButtons()}
+						</div>
+					</div>
+					<span class="grid-title">Correct answer:</span>
+					<div class="grid-row ans" data-question-id="${currentQuestion['_id']}">
 				</div>
 				<div class="answer-block" data-question-id="${currentQuestion['_id']}">${_.noteTpl(currentQuestion)}</div>
-				${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
 			</div>
 		`;
 		return tpl;
@@ -564,15 +672,43 @@ export const view = {
 		const _ = this;
 		let isGrid = await G_Bus.trigger(_.componentName,'isGrid');
 	
-		if(isGrid){
+	/*	if(isGrid){
 			return void 0;
-		}
+		}*/
 		let handle = ( questionId,correctVariant )=>{
-			let
-				answerItem = _.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${correctVariant}"]`);
-			if(!answerItem) return void 0;
-			answerItem.classList.remove('wrong');
-			answerItem.classList.add('correct');
+			if(isGrid){
+				let
+					id = questionId,
+					question = _._$.currentQuestion
+					let ans =   _.storageTest[id]['answer'];
+					if(_.isGrid()){
+						if(_.storageTest[id]['answer'] != 'O'){
+							if(typeof  _.storageTest[id]['answer'] == 'object'){
+								ans =   _.storageTest[id]['answer'].join('');
+								ans = ans.replaceAll('_','');
+							}else{
+								ans =  _.storageTest[id]['answer'];
+							}
+						}
+					}
+					if(question['correctAnswer'] == ans){
+						if( _.isGrid()){
+							_.f('.grid.empty').setAttribute('hidden','hidden');
+							_.f('.grid.correct').removeAttribute('hidden');
+						}
+					}else{
+						if( _.isGrid()){
+							_.f('.grid.empty').setAttribute('hidden','hidden');
+							_.f('.grid.incorrect').removeAttribute('hidden');
+						}
+					}
+			}else{
+				let
+					answerItem = _.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${correctVariant}"]`);
+				if(!answerItem) return void 0;
+				answerItem.classList.remove('wrong');
+				answerItem.classList.add('correct');
+			}
 		};
 		if(_._$.currentQuestion['questions']){
 			if(_._$.currentQuestion['questions'].length > 1){
@@ -589,6 +725,7 @@ export const view = {
 				currentQuestion = _._$.currentQuestion,
 				answeredQuestion = Model.allquestions[_.questionPos],
 				correctVariant = answeredQuestion['correctAnswer'];
+		
 			handle(currentQuestion['_id'],correctVariant);
 		}
 		
@@ -827,9 +964,15 @@ export const view = {
 	
 	testPickTpl(test){
 		const _ = this;
-		let status = "Start";
-		if(Model.test['status'] == 'in progress') status = "Continue";
-		if(Model.test['status'] == 'finished') status = "Review";
+		let status = "Start", section = 'welcome'
+		if(Model.test['status'] == 'in progress'){
+			status = "Continue";
+			section = "directions";
+		}
+		if(Model.test['status'] == 'finished'){
+			section = 'questions';
+			status = "Review";
+		}
 		
 		let tpl = `
 			<h5 class="block-title test-title">
@@ -858,7 +1001,7 @@ export const view = {
 			}
 		tpl+= `
 				</ul>
-				<button class="button" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="welcome"><span>${status} this test</span></button>
+				<button class="button" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="${section}"><span>${status} this test</span></button>
 			</li>
 			</ul>
 		`;
@@ -1002,7 +1145,22 @@ export const view = {
 			${_.testScoreHeaderTpl()}
 			${_.tempTestListTpl()}
 		`;
+	},
+	
+	confirmFinishTpl(){
+		const _ = this;
+		return `
+			 <div class="modal modal-block finish" id="finish" slot="modal-item">
+              <h6 class="modal-title"><span>Are you sure you want to finish this section</span></h6>
+              <p class="modal-text">
+                You have <span id="finish-minutes"></span> minutes left to work on the <span id="finish-questions-length"></span> questions you haven’t answered, and to double-check your other answers.
+                You will not able to return later to answer more questions if you finish this section.
+              </p>
+              <div class="modal-row">
+	              <button class="button" data-click="${_.componentName}:changeSection" section="score">Yes, I’m done with this section</button>
+	              <button class="button-blue" data-click="modaler:closeModal">No, take me to my first skipped question</button>
+              </div>
+            </div>
+		`;
 	}
-	
-	
 }

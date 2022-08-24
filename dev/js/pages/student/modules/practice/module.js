@@ -158,6 +158,7 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		if(!_.skillTests){
 			let currentQuiz = await Model.getCurrentQuiz(_.currentQuizSubject,_.currentQuizNum);
+			console.log(currentQuiz);
 			_.skillTests = currentQuiz['tests'];
 			let quizObj = await Model.startQuiz();
 		}
@@ -871,6 +872,7 @@ export class PracticeModule extends StudentPage{
 	}
 	setLetterAnswer(currentAnswers){
 		const _ = this;
+		console.log(currentAnswers);
 		_._$.currentQuestion['questions'].forEach( question =>{
 			let correctAnswer = question['correctAnswer'];
 			currentAnswers.forEach( answer => {
@@ -878,12 +880,13 @@ export class PracticeModule extends StudentPage{
 			});
 		});
 		currentAnswers.forEach( answer => {
-			if( answer['answer'] == answer['correctAnswer'] ){
+			_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`).classList.add('active');
+		/*	if( answer['answer'] == answer['correctAnswer'] ){
 				_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
 			}else{
 				_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`).classList.add('incorrect');
 				_.f(`.answer-item[data-variant="${answer['correctAnswer']}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
-			}
+			}*/
 		});
 	}
 	async startQuiz({item}){
@@ -921,7 +924,7 @@ export class PracticeModule extends StudentPage{
 	// inited methods
 	async init(){
 		const _ = this;
-		
+		//Model.deleteQuiz();
 		_._( async ({currentQuestion})=>{
 			if( !_.initedUpdate ){
 				return void 'not inited yet';
@@ -941,12 +944,13 @@ export class PracticeModule extends StudentPage{
 			let rawAnswers = [];
 			if(_.currentTestType == 'quiz'){
 				rawAnswers = await  Model.getQuizResults(_.currentQuizSubject,_.currentQuizNum);
+			
 			}else{
 				rawAnswers = await Model.getTestResults();
 			}
 			let	placedAnswers = {};
 			if( (!rawAnswers) ||  (!rawAnswers.length)) return void  'No answers from Server';
-
+			
 			rawAnswers.forEach( (item) => {
 				if(!placedAnswers[item.questionDatasId]) placedAnswers[item.questionDatasId] = [];
 				placedAnswers[item.questionDatasId].push({
@@ -962,16 +966,16 @@ export class PracticeModule extends StudentPage{
 				if(!_.answerVariant[answer.questionId]) _.answerVariant[answer.questionId] = {};
 				_.answerVariant[answer.questionId] = answer;
 			});
-			
 			if( _.isGrid() ){
 				_.setGridAnswer(currentAnswers);
 			} else{
 				_.setLetterAnswer(currentAnswers);
 			}
-			
-			_.fillExplanation(currentQuestion);
-			_.fillNote(currentAnswers);
-			_.setBookmark(currentAnswers);
+			if(_.currentTestType != 'quiz') {
+				_.fillExplanation(currentQuestion);
+				_.fillNote(currentAnswers);
+				_.setBookmark(currentAnswers);
+			}
 			if(!_.testFinished ){
 				_.setDisableCheckBtn();
 			}else{

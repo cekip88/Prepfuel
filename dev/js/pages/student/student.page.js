@@ -93,7 +93,6 @@ class StudentPage extends G{
 	}
 	async init(blockData){
 		const _ = this;
-		console.log(blockData);
 		let params;
 		if(blockData && blockData['params']){
 			params = blockData['params'];
