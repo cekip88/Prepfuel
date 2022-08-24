@@ -235,9 +235,8 @@ export class UsersModule extends AdminPage {
 		}
 
 		item.setAttribute('rerender',true);
-		item.setAttribute('section','student');
 		G_Bus.trigger(_.componentName,'changeSection',{item})
-		_.showSuccessPopup('Student profile updated')
+		_.showSuccessPopup('Student profile updated');
 	}
 	async updateAdmin({item}){
 		const _ = this;
@@ -271,7 +270,7 @@ export class UsersModule extends AdminPage {
 	async updateParent({item}){
 		const _ = this;
 		let response = await Model.updateParent({
-			'_id': _.parentInfo['_id'],
+			'_id': _.parentInfo['outerId'] ?? _.parentInfo['_id'],
 			'firstName': _.parentInfo['firstName'],
 			"lastName": _.parentInfo['lastName'],
 			"email": _.parentInfo['email'],
@@ -336,16 +335,16 @@ export class UsersModule extends AdminPage {
 	}
 	inputCourseData({item}){
 		const _ = this;
-		let courseId = _.studentInfo['currentPlan']['_id'];
+		let courseId = _.studentInfo['currentPlan'] ? _.studentInfo['currentPlan']['_id'] : '';
 		if (!_.courseData) _.courseData = {};
-		if (!_.courseData[courseId]) {
+		if (courseId && !_.courseData[courseId]) {
 			_.courseData[courseId] = {
 				'_id': courseId,
 				'studentId':_.studentInfo['_id'],
-				'firstSchool': _.studentInfo['currentPlan']['firstSchool']['_id'],
-				'secondSchool': _.studentInfo['currentPlan']['secondSchool']['_id'],
-				'thirdSchool': _.studentInfo['currentPlan']['thirdSchool']['_id'],
-				'testDate': _.studentInfo['currentPlan']['testDate']
+				'firstSchool': _.studentInfo['currentPlan']['firstSchool'] ? _.studentInfo['currentPlan']['firstSchool']['_id'] : '',
+				'secondSchool': _.studentInfo['currentPlan']['secondSchool'] ? _.studentInfo['currentPlan']['secondSchool']['_id'] : '',
+				'thirdSchool': _.studentInfo['currentPlan']['thirdSchool'] ? _.studentInfo['currentPlan']['thirdSchool']['_id'] : '',
+				'testDate': _.studentInfo['currentPlan']['testDate'] ?? ''
 			}
 		}
 
@@ -401,7 +400,7 @@ export class UsersModule extends AdminPage {
 		}
 		
 		let tableData = _.usersBodyRowsTpl(usersData);
-		tbody.append(...tableData);
+		if (tbody) tbody.append(...tableData);
 		if (usersData.response.length) _.connectTableHead(selector);
 	}
 	async fillParentBlock({usersData}){
@@ -414,6 +413,7 @@ export class UsersModule extends AdminPage {
 		}
 	}
 	async fillParentsTable({usersData}){
+		console.log(usersData)
 		const _ = this;
 		let tbody = _.f(`#assignParent .tbl-body`);
 		if (!tbody) {
@@ -436,7 +436,7 @@ export class UsersModule extends AdminPage {
 		_.fillDataByClass({className:`.gusers-count`,data:`${usersData ? total : 0}`});
 		_.fillDataByClass({className:`.gusers-limit`,data:`${usersData ? (limit <= total ? limit : total) : 0}`});
 		_.clear(tbody)
-		tbody.append(...tableData);
+		if (tbody) tbody.append(...tableData);
 		if (usersData.response.length)_.connectTableHead('#bodyParents');
 	}
 	async fillProfile(profileData) {
@@ -486,19 +486,17 @@ export class UsersModule extends AdminPage {
 	}
 	async fillParentProfile(profileData) {
 		const _ = this;
-		let parentId;
+		let parentId, parentOuterId;
 		if(profileData['item']){
 			parentId = profileData['item'].getAttribute('data-id');
+			parentOuterId = profileData['item'].getAttribute('data-outerId');
 			_.subSection = profileData['item'].getAttribute('section');
 		} else {
 			parentId = profileData['_id'];
 		}
-		let
-			currentParent = Model.parentsData.response.filter( parent => parent['_id'] == parentId )[0];
-		_.parentInfo = Object.assign({},currentParent['user']);
-		_.parentInfo['phone'] = currentParent['phone'];
-		_.parentInfo['outerId'] = _.parentInfo['_id'];
-		_.parentInfo['_id'] = currentParent['_id'];
+		let currentParent = await Model.getParent(parentId);
+		_.parentInfo = currentParent[0];
+		_.parentInfo['outerId'] = parentOuterId ?? _.parentInfo['_id'];
 
 		_.f('.parent-profile-inner').innerHTML = _.parentsProfileInner();
 		_.f('.breadcrumbs').innerHTML = _.breadCrumbsTpl([
@@ -548,7 +546,7 @@ export class UsersModule extends AdminPage {
 		_.fillDataByClass({className:`.gusers-count`,data:`${adminsData ? total : 0}`});
 		_.fillDataByClass({className:`.gusers-limit`,data:`${adminsData ? (limit <= total ? limit : total) : 0}`});
 		_.clear(tbody)
-		tbody.append(...tableData);
+		if (tbody) tbody.append(...tableData);
 		_.connectTableHead('#bodyAdmins');
 	}
 	clearData(){
@@ -605,19 +603,26 @@ export class UsersModule extends AdminPage {
 	async getSearchUsers({searchInfo,cont,role}){
 		const _ = this;
 		if (!role) role = _.subSection;
-		let usersData = await Model.getUsers({role,update: true,searchInfo});
+		let usersData = await Model.getUsers({role:role == 'addingParent' ? 'parent' : role,update: true,searchInfo});
 
-		if(role == 'student') {
-			_.fillUserTable({usersData,cont});
-		}
-		if(role == 'parent') {
+		if (role == 'student') {
+			_.fillUserTable({usersData,cont,role});
+		} else if (role == 'parent') {
 			_.fillBodyParentsTable({usersData,cont,role});
+		} else if (role == 'admin') {
+			_.fillBodyAdminsTable({usersData,cont,role})
+		} else if (role == 'addingParent') {
+			_.parents = usersData;
+			_.paginationFill({
+				total:_.parents.total,
+				limit:_.parents.limit,
+				cont:cont.querySelector( '.pagination' )
+			});
+			_.fillParentBlock({usersData:_.parents});
+			_.fillParentsTable({usersData:_.parents});
 		}
-		if(role == 'admin') {
-			_.fillBodyAdminsTable({usersData,cont})
-		}
-		_.studentInfo = {};
-		_.metaInfo = {};
+		/*_.studentInfo = {};
+		_.metaInfo = {};*/
 		let paginationData = {
 			cont:cont.querySelector('.pagination'),
 			page:_.searchInfo[role].page,
@@ -754,6 +759,7 @@ export class UsersModule extends AdminPage {
 	}
 	async changeSection({item,event}) {
 		const _ = this;
+		_.prevSubSection = _.subSection;
 		_.subSection = item.getAttribute('section');
 		let struct = _.flexible();
 		await _.render( struct,{item} );
@@ -767,6 +773,10 @@ export class UsersModule extends AdminPage {
 		let studentInner = _.f('.student-profile-inner');
 		let adminInner = _.f('.admin-profile-inner');
 		let parentInner = _.f('.parent-profile-inner');
+		if (parentInner) {
+			if (pos == 12) parentInner.classList.add('noScroll');
+			else parentInner.classList.remove('noScroll');
+		}
 		if(pos == 0){
 			studentInner.classList.remove('short')
 			_.fillProfile({studentId:_.studentInfo['studentId']});
@@ -840,9 +850,8 @@ export class UsersModule extends AdminPage {
 			_.fillParentAddressesInfo(addresses);
 		}
 		if (pos == 12) {
-			let tableData = await Model.getParentStudents(_.parentInfo['_id']);
+			let tableData = await Model.getParentStudents(_.parentInfo['outerId']);
 			let layout = _.parentsStudentsTpl(tableData);
-			parentInner.classList.add('noScroll');
 			parentInner.innerHTML = layout;
 			_.connectTableHead('.parent-profile-inner');
 		}
@@ -1186,10 +1195,10 @@ export class UsersModule extends AdminPage {
 		} else {
 			cont.append( _.markup( _.assignParentTpl() ));
 		}
-
+		let page = _.searchInfo && _.searchInfo.parent && _.searchInfo.parent.page ? _.searchInfo.parent.page : 1;
 		_.parents = await Model.getUsers({
 			role:'parent',
-			page:1
+			searchInfo: {page}
 		});
 
 		_.paginationFill({
@@ -1422,6 +1431,8 @@ export class UsersModule extends AdminPage {
 			if (!validation) return;
 			if(_.maxStep > _._$.addingStep) _._$.addingStep++;
 		}else{
+			let validation = await _.nextStepBtnValidation(_.f('#assignForm'));
+			if (!validation) return;
 			if(_.maxAssignStep > _._$.assignStep) _._$.assignStep++;
 		}
 	}
@@ -1505,6 +1516,11 @@ export class UsersModule extends AdminPage {
 			if (!_.studentInfo.level) _['studentInfo'].level = stepOneData['courses'][0]['levels'][0]['_id'];
 			if (!_['metaInfo'].course) _['metaInfo'].course = stepOneData['courses'][0]['title'];
 			if (!_['metaInfo'].level) _['metaInfo'].level = stepOneData['courses'][0]['levels'][0]['title'];
+		} else if (addingStep == 3) {
+			_.prevSubSection = _.subSection;
+			_.subSection = 'addingParent';
+		} else {
+			_.subSection = _.prevSubSection ?? _.subSection;
 		}
 		addingBody.append( _.markup( _.stepsObj[ addingStep ]() ) );
 		
@@ -1517,7 +1533,7 @@ export class UsersModule extends AdminPage {
 	async handleAssignSteps({assignStep}) {
 		const _ = this;
 		if(!_.initedUpdate){
-			let wizardData = await Model.getWizardData();
+			let wizardData = _.wizardData ?? await Model.getWizardData();
 			_.stepsAssignObj = {
 				1: _.addingStepOne.bind(_,wizardData),
 				2: _.assignStepTwo.bind(_,wizardData),
@@ -1568,6 +1584,7 @@ export class UsersModule extends AdminPage {
 		if (item.hasAttribute('disabled')) return;
 		let page = parseInt(item.value);
 
+		if (!_.searchInfo[_.subSection]) _.searchInfo[_.subSection] = {};
 		_.searchInfo[_.subSection].page = page;
 		let cont = item.closest('.block');
 		_.getSearchUsers({searchInfo:_.searchInfo[_.subSection],cont});

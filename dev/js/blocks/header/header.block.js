@@ -60,7 +60,7 @@ class HeaderBlock extends G{
 			let coursesArr = [],index = 0;
 			for (let course of courses) {
 				let data = {
-					text: `${course.course.title} ${course.level.title}`,
+					text: `${course.course.title} ${course.level.title.split(' ')[0]}`,
 					value: course.level._id
 				};
 				if (!index) {
