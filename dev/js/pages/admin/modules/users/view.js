@@ -427,7 +427,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="firstSchool" 
-							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
+							data-change="${_.componentName}:${_.subSection === 'profile' && _.studentInfo.currentPlan ? 'inputCourseData' : 'fillStudentInfo'}" 
 							data-required
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
@@ -442,7 +442,7 @@ export const view = {
 							class="select adding-select" 
 							name="secondSchool" 
 							data-required
-							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
+							data-change="${_.componentName}:${_.subSection == 'profile' && _.studentInfo.currentPlan ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
 							title=""
@@ -456,7 +456,7 @@ export const view = {
 							class="select adding-select" 
 							name="thirdSchool" 
 							data-required
-							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
+							data-change="${_.componentName}:${_.subSection == 'profile' && _.studentInfo.currentPlan ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
 							title=""
@@ -1274,7 +1274,7 @@ export const view = {
 		usersData = usersData['response'];
 		for(let item of usersData){
 			let tr = document.createElement('TR');
-			tr.className= 'tbl-row';
+			tr.className = 'tbl-row';
 			tr.setAttribute('user-id',item['_id']);
 			if(type=='adding'){
 				tr.innerHTML = _.parentsBodyRowTpl(item);
@@ -1356,11 +1356,11 @@ export const view = {
 			</td>
 			<td>
 				<div class="tbl-item parent-table-students-block">`;
-					if (rowData.students.length) {
+					if (rowData.students && rowData.students.length) {
 						tpl += `<div class="parent-table-students">`;
 						for (let item of rowData.students) {
 							if(rowData.students.length) {
-								let avatar = item.user.avatar ? item.user.avatar.avatar : '';
+								let avatar = item.user && item.user.avatar ? item.user.avatar.avatar : '';
 								tpl += `<div class="parent-table-student">${avatar ? '<img src="/img/' + avatar + '.svg">' : ''}</div>`
 							}
 						}
@@ -1390,7 +1390,7 @@ export const view = {
 							<use xlink:href="#trash"></use>
 						</svg>
 					</button>
-					<button class="users-btn button profile" data-click="${_.componentName}:changeSection" data-id="${rowData._id}" section="parentProfile">Profile</button>
+					<button class="users-btn button profile" data-click="${_.componentName}:changeSection" data-id="${rowData.user._id}" data-outerId="${rowData._id}" section="parentProfile">Profile</button>
 				</div>
 			</td>
 		`
@@ -2203,10 +2203,10 @@ export const view = {
 			<div class="student-profile-footer">
 				<button class="student-profile-delete" data-click="${_.componentName}:showRemoveUserPopup" data-id="${_.studentInfo['studentId']}">Delete User Profile</button>
 				<div class="student-profile-actions">
-					<button class="test-footer-back" data-click="${_.componentName}:changeSection" section="student" rerender>
+					<button class="test-footer-back" data-click="${_.componentName}:changeSection" section="${_.prevSubSection}" rerender>
 						<span>Discard</span>
 					</button>
-					<button class="button-blue" data-click="${_.componentName}:updateStudent">
+					<button class="button-blue" data-click="${_.componentName}:updateStudent" section="${_.prevSubSection}">
 						<span>Save Changes</span>
 					</button>
 				</div>
@@ -3020,7 +3020,7 @@ export const view = {
 					</td>
 					<td>
 						<div class="tbl-item right actions">
-							<button class="users-btn button profile" data-click="UsersModule:showPopupParentProfile" data-id="${item._id}">Profile</button>
+							<button class="users-btn button profile" data-click="UsersModule:changeSection" data-id="${item._id}" section="profile">Profile</button>
 							<button class="users-btn button-blue profile" data-id="${item._id}" data-click="UsersModule:removeUser">
 								<svg class="button-icon"><use xlink:href="#close"></use></svg>
 							</button>

@@ -142,7 +142,7 @@ export class ScheduleModule extends StudentPage{
 				}
 			}
 			if(currentStep  === 3 ){
-				let practiceRows = _.f('#shedule-rows .practice-schedule-row');
+				let practiceRows = document.querySelectorAll('#shedule-rows .practice-schedule-row');
 				_.practiceRows = [];
 				_.practiceTests = [];
 				for(let row of practiceRows){
