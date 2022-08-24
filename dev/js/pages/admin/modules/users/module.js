@@ -413,6 +413,7 @@ export class UsersModule extends AdminPage {
 		}
 	}
 	async fillParentsTable({usersData}){
+		console.log(usersData)
 		const _ = this;
 		let tbody = _.f(`#assignParent .tbl-body`);
 		if (!tbody) {
@@ -494,7 +495,6 @@ export class UsersModule extends AdminPage {
 			parentId = profileData['_id'];
 		}
 		let currentParent = await Model.getParent(parentId);
-		console.log(currentParent[0])
 		_.parentInfo = currentParent[0];
 		_.parentInfo['outerId'] = parentOuterId ?? _.parentInfo['_id'];
 
@@ -603,19 +603,26 @@ export class UsersModule extends AdminPage {
 	async getSearchUsers({searchInfo,cont,role}){
 		const _ = this;
 		if (!role) role = _.subSection;
-		let usersData = await Model.getUsers({role,update: true,searchInfo});
+		let usersData = await Model.getUsers({role:role == 'addingParent' ? 'parent' : role,update: true,searchInfo});
 
-		if(role == 'student') {
-			_.fillUserTable({usersData,cont});
-		}
-		if(role == 'parent') {
+		if (role == 'student') {
+			_.fillUserTable({usersData,cont,role});
+		} else if (role == 'parent') {
 			_.fillBodyParentsTable({usersData,cont,role});
+		} else if (role == 'admin') {
+			_.fillBodyAdminsTable({usersData,cont,role})
+		} else if (role == 'addingParent') {
+			_.parents = usersData;
+			_.paginationFill({
+				total:_.parents.total,
+				limit:_.parents.limit,
+				cont:cont.querySelector( '.pagination' )
+			});
+			_.fillParentBlock({usersData:_.parents});
+			_.fillParentsTable({usersData:_.parents});
 		}
-		if(role == 'admin') {
-			_.fillBodyAdminsTable({usersData,cont})
-		}
-		_.studentInfo = {};
-		_.metaInfo = {};
+		/*_.studentInfo = {};
+		_.metaInfo = {};*/
 		let paginationData = {
 			cont:cont.querySelector('.pagination'),
 			page:_.searchInfo[role].page,
@@ -1188,10 +1195,10 @@ export class UsersModule extends AdminPage {
 		} else {
 			cont.append( _.markup( _.assignParentTpl() ));
 		}
-
+		let page = _.searchInfo && _.searchInfo.parent && _.searchInfo.parent.page ? _.searchInfo.parent.page : 1;
 		_.parents = await Model.getUsers({
 			role:'parent',
-			page:1
+			searchInfo: {page}
 		});
 
 		_.paginationFill({
@@ -1509,6 +1516,11 @@ export class UsersModule extends AdminPage {
 			if (!_.studentInfo.level) _['studentInfo'].level = stepOneData['courses'][0]['levels'][0]['_id'];
 			if (!_['metaInfo'].course) _['metaInfo'].course = stepOneData['courses'][0]['title'];
 			if (!_['metaInfo'].level) _['metaInfo'].level = stepOneData['courses'][0]['levels'][0]['title'];
+		} else if (addingStep == 3) {
+			_.prevSubSection = _.subSection;
+			_.subSection = 'addingParent';
+		} else {
+			_.subSection = _.prevSubSection ?? _.subSection;
 		}
 		addingBody.append( _.markup( _.stepsObj[ addingStep ]() ) );
 		
@@ -1572,6 +1584,7 @@ export class UsersModule extends AdminPage {
 		if (item.hasAttribute('disabled')) return;
 		let page = parseInt(item.value);
 
+		if (!_.searchInfo[_.subSection]) _.searchInfo[_.subSection] = {};
 		_.searchInfo[_.subSection].page = page;
 		let cont = item.closest('.block');
 		_.getSearchUsers({searchInfo:_.searchInfo[_.subSection],cont});

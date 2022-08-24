@@ -27,7 +27,7 @@ export default class GSelect extends GComponent {
 
 	open(){
 		const _ = this;
-		if(!_.opened){
+		if(!_.opened && !_.isDisabled()){
 			_.setProperty('--body-max-height','280px');
 			_.opened = true;
 			_.shadow.querySelector('.g-select').classList.add('active');
@@ -42,6 +42,10 @@ export default class GSelect extends GComponent {
 		_.setProperty('--body-max-height',0);
 		_.shadow.querySelector('.g-select').classList.remove('active');
 		_.opened = false;
+	}
+	isDisabled(){
+		const _ = this;
+		return _.hasAttribute('disabled');
 	}
 
 	get name(){
@@ -399,6 +403,9 @@ export default class GSelect extends GComponent {
 
 		_.fillAttributes();
 		_.trigger('appended');
+		if (_.isDisabled()) {
+			_.style = 'opacity:50%;'
+		}
 	}
 	
 	styleSheets() {

@@ -128,16 +128,16 @@ export class ScheduleModule extends StudentPage{
 			}
 			_.innerCont = _.f('.test-inner');
 			_.f('#step-item').textContent = currentStep;
-			if(currentStep  === 1 ){
+			if(currentStep === 1 ){
 				_.innerCont.innerHTML = _.stepOneTpl();
 			}
-			if(currentStep  === 2 ){
+			if(currentStep === 2 ){
 				let
 					scheduleDate = _.f('#schedule-date');
 				if(!_.testDate){
 					scheduleDate.doValidate();
 					currentStep--;
-				}else{
+				} else {
 					_.innerCont.innerHTML = _.stepTwoTpl();
 				}
 			}

@@ -946,7 +946,6 @@ export const view = {
 		const _ = this;
 		let width = '';
 		//<button class="adding-button ${_.metaInfo && _.metaInfo.parentAddType == 'skip' ? 'active' : ''}" data-click="${_.componentName}:skipParent">Skip for now</button>
-		console.log(_.metaInfo)
 		if (_.metaInfo && _.metaInfo.parentAddType && _.metaInfo.parentAddType == 'assign') width = 'full';
 		let tpl =  `
 			<h3 class="adding-title">Parent Information</h3>
@@ -1307,7 +1306,7 @@ export const view = {
 			tpl += `<div class="parent-table-students">`;
 			for (let item of rowData.students) {
 				if(rowData.students.length) {
-					let avatar = item.user.avatar ? item.user.avatar.avatar : '';
+					let avatar = item.user && item.user.avatar ? item.user.avatar.avatar : '';
 					tpl += `<div class="parent-table-student">${avatar ? '<img src="/img/' + avatar + '.svg">' : ''}</div>`
 				}
 			}

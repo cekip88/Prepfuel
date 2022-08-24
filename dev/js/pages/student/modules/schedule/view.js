@@ -130,7 +130,7 @@ export const view = {
 				<div class="practice-schedule-row">
 					<h5 class="practice-schedule-title">Number of questions</h5>
 					<div class="practice-schedule-right">
-						<g-select class="g-select-gray" data-change="${_.componentName}:changeNumberOfQuestions" items='[{"text":"5 questions","value":5,"active":true},{"text":"10 questions","value":10}]' value="5" classname="g-select-gray" style="--class:g-select-gray; --value:5; --classname:g-select-gray;">
+						<g-select class="g-select-gray" disabled data-change="${_.componentName}:changeNumberOfQuestions" items='[{"text":"5 questions","value":5,"active":true},{"text":"10 questions","value":10}]' value="5" classname="g-select-gray" style="--class:g-select-gray; --value:5; --classname:g-select-gray;">
 							<input type="hidden" name="null" slot="value" value="5">
 						</g-select>
 					</div>
