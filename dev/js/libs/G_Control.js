@@ -28,7 +28,14 @@ class _G_Control{
 		_.handle();
 	}
 	
-	clickHandler(e){return prepareHandler(e,'click');}
+	clickHandler(e){
+		try{
+			return prepareHandler(e,'click');
+		}catch(e){
+			console.log(new Error(e));
+		}
+		
+	}
 	focusOutHandler(e){
 		return prepareHandler(e,'outfocus');
 	}

@@ -40,6 +40,7 @@ export class router {
 			_.user = { role:'guest' };
 		}
 	}
+	
 	async changePage(route){
 		const _ = this;
 		//_.user['role'] = 'guest';
@@ -211,3 +212,4 @@ export class router {
 	}
 
 }
+
