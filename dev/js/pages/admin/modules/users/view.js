@@ -11,10 +11,10 @@ export const view = {
 			</div>
 		`;
 	},
-	pagination(){
+	pagination(role){
 		const _ = this;
 		return `
-			<div class="pagination pagination-top fill">
+			<div class="pagination pagination-top fill" role="${role}">
 				<img src="/img/loader.gif" alt="">
 			</div>
 		`;
@@ -124,7 +124,7 @@ export const view = {
 							</svg>
 						</button> 
 					</div>
-					${_.pagination()}
+					${_.pagination('student')}
 					<div class="tbl">
 						<div class="tbl-head">
 							<div class="tbl-item"><span>USER Name</span>
@@ -191,11 +191,29 @@ export const view = {
 			tpl = `
 				<div class="block-header-item block-header-search">
 					<svg><use xlink:href="#search"></use></svg>
-					<g-input class="block-header-input search-user" type="text" name="search" placeholder="Search" classname="form-input form-search" data-input="${_.componentName}:searchUsers" role="student"></g-input>
+					<g-input 
+						class="block-header-input search-user" 
+						type="text" 
+						name="search" 
+						placeholder="Search" 
+						classname="form-input form-search" 
+						data-input="${_.componentName}:searchUsers" 
+						role="student"
+					></g-input>
 				</div>
 				<div class="block-header-item block-header-date">
 					<svg><use xlink:href="#calendar"></use></svg>
-					<g-input class="block-header-input block-header-date" name="dates" range previous type="date" icon="false" format="month DD, YYYY" classname="form-input form-search" data-change="${_.componentName}:filterUsersByDates"></g-input>
+					<g-input 
+						class="block-header-input block-header-date" 
+						name="dates" 
+						range 
+						previous 
+						type="date" 
+						icon="false" 
+						format="month DD, YYYY" 
+						classname="form-input form-search" 
+						data-change="${_.componentName}:filterUsersByDates"
+					></g-input>
 				</div>
 				<div class="block-header-item block-header-select" multiple>
 					<g-select
@@ -212,19 +230,46 @@ export const view = {
 			`;
 			return tpl;
 		} else if (subSection === 'parent') {
-			let options = [{text:'All parents',value:undefined},{text:'No Students',value:false},{text:'With Students',value:true}];
+			let options = [
+				{text:'All parents',value:undefined},
+				{text:'No Students',value:false},
+				{text:'With Students',value:true}
+			];
 			tpl = `
 				<div class="block-header-item block-header-search">
 					<svg><use xlink:href="#search"></use></svg>
-					<g-input class="block-header-input" type="text" name="search" placeholder="Search" classname="form-input form-search" data-input="${_.componentName}:searchUsers"></g-input>
+					<g-input 
+						class="block-header-input" 
+						type="text" 
+						name="search" 
+						placeholder="Search" 
+						classname="form-input form-search" 
+						data-input="${_.componentName}:searchUsers"
+					></g-input>
 				</div>
 				<div class="block-header-item block-header-date">
 					<svg><use xlink:href="#calendar"></use></svg>
-					<g-input class="block-header-input block-header-date" range previous type="date" icon="false" format="month DD, YYYY" classname="form-input form-search" data-change="${_.componentName}:filterUsersByDates"></g-input>
+					<g-input 
+						class="block-header-input block-header-date" 
+						range 
+						previous 
+						name="searchDates"
+						type="date" 
+						icon="false" 
+						format="month DD, YYYY" 
+						classname="form-input form-search"
+						data-change="${_.componentName}:filterUsersByDates"
+					></g-input>
 				</div>
 				<div class="block-header-item block-header-select">
-					<g-select class="select" data-change="${_.componentName}:searchUsers" name="hasStudents" classname="filter-select table-filter" arrowsvg="/img/sprite.svg#select-arrow" title="All Parents"
-					items='${JSON.stringify(options)}'></g-select>
+					<g-select 
+						class="select" 
+						data-change="${_.componentName}:searchUsers" 
+						name="hasStudents" 
+						classname="filter-select table-filter" 
+						arrowsvg="/img/sprite.svg#select-arrow" 
+						title="All Parents"
+						items='${JSON.stringify(options)}'></g-select>
 				</div>
 			`;
 		} else if (subSection === 'admin') {
@@ -1191,9 +1236,9 @@ export const view = {
 			<div class="block" id="assignParent">
 				<div class="block-header">
 					<h2 class="block-title">Parents (<span class="users-count">${count ?? ''}</span>)</h2>
-					<div class="filter" role="parent">${_.filterTpl('parent')}</div>
+					<div class="filter" role="addingParent">${_.filterTpl('parent')}</div>
 				</div>
-				${_.pagination()}
+				${_.pagination('addingParent')}
 				<div class="tbl">
 					<div class="tbl-head">
 						<div class="tbl-item"> 
@@ -1394,9 +1439,6 @@ export const view = {
 			</td>
 		`
 		return tpl;
-	},
-	assignFromBase(){
-		const _ = this;
 	},
 	assignNewParent(){
 		const _ = this;

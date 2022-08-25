@@ -162,7 +162,6 @@ export default class GInput extends GComponent {
 		let timeSkip = item.getAttribute('data-range');
 
 		let startEndInfo = _.getTargetDate(curDate,timeSkip);
-		console.log(startEndInfo)
 		let start = startEndInfo.start;
 		let end = startEndInfo.end;
 
@@ -494,8 +493,9 @@ export default class GInput extends GComponent {
 		_.triggerChangeEvent();
 		_.datePickerClose();
 	}
-	rangeChangeDate({item},dateValues){
+	rangeChangeDate(clickData,dateValues){
 		const _ = this;
+		let item = clickData.item;
 		let input = _.shadow.querySelector('.date-value');
 
 		if (!_.firstClick) {
@@ -560,9 +560,6 @@ export default class GInput extends GComponent {
 			month = date.getMonth() + 1,
 			MM = month >= 10 ? month : '0' + month,
 			YYYY = date.getFullYear();
-
-		//if (DD < 10) DD = '0' + DD;
-		//console.log(date,DD,dateValue,type)
 
 		outValue = outValue.replace('DD',DD.toString());
 		outValue = outValue.replace('MM',MM.toString());
@@ -921,9 +918,17 @@ export default class GInput extends GComponent {
 		if (_.isDate()) {
 			_.setAttribute('style','position:relative;')
 			if (_.attr('value')) {
-				let dateValues = _.fillDate(_.attr('value'));
-				if (!_.isDateRange()) _.notRangeChangeDate(null,dateValues);
-				else _.rangeChangeDate(null,dateValues);
+				if (!_.isDateRange()) {
+					let dateValues = _.fillDate(_.attr('value'));
+					_.notRangeChangeDate(null,dateValues);
+				} else {
+					let dates = _.attr('value').split('|');
+					_.shadow.querySelector('.inpt-date[data-type="from"]').value = dates[0];
+					_.shadow.querySelector('.inpt-date[data-type="to"]').value = dates[1] ?? dates[0];
+
+					let value = _.fillDate(dates[0]).outValue + (dates[1] ? ' - ' + _.fillDate(dates[1]).outValue : '');
+					_.shadow.querySelector('.inpt-value').value = value;
+				}
 			}
 		}
 		_.type = _.attr('type');

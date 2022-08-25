@@ -399,6 +399,7 @@ export default class GSelect extends GComponent {
 				_.choose({fakeItem:option});
 				option.removeAttribute('data-active')
 			}
+			_.close();
 		}
 
 		_.fillAttributes();
