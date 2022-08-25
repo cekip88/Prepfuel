@@ -261,19 +261,19 @@ export const view = {
 				<div class="practice-task-item-actions">
 					<span 
 						class="practice-task-item-status 
-						${task['status'] == 'completed' ? 'completed' : ''}"
+						${task['status'] == 'finished' ? 'Completed' : 'Yet to start'}"
 						style="
 							color:rgb(${task['status'] == 'locked' ? '126, 130, 153' : color});
 							${task['status'] != 'completed' && task['status' != 'locked'] ? 'border: 1px solid rgb(' + color + ');' : ''}
 							${task['status'] == 'completed' ? 'background-color:rgba(' + color + ',.15)' : ''}
 							${task['status'] == 'locked' ? 'background-color:#fff;' : ''}
 						">
-					 ${task['status']  ? 'Completed' : 'Yet to start'}
+					 ${task['status'] == 'finished' ? 'Completed' : 'Yet to start'}
 					</span>
 					<button 
 						class="practice-task-item-button"
 						data-subject="${task.subject}"
-						data-id="${task.title}"
+						data-status="${task['status']}"
 						data-num="${task.num}"
 						section = "quizDirections"
 						data-click="${_.componentName}:changeSection;${_.componentName}:setQuizInfo"
@@ -544,7 +544,7 @@ export const view = {
 			<div class="section">
 				<div class="section-header">
 					<h1 class="title" id="directions-header-title"></h1>
-					<button class="button-white"	data-click="${this.componentName}:changeSection" section="mathematics"><span>Exit this practice</span></button>
+					<button class="button-white"	data-click="${this.componentName}:changeSection" section="mathematics"><span>Exit this <span id="testType">practice</span></span></button>
 				</div>
 			</div>
 			<div class="section row">
@@ -684,7 +684,7 @@ export const view = {
 			<div class="section">
 				<div class="section-header">
 					<h1 class="title" id="question-header-title">Concept name</strong></h1>
-					<button class="button-white" data-click="${this.componentName}:changeSection" section="mathematics"><span>Exit this practice</span></button>
+					<button class="button-white" data-click="${this.componentName}:changeSection" section="mathematics"><span>Exit this <span id="testType">practice</span></span></button>
 				</div>
 			</div>
 	`)});
@@ -697,6 +697,18 @@ export const view = {
 				tpl+=`<a class="pagination-link active" data-pos="${i}"	data-click="${_.componentName}:jumpToQuestion"><span>${i+1}</span></a>`;
 			}else{
 				tpl+=`<a class="pagination-link" data-pos="${i}" data-click="${_.componentName}:jumpToQuestion"><span>${i+1}</span></a>`;
+			}
+		}
+		return tpl;
+	},
+	quizQuestionNavigation(pos=0){
+		const _ = this;
+		let tpl = ``;
+		for(let i=0; i < _.quizQuestionsLength; i++){
+			if(pos == i){
+				tpl+=`<a class="pagination-link active" data-pos="${i}"	data-click="${_.componentName}:jumpToQuizQuestion"><span>${i+1}</span></a>`;
+			}else{
+				tpl+=`<a class="pagination-link" data-pos="${i}" data-click="${_.componentName}:jumpToQuizQuestion"><span>${i+1}</span></a>`;
 			}
 		}
 		return tpl;
@@ -729,13 +741,7 @@ export const view = {
 
 	async gridQuestion(){
 		const _ = this;
-		let currentQuestion;
-		if(_._$.currentQuestion['questions']){
-			currentQuestion = _._$.currentQuestion['questions'][0]
-		}else {
-			currentQuestion = _._$.currentQuestion;
-		}
-		let
+		let currentQuestion = _.getCurrentQuestion(),
 			{ title, text, intro, content } = await _.getQuestionFields(currentQuestion),
 		tpl =	`
 			<div class="test-header">
@@ -936,7 +942,7 @@ export const view = {
 	async compareQuestion(){
 		const _ = this;
 		let
-		currentQuestion = _._$.currentQuestion['questions'][0],
+			currentQuestion = _.getCurrentQuestion(),
 		tpl= `
 				<div class="test-header">
 					<h5 class="block-title test-title"><span>Question ${_.questionPos} of ${_.questionsLength}</span></h5>
@@ -1000,13 +1006,9 @@ export const view = {
 	},
 	async graphicQuestion(){
 		const _ = this;
-		let currentQuestion;
-		if(_._$.currentQuestion['questions']){
-			currentQuestion = _._$.currentQuestion['questions'][0]
-		}else {
-			currentQuestion = _._$.currentQuestion;
-		}
-		let { text,intro,content } = await _.getQuestionFields(currentQuestion),
+		let
+			currentQuestion = _.getCurrentQuestion(),
+			{ text,intro,content } = await _.getQuestionFields(currentQuestion),
 		tpl= `
 				<div class="test-row test-inner">
 					<div class="test-col">
@@ -1082,18 +1084,12 @@ export const view = {
 	},
 	async standartQuestion(){
 		const _ = this;
-		let currentQuestion;
-		if(_._$.currentQuestion['questions']){
-			currentQuestion = _._$.currentQuestion['questions'][0]
-		}else {
-			currentQuestion = _._$.currentQuestion;
-		}
-		let
+		let currentQuestion = _.getCurrentQuestion(),
 			{ text,intro,content } = await _.getQuestionFields(currentQuestion),
 		tpl = `
 			<div class="test-header">
 				<h5 class="block-title test-title ddss">
-					<span>Question ${_.getStep()} of ${Model.allQuestionsLength}</span>
+					<span>Question ${ (_.currentTestType == 'quiz') ? _.getQuizStep(): _.getStep()} of ${Model.allQuestionsLength}</span>
 				</h5>
 				${_.actionsTpl(currentQuestion)}
 			</div>
@@ -1108,7 +1104,7 @@ export const view = {
 					${text}
 				</p>
 			<ul class="answer-list" data-question-id="${currentQuestion['_id']}">
-		`;
+	`;
 		for(let answer in	currentQuestion['answers']){
 			tpl+=await _.answerTpl(currentQuestion,answer);
 		}
@@ -1119,6 +1115,25 @@ export const view = {
 		</div>`;
 		return tpl;
 	},
+	getCurrentQuestion(){
+		const _ = this;
+		let currentQuestion;
+		if(_.currentTestType == 'quiz'){
+			if(_._$.currentQuizQuestion['questions']){
+				currentQuestion = _._$.currentQuizQuestion['questions'][0]
+			}else {
+				currentQuestion = _._$.currentQuizQuestion;
+			}
+		}else{
+			if(_._$.currentQuestion['questions']){
+				currentQuestion = _._$.currentQuestion['questions'][0]
+			}else {
+				currentQuestion = _._$.currentQuestion;
+			}
+		}
+		return currentQuestion;
+	},
+	
 	/* Questions tpls */
 	
 	skillSummary(summary,category,concept){
