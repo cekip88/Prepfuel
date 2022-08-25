@@ -98,13 +98,17 @@ export class UsersModule extends AdminPage {
 
 	async domReady(data){
 		const _ = this;
-		_.parentInfo = {};
-		_.studentInfo = {};
+		//_.parentInfo = {};
+		//_.studentInfo = {};
 		_.wizardData = Model.wizardData ?? await Model.getWizardData();
 		if (!_.searchInfo) _.searchInfo = {};
 		if (!_.searchInfo[_.subSection]) _.searchInfo[_.subSection] = {page:1}
+		if (_.subSection === 'student' || _.subSection === 'parent') {
+			_.parentInfo = {};
+		}
 		if (_.subSection === 'student'){
 			let item,update= true;
+			_._$.addingStep = 1;
 			if(data){
 				item = data.item;
 				update = item.hasAttribute('rerender');
@@ -130,6 +134,7 @@ export class UsersModule extends AdminPage {
 			_._$.assignStep = 1;
 		}
 		if( _.subSection === 'parentProfile'){
+			if (!_.isEmpty(_.parentInfo) && !data.item.hasAttribute('data-id')) data.item.setAttribute('data-id',_.parentInfo['_id'])
 			_.fillParentProfile(data);
 		}
 		if( _.subSection === 'parent'){
@@ -376,14 +381,10 @@ export class UsersModule extends AdminPage {
 	}
 	fillDataByClass({className,data}){
 		const _ = this;
-		let conts = _.f(`${className}`);
-		if(conts.length){
-			conts.forEach( item=>{
-				item.textContent = data;
-			});
-		} else {
-			conts.textContent = data;
-		}
+		let conts = document.querySelectorAll(`${className}`);
+		conts.forEach( item=>{
+			item.textContent = data;
+		});
 	}
 	async fillUserTable({usersData,selector = '',cont}){
 		const _ = this;
@@ -486,17 +487,17 @@ export class UsersModule extends AdminPage {
 	}
 	async fillParentProfile(profileData) {
 		const _ = this;
-		let parentId, parentOuterId;
+		let parentId;
+		_.subSection = 'parentProfile';
 		if(profileData['item']){
 			parentId = profileData['item'].getAttribute('data-id');
-			parentOuterId = profileData['item'].getAttribute('data-outerId');
-			_.subSection = profileData['item'].getAttribute('section');
 		} else {
 			parentId = profileData['_id'];
 		}
 		let currentParent = await Model.getParent(parentId);
-		_.parentInfo = currentParent[0];
-		_.parentInfo['outerId'] = parentOuterId ?? _.parentInfo['_id'];
+		_.parentInfo = currentParent['user'];
+		_.parentInfo['_id'] = currentParent['_id'];
+		_.parentInfo['phone'] = currentParent['phone'];
 
 		_.f('.parent-profile-inner').innerHTML = _.parentsProfileInner();
 		_.f('.breadcrumbs').innerHTML = _.breadCrumbsTpl([
@@ -636,7 +637,7 @@ export class UsersModule extends AdminPage {
 	// Adding methods
 	async addStudent({item}) {
 		const _ = this;
-		
+
 		_._$.addingStep = _._$.addingStep;
 
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#addingForm'});
@@ -784,13 +785,11 @@ export class UsersModule extends AdminPage {
 		if(pos == 1){
 			studentInner.classList.remove('short')
 			studentInner.innerHTML = _.parentsInfo();
-			//let parentsData = await Model.getUsers({role: 'parent'});
 			_.currentParent = await Model.getStudentParents( _.studentInfo['studentId'] );
 			if ( _.currentParent['response']['length'] ){
 				studentInner.querySelector( '.button-link.blue' ).textContent = 'Change parent';
 			}
 			_.fillParentsInfoTable( _.currentParent );
-			console.log(_.currentParent)
 		}
 		if(pos == 2){
 			studentInner.classList.remove('short')
@@ -814,8 +813,8 @@ export class UsersModule extends AdminPage {
 			_.connectTableHead('.activity-table');
 		}
 		if(pos == 6){
-			parentInner.classList.remove('short')
-			_.fillParentProfile({_id:_.parentInfo['_id']});
+			parentInner.classList.remove('short');
+			_.fillParentProfile({_id:_.parentInfo['_id'],outerId:_.parentInfo['outerId']});
 		}
 		if (pos == 9) {
 			parentInner.classList.remove('short')
@@ -850,7 +849,7 @@ export class UsersModule extends AdminPage {
 			_.fillParentAddressesInfo(addresses);
 		}
 		if (pos == 12) {
-			let tableData = await Model.getParentStudents(_.parentInfo['outerId']);
+			let tableData = await Model.getParentStudents(_.parentInfo['_id']);
 			let layout = _.parentsStudentsTpl(tableData);
 			parentInner.innerHTML = layout;
 			_.connectTableHead('.parent-profile-inner');
@@ -884,7 +883,7 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		let
 			pos = item.getAttribute('data-pos'),
-			parentId = _.f('#parent-profile-popup').getAttribute('data-id');
+			parentId = _.parentInfo['_id'];
 		item.parentNode.querySelector('.active').classList.remove('active');
 		item.classList.add('active');
 		let container = _.f('.parent-popup-profile-body');
@@ -968,14 +967,13 @@ export class UsersModule extends AdminPage {
 	}
 	async showPopupParentProfile({item}){
 		const _ = this;
+		let cont = _.f('#parent-profile-popup');
+		cont.setAttribute('data-id',_.currentParent['_id']);
 
-		let parentId = item.getAttribute('data-id');
-		_.f('#parent-profile-popup').setAttribute('data-id',parentId);
+		_.parentInfo = _.currentParent['response'][0]['user'];
+		_.parentInfo['phone'] = _.currentParent['response'][0]['phone'];
+		_.parentInfo['_id'] = _.currentParent['response'][0]['_id'];
 
-		let tableData = await Model.getParent(parentId);
-		_.currentParent = tableData[0];
-		_.parentInfo = _.currentParent;
-		
 		G_Bus.trigger('modaler','closeModal');
 		_.f('.parent-popup-profile-body').innerHTML = _.parentPersonalInfoTpl();
 		G_Bus.trigger('modaler','showModal',{
@@ -983,6 +981,8 @@ export class UsersModule extends AdminPage {
 			target: '#parent-profile-popup',
 			closeBtn: 'hide'
 		});
+		let btn = cont.querySelector('.section-button[data-pos="0"]');
+		G_Bus.trigger(_.componentName,'changeParentPopupProfileTab',{item:btn})
 	}
 	showHistoryDetails({item}){
 		const _ = this;
@@ -1195,7 +1195,8 @@ export class UsersModule extends AdminPage {
 		} else {
 			cont.append( _.markup( _.assignParentTpl() ));
 		}
-		let page = _.searchInfo && _.searchInfo.parent && _.searchInfo.parent.page ? _.searchInfo.parent.page : 1;
+
+		let page = _.searchInfo && _.searchInfo.addingParent && _.searchInfo.addingParent.page ? _.searchInfo.addingParent.page : 1;
 		_.parents = await Model.getUsers({
 			role:'parent',
 			searchInfo: {page}

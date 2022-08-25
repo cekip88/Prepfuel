@@ -1389,7 +1389,7 @@ export const view = {
 							<use xlink:href="#trash"></use>
 						</svg>
 					</button>
-					<button class="users-btn button profile" data-click="${_.componentName}:changeSection" data-id="${rowData.user._id}" data-outerId="${rowData._id}" section="parentProfile">Profile</button>
+					<button class="users-btn button profile" data-click="${_.componentName}:changeSection" data-id="${rowData._id}" section="parentProfile">Profile</button>
 				</div>
 			</td>
 		`
@@ -2202,7 +2202,7 @@ export const view = {
 			<div class="student-profile-footer">
 				<button class="student-profile-delete" data-click="${_.componentName}:showRemoveUserPopup" data-id="${_.studentInfo['studentId']}">Delete User Profile</button>
 				<div class="student-profile-actions">
-					<button class="test-footer-back" data-click="${_.componentName}:changeSection" section="${_.prevSubSection}" rerender>
+					<button class="test-footer-back" data-click="${_.componentName}:changeSection" section="${_.prevSubSection}" ${_.prevSubSection == 'parentProfile' ? 'data-outerId=' + _.parentInfo['outerId'] : '' } rerender>
 						<span>Discard</span>
 					</button>
 					<button class="button-blue" data-click="${_.componentName}:updateStudent" section="${_.prevSubSection}">
