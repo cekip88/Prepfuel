@@ -2569,7 +2569,7 @@ export const view = {
 							</svg>
 						</button>
 					</div>
-					${_.pagination()}
+					${_.pagination('parent')}
 					<div class="tbl">
 			      <div class="tbl-head">
 			        <div class="tbl-item">
@@ -3101,7 +3101,7 @@ export const view = {
 							<svg class="button-icon large"><use xlink:href="#plus2"></use></svg>
 						</button>
 					</div>
-					${_.pagination()}
+					${_.pagination('admin')}
 					<div class="tbl">
 			      <div class="tbl-head">
 			        <div class="tbl-item">
