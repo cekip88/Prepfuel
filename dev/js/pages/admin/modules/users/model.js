@@ -134,7 +134,7 @@ class _Model {
 			'data': request
 		});
 	}
-	getUsers({role,update,searchInfo= {page: 1}}) {
+	getUsers({role,searchInfo= {page: 1}}) {
 		const _ = this;
 		/*if(!update){
 			if(_[`${role}sData`]) return Promise.resolve(_[`${role}sData`]);

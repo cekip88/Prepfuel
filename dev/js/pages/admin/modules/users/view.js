@@ -11,7 +11,7 @@ export const view = {
 			</div>
 		`;
 	},
-	pagination(role){
+	pagination(role = this.subSection){
 		const _ = this;
 		return `
 			<div class="pagination pagination-top fill" role="${role}">
@@ -3081,15 +3081,6 @@ export const view = {
 	//admins page
 	adminsBody(){
 		const _ = this;
-		let filterSelectOptions = [
-			{
-				value: 1, text: 'All Roles',active:true
-			},{
-				value: 2, text: 'No students',
-			},{
-				value: 3, text: 'With students',
-			}
-		];
 		let tpl = `
 			<div class="section users-page" id="bodyAdmins">
 				<div class="block">
