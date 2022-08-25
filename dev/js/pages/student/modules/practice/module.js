@@ -18,6 +18,10 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		return _.skillTests.length;
 	}
+	get quizQuestionsLength(){
+		const _ = this;
+		return _.quizTests.length;
+	}
 	
 	
 	// Setters
@@ -49,16 +53,20 @@ export class PracticeModule extends StudentPage{
 		_.isLastQuestion = false;
 		_.testFinished = false;
 		_.currentTestType = 'quiz';
+		
+		_.skillTests  = [];
+		_.quizTests = [];
+		
 		_.set({
 			currentQuestion: null
 		})
 		
 		G_Bus.on(_,[
-			'domReady','changeSection','changePracticeTab','jumpToQuestion',
+			'domReady','changeSection','changePracticeTab','jumpToQuestion','jumpToQuizQuestion',
 			'startTest','enterGridAnswer','checkAnswer','setCorrectAnswer',
 			'showForm','saveBookmark','saveNote','saveBookmark','changeInnerQuestionId',
 			'showTestLabelModal','editNote','deleteNote','saveReport','changeQuestion','viewResult',
-			'startQuiz','checkQuizAnswer','setWrongAnswer','setQuizInfo'
+			'startQuiz','checkQuizAnswer','setWrongAnswer','setQuizInfo','changeQuizQuestion'
 		])
 	}
 	
@@ -144,6 +152,7 @@ export class PracticeModule extends StudentPage{
 		_.f('#directions-header-title').textContent = title;
 		_.f('#directions-btn').setAttribute('data-id',title);
 		_.f('#directions-btn').setAttribute('section','quizQuestions');
+		_.f("#testType").textContent = _.currentTestType;
 	}
 	async fillDirectionsSection({item}){
 		const _ = this;
@@ -156,17 +165,15 @@ export class PracticeModule extends StudentPage{
 	}
 	async fillQuizQuestionSection({item}){
 		const _ = this;
-		if(!_.skillTests){
+		if(!_.quizTests.length){
 			let currentQuiz = await Model.getCurrentQuiz(_.currentQuizSubject,_.currentQuizNum);
-			console.log(currentQuiz);
-			_.skillTests = currentQuiz['tests'];
+			_.quizTests = currentQuiz['tests'];
 			let quizObj = await Model.startQuiz();
 		}
-		
-		
 		_.f('#question-header-title').textContent = _.currentQuizSubject;
-		_.f('.questions-length').textContent = _.questionsLength;
-		_.f('#question-pagination').append(_.markup(_.questionNavigation()));
+		_.f('.questions-length').textContent = _.quizQuestionsLength;
+		_.f('#question-pagination').append(_.markup(_.quizQuestionNavigation()));
+		_.f("#testType").textContent = _.currentTestType;
 		let
 			innerItem = _.f('.pagination-link'),
 			pos = _.questionPos;
@@ -178,7 +185,7 @@ export class PracticeModule extends StudentPage{
 		let directionsBtn = _.f('#directions-btn');
 		directionsBtn.setAttribute('section',`quizDirections`);
 		
-		_._$.currentQuestion =_.skillTests[_.questionPos];
+		_._$.currentQuizQuestion =_.quizTests[_.questionPos];
 	}
 	async fillQuestionSection({item}){
 		const _ = this;
@@ -305,6 +312,39 @@ export class PracticeModule extends StudentPage{
 		let title =  await handle();
 		return { title,text,intro,content };
 	}
+	getQuizStep(){
+		const _ = this;
+		let pos = 0;
+		Model.questions.find((item,index)=> {
+			if( item['questions']){
+				let findedInQuestions = false;
+				item['questions'].find((item,index)=> {
+					if( item['_id'] == _._$.currentQuizQuestion['_id'] ){
+						pos = index;
+						findedInQuestions = true;
+						return true;
+					}
+				});
+				if(!findedInQuestions){ pos = index;}
+			}
+			if( item['_id'] == _._$.currentQuizQuestion['_id'] ){
+				pos = index;
+				return true;
+			}
+		});
+		//_.questionPos = pos;
+		let cnt = 0;
+		for(let i = 0; i <= pos;i++){
+			if(Model.questions[i]){
+				if(Model.questions[i]['questions']){
+					cnt+=Model.questions[i]['questions'].length;
+				}else{
+					cnt+=1;
+				}
+			}
+		}
+		return pos+1;
+	}
 	getStep(){
 		const _ = this;
 		let pos = 0;
@@ -349,6 +389,10 @@ export class PracticeModule extends StudentPage{
 	async getQuestionTpl(){
 		const _ = this;
 		return await _[`${_.types[_._$.currentQuestion['type']]}Question`]();
+	}
+	async getQuizQuestionTpl(){
+		const _ = this;
+		return await _[`${_.types[_._$.currentQuizQuestion['type']]}Question`]();
 	}
 	
 	
@@ -443,14 +487,30 @@ export class PracticeModule extends StudentPage{
 		_.f('.pagination-link.active').classList.remove('active');
 		item.classList.add('active');
 	}
+	jumpToQuizQuestion({item}){
+		const _ = this;
+		let questionPos = item.getAttribute('data-pos');
+		_.questionPos = questionPos;
+		_._$.currentQuizQuestion =  Model.skillTest[questionPos];
+		_.f('.pagination-link.active').classList.remove('active');
+		item.classList.add('active');
+	}
 	// end navigate methods
 
 
 	//change methods
+	changeAnswerButtonToQuizSkip(){
+		const _ = this;
+		let btn = _.f('#check-answer-btn');
+		btn.textContent = 'Skip to question';
+		btn.className= 'button';
+		btn.removeAttribute('disabled');
+		btn.setAttribute('data-click',`${this.componentName}:changeQuizQuestion`);
+	}
 	changeAnswerButtonToNext(){
 		const _ = this;
-		_.f('#check-answer-btn').textContent = 'Next to question';
 		let btn = _.f('#check-answer-btn');
+		btn.textContent = 'Next to question';
 		btn.className= 'skip-to-question-button button-blue';
 		btn.setAttribute('data-click',`${this.componentName}:changeQuestion`);
 	}
@@ -465,7 +525,6 @@ export class PracticeModule extends StudentPage{
 		}else{
 			btn.setAttribute('data-click',`${this.componentName}:checkAnswer`);
 		}
-		
 	}
 	
 	
@@ -489,6 +548,17 @@ export class PracticeModule extends StudentPage{
 			pos = parseInt(innerItem.nextElementSibling.getAttribute('data-pos'));
 		_.questionPos = pos;
 		_._$.currentQuestion =  Model.skillTest[pos];
+		innerItem.classList.remove('active');
+		innerItem.nextElementSibling.classList.add('active');
+	}
+	changeQuizQuestion({item,event}){
+		const _ = this;
+		let
+			innerItem = _.f('.pagination-link.active'),
+			pos = parseInt(innerItem.nextElementSibling.getAttribute('data-pos'));
+		console.log(pos);
+		_.questionPos = pos;
+		_._$.currentQuizQuestion =  Model.skillTest[pos];
 		innerItem.classList.remove('active');
 		innerItem.nextElementSibling.classList.add('active');
 	}
@@ -620,7 +690,11 @@ export class PracticeModule extends StudentPage{
 		}
 		_.answerVariant[questionId]['answer'] = answerVariant;
 		
-		_.setAvailableCheckBtn();
+		if(_.currentTestType == 'quiz'){
+			_.changeNextButtonToAnswer();
+		}else{
+			_.setAvailableCheckBtn();
+		}
 		
 		G_Bus.trigger(_.componentName,'updateStorageTest');
 	}
@@ -672,11 +746,14 @@ export class PracticeModule extends StudentPage{
 	setQuizInfo({item}){
 		const _ = this;
 		let
+			status = item.getAttribute('data-status'),
 			num = item.getAttribute('data-num'),
 			subject = item.getAttribute('data-subject');
 		_.currentTestType = 'quiz';
 		_.currentQuizNum = num;
 		_.currentQuizSubject = subject;
+		
+		_.currentQuizStatus = status;
 	}
 	setDisableCheckBtn(){
 		const _ = this;
@@ -740,13 +817,18 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		return _._$.currentQuestion.type == 'grid-in';
 	}
+	isQuizGrid(){
+		const _ = this;
+		return _._$.currentQuizQuestion.type == 'grid-in';
+	}
 	async checkQuizAnswer({item}){
 		const _ = this;
+		console.log(_._$.currentQuizQuestion);
 		for(let id in _.answerVariant){
 			let
 				answerObj = {
 					"questionId": id,
-					"questionDatasId": _._$.currentQuestion['_id'],
+					"questionDatasId": _._$.currentQuizQuestion['_id'],
 					"answer": _.answerVariant[id]['answer'],
 				},
 				fullAnswer = {
@@ -769,7 +851,7 @@ export class PracticeModule extends StudentPage{
 				answerObj['disabledAnswers'] = _.answerVariant[id]['disabledAnswers'];
 			}
 			let response = await Model.saveQuizAnswer(fullAnswer);
-			_.changeQuestion({item});
+			_.changeQuizQuestion({item});
 			
 			if(_.isLastQuestion){
 				_.setSummaryBtn();
@@ -872,7 +954,14 @@ export class PracticeModule extends StudentPage{
 	}
 	setLetterAnswer(currentAnswers){
 		const _ = this;
-		console.log(currentAnswers);
+		let handle = (answer)=>{
+			if( answer['answer'] == answer['correctAnswer'] ){
+			_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
+			}else{
+				_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`).classList.add('incorrect');
+				_.f(`.answer-item[data-variant="${answer['correctAnswer']}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
+			}
+		}
 		_._$.currentQuestion['questions'].forEach( question =>{
 			let correctAnswer = question['correctAnswer'];
 			currentAnswers.forEach( answer => {
@@ -880,14 +969,87 @@ export class PracticeModule extends StudentPage{
 			});
 		});
 		currentAnswers.forEach( answer => {
-			_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`).classList.add('active');
-		/*	if( answer['answer'] == answer['correctAnswer'] ){
-				_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
+			handle(answer);
+		});
+	}
+	setQuizLetterAnswer(currentAnswers){
+		const _ = this;
+		let handle = (answer)=>{
+			if( answer['answer'] == answer['correctAnswer'] ){
+			_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
 			}else{
 				_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`).classList.add('incorrect');
 				_.f(`.answer-item[data-variant="${answer['correctAnswer']}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
-			}*/
+			}
+		}
+		_._$.currentQuizQuestion['questions'].forEach( question =>{
+			let correctAnswer = question['correctAnswer'];
+			currentAnswers.forEach( answer => {
+				if(answer['questionId'] == question['_id'] ) 	answer['correctAnswer'] = correctAnswer;
+			});
 		});
+		currentAnswers.forEach( answer => {
+			if( (_.currentQuizStatus == 'finished')){
+				handle(answer);
+			}else{
+				if(_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`))
+					_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`).classList.add('active');
+			}
+		});
+	}
+	setQuizGridAnswer(value){
+		const _ = this;
+		if( !value.length ) return void 0;
+		let
+			answerObject = value[0],
+			answerText = answerObject.answer;
+		if(!answerText) return void 0;
+		let
+			answerDigits = (typeof answerText == 'string') ? answerText.split('') :  answerText,
+			className = '.grid.correct',
+		correctAnswer = _._$.currentQuizQuestion['questions'][0]['correctAnswer'],
+		ans =   _.answerVariant[answerObject['questionId']]['answer'].join('');
+		ans = ans.replaceAll('_','');
+		
+		if( correctAnswer != ans) className = '.grid.incorrect';
+		_.f('.grid.empty').setAttribute('hidden','hidden');
+		if( className == '.grid.correct'){
+			_.f('.grid.correct').removeAttribute('hidden');
+		}else{
+			_.f('.grid.incorrect').removeAttribute('hidden');
+		}
+		answerDigits.forEach( (digit,index) => {
+			let currentCol = _.f(`${className} [data-col="${index+1}"] .grid-button`);
+			currentCol.forEach( (item) => {
+				if(item.textContent.trim() == digit){
+					item.classList.add('active');
+				}
+			});
+			let inputValue = _.f(`${className} .grid-input span:nth-child(${index+1})`);
+			if(digit != '_') inputValue.textContent = digit;
+		})
+	}
+	setPaginationAnswers(currentAnswers){
+		const _ = this;
+		_.quizTests.forEach( (skill,index) => {
+			if(currentAnswers[skill['_id']]){
+				currentAnswers[skill['_id']][0]['pos'] = index;
+				skill['questions'].forEach(question=>{
+					currentAnswers[skill['_id']][0]['correctAnswer'] = question['correctAnswer'];
+				});
+				
+			}
+		});
+		for(let key in currentAnswers){
+			let answer = currentAnswers[key][0];
+			if(answer['answer'] == answer['correctAnswer']){
+				_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('done');
+			}else{
+				_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('error');
+			}
+			
+		}
+		
 	}
 	async startQuiz({item}){
 		const _ = this;
@@ -936,21 +1098,16 @@ export class PracticeModule extends StudentPage{
 			}
 			_.answerVariant = {};
 			if(_.questionPos == _.questionsLength-1){
-				//_.setSummaryBtn();
 				_.isLastQuestion = true;
 			}
 			let questionBody = _.f('#question-inner-body');
 			questionBody.innerHTML = await _.getQuestionTpl();
 			let rawAnswers = [];
-			if(_.currentTestType == 'quiz'){
-				rawAnswers = await  Model.getQuizResults(_.currentQuizSubject,_.currentQuizNum);
+			rawAnswers = await Model.getTestResults();
 			
-			}else{
-				rawAnswers = await Model.getTestResults();
-			}
 			let	placedAnswers = {};
 			if( (!rawAnswers) ||  (!rawAnswers.length)) return void  'No answers from Server';
-			
+	
 			rawAnswers.forEach( (item) => {
 				if(!placedAnswers[item.questionDatasId]) placedAnswers[item.questionDatasId] = [];
 				placedAnswers[item.questionDatasId].push({
@@ -966,22 +1123,80 @@ export class PracticeModule extends StudentPage{
 				if(!_.answerVariant[answer.questionId]) _.answerVariant[answer.questionId] = {};
 				_.answerVariant[answer.questionId] = answer;
 			});
+			
+			
 			if( _.isGrid() ){
 				_.setGridAnswer(currentAnswers);
 			} else{
 				_.setLetterAnswer(currentAnswers);
 			}
-			if(_.currentTestType != 'quiz') {
-				_.fillExplanation(currentQuestion);
-				_.fillNote(currentAnswers);
-				_.setBookmark(currentAnswers);
-			}
+			_.fillExplanation(currentQuestion);
+			_.fillNote(currentAnswers);
+			_.setBookmark(currentAnswers);
+			
 			if(!_.testFinished ){
 				_.setDisableCheckBtn();
 			}else{
 				//_.setNextButton();
 			}
-		})
+		},['currentQuestion']);
+		_._( async ({currentQuizQuestion})=>{
+			if( !_.initedUpdate ){
+				return void 'not inited yet';
+			}
+			
+			if( _.testFinished ){
+				_.changeAnswerButtonToNext();
+			}else{
+				_.changeAnswerButtonToQuizSkip();
+			}
+			_.answerVariant = {};
+			if(_.questionPos == _.quizQuestionsLength-1){
+				//_.setSummaryBtn();
+				_.isLastQuestion = true;
+			}
+			let questionBody = _.f('#question-inner-body');
+			questionBody.innerHTML = await _.getQuizQuestionTpl();
+			let rawAnswers = [];
+			rawAnswers = await  Model.getQuizResults(_.currentQuizSubject,_.currentQuizNum);
+			
+			let	placedAnswers = {};
+			if( (!rawAnswers) ||  (!rawAnswers.length)) return void  'No answers from Server';
+			
+			rawAnswers.forEach( (item) => {
+				if(!placedAnswers[item.questionDatasId]) placedAnswers[item.questionDatasId] = [];
+				placedAnswers[item.questionDatasId].push({
+					questionId: item.questionId,
+					answer: item.answer,
+					note: item.note,
+					bookmark: item.bookmark
+				});
+			});
+			let currentAnswers = placedAnswers[currentQuizQuestion['_id']];
+			if(!currentAnswers)	return  void 'No current answers';
+			_.changeNextButtonToAnswer();
+			currentAnswers.forEach( answer =>{
+				if(!_.answerVariant[answer.questionId]) _.answerVariant[answer.questionId] = {};
+				_.answerVariant[answer.questionId] = answer;
+			});
+			
+			if(_.currentQuizStatus == 'finished'){
+				_.setPaginationAnswers(placedAnswers);
+				_.fillExplanation(currentQuizQuestion);
+			}
+			if( _.isQuizGrid() ){
+				_.setGridAnswer(currentAnswers);
+			} else{
+				_.setQuizLetterAnswer(currentAnswers);
+			}
+			
+			
+
+			
+			_.fillNote(currentAnswers);
+			_.setBookmark(currentAnswers);
+			
+		},['currentQuizQuestion']);
 		
 		
 	}
