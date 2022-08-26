@@ -14,6 +14,7 @@ export class _Model {
 			quizess: `${env.backendUrl}/student/current-course/quiz`,
 			quiz: `${env.backendUrl}/student/diagnostic-quiz`,
 			summary: `${env.backendUrl}/skill-results`,
+			quizSummary: `${env.backendUrl}/quiz-results/summary`,
 			quizResults: `${env.backendUrl}/quiz-results`,
 			startQuiz: `${env.backendUrl}/quiz-results/create`,
 			resetQuiz:`${env.backendUrl}/quiz-results/reset`,
@@ -453,6 +454,20 @@ export class _Model {
 		const _ = this;
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['summary']}/${_.resultId}/summary`,{
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				console.log(response);
+				resolve(response['response']);
+			}
+		});
+	}
+	getQuizSummary(){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['quizSummary']}`,{
 				method: 'GET',
 				headers: _.baseHeaders,
 			});
