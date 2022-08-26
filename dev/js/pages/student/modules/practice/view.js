@@ -111,7 +111,9 @@ export const view = {
 		return tpl;
 	},
 	actionsTpl(question){
+		const _ = this;
 		return `
+			${_.currentTestType == 'quiz' ? _.videoBtnTpl() : ''}
 			<button class="test-header-button bookmarked-button" data-click="${this.componentName}:saveBookmark" data-question-id="${question['_id']}">
 				<svg>
 					<use xlink:href="#bookmark-transparent"></use>
@@ -242,6 +244,10 @@ export const view = {
 	},
 	taskItemTpl(task,color='80, 20, 208'){
 		const _ = this;
+		let clickTpl = `${_.componentName}:changeSection;${_.componentName}:setQuizInfo`;
+		if(task['status'] == 'finished'){
+			clickTpl = `${_.componentName}:viewStartResult;${_.componentName}:setQuizInfo`;
+		}
 		return `
 			<li 
 				class="practice-task-item" 
@@ -272,15 +278,14 @@ export const view = {
 					</span>
 					<button 
 						class="practice-task-item-button"
+						data-start
 						data-subject="${task.subject}"
 						data-status="${task['status']}"
 						data-num="${task.num}"
 						section = "quizDirections"
-						data-click="${_.componentName}:changeSection;${_.componentName}:setQuizInfo"
+						data-click="${clickTpl}"
 						style="background-color:rgb(${color});"
-					>
-						${task['status'] == 'completed' ? 'Review' : 'Start task'}
-					</button>
+					>${task['status'] == 'finished' ? 'Review' : 'Start task'}</button>
 				</div>
 			</li>
 		`;
@@ -742,15 +747,14 @@ export const view = {
 	async gridQuestion(){
 		const _ = this;
 		let currentQuestion = _.getCurrentQuestion(),
-			{ title, text, intro, content } = await _.getQuestionFields(currentQuestion),
+			{ title, text, intro, content,step,len } = await _.getQuestionFields(currentQuestion),
 		tpl =	`
 			<div class="test-header">
-				<h5 class="block-title test-title"><span>Question ${parseInt(_.questionPos)+1} of ${_.questionsLength}</span></h5>
+				<h5 class="block-title test-title"><span>Question ${step} of ${len}</span></h5>
 				${_.actionsTpl(currentQuestion)}
 			</div>
 			<div class="test-inner test-row">
-				<div class="test-col wide">
-					`;
+				<div class="test-col wide">`;
 		if(currentQuestion['questionImages']){
 			for(let fileLink of currentQuestion['questionImages']){
 				if(fileLink == 'No') continue;
@@ -1008,7 +1012,7 @@ export const view = {
 		const _ = this;
 		let
 			currentQuestion = _.getCurrentQuestion(),
-			{ text,intro,content } = await _.getQuestionFields(currentQuestion),
+			{ text,intro,content,step,len } = await _.getQuestionFields(currentQuestion),
 		tpl= `
 				<div class="test-row test-inner">
 					<div class="test-col">
@@ -1022,7 +1026,7 @@ export const view = {
 				<div class="test-col">
 					<div class="test-header">
 						<h5 class="block-title test-title">
-							<span>Question ${_.questionPos+1} of ${_.questionsLength}</span>
+							<span>Question ${step} of ${len}</span>
 						</h5>
 						${_.actionsTpl(currentQuestion)}
 					</div>
@@ -1044,17 +1048,16 @@ export const view = {
 	async passageQuestion(){
 		const _ = this;
 		/*<p class="test-text"><span>${question['title']}</span></p>*/
+		let { text,intro,content,step,len } = await _.getQuestionFields(_._$.currentQuestion);
 		let tpl= `
 			<div class="test-inner test-row">
 				<div class="test-col">
 					<div class="test-left">
-						<p class="test-left-text">${_._$.currentQuestion['questionDataId']}</p>
 						<p class="test-left-text">${_._$.currentQuestion['passageText']}</p>
 					</div>
 				</div>
 				<div class="test-col">
 					<div class="test-right">
-						<p class="test-text">${_._$.currentQuestion['questionDataId']}</p>
 		`;
 		let cnt = 0;
 		for(let question of _._$.currentQuestion['questions']){
@@ -1085,11 +1088,11 @@ export const view = {
 	async standartQuestion(){
 		const _ = this;
 		let currentQuestion = _.getCurrentQuestion(),
-			{ text,intro,content } = await _.getQuestionFields(currentQuestion),
+			{ text,intro,content,step,len } = await _.getQuestionFields(currentQuestion),
 		tpl = `
 			<div class="test-header">
 				<h5 class="block-title test-title ddss">
-					<span>Question ${ (_.currentTestType == 'quiz') ? _.getQuizStep(): _.getStep()} of ${Model.allQuestionsLength}</span>
+					<span>Question ${ step } of ${len}</span>
 				</h5>
 				${_.actionsTpl(currentQuestion)}
 			</div>
@@ -1177,6 +1180,85 @@ export const view = {
 					</div>
 				</div>
 			</div>
+		`;
+	},
+	quizSummary(summary){
+		const _ = this;
+		let tpl= `
+			<div class="test-inner">
+				<h5 class="block-title test-title"><span>Complete</span></h5>
+				<p class="test-text">Description text about rules at the real test - if there will be break or not etc.</p>
+				<div class="test-result">
+					<div class="test-result-block half violet">
+						<h6 class="test-result-title"><span>Questions Answered</span></h6>
+						<p class="test-result-score">${summary['answered']}</p>
+					</div>
+					<div class="test-result-block half turquoise">
+						<h6 class="test-result-title"><span>Questions Correct</span></h6>
+						<p class="test-result-score">${summary['correct']}</p>
+					</div>
+					<div class="test-result-block half gold">
+						<h6 class="test-result-title"><span>Stars for section of the Test</span></h6>
+						<p class="test-result-score">+${summary['stars']}</p>
+						<div class="test-result-img">
+							<svg>
+								<use xlink:href="#stars"></use>
+							</svg>
+							<svg>
+								<use xlink:href="#stars"></use>
+							</svg>
+							<svg>
+								<use xlink:href="#stars"></use>
+							</svg>
+						</div>
+					</div>
+					<div class="test-result-block blue half">
+						<h6 class="test-result-title"><span>Skill Mastered</span></h6>
+						<p class="test-result-score">${summary['skills']}</p>
+						<div class="test-result-img solo">
+							<svg>
+								<use xlink:href="#graphic-3"></use>
+							</svg>
+						</div>
+					</div>
+				</div>
+				 <div class="test-result-list-block">
+                  <h6 class="test-result-list-title"><span>List of skill levels:</span></h6>
+                  <ul class="test-result-list">
+`;
+		for(let skill of summary['skillList']){
+			tpl+=`<li class="test-result-list-item">
+                      <div class="test-result-list-img">
+                        <svg>
+                          <use xlink:href="#graphic-1"></use>
+                        </svg>
+                      </div><span>${skill}</span>
+            </li>`;
+		}
+                  `</ul>
+                </div>
+			</div>
+		`;
+		return tpl;
+	},
+	
+	videoBtnTpl(){
+		const _ = this;
+		return `
+			  <button class="test-header-button">
+                  <svg>
+                    <use xlink:href="#video-clip"></use>
+                  </svg>
+                  <svg>
+                    <use xlink:href="#video-clip"></use>
+                  </svg><span>Video</span>
+                </button>
+		`;
+	},
+	exitThisQuiz(){
+		const _ = this;
+		return `
+			<button class="section-button" data-click="${_.componentName}:changeSection" section="welcome">Exit this Quiz</button>
 		`;
 	}
 }
