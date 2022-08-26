@@ -353,14 +353,27 @@ export const view = {
 	},
 	questionFooter(){
 		const _ = this;
-		let pp = _.getNextStepCnt();
+		let
+			pos,
+			pp = _.getNextStepCnt(),
+			questionData = Model.currentQuestionData(_.questionPos+1);
+		if(questionData){
+			if(questionData['type'] == 'passage'){
+				if(pp[0] > pp[1]){
+					pp[0] = pp[1];
+				}
+				pos = `${pp[0]}-${pp[1]}`;
+			}else{
+				pos = `${pp[0]-1}`;
+			}
+		}
 		return `
 			<div class="test-footer">
 				<button class="test-footer-button dir-button" data-click="${this.componentName}:changeSection" section="directions">
 					<span>Directions</span>
 				</button>
 				<button class="button skip-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="next">
-					<span><em class="skip-to-question-title">Skip to questions</em> <b class="skip-to-question">${pp[0]}-${pp[1]}</b></span>
+					<span><em class="skip-to-question-title">Skip to questions</em> <b class="skip-to-question">${pos}</b></span>
 				</button>
 			</div>
 			`;
@@ -457,7 +470,7 @@ export const view = {
 			{ title, text, intro, content } = await _.getQuestionFields(currentQuestion),
 			tpl =	`
 			<div class="test-header">
-				<h5 class="block-title test-title"><span>Question ${_.questionPos+1} of ${_.questionsLength}</span></h5>
+				<h5 class="block-title test-title"><span>Question ${_.getStep()[0]-1} of ${_.questionsLength}</span></h5>
 				${_.actionsTpl(_._$.currentQuestion)}
 			</div>
 			<div class="test-inner ">
@@ -640,7 +653,7 @@ export const view = {
 			currentQuestion = _._$.currentQuestion['questions'][0],
 			tpl= `
 				<div class="test-header">
-					<h5 class="block-title test-title"><span>Question ${_.questionPos} of ${_.questionsLength}</span></h5>
+					<h5 class="block-title test-title"><span>Question ${_.getStep()[0]-1} of ${_.questionsLength}</span></h5>
 					${_.actionsTpl(currentQuestion)}
 				</div>
 				<div class="test-inner middle">
@@ -752,7 +765,7 @@ export const view = {
 				<div class="test-col">
 					<div class="test-header">
 						<h5 class="block-title test-title">
-							<span>Question ${_.questionPos+1} of ${_.questionsLength}</span>
+							<span>Question ${_.getStep()[0]-1} of ${_.questionsLength}</span>
 							<strong style="font-size:10px;margin-left: 15px">${_._$.currentQuestion['questionId']}</strong>
 						</h5>
 						${_.actionsTpl(currentQuestion)}
@@ -824,7 +837,7 @@ export const view = {
 			tpl = `
 			<div class="test-header">
 				<h5 class="block-title test-title ddss">
-					<span>Question ${_.getStep()} of ${Model.allQuestionsLength}</span>
+					<span>Question ${_.getStep('arr')[0]-1} of ${Model.allQuestionsLength}</span>
 					<strong style="font-size:10px;margin-left: 15px">${_._$.currentQuestion['questionId']}</strong>
 				</h5>
 				${_.actionsTpl(currentQuestion)}
