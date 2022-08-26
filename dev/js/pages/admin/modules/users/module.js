@@ -190,7 +190,7 @@ export class UsersModule extends AdminPage {
 		G_Bus.trigger('modaler','closeModal');
 		G_Bus.trigger(_.componentName,'showSuccessPopup','Student has been successfully added');
 		_._$.addingStep = 1;
-		let users = await Model.getUsers({role:_.subSection,page: 1,update: true});
+		let users = await Model.getUsers({role:'student',page: 1,update: true});
 		_.fillUserTable({usersData:users,selector:'#usersBody'});
 	}
 	// Create methods
@@ -909,7 +909,7 @@ export class UsersModule extends AdminPage {
 	}
 	showRemoveParentPopup({item}){
 		const _ = this;
-		_.parentInfo['parentId'] = item.getAttribute('data-id');
+		_.parentInfo['_id'] = item.getAttribute('data-id');
 		G_Bus.trigger('modaler','showModal', {item:item,type:'html',target:'#removeParentForm','closeBtn':'hide'});
 	}
 	showAddParentPopup({item}){
@@ -1219,7 +1219,16 @@ export class UsersModule extends AdminPage {
 	}
 	async assignCourse({item}) {
 		const _ = this;
-		let response = await Model.assignCourse(_.studentInfo);
+		let courseInfo = {
+			"studentId": _.studentInfo._id,
+			"course": _.studentInfo.course,
+			"level": _.studentInfo.level,
+			"testDate": _.studentInfo.testDate,
+			"firstSchool": _.studentInfo.firstSchool,
+			"secondSchool": _.studentInfo.secondSchool,
+			"thirdSchool": _.studentInfo.thirdSchool
+		};
+		let response = await Model.assignCourse(courseInfo);
 		if(!response)	return void 0;
 		_.studentInfo['currentPlan'] = response['currentPlan'];
 		let wizardData = await Model.getWizardData();
@@ -1292,9 +1301,9 @@ export class UsersModule extends AdminPage {
 	}
 	async removeParent({item}){
 		const _ = this;
-		let response = await Model.removeParent(_.parentInfo['parentId']);
+		let response = await Model.removeParent(_.parentInfo['_id']);
 		if (!response) return;
-		_.f(`TR[user-id="${_.parentInfo['parentId']}"]`).remove();
+		_.f(`TR[user-id="${_.parentInfo['_id']}"]`).remove();
 		G_Bus.trigger('modaler','closeModal')
 		_.showSuccessPopup('Parent profile deleted');
 	}
@@ -1482,6 +1491,7 @@ export class UsersModule extends AdminPage {
 		if (addingStep == 3 && _.parents) {
 			_.paginationFill({limit:_.parents.limit,total:_.parents.total,selector:'#assignParent'})
 		}
+		console.log(_.subSection)
 	}
 	async handleAssignSteps({assignStep}) {
 		const _ = this;

@@ -200,7 +200,7 @@ export class DashboardModule extends ParentPage{
 		let courseInfo = _.f('.student-profile-course-info');
 		_.clear(courseInfo);
 		await Model.removeCourse({
-			studentId:_.studentInfo['studentId'],
+			studentId:_.studentInfo['_id'],
 			planId:_.studentInfo.currentPlan['_id'],
 		});
 
@@ -253,7 +253,7 @@ export class DashboardModule extends ParentPage{
 	}
 	async removeUser({item}){
 		const _ = this;
-		let response = await Model.removeStudent(_.studentInfo['studentId']);
+		let response = await Model.removeStudent(_.studentInfo['_id']);
 		if (!response) return;
 
 		_.me['parent']['students'].find((student,index)=>{
@@ -618,7 +618,7 @@ export class DashboardModule extends ParentPage{
 	}
 	showRemoveUserPopup({item}){
 		const _ = this;
-		_.studentInfo['studentId'] = item.getAttribute('data-id');
+		_.studentInfo['_id'] = item.getAttribute('data-id');
 		G_Bus.trigger('modaler','showModal', {item:item,type:'html',target:'#removeUserForm','closeBtn':'hide'});
 	}
 	async saveChangePassword({item}){
