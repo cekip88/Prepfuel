@@ -157,7 +157,7 @@ export class UsersModule extends AdminPage {
 		let role = _.subSection;
 
 		if (_.subSection == 'profile') {
-			Model.assignStudentToParent(response._id,_.studentInfo.studentId);
+			Model.assignStudentToParent(response._id,_.studentInfo._id);
 			role = 'parent';
 		}
 
@@ -199,7 +199,7 @@ export class UsersModule extends AdminPage {
 	async updateStudent({item}){
 		const _ = this;
 		let response = await Model.updateStudent({
-			'studentId': _.studentInfo['studentId'],
+			'studentId': _.studentInfo['_id'],
 			'firstName': _.studentInfo['firstName'],
 			"lastName": _.studentInfo['lastName'],
 			"email": _.studentInfo['email'],
@@ -418,7 +418,7 @@ export class UsersModule extends AdminPage {
 			studentId = profileData['item'].getAttribute('data-id');
 			_.subSection = profileData['item'].getAttribute('section');
 		} else {
-			studentId = profileData['studentId'];
+			studentId = profileData['_id'];
 		}
 		let currentStudent = Model.studentsData.response.filter( student => student['_id'] == studentId )[0];
 		_.studentInfo = Object.assign({},currentStudent['user']);
@@ -739,12 +739,12 @@ export class UsersModule extends AdminPage {
 		}
 		if(pos == 0){
 			studentInner.classList.remove('short')
-			_.fillProfile({studentId:_.studentInfo['studentId']});
+			_.fillProfile({_id:_.studentInfo['_id']});
 		}
 		if(pos == 1){
 			studentInner.classList.remove('short')
 			studentInner.innerHTML = _.parentsInfo();
-			_.currentParent = await Model.getStudentParents( _.studentInfo['studentId'] );
+			_.currentParent = await Model.getStudentParents( _.studentInfo['_id'] );
 			if ( _.currentParent['response']['length'] ){
 				studentInner.querySelector( '.button-link.blue' ).textContent = 'Change parent';
 			}
@@ -899,7 +899,7 @@ export class UsersModule extends AdminPage {
 	}
 	showRemoveUserPopup({item}){
 		const _ = this;
-		_.studentInfo['studentId'] = item.getAttribute('data-id');
+		_.studentInfo['_id'] = item.getAttribute('data-id');
 		//_.metaInfo['sourse'] = '';
 		G_Bus.trigger('modaler','showModal', {item:item,type:'html',target:'#removeUserForm','closeBtn':'hide'});
 	}
@@ -1187,12 +1187,12 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		let parentId = item.getAttribute('data-id');
 
-		if ( _.subSection === 'profile' && _.studentInfo['studentId'] ){
+		if ( _.subSection === 'profile' && _.studentInfo['_id'] ){
 			let cont = _.f( '#add-parent .tbl' );
 			_.clear( cont );
 			cont.append( _.markup( `<img src="/img/loader.gif">` ));
 
-			await Model.assignStudentToParent( parentId,_.studentInfo['studentId'] );
+			await Model.assignStudentToParent( parentId,_.studentInfo['_id'] );
 			G_Bus.trigger('modaler','closeModal');
 			let sectionButton = _.f('g-body .section-button.active');
 
@@ -1229,7 +1229,7 @@ export class UsersModule extends AdminPage {
 	}
 	async assignFirstParent({item}) {
 		const _ = this;
-		let parentId,studentId = _.studentInfo['studentId'];
+		let parentId,studentId = _.studentInfo['_id'];
 		if(!_.metaInfo.parentAddType || ( _.metaInfo.parentAddType == 'adding')){
 			let parent = await Model.createParent(_.parentInfo);
 			parentId = parent['_id'];
@@ -1247,7 +1247,7 @@ export class UsersModule extends AdminPage {
 		let courseInfo = _.f('.student-profile-course-info');
 		_.clear(courseInfo);
 		await Model.removeCourse({
-			studentId:_.studentInfo['studentId'],
+			studentId:_.studentInfo['_id'],
 			planId:_.studentInfo.currentPlan['_id'],
 		});
 		courseInfo.innerHTML = _.emptyCourseInfo();
@@ -1262,7 +1262,7 @@ export class UsersModule extends AdminPage {
 	}
 	async removeUser({item}){
 		const _ = this;
-		let response = await Model.removeStudent(_.studentInfo['studentId'] ?? item.getAttribute('data-id'));
+		let response = await Model.removeStudent(_.studentInfo['_id'] ?? item.getAttribute('data-id'));
 		if (!response) return;
 		
 		if (_.subSection == 'profile') {
@@ -1270,7 +1270,7 @@ export class UsersModule extends AdminPage {
 			item.setAttribute('section','student');
 			G_Bus.trigger(_.componentName,'changeSection',{item})
 		} else {
-			_.f(`TR[user-id="${_.studentInfo['studentId'] ?? item.getAttribute('data-id')}"]`).remove();
+			_.f(`TR[user-id="${_.studentInfo['_id'] ?? item.getAttribute('data-id')}"]`).remove();
 		}
 		G_Bus.trigger('modaler','closeModal',{item})
 		_.showSuccessPopup('Student profile deleted')

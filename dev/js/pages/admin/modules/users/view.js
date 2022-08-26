@@ -2264,7 +2264,7 @@ export const view = {
 				<div class="breadcrumbs"></div>
 				<div class="block">
 					${_.sectionHeaderTpl({
-						title: 'Student Profile',
+						title: 'Student Personal Profile',
 						buttonsData:{
 							action:`data-click="${_.componentName}:changeProfileTab"`,
 							buttons:[
@@ -3200,7 +3200,7 @@ export const view = {
 				<div class="breadcrumbs"></div>
 				<div class="block">
 					${_.sectionHeaderTpl({
-						title: 'Admin Profile',
+						title: 'Admin Personal Profile',
 						buttonsData:{
 							action:`data-click="${_.componentName}:changeProfileTab"`,
 							buttons:[
