@@ -610,6 +610,7 @@ class _Model {
 			});
 			if(rawResponse.status < 210) {
 				let response = await rawResponse.json();
+				console.log(updateData,response)
 				if(response['status'] == 'success') {
 					resolve(response['response']);
 				} else {

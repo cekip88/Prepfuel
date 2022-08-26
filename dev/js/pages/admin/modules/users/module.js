@@ -129,7 +129,9 @@ export class UsersModule extends AdminPage {
 			_.fillBodyParentsTable({usersData:tableData});
 		}
 		if( _.subSection === 'parentProfile'){
-			if (!_.isEmpty(_.parentInfo) && !data.item.hasAttribute('data-id')) data.item.setAttribute('data-id',_.parentInfo['_id'])
+			if (!_.isEmpty(_.parentInfo) && !data.item.hasAttribute('data-id')) {
+				data.item.setAttribute('data-id',_.parentInfo['_id'])
+			}
 			_.fillParentProfile(data);
 		}
 		if( _.subSection === 'admin'){
@@ -249,8 +251,9 @@ export class UsersModule extends AdminPage {
 	}
 	async updateParent({item}){
 		const _ = this;
+		console.log(_.parentInfo)
 		let response = await Model.updateParent({
-			'_id': _.parentInfo['outerId'] ?? _.parentInfo['_id'],
+			'_id': _.parentInfo['_id'],
 			'firstName': _.parentInfo['firstName'],
 			"lastName": _.parentInfo['lastName'],
 			"email": _.parentInfo['email'],
@@ -269,10 +272,10 @@ export class UsersModule extends AdminPage {
 		let
 			form = item.closest('.passwords'),
 			inputs = form.querySelectorAll('G-INPUT[type="password"]'),
-			role = form.getAttribute('data-role') ?? 'student';
+			role = form.getAttribute('role') ?? 'student';
 
 		let passwords = {
-			'_id': _[`${role}Info`].outerId ?? _[`${role}Info`]._id
+			'_id': _[`${role}Info`].userId
 		};
 
 		for (let input of inputs) {
@@ -315,23 +318,17 @@ export class UsersModule extends AdminPage {
 	}
 	inputCourseData({item}){
 		const _ = this;
-		let courseId = _.studentInfo['currentPlan'] ? _.studentInfo['currentPlan']['_id'] : '';
+		_.fillStudentInfo({item});
+		let courseId = _.studentInfo['currentPlan']['_id'];
 		if (!_.courseData) _.courseData = {};
-		if (courseId && !_.courseData[courseId]) {
-			_.courseData[courseId] = {
-				'_id': courseId,
-				'studentId':_.studentInfo['_id'],
-				'firstSchool': _.studentInfo['currentPlan']['firstSchool'] ? _.studentInfo['currentPlan']['firstSchool']['_id'] : '',
-				'secondSchool': _.studentInfo['currentPlan']['secondSchool'] ? _.studentInfo['currentPlan']['secondSchool']['_id'] : '',
-				'thirdSchool': _.studentInfo['currentPlan']['thirdSchool'] ? _.studentInfo['currentPlan']['thirdSchool']['_id'] : '',
-				'testDate': _.studentInfo['currentPlan']['testDate'] ?? ''
-			}
+		_.courseData[courseId] = {
+			'_id': courseId,
+			'studentId':_.studentInfo['_id'],
+			'firstSchool': _.studentInfo['firstSchool'],
+			'secondSchool': _.studentInfo['secondSchool'],
+			'thirdSchool': _.studentInfo['thirdSchool'],
+			'testDate': _.studentInfo['testDate'] ?? ''
 		}
-
-		let
-			prop = item.getAttribute('name'),
-			value = item.value;
-		_.courseData[courseId][prop] = value;
 	}
 	fillAdminInfo({item}){
 		const _ = this;
@@ -429,7 +426,8 @@ export class UsersModule extends AdminPage {
 		_.studentInfo['currentSchool'] = currentStudent['currentSchool'] ?? '';
 		_.studentInfo['currentPlan'] = currentStudent['currentPlan'];
 		_.studentInfo['grade'] = currentStudent['grade'] ? currentStudent['grade']['_id'] : '';
-		_.studentInfo['studentId'] = currentStudent['_id'];
+		_.studentInfo['userId'] = _.studentInfo['_id'];
+		_.studentInfo['_id'] = currentStudent['_id'];
 		
 		_.f('.student-profile-inner').innerHTML = _.personalInfo();
 		_._$.addingStep = 1;
@@ -453,7 +451,7 @@ export class UsersModule extends AdminPage {
 		}
 		let currentAdmin = Model.adminsData.response.filter( admin => admin['_id'] == adminId )[0];
 		_.adminInfo = Object.assign({},currentAdmin['user']);
-		_.adminInfo['outerId'] = _.adminInfo['_id'];
+		_.adminInfo['userId'] = _.adminInfo['_id'];
 		_.adminInfo['_id'] = currentAdmin['_id'];
 
 		_.f('.admin-profile-inner').innerHTML = _.adminProfileInner();
@@ -468,8 +466,10 @@ export class UsersModule extends AdminPage {
 		} else {
 			parentId = profileData['_id'];
 		}
+
 		let currentParent = await Model.getParent(parentId);
 		_.parentInfo = currentParent['user'];
+		_.parentInfo['userId'] = _.parentInfo['_id'];
 		_.parentInfo['_id'] = currentParent['_id'];
 		_.parentInfo['phone'] = currentParent['phone'];
 
@@ -949,10 +949,10 @@ export class UsersModule extends AdminPage {
 	}
 	showChangePassword({item}){
 		const _ = this;
-		let role = item.getAttribute('data-role');
+		let role = item.getAttribute('role');
 		if (role) {
 			let targetForm = _.f('#changePassword');
-			targetForm.setAttribute('data-role',role);
+			targetForm.setAttribute('role',role);
 		}
 		G_Bus.trigger('modaler','showModal',{target:'#changePassword'})
 	}

@@ -28,9 +28,11 @@ export default class GSelect extends GComponent {
 	open(){
 		const _ = this;
 		if(!_.opened && !_.isDisabled()){
+			let cont = _.closest('.selects-cont');
 			_.setProperty('--body-max-height','280px');
 			_.opened = true;
 			_.shadow.querySelector('.g-select').classList.add('active');
+			if (cont) _.chooseOptionsToShow(cont);
 		}else{
 			_.close();
 		}
@@ -70,6 +72,42 @@ export default class GSelect extends GComponent {
 			}
 		});
 	}
+
+	chooseOptionsToShow(cont){
+		const _ = this;
+		let selects = cont.querySelectorAll('g-select');
+		let exceptions = [];
+		selects.forEach(function (item){
+			if (item === _) {
+				return;
+			}
+			exceptions.push(...item.value);
+		})
+		let options = _.shadow.querySelectorAll('.g-select-option');
+		options.forEach(function (opt){
+			if (exceptions.indexOf(opt.value) >= 0) opt.style = 'display:none';
+			else opt.removeAttribute('style');
+		})
+	}
+	hideOption({value,text}){
+		const _ = this;
+		let opt = _.shadow.querySelectorAll(`.g-select-option[${value ? 'value="' + value + '"' : ''}]`);
+		opt.forEach(function (option){
+			if (text && text == option.textContent || !text) {
+				option.style = 'display:none';
+			}
+		})
+	}
+	showOption({value,text}){
+		const _ = this;
+		let opt = _.shadow.querySelectorAll(`.g-select-option[${value ? 'value="' + value + '"' : ''}]`);
+		opt.forEach(function (option){
+			if (text && text == option.textContent || !text) {
+				option.removeAttribute('style');
+			}
+		})
+	}
+
 
 	doValidate(msg){
 		const _ = this;
@@ -405,7 +443,10 @@ export default class GSelect extends GComponent {
 		_.fillAttributes();
 		_.trigger('appended');
 		if (_.isDisabled()) {
-			_.style = 'opacity:50%;'
+			if (!_.classList.contains('head-select')) _.style = 'opacity:50%;';
+			else {
+				_.shadow.querySelector('.with-arrow').classList.remove('with-arrow');
+			}
 		}
 	}
 	

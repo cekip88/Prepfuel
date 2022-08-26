@@ -170,7 +170,8 @@ export class DashboardModule extends ParentPage{
 		_.studentInfo['currentSchool'] = _.currentStudent['currentSchool'] ?? '';
 		_.studentInfo['currentPlan'] = _.currentStudent['currentPlan'];
 		_.studentInfo['grade'] = _.currentStudent['grade'] ? _.currentStudent['grade']['_id'] : null;
-		_.studentInfo['studentId'] = _.currentStudent['_id'];
+		_.studentInfo['userId'] = _.studentInfo['_id'];
+		_.studentInfo['_id'] = _.currentStudent['_id'];
 
 		_.body.append( _.markup( _.personalInfo()));
 		if (!_.isEmpty(_.currentStudent['currentPlan'])){
@@ -249,28 +250,6 @@ export class DashboardModule extends ParentPage{
 			})
 		}
 		_.updateMe();
-	}
-	inputCourseData({item}){
-		const _ = this;
-		if (!_.courseData) _.courseData = {};
-
-		let curPlanId = _.currentStudent['currentPlan']['_id'];
-		if (!_.courseData[curPlanId]) _.courseData[curPlanId] = {
-			_id: curPlanId,
-			studentId:_.currentStudent['_id']
-		};
-
-		let
-			fstSchool = _.currentStudent['currentPlan']['firstSchool'],
-			sndSchool = _.currentStudent['currentPlan']['secondSchool'],
-			trdSchool = _.currentStudent['currentPlan']['thirdSchool'],
-			testDate = _.currentStudent['currentPlan']['testDate'];
-		if (fstSchool) _.courseData[curPlanId]['firstSchool'] = fstSchool['_id'] ?? fstSchool;
-		if (sndSchool) _.courseData[curPlanId]['secondSchool'] = sndSchool['_id'] ?? sndSchool;
-		if (trdSchool) _.courseData[curPlanId]['thirdSchool'] = trdSchool ?? trdSchool;
-		if (testDate) _.courseData[curPlanId]['testDate'] = testDate;
-
-		_.courseData[curPlanId][item.getAttribute('name')] = item.value;
 	}
 	async removeUser({item}){
 		const _ = this;
@@ -542,7 +521,26 @@ export class DashboardModule extends ParentPage{
 		} else {
 			item.setMarker('red')
 		}
-		_.studentInfo[item.getAttribute('name')] = item.value;
+		let value = item.value;
+		let name = item.getAttribute('name');
+		if( typeof value == 'object'){
+			value = value + '';
+		}
+		_.studentInfo[name] = value;
+	}
+	inputCourseData({item}){
+		const _ = this;
+		_.fillStudentInfo({item});
+		let courseId = _.studentInfo['currentPlan']['_id'];
+		if (!_.courseData) _.courseData = {};
+		_.courseData[courseId] = {
+			'_id': courseId,
+			'studentId':_.studentInfo['_id'],
+			'firstSchool': _.studentInfo['firstSchool'],
+			'secondSchool': _.studentInfo['secondSchool'],
+			'thirdSchool': _.studentInfo['thirdSchool'],
+			'testDate': _.studentInfo['testDate'] ?? ''
+		}
 	}
 	fillAddingStudent(){
 		const _ = this;
@@ -592,7 +590,7 @@ export class DashboardModule extends ParentPage{
 	async updateStudent({item}){
 		const _ = this;
 		let response = await Model.updateStudent({
-			'studentId': _.studentInfo['studentId'],
+			'_id': _.studentInfo['_id'],
 			'firstName': _.studentInfo['firstName'],
 			"lastName": _.studentInfo['lastName'],
 			"email": _.studentInfo['email'],
@@ -628,10 +626,11 @@ export class DashboardModule extends ParentPage{
 		let
 			form = item.closest('.passwords'),
 			inputs = form.querySelectorAll('G-INPUT[type="password"]'),
-			role = form.getAttribute('data-role') ?? 'student';
+			role = form.getAttribute('role') ?? 'student';
 
+		console.log(_[`${role}Info`])
 		let passwords = {
-			'_id': _[`${role}Info`].outerId ?? _[`${role}Info`]._id
+			'_id': _[`${role}Info`].userId
 		};
 
 		for (let input of inputs) {

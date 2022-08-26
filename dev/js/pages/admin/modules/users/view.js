@@ -463,7 +463,7 @@ export const view = {
 			secondItems = _.createSelectItems(choiceData.schools,"value:_id;text:school",activeSecond),
 			thirdItems = _.createSelectItems(choiceData.schools,"value:_id;text:school",activeThird);
 		return `
-			<div class="adding-section">
+			<div class="adding-section selects-cont">
 					<h4 class="adding-subtitle withmar">${title}</h4>
 					<div class="adding-inpt">
 						<div class="form-label-row">
@@ -472,6 +472,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="firstSchool" 
+							together="applyingSchool"
 							data-change="${_.componentName}:${_.subSection === 'profile' && _.studentInfo.currentPlan ? 'inputCourseData' : 'fillStudentInfo'}" 
 							data-required
 							classname="adding-select" 
@@ -486,6 +487,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="secondSchool" 
+							together="applyingSchool"
 							data-required
 							data-change="${_.componentName}:${_.subSection == 'profile' && _.studentInfo.currentPlan ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
@@ -500,6 +502,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="thirdSchool" 
+							together="applyingSchool"
 							data-required
 							data-change="${_.componentName}:${_.subSection == 'profile' && _.studentInfo.currentPlan ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
@@ -2714,7 +2717,7 @@ export const view = {
 							<svg><use xlink:href="#mail"></use></svg>
 							<span>Send Link To Reset Password</span>
 						</button>
-						<button class="admin-profile-password-button" data-role="parent" data-click="${_.componentName}:showChangePassword">
+						<button class="admin-profile-password-button" role="parent" data-click="${_.componentName}:showChangePassword">
 							<svg><use xlink:href="#edit-transparent"></use></svg>
 							<span>Change Manually</span>
 						</button>
@@ -3276,7 +3279,7 @@ export const view = {
 							<svg><use xlink:href="#mail"></use></svg>
 							<span>Send Link To Reset Password</span>
 						</button>
-						<button class="admin-profile-password-button" data-role="admin" data-click="${_.componentName}:showChangePassword">
+						<button class="admin-profile-password-button" role="admin" data-click="${_.componentName}:showChangePassword">
 							<svg><use xlink:href="#edit-transparent"></use></svg>
 							<span>Change Manually</span>
 						</button>

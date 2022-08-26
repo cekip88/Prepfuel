@@ -63,7 +63,7 @@ export class _Model{
 	updateStudent(studentData) {
 		const _ = this;
 		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.getEndpoint('updateStudent')}/${studentData['studentId']}`, {
+			let rawResponse = await fetch(`${_.getEndpoint('updateStudent')}/${studentData['_id']}`, {
 				method: 'PUT',
 				headers: _.baseHeaders,
 				body: JSON.stringify(studentData)

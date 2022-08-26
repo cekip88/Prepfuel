@@ -717,7 +717,7 @@ export const view = {
 			secondItems = _.createSelectItems(choiceData['schools'],"value:_id;text:school",activeSecond ?? ''),
 			thirdItems = _.createSelectItems(choiceData['schools'],"value:_id;text:school",activeThird ?? '');
 		return `
-			<div class="adding-section">
+			<div class="adding-section selects-cont">
 					<h4 class="adding-subtitle withmar">${title}</h4>
 					<div class="adding-inpt">
 						<div class="form-label-row">
@@ -726,6 +726,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="firstSchool"
+							together="applyingSchool"
 							data-required
 							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
@@ -741,6 +742,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="secondSchool"
+							together="applyingSchool"
 							data-required
 							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
@@ -755,6 +757,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="thirdSchool" 
+							together="applyingSchool"
 							data-required
 							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 

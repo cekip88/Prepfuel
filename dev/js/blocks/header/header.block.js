@@ -69,10 +69,11 @@ class HeaderBlock extends G{
 				}
 				coursesArr.push(data);
 			}
-			if (coursesArr.length > 1) {
+			if (coursesArr.length) {
 				tpl += `
 					<div class="head-select-block"><span>Course</span>
 						<g-select 
+							${coursesArr.length === 1 ? 'disabled' : ''}
 							class="g-select select head-select" 
 							classname="head-select" 
 							items='${JSON.stringify(coursesArr)}'
