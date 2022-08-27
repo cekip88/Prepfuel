@@ -178,7 +178,7 @@ export class TestsModule extends StudentPage{
 	//	_._$.currentSection = section;
 		await _.render();
 		if(section == 'directions') {
-			_.f('#directionsQuestion').textContent = _.questionPos+1;
+			_.f('#directionsQuestion').textContent = _.getStep()[0]//_.questionPos+1;
 			_.tickTimer();
 		}
 		if(section == 'questions'){
@@ -695,6 +695,11 @@ export class TestsModule extends StudentPage{
 
 	addBackToQuestionBtn(pos){
 		const _ = this;
+		let questionData = Model.currentQuestionData(_.questionPos-1);
+		let questPos = `${pos[0]}-${pos[1]}`;
+		if(questionData['type'] != 'passage'){
+			questPos = pos[0]-1;
+		}
 		if(pos == -1){
 			_.f('.test-footer .dir-button').after(
 				_.markup(`
@@ -706,7 +711,7 @@ export class TestsModule extends StudentPage{
 			_.f('.test-footer .dir-button').after(
 				_.markup(`
 					<button class="test-footer-back back-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="prev">
-						<span>Back to questions ${pos[0]} - ${pos[1]}</span>
+						<span>Back to questions ${questPos}</span>
 					</button>`
 				)
 			)
@@ -800,12 +805,10 @@ export class TestsModule extends StudentPage{
 	getQuestionNum(pos){
 		let cnt = 0,cntFirst=1,cntLen=0;
 		for(let i = 0; i <= pos;i++){
-			
 			if(Model.questions[i]){
 				if(Model.questions[i]['questions']){
 					cnt+=Model.questions[i]['questions'].length;
 					if(i == pos){
-
 						cntLen = Model.questions[i]['questions'].length;
 					}
 				}else{
@@ -815,12 +818,14 @@ export class TestsModule extends StudentPage{
 		}
 		//if(cntFirst < 1){ cntFirst =0;}
 		cntFirst = (cnt+1) - cntLen;
+	
 		return [cntFirst,cnt];
 	}
 	getStep(){
 		const _ = this;
 		let pos = _.getStepPos();
-		return _.getQuestionNum(pos)+1;
+		let cnt =  _.getQuestionNum(pos);
+		return cnt;
 	}
 	getPrevStepCnt(){
 		const _ = this;
@@ -910,8 +915,18 @@ export class TestsModule extends StudentPage{
 			_.isLastQuestion = false;
 			_.setActions(['bookmark','note']);
 			if( _.questionPos < _.questionsLength ){
-				let pp = _.getNextStepCnt();
-				_.f('.skip-to-question').textContent = `${pp[0]}-${pp[1]}`;
+				let
+					pp = _.getNextStepCnt(),
+					questionData = Model.currentQuestionData(_.questionPos+1);
+				if(questionData['type'] == 'passage'){
+					if(pp[0] > pp[1]){
+						pp[0] = pp[1];
+					}
+					_.f('.skip-to-question').textContent = `${pp[0]}-${pp[1]}`;
+				}else{
+					_.f('.skip-to-question').textContent = `${pp[0]-1}`;
+				}
+				
 			}
 		
 			if( _.questionPos == _.questionsLength - 1 ){
