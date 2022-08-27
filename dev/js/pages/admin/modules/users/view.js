@@ -37,25 +37,40 @@ export const view = {
 		}
 		return trs;
 	},
-	usersBodyRowTpl(plan,rowData,user){
+	usersPlansTpl(plan){
 		const _ = this;
-		let course = plan && plan['course'] ? plan['course'].title + ' ' + plan['level']['title'].split(' ')[0] : '';
+		console.log('usersPlansTpl')
+		let course = plan['course'].title + ' ',courseCls;
+		if (plan && plan['course']) {
+			if (plan['level']['title'].split(' ')[2]){
+				course += plan['level']['title'].split(' ')[0][0];
+			} else {
+				course += plan['level']['title'].split(' ')[0];
+			}
+			courseCls = plan['course'].title + '-' + plan['level']['title'].split(' ')[0];
+		}
+		return {course,courseCls};
+	},
+	usersBodyRowTpl(plan,rowData,user){
+		console.log('usersBodyRowTpl')
+		const _ = this;
+		let coursesData = _.usersPlansTpl(plan);
 		let avatar = rowData.avatar ? rowData.avatar.avatar.split('.')[0] : '';
 		let tpl = `
-				<td>
-					<div class="tbl-item">
-						<div class="users-photo-icon">
-							${avatar ? '<img src="/img/' + avatar + '.svg" alt="' + avatar + '">' : ''}
-						</div>
-						<div class="users-info">
-							<h6 class="users-info-name">${rowData.firstName} ${rowData.lastName}</h6>
-							<span class="users-info-email">${rowData.email}</span>
-						</div>
+			<td>
+				<div class="tbl-item">
+					<div class="users-photo-icon">
+						${avatar ? '<img src="/img/' + avatar + '.svg" alt="' + avatar + '">' : ''}
 					</div>
-				</td>
-				<td>
-					<div class="tbl-item">
-						<div class="users-course ${course ? plan['course'].title + '-' + plan.level.title.split(' ')[0] : ''}">${course}</div>
+					<div class="users-info">
+						<h6 class="users-info-name">${rowData.firstName} ${rowData.lastName}</h6>
+						<span class="users-info-email">${rowData.email}</span>
+					</div>
+				</div>
+			</td>
+			<td>
+				<div class="tbl-item">
+						<div class="users-course ${coursesData.courseCls}">${coursesData.course}</div>
 				</div>
 			</td>
 			<td>
@@ -82,8 +97,9 @@ export const view = {
 		return tpl;
 	},
 	studentsBodyRowTpl(plan,rowData,user){
+		console.log('studentsBodyRowTpl')
 		const _ = this;
-		let course = plan && plan['course'] ? plan['course'].title + ' ' + plan['level']['title'] : '';
+		let coursesData = _.usersPlansTpl(plan);
 		let avatar = rowData.avatar ? rowData.avatar.avatar.split('.')[0] : '';
 		let tpl = `
 			<td>
@@ -99,7 +115,7 @@ export const view = {
 			</td>
 			<td>
 				<div class="tbl-item">
-					<div class="users-course brown">${course}</div>
+					<div class="users-course ${coursesData.courseCls}">${coursesData.course}</div>
 			</div>
 		</td>
 			<td>
@@ -117,7 +133,7 @@ export const view = {
 				<div class="block">
 					<div class="block-header">
 						<h2 class="block-title">Students (<span class="users-count gusers-count"><img src='/img/loader.gif' class='loader'></span>)</h2>
-						<div class="filter"><img src="/img/loader.gif" alt=""></div>
+						<div class="filter" role="student"><img src="/img/loader.gif" alt=""></div>
 						<button class="block-header-item button-blue" data-click="${_.componentName}:addStudent"><span>Add Student</span>
 							<svg class="button-icon large">
 								<use xlink:href="#plus2"></use>
@@ -129,15 +145,15 @@ export const view = {
 						<div class="tbl-head">
 							<div class="tbl-item"><span>USER Name</span>
 								<div class="tbl-sort-btns">
-									<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-									<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+									<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" role="student"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+									<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" role="student"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 								</div> 
 							</div>
 							<div class="tbl-item">Courses</div>
 							<div class="tbl-item"><span>date Registered</span>
 								<div class="tbl-sort-btns">
-									<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-									<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+									<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" value="createdAt_asc" role="student"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+									<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" value="createdAt_desc" role="student"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 								</div>
 							</div>
 							<div class="tbl-item right">Action</div>
@@ -150,8 +166,8 @@ export const view = {
 											<div class="tbl-item">
 												<span>USER Name</span>
 												<div class="tbl-sort-btns">
-													<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-													<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+													<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" role="student"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+													<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" role="student"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 												</div> 
 											</div>
 										</th>
@@ -160,8 +176,8 @@ export const view = {
 											<div class="tbl-item">
 												<span>date Registered</span>
 												<div class="tbl-sort-btns">
-													<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-													<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+													<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" value="createdAt_asc" role="student"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+													<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" value="createdAt_desc" role="student"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 												</div> 
 											</div>
 										</th>
@@ -450,7 +466,7 @@ export const view = {
 				</div>
 		`;
 	},
-	
+
 	choiceSelectStudent(choiceData,title='School you are interested in applying to'){
 		const _ = this;
 		let activeFirst,activeSecond,activeThird;
@@ -809,7 +825,7 @@ export const view = {
 		`;
 		return tpl;
 	},
-	
+
 	// Adding steps
 	addingStepOne(stepData){
 		const _ = this;
@@ -1225,12 +1241,13 @@ export const view = {
 		`;
 	},
 	// Adding steps end
-	
+
 	skipParentTpl(){
 		return `<h2 class="parent-skip">You can assign or add parent later</h2>`
 	},
 	assignParentTpl(asked = false){
 		const _ = this;
+		console.log('assignParentTpl')
 		let
 			count = asked ? _.parents.total : null,
 			limit = asked ? _.parents.limit : null;
@@ -1247,21 +1264,21 @@ export const view = {
 						<div class="tbl-item"> 
 							<span>USER Name</span>
 							<div class="tbl-sort-btns">
-								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" role="addingParent"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" role="addingParent"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 							</div>
 						</div>
 						<div class="tbl-item">
 							<span>Students</span>
 							<div class="tbl-sort-btns">
-								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" value="students_asc" role="addingParent"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" value="students_desc" role="addingParent"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 							</div>
 						</div>
 						<div class="tbl-item right"><span>date Registered</span>
 							<div class="tbl-sort-btns">
-								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" value="createdAt_asc" role="addingParent"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" value="createdAt_desc" role="addingParent"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 							</div>
 						</div>
 						<div class="tbl-item right">Action</div>
@@ -1274,8 +1291,8 @@ export const view = {
 										<div class="tbl-item">
 											<span>USER Name</span>
 											<div class="tbl-sort-btns">
-												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" role="addingParent"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" role="addingParent"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 											</div> 
 										</div>
 									</th>
@@ -1283,8 +1300,8 @@ export const view = {
 										<div class="tbl-item">
 											<span>Students</span>
 											<div class="tbl-sort-btns">
-												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" value="students_asc" role="addingParent"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" value="students_desc" role="addingParent"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 											</div> 
 										</div>
 									</th>
@@ -1292,8 +1309,8 @@ export const view = {
 										<div class="tbl-item right">
 											<span>date Registered</span>
 											<div class="tbl-sort-btns">
-												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" value="createdAt_asc" role="addingParent"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" value="createdAt_desc" role="addingParent"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 											</div> 
 										</div>
 									</th>
@@ -1335,6 +1352,7 @@ export const view = {
 		return trs;
 	},
 	parentsBodyRowTpl(rowData){
+		console.log('parentsBodyRowTpl')
 		const _ = this;
 		let tpl = `
 			<td>
@@ -1388,6 +1406,7 @@ export const view = {
 		return tpl;
 	},
 	parentsSingleBodyRowTpl(rowData){
+		console.log('parentsSingleBodyRowTpl')
 		const _ = this;
 		let tpl = `
 			<td>
@@ -1432,7 +1451,12 @@ export const view = {
 							<use xlink:href="#write"></use>
 						</svg>
 					</button>-->
-					<button class="users-btn button" data-click="${_.componentName}:showRemoveParentPopup" data-id="${rowData._id}">
+					<button 
+						class="users-btn button" 
+						${rowData.students && rowData.students.length ? 'disabled' : ''} 
+						data-click="${_.componentName}:showRemoveParentPopup" 
+						data-id="${rowData._id}"
+					>
 						<svg class="button-icon">
 							<use xlink:href="#trash"></use>
 						</svg>
@@ -1670,7 +1694,7 @@ export const view = {
 			<button class="student-profile-remove" data-click="${_.componentName}:showRemovePopup">Remove This Course</button>
 		`;
 	},
-	
+
 	notifications(notifications,{title,types,subtitle}){
 		const _ = this;
 		let tpl = `
@@ -1744,6 +1768,7 @@ export const view = {
 		return tpl;
 	},
 	activityHistory(){
+		console.log('activityHistory')
 		const _ = this;
 		let tpl = `
 			<div class="activity-header-list">${_.activityHistoryHeaderTpl(_.activityHeaderData)}</div>
@@ -1819,27 +1844,29 @@ export const view = {
 		return tpl;
 	},
 	activityTableTpl(){
+		console.log('activityTableTpl')
+		const _ = this;
 		return `
 			<div class="tbl">
 				<div class="tbl-head">
 					<div class="tbl-item"><span>Course</span>
 						<div class="tbl-sort-btns">
-							<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-							<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 						</div> 
 					</div>
 					<div class="tbl-item"><span>Date</span>
 						<div class="tbl-sort-btns">
-							<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-							<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 						</div>
 					</div>
 					<div class="tbl-item">Time in</div>
 					<div class="tbl-item">time out</div>
 					<div class="tbl-item"><span>session duration</span>
 						<div class="tbl-sort-btns">
-							<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-							<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 						</div>
 					</div>
 					<div class="tbl-item right">Action</div>
@@ -1852,16 +1879,16 @@ export const view = {
 									<div class="tbl-item">
 										<span>Course</span>
 										<div class="tbl-sort-btns">
-											<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-											<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 										</div> 
 									</div>
 								</th>
 								<th>
 									<div class="tbl-item "><span>Date</span>
 										<div class="tbl-sort-btns">
-											<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-											<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 										</div>
 									</div>
 								</th>
@@ -1870,8 +1897,8 @@ export const view = {
 								<th>
 									<div class="tbl-item"><span>session duration</span>
 										<div class="tbl-sort-btns">
-											<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-											<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 										</div>
 									</div>
 								</th>
@@ -1892,6 +1919,7 @@ export const view = {
 		return tpl;
 	},
 	parentsInfoRow(rowData){
+		console.log("parentsInfoRow")
 		const _ = this;
 		let tpl = `
 			<td>
@@ -1915,21 +1943,21 @@ export const view = {
 					<button 
 						class="users-btn button profile" 
 						data-click="UsersModule:showPopupParentProfile" 
-						data-id="${rowData.user._id}"
+						data-id="${rowData._id}"
 					>Profile</button>
-					<button
+					<!--<button
 						class="users-btn button-blue profile"
 						data-id="${rowData['_id']}"
 						data-click=${_.componentName}:deleteParent
 					>
 						<svg class="button-icon"><use xlink:href="#close"></use></svg>
-					</button>
+					</button>-->
 				</div>
 			</td>
 		`
 		return tpl;
 	},
-	
+
 	addParentPopup(){
 		const _ = this;
 		return `
@@ -1966,7 +1994,7 @@ export const view = {
 			</div>
 		`;
 	},
-	
+
 	headerParentAddingFromProfile(){
 		const _ = this;
 		return `
@@ -1996,6 +2024,7 @@ export const view = {
 		return tpl;
 	},
 	assignedParent(parentInfo){
+		console.log('assignedParent')
 		const _ = this;
 		let studentsTpl = ``,students = parentInfo.students;
 		if (students.length) {
@@ -2017,24 +2046,24 @@ export const view = {
 				<div class="tbl-head">
 						<div class="tbl-item">
 							<span>USER Name</span>
-							<div class="tbl-sort-btns">
-								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-							</div>
+							<!--<div class="tbl-sort-btns">
+								<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							</div>-->
 						</div>
 						<div class="tbl-item">
 							<span>Students</span>
-							<div class="tbl-sort-btns">
-								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-							</div>
+							<!--<div class="tbl-sort-btns">
+								<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							</div>-->
 						</div>
-						<div class="tbl-item right">
+						<div class="tbl-item">
 						<span>Date Registered</span>
-							<div class="tbl-sort-btns">
-								<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-								<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-							</div>
+							<!--<div class="tbl-sort-btns">
+								<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+								<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							</div>-->
 						</div>
 						<div class="tbl-item right">Action</div>
 					</div>
@@ -2045,28 +2074,28 @@ export const view = {
 									<th>
 										<div class="tbl-item">
 											<span>USER Name</span>
-											<div class="tbl-sort-btns">
-												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-											</div>
+											<!--<div class="tbl-sort-btns">
+												<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											</div>-->
 										</div>
 									</th>
 									<th>
 										<div class="tbl-item">
 											<span>Students</span>
-											<div class="tbl-sort-btns">
-												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-											</div>
+											<!--<div class="tbl-sort-btns">
+												<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											</div>-->
 										</div>
 									</th>
 									<th>
-										<div class="tbl-item right">
+										<div class="tbl-item">
 											<span>date Registered</span>
-											<div class="tbl-sort-btns">
-												<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-												<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-											</div>
+											<!--<div class="tbl-sort-btns">
+												<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+												<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											</div>-->
 										</div>
 									</th>
 									<th><div class="tbl-item right">Action</div></th>
@@ -2086,10 +2115,12 @@ export const view = {
 										</div>
 									</td>
 									<td>
-									 ${studentsTpl}
+										<div class="tbl-item notDF">
+											${studentsTpl}
+										</div>
 									</td>
 									<td>
-										<div class="tbl-item right">
+										<div class="tbl-item">
 											<div class="users-date">${_.createdAtFormat(parentInfo.createdAt)}</div>
 										</div>
 									</td>
@@ -2112,21 +2143,22 @@ export const view = {
 		return tpl;
 	},
 	parentsInfo(){
+		console.log('parentsInfo')
 		const _ = this;
 		return `
 			<div class="tbl">
 				<div class="tbl-head">
 					<div class="tbl-item"><span>USER Name</span>
-						<div class="tbl-sort-btns">
-							<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-							<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-						</div>
+						<!--<div class="tbl-sort-btns">
+							<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+						</div>-->
 					</div>
 					<div class="tbl-item right"><span>Date Registered</span>
-						<div class="tbl-sort-btns">
-							<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-							<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-						</div>
+						<!--<div class="tbl-sort-btns">
+							<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+						</div>-->
 					</div>
 					<div class="tbl-item right">Action</div>
 				</div>
@@ -2137,19 +2169,19 @@ export const view = {
 								<th>
 									<div class="tbl-item">
 										<span>USER Name</span>
-										<div class="tbl-sort-btns">
-											<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-											<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-										</div>
+										<!--<div class="tbl-sort-btns">
+											<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+										</div>-->
 									</div>
 								</th>
 								<th>
 									<div class="tbl-item right">
 										<span>date Registered</span>
-										<div class="tbl-sort-btns">
-											<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-											<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-										</div>
+										<!--<div class="tbl-sort-btns">
+											<button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+										</div>-->
 									</div>
 								</th>
 								<th><div class="tbl-item right">Action</div></th>
@@ -2167,7 +2199,7 @@ export const view = {
 			</div>
 		`;
 	},
-	
+
 	personalInfo(){
 		const _ = this;
 		let gradeActive;
@@ -2375,7 +2407,8 @@ export const view = {
 			</div>
 		`;
 	},
-	parentChildesInfoTpl(childes){
+	parentChildesInfoTpl(){
+		console.log('parentChildesInfoTpl')
 		const _ = this;
 		return `
 			<div class="section users-page" id="parentsStudentTable">
@@ -2384,15 +2417,15 @@ export const view = {
 						<div class="tbl-head">
 							<div class="tbl-item"><span>USER Name</span>
 								<div class="tbl-sort-btns">
-									<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-									<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+									<button class="tbl-sort-btn top" data-click="${_.componentName}:sortParentStudentsBy" role="studentProfile"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+									<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortParentStudentsBy" role="studentProfile"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 								</div>
 							</div>
 							<div class="tbl-item">Courses</div>
 							<div class="tbl-item right"><span>Date Registered</span>
 								<div class="tbl-sort-btns">
-									<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-									<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+									<button class="tbl-sort-btn top" data-click="${_.componentName}:sortParentStudentsBy" value="createdAt_asc" role="studentProfile"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+									<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortParentStudentsBy" value="createdAt_desc" role="studentProfile"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 								</div>
 							</div>
 						</div>
@@ -2404,8 +2437,8 @@ export const view = {
 											<div class="tbl-item">
 												<span>USER Name</span>
 												<div class="tbl-sort-btns">
-													<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-													<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+													<button class="tbl-sort-btn top" data-click="${_.componentName}:sortParentStudentsBy" role="studentProfile"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+													<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortParentStudentsBy" role="studentProfile"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 												</div>
 											</div>
 										</th>
@@ -2414,8 +2447,8 @@ export const view = {
 											<div class="tbl-item right">
 												<span>Date Registered</span>
 												<div class="tbl-sort-btns">
-													<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-													<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+													<button class="tbl-sort-btn top" data-click="${_.componentName}:sortParentStudentsBy" value="createdAt_asc" role="studentProfile"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+													<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortParentStudentsBy" value="createdAt_desc" role="studentProfile"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 												</div>
 											</div>
 										</th>
@@ -2578,21 +2611,21 @@ export const view = {
 			        <div class="tbl-item">
 			          <span>USER Name</span>
 			          <div class="tbl-sort-btns">
-			            <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-			            <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			            <button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" role="parent"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			            <button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" role="parent"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 			          </div>
 			        </div>
 			        <div class="tbl-item">
 			          <span>Students</span>
 			          <div class="tbl-sort-btns">
-			            <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-			            <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			            <button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" role="parent" value="students_asc"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			            <button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" role="parent" value="students_desc"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 			          </div>
 			        </div>
 			        <div class="tbl-item"><span>date Registered</span>
 			          <div class="tbl-sort-btns">
-			            <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-			            <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			            <button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" role="parent" value="createdAt_asc"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			            <button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" role="parent" value="createdAt_desc"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 			          </div>
 			        </div>
 			        <div class="tbl-item right">Action</div>
@@ -2605,8 +2638,8 @@ export const view = {
 			              <div class="tbl-item">
 			                <span>USER Name</span>
 			                <div class="tbl-sort-btns">
-			                  <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-			                  <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                  <button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" role="parent"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                  <button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" role="parent"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 			                </div>
 			              </div>
 			            </th>
@@ -2614,8 +2647,8 @@ export const view = {
 			              <div class="tbl-item">
 			                <span>Students</span>
 			                <div class="tbl-sort-btns">
-			                  <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-			                  <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                  <button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" role="parent" value="students_asc"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                  <button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" role="parent" value="students_desc"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 			                </div>
 			              </div>
 			            </th>
@@ -2623,8 +2656,8 @@ export const view = {
 			              <div class="tbl-item">
 			                <span>date Registered</span>
 			                <div class="tbl-sort-btns">
-			                  <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-			                  <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                  <button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" role="parent" value="createdAt_asc"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                  <button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" role="parent" value="createdAt_desc"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 			                </div>
 			              </div>
 			            </th>
@@ -2725,7 +2758,12 @@ export const view = {
 				</div>
 			</div>
 			<div class="student-profile-footer">
-				<button class="student-profile-delete" data-click="${_.componentName}:showRemoveParentPopup" data-id="${_.parentInfo['_id']}">Delete User Profile</button>
+				<button 
+					class="student-profile-delete" 
+					${_.parentInfo['students'] && _.parentInfo['students'].length ? 'disabled' : ''} 
+					data-click="${_.componentName}:showRemoveParentPopup" 
+					data-id="${_.parentInfo['_id']}"
+				>Delete User Profile</button>
 				<div class="student-profile-actions">
 					<button class="test-footer-back" data-click="${_.componentName}:changeSection" section="parent" rerender>
 						<span>Discard</span>
@@ -2986,7 +3024,8 @@ export const view = {
 		`;
 		return tpl;
 	},
-	parentsStudentsTpl(studentsData){
+	parentsStudentsTpl(){
+		console.log('parentsStudentsTpl')
 		const _ = this;
 		let tpl = `
 			<div class="tbl">
@@ -2994,16 +3033,16 @@ export const view = {
 					<div class="tbl-item">
 						<span>USER Name</span>
 						<div class="tbl-sort-btns">
-							<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-							<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn top" data-click="${_.componentName}:sortParentStudentsBy" role="parentProfile"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortParentStudentsBy" role="parentProfile"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 						</div> 
 					</div>
 					<div class="tbl-item">Courses</div>
 					<div class="tbl-item">
 						<span>date Registered</span>
 						<div class="tbl-sort-btns">
-							<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-							<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn top" data-click="${_.componentName}:sortParentStudentsBy" role="parentProfile" value="createdAt_asc"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+							<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortParentStudentsBy" role="parentProfile" value="createdAt_desc"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 						</div>
 					</div>
 					<div class="tbl-item right">Action</div>
@@ -3016,8 +3055,8 @@ export const view = {
 									<div class="tbl-item">
 										<span>USER Name</span>
 										<div class="tbl-sort-btns">
-											<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-											<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn top" data-click="${_.componentName}:sortParentStudentsBy" role="parentProfile"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortParentStudentsBy" role="parentProfile"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 										</div> 
 									</div>
 								</th>
@@ -3026,15 +3065,26 @@ export const view = {
 									<div class="tbl-item">
 										<span>date Registered</span>
 										<div class="tbl-sort-btns">
-											<button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-											<button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn top" data-click="${_.componentName}:sortParentStudentsBy" role="parentProfile" value="createdAt_asc"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+											<button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortParentStudentsBy" role="parentProfile" value="createdAt_desc"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 										</div> 
 									</div>
 								</th>
 								<th><div class="tbl-item right">Action</div></th>
 							</tr>
 						</thead>
-						<tbody class="tbl-body">`;
+						<tbody class="tbl-body">
+							<tr><td class="loader-parent"><img src="/img/loader.gif" alt=""></td></tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		`;
+		return tpl;
+	},
+	parentsStudentsRowsTpl(studentsData){
+		const _ = this;
+		let tpl = '';
 		for (let item of studentsData) {
 			tpl += `
 				<tr class="tbl-row" user-id="${item['_id']}">
@@ -3051,33 +3101,29 @@ export const view = {
 					</td>
 					<td>
 						<div class="tbl-item">`;
-			for (let unit of item.plans) {
-				tpl += `<div class="users-course ${unit.course ? unit.course.title + '-' + unit.level.title.split(' ')[0] : ''}">${unit.course.title} ${unit.level.title.split(' ')[0]}</div>`;
+			if (item.plans && item.plans.length){
+				for (let unit of item.plans) {
+					tpl += `<div class="users-course ${unit.course ? unit.course.title + '-' + unit.level.title.split(' ')[0] : ''}">${unit.course.title} ${unit.level.title.split(' ')[0]}</div>`;
+				}
 			}
 			tpl += `
-						</div>
-					</td>
-					<td>
-						<div class="tbl-item">
-							<div class="users-date">${_.createdAtFormat(item.updatedAt.split('T')[0])}</div>
-						</div>
-					</td>
-					<td>
-						<div class="tbl-item right actions">
-							<button class="users-btn button profile" data-click="UsersModule:changeSection" data-id="${item._id}" section="profile">Profile</button>
-							<button class="users-btn button-blue profile" data-id="${item._id}" data-click="UsersModule:removeUser">
-								<svg class="button-icon"><use xlink:href="#close"></use></svg>
-							</button>
-						</div>
-					</td>
-				</tr>`;
+					</div>
+				</td>
+				<td>
+					<div class="tbl-item">
+						<div class="users-date">${_.createdAtFormat(item.updatedAt.split('T')[0])}</div>
+					</div>
+				</td>
+				<td>
+					<div class="tbl-item right actions">
+						<button class="users-btn button profile" data-click="UsersModule:changeSection" data-id="${item._id}" section="profile">Profile</button>
+						<button class="users-btn button-blue profile" data-id="${item._id}" data-click="UsersModule:removeUser">
+							<svg class="button-icon"><use xlink:href="#close"></use></svg>
+						</button>
+					</div>
+				</td>
+			</tr>`;
 		}
-		tpl += `
-						</tbody>
-					</table>
-				</div>
-			</div>
-		`;
 		return tpl;
 	},
 
@@ -3101,15 +3147,15 @@ export const view = {
 			        <div class="tbl-item">
 			          <span>USER Name</span>
 			          <div class="tbl-sort-btns">
-			            <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-			            <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			            <button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" role="admin"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			            <button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" role="admin"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 			          </div>
 			        </div>
 			        <div class="tbl-item">Role</div>
 			        <div class="tbl-item"><span>date Registered</span>
 			          <div class="tbl-sort-btns">
-			            <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-			            <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			            <button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" role="admin" value="createdAt_asc"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			            <button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" role="admin" value="createdAt_desc"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 			          </div>
 			        </div>
 			        <div class="tbl-item right">Action</div>
@@ -3122,8 +3168,8 @@ export const view = {
 			              <div class="tbl-item">
 			                <span>USER Name</span>
 			                <div class="tbl-sort-btns">
-			                  <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-			                  <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                  <button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" role="admin"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                  <button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" role="admin"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 			                </div>
 			              </div>
 			            </th>
@@ -3134,8 +3180,8 @@ export const view = {
 			              <div class="tbl-item">
 			                <span>date Registered</span>
 			                <div class="tbl-sort-btns">
-			                  <button class="tbl-sort-btn top"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
-			                  <button class="tbl-sort-btn bottom"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                  <button class="tbl-sort-btn top" data-click="${_.componentName}:sortBy" role="admin" value="createdAt_asc"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
+			                  <button class="tbl-sort-btn bottom" data-click="${_.componentName}:sortBy" role="admin" value="createdAt_desc"><svg><use xlink:href="#select-arrow-bottom"></use></svg></button>
 			                </div>
 			              </div>
 			            </th>
@@ -3150,6 +3196,7 @@ export const view = {
 		return tpl;
 	},
 	adminSingleBodyRowTpl(rowData){
+		console.log('adminSingleBodyRowTpl')
 		const _ = this;
 		let tpl = `
 			<td>
@@ -3182,7 +3229,10 @@ export const view = {
 							<use xlink:href="#write"></use>
 						</svg>
 					</button>-->
-					<button class="users-btn button" data-click="${_.componentName}:showRemoveParentPopup"  data-id="${rowData._id}">
+					<button class="users-btn button" 
+						data-click="${_.componentName}:showRemoveParentPopup" 
+						data-id="${rowData._id}"
+					>
 						<svg class="button-icon">
 							<use xlink:href="#trash"></use>
 						</svg>

@@ -74,7 +74,7 @@ export class UsersModule extends AdminPage {
 				'changeProfileTab','updateStudent','updateAdmin',
 				'showAddParentPopup','showPopupParentProfile','changeParentPopupProfileTab','cancelParentProfile',
 				'showHistoryDetails','createNewParent','assignFirstParent',
-				'notificationNavigate','showAddCard','showAddBillingAddress','searchUsers','filterUsersByDates',
+				'notificationNavigate','showAddCard','showAddBillingAddress','searchUsers','sortBy','filterUsersByDates','sortParentStudentsBy',
 				'checkEmail',
 				'paginate','paginateTo',
 			]);
@@ -275,7 +275,7 @@ export class UsersModule extends AdminPage {
 			role = form.getAttribute('role') ?? 'student';
 
 		let passwords = {
-			'_id': _[`${role}Info`].userId
+			'_id': _[`${role}Info`]._id
 		};
 
 		for (let input of inputs) {
@@ -387,15 +387,18 @@ export class UsersModule extends AdminPage {
 	}
 	async fillParentsTable({usersData}){
 		const _ = this;
-		let tbody = _.f(`#assignParent .tbl-body`);
-		if (!tbody) {
+		let tbodies = document.querySelectorAll(`#assignParent .tbl-body`);
+		if (!tbodies || !tbodies.length) {
 			_.fillBodyParentsTable({usersData});
 			return;
 		}
 		let tableData = _.parentsBodyRowsTpl({usersData});
-		_.clear(tbody)
-		tbody.append(...tableData);
-		if (usersData.response.length) _.connectTableHead('#assignParent');
+		for (let tbody of tbodies) {
+			if (tbody.closest('[hidden]')) continue;
+			_.clear(tbody)
+			tbody.append(...tableData);
+			if (usersData.response.length) _.connectTableHead('#assignParent');
+		}
 	}
 	async fillBodyParentsTable({usersData,cont,role}){
 		const _ = this;
@@ -472,6 +475,7 @@ export class UsersModule extends AdminPage {
 		_.parentInfo['userId'] = _.parentInfo['_id'];
 		_.parentInfo['_id'] = currentParent['_id'];
 		_.parentInfo['phone'] = currentParent['phone'];
+		_.parentInfo['students'] = currentParent['students'];
 
 		_.f('.parent-profile-inner').innerHTML = _.parentsProfileInner();
 		_.f('.breadcrumbs').innerHTML = _.breadCrumbsTpl([
@@ -496,11 +500,9 @@ export class UsersModule extends AdminPage {
 	}
 	async fillStudentsTable(usersData,selector){
 		const _ = this;
-		let
-			tbody = _.f('#parent-profile-popup .tbl-body');
-		
+		let tbody = _.f('#parent-profile-popup .tbl-body');
 		_.clear(tbody);
-		
+
 		if(!usersData) {
 			return void 'no users data';
 		}
@@ -511,6 +513,7 @@ export class UsersModule extends AdminPage {
 		_.connectTableHead(selector);
 	}
 	async fillBodyAdminsTable(adminsData){
+		console.log('fillBodyAdminsTable')
 		const _ = this;
 		let
 			tbody = _.f(`#bodyAdmins .tbl-body`),
@@ -564,6 +567,7 @@ export class UsersModule extends AdminPage {
 	}
 	async getSearchUsers({cont,role}){
 		const _ = this;
+		console.log('getSearchUsers')
 		let usersData = await Model.getUsers({
 			role:role == 'addingParent' ? 'parent' : role,
 			update: true,
@@ -575,7 +579,7 @@ export class UsersModule extends AdminPage {
 		} else if (role == 'parent') {
 			_.fillBodyParentsTable({usersData,cont,role});
 		} else if (role == 'admin') {
-			_.fillBodyAdminsTable({usersData,cont,role})
+			_.fillBodyAdminsTable(usersData)
 		} else if (role == 'addingParent') {
 			_.parents = usersData;
 			_.paginationFill({
@@ -727,6 +731,7 @@ export class UsersModule extends AdminPage {
 	}
 	async changeProfileTab({item}) {
 		const _ = this;
+		console.log('changeProfileTab')
 		let pos = item.getAttribute('data-pos');
 		item.parentNode.querySelector('.active').classList.remove('active');
 		item.classList.add('active');
@@ -809,8 +814,12 @@ export class UsersModule extends AdminPage {
 		}
 		if (pos == 12) {
 			let tableData = await Model.getParentStudents(_.parentInfo['_id']);
-			let layout = _.parentsStudentsTpl(tableData);
-			parentInner.innerHTML = layout;
+			let layout = _.parentsStudentsTpl();
+			_.clear(parentInner);
+			parentInner.append(_.markup(layout));
+			let table = parentInner.querySelector('.tbl-body');
+			_.clear(table);
+			table.innerHTML = _.parentsStudentsRowsTpl(tableData);
 			_.connectTableHead('.parent-profile-inner');
 		}
 	}
@@ -855,6 +864,25 @@ export class UsersModule extends AdminPage {
 			container.innerHTML = _.parentChildesInfoTpl();
 			let tableData = await Model.getParentStudents(parentId);
 			_.fillStudentsTable(tableData,'#parent-profile-popup');
+		}
+	}
+	async sortParentStudentsBy({item}){
+		const _ = this;
+		console.log('sortParentStudentsBy')
+		let container = item.closest('.tbl');
+		let table = container.querySelector('.tbl-body');
+		let parentId = _.parentInfo['_id'];
+		_.clear(table);
+		let tableData = await Model.getParentStudents(parentId);
+
+		let role = item.getAttribute('role');
+
+		if (role === 'studentProfile') {
+			_.fillStudentsTable(tableData,'#parent-profile-popup');
+		} else if (role === 'parentProfile') {
+			_.clear(table);
+			table.innerHTML = _.parentsStudentsRowsTpl(tableData);
+			_.connectTableHead('.parent-profile-inner');
 		}
 	}
 	flexible(){
@@ -909,6 +937,7 @@ export class UsersModule extends AdminPage {
 	}
 	showRemoveParentPopup({item}){
 		const _ = this;
+		if (item.hasAttribute('disabled')) return;
 		_.parentInfo['_id'] = item.getAttribute('data-id');
 		G_Bus.trigger('modaler','showModal', {item:item,type:'html',target:'#removeParentForm','closeBtn':'hide'});
 	}
@@ -927,11 +956,14 @@ export class UsersModule extends AdminPage {
 	async showPopupParentProfile({item}){
 		const _ = this;
 		let cont = _.f('#parent-profile-popup');
-		cont.setAttribute('data-id',_.currentParent['_id']);
+		let parentId = item.getAttribute('data-id');
+		cont.setAttribute('data-id',parentId);
 
-		_.parentInfo = _.currentParent['response'][0]['user'];
-		_.parentInfo['phone'] = _.currentParent['response'][0]['phone'];
-		_.parentInfo['_id'] = _.currentParent['response'][0]['_id'];
+		let parentInfo = await Model.getParent(parentId);
+		_.parentInfo = parentInfo['user'];
+		_.parentInfo['phone'] = parentInfo['phone'];
+		_.parentInfo['_id'] = parentInfo['_id'];
+		_.parentInfo['userId'] = parentInfo.user['_id'];
 
 		G_Bus.trigger('modaler','closeModal');
 		_.f('.parent-popup-profile-body').innerHTML = _.parentPersonalInfoTpl();
@@ -1053,22 +1085,26 @@ export class UsersModule extends AdminPage {
 
 	connectTableHead(selector) {
 		const _ = this;
-		let cont = _.f(`${selector ?? ''} .tbl`);
-		if (!cont) return void 0;
+		console.log('connectTableHead')
+		let conts = document.querySelectorAll(`${selector ?? ''} .tbl`);
+		if (!conts) return void 0;
 
-		let
-			head = cont.querySelector('.tbl-head'),
-			ths = head.querySelectorAll('.tbl-item'),
-			table = cont.querySelector('TABLE'),
-			row = table.querySelector('TBODY TR');
+		for (let cont of conts) {
+			if (cont.closest('[hidden]')) continue;
+			let
+				head = cont.querySelector('.tbl-head'),
+				ths = head.querySelectorAll('.tbl-item'),
+				table = cont.querySelector('TABLE'),
+				row = table.querySelector('TBODY TR');
 
-		if (!row) return;
+			if (!row) return;
 
-		let tds = row.querySelectorAll('.tbl-item');
-		ths.forEach(function (item,index){
-			let w = tds[index].getBoundingClientRect().width;
-			item.style = `width:${w}px;flex: 0 0 ${w}px;`
-		})
+			let tds = row.querySelectorAll('.tbl-item');
+			ths.forEach(function (item,index){
+				let w = tds[index].getBoundingClientRect().width;
+				item.style = `width:${w}px;flex: 0 0 ${w}px;`
+			})
+		}
 	}
 	skipParent ({item}) {
 		const _ = this;
@@ -1130,6 +1166,7 @@ export class UsersModule extends AdminPage {
 	
 	// Assign methods
 	async assignParent(clickData = null) {
+		console.log('assignParent')
 		const _ = this;
 		let container;
 		_.parentInfo = {};
@@ -1144,13 +1181,9 @@ export class UsersModule extends AdminPage {
 		}
 
 		let cont = container.querySelector( '.adding-assign-body' );
-		_.clear(cont);
-		cont.classList.add( 'full' );
-
-		if ( _.metaInfo.parentAssigned ){
-			cont.append( _.markup( _.assignedParent( _.currentParent )));
-			return void 0;
-		} else {
+		if (cont) {
+			_.clear(cont);
+			cont.classList.add( 'full' );
 			cont.append( _.markup( _.assignParentTpl() ));
 		}
 
@@ -1216,6 +1249,7 @@ export class UsersModule extends AdminPage {
 		_.parentInfo = _.currentParent['user'];
 		_.parentInfo.type = 'assigned';
 		_.metaInfo.parentAssigned = true;
+		_.connectTableHead()
 	}
 	async assignCourse({item}) {
 		const _ = this;
@@ -1318,6 +1352,7 @@ export class UsersModule extends AdminPage {
 			limit:_.parents.limit,
 			cont:cont.querySelector('.pagination')
 		});
+		_.connectTableHead()
 	}
 	// Remove methods
 
@@ -1336,6 +1371,18 @@ export class UsersModule extends AdminPage {
 		_.searchInfo[role].page = 1;
 		_.getSearchUsers({cont,role})
 	}
+	sortBy({item}) {
+		const _ = this;
+		let
+			role = item.getAttribute('role') ?? _.subSection,
+			cont = item.closest('.block'),
+			value = item.getAttribute('value');
+		if (!value) return;
+		if (!_.searchInfo[role]) _.searchInfo[role] = {page: 1};
+		_.searchInfo[role]['sort'] = value;
+		_.getSearchUsers({cont,role})
+	}
+
 	filterUsersByDates({item}){
 		const _ = this;
 		let
@@ -1481,8 +1528,6 @@ export class UsersModule extends AdminPage {
 		} else if (addingStep == 3) {
 			_.searchInfo['addingParent'] = {page:1};
 			_.parents = await Model.getUsers({role:'parent',searchInfo:_.searchInfo['addingParent']})
-		} else {
-			_.subSection = _.prevSubSection ?? _.subSection;
 		}
 		addingBody.append( _.markup( _.stepsObj[ addingStep ]() ) );
 		
@@ -1490,8 +1535,8 @@ export class UsersModule extends AdminPage {
 		_.f(`#addingForm .adding-list-item:nth-child(${addingStep})`).classList.add('active');
 		if (addingStep == 3 && _.parents) {
 			_.paginationFill({limit:_.parents.limit,total:_.parents.total,selector:'#assignParent'})
+			_.connectTableHead('#addingForm')
 		}
-		console.log(_.subSection)
 	}
 	async handleAssignSteps({assignStep}) {
 		const _ = this;
