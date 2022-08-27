@@ -628,9 +628,8 @@ export class DashboardModule extends ParentPage{
 			inputs = form.querySelectorAll('G-INPUT[type="password"]'),
 			role = form.getAttribute('role') ?? 'student';
 
-		console.log(_[`${role}Info`])
 		let passwords = {
-			'_id': _[`${role}Info`].userId
+			'_id': _[`${role}Info`]._id
 		};
 
 		for (let input of inputs) {

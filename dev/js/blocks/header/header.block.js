@@ -36,9 +36,9 @@ class HeaderBlock extends G{
 		let tpl = `<header class="head">
 			<div class="section">
 				<div class="head-row">
-					<a class="head-logo">
+					<div class="head-logo">
 						<img src="/img/logo.svg" alt="">
-					</a>
+					</div>
 					<div class="head-control">
 					`;
 		if (_._$.role === 'student') {
@@ -108,9 +108,9 @@ class HeaderBlock extends G{
 		return `<header class="head">
 			<div class="section">
 				<div class="head-row">
-					<a class="head-logo" style="margin: auto">
+					<div class="head-logo" style="margin: auto">
 						<img src="/img/logo.svg" alt="">
-					</a>
+					</div>
 				</div>
 			</div>
 		</header>`;
