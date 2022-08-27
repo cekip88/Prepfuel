@@ -178,7 +178,7 @@ export class TestsModule extends StudentPage{
 	//	_._$.currentSection = section;
 		await _.render();
 		if(section == 'directions') {
-			_.f('#directionsQuestion').textContent = _.getStep()[0]//_.questionPos+1;
+			_.f('#directionsQuestion').textContent = _.getStep()[0]-1//_.questionPos+1;
 			_.tickTimer();
 		}
 		if(section == 'questions'){
@@ -383,16 +383,17 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		let test = await Model.getTestResults();//Model.getTestFromStorage();
 		test = test['testResults'];
+		
 		for(let t in test){
-			if( test[t]['answer'] == 'O') continue;
+			//if(( test[t]['answer'] == 'O') && (!test[t]['bookmark']) && (!test[t]['note'])  && (!test[t]['disabledAnswers']) ) continue;
 			let
 				currentTestObj = test[t],
-				questionId= currentTestObj['questionId']; // if request was not in local storage, try another prop for questionId
+				questionId= currentTestObj['questionId']; // if request was not in local storage, try another prop for
 			if(currentTestObj['bookmark']) {
 				let listAnswerItem = _.f(`.questions-list .questions-item[data-question-id="${questionId}"]`);
 				if(listAnswerItem) listAnswerItem.classList.add('checked');
 			}
-			if(currentTestObj['answer']) {
+			if(currentTestObj['answer'] && (currentTestObj['answer'] != 'O')) {
 				let listAnswerItemVariant = _.f(`.questions-list .questions-item[data-question-id="${questionId}"] .questions-variant`);
 				if(listAnswerItemVariant)
 				_.f(`.questions-list .questions-item[data-question-id="${questionId}"] .questions-variant`).textContent = currentTestObj['answer'].toUpperCase();
@@ -413,7 +414,8 @@ export class TestsModule extends StudentPage{
 				serverQuestion = serverQuestions[cnt],
 				variant = item.querySelector('.questions-variant').textContent;
 			if(Model.testServerAnswers && Model.testServerAnswers[id]){
-				serverQuestion['correctAnswer'] = '4'; // stub, delete in the future
+				console.log(serverQuestion['correctAnswer']);
+				//serverQuestion['correctAnswer'] = '4'; // stub, delete in the future
 				if(Model.testServerAnswers[id]['answer']){
 					let
 						answer = Model.testServerAnswers[id]['answer'].toUpperCase(),
@@ -449,14 +451,17 @@ export class TestsModule extends StudentPage{
 		let
 			questionId = item.getAttribute('data-question-id'),
 			bookmarked = item.classList.contains('active');
-			
+		//if()
 		Model.saveTestToStorage({
 			questionId: questionId,
 			bookmark: !bookmarked
 		});
 		item.classList.toggle('active');
-		if(!_.isGrid())
-		_.f(`.questions-list .questions-item[data-question-id="${questionId}"]`).classList.toggle('checked');
+		if(!_.isGrid()){
+			if(_.f(`.questions-list .questions-item[data-question-id="${questionId}"]`))
+				_.f(`.questions-list .questions-item[data-question-id="${questionId}"]`).classList.toggle('checked');
+		}
+		
 	}
 	async saveNote({item:form,event}){
 		const _ = this;
@@ -516,7 +521,7 @@ export class TestsModule extends StudentPage{
 			let questionData = Model.currentQuestionData(_.questionPos);
 			if(_._$.currentQuestion['questions']) questionData = _._$.currentQuestion;
 			let handle = async (answer)=>{
-			//	console.log(answer)
+				console.log(answer)
 				let testSaved =  await Model.saveAnswer({
 					answer:{
 						sectionName: Model.currentSection['sectionName'],
@@ -550,10 +555,10 @@ export class TestsModule extends StudentPage{
 					}else if(answer['answer'] == 'O'){
 					//	console.log('not o a');
 						let bookmarkedButton = _.f(`.bookmarked-button[data-question-id="${quest['_id']}"]`);
+						answer['bookmark'] = true;
 						_.saveBookmark({
 							item: bookmarkedButton
 						});
-						answer['bookmark'] = true;
 					}
 				//	console.log('here',answer);
 					outArr.push(await handle(answer))
@@ -566,9 +571,12 @@ export class TestsModule extends StudentPage{
 					resolve(await handle(answer));
 				}else{
 					// else set bookmarked this answer
+					if(!answer)	answer = {};
 					_.saveBookmark({
 						item: _.f('.bookmarked-button')
 					});
+					answer['bookmark'] = true;
+					resolve(await handle(answer));
 					resolve('Answer not found in storageTest');
 				}
 			}
@@ -697,8 +705,10 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		let questionData = Model.currentQuestionData(_.questionPos-1);
 		let questPos = `${pos[0]}-${pos[1]}`;
-		if(questionData['type'] != 'passage'){
-			questPos = pos[0]-1;
+		if(questionData){
+			if(questionData['type'] != 'passage'){
+				questPos = pos[0]-1;
+			}
 		}
 		if(pos == -1){
 			_.f('.test-footer .dir-button').after(
@@ -918,17 +928,17 @@ export class TestsModule extends StudentPage{
 				let
 					pp = _.getNextStepCnt(),
 					questionData = Model.currentQuestionData(_.questionPos+1);
-				if(questionData['type'] == 'passage'){
-					if(pp[0] > pp[1]){
-						pp[0] = pp[1];
+				if(questionData){
+					if(questionData['type'] == 'passage'){
+						if(pp[0] > pp[1]){
+							pp[0] = pp[1];
+						}
+						_.f('.skip-to-question').textContent = `${pp[0]}-${pp[1]}`;
+					}else{
+						_.f('.skip-to-question').textContent = `${pp[0]-1}`;
 					}
-					_.f('.skip-to-question').textContent = `${pp[0]}-${pp[1]}`;
-				}else{
-					_.f('.skip-to-question').textContent = `${pp[0]-1}`;
 				}
-				
 			}
-		
 			if( _.questionPos == _.questionsLength - 1 ){
 				_.isLastQuestion = true;
 				
