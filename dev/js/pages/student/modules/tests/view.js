@@ -180,7 +180,7 @@ export const view = {
 		return	`
 			<div class="section">
 				<div class="section-header">
-					<h1 class="title">${Model.currentSection['welcome'].headerTitle}</h1>
+					<h1 class="title">Welcome</h1>
 					<button class="button-white" data-click="StudentPage:changeSection" section="/student/tests">
 						<span>Don’t start this test now</span>
 					</button>
