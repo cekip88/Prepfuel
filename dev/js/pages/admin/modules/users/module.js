@@ -97,6 +97,7 @@ export class UsersModule extends AdminPage {
 	}
 
 	async domReady(data){
+		console.log('domReady');
 		const _ = this;
 		//_.parentInfo = {};
 		//_.studentInfo = {};
@@ -143,6 +144,9 @@ export class UsersModule extends AdminPage {
 			_.fillAdminProfile(data);
 			_._$.assignStep = 1;
 		}
+		//console.log(_.ff('.blocfk-header-item.button-blue'))
+		//_.ff('.block-header-itefm.button-blue').gappend(_.markup('<span>Hello</span>'))
+		//_.navigationInit();
 	}
 
 	// Create methods
@@ -415,6 +419,7 @@ export class UsersModule extends AdminPage {
 		if (usersData.response.length)_.connectTableHead('#bodyParents');
 	}
 	async fillProfile(profileData) {
+		console.log('fillProfile')
 		const _ = this;
 		let studentId;
 		if(profileData['item']){
@@ -423,12 +428,13 @@ export class UsersModule extends AdminPage {
 		} else {
 			studentId = profileData['_id'];
 		}
-		let currentStudent = Model.studentsData.response.filter( student => student['_id'] == studentId )[0];
+		//let currentStudent = Model.studentsData.response.filter( student => student['_id'] == studentId )[0];
+		let currentStudent = await Model.getStudent(studentId);
 		_.studentInfo = Object.assign({},currentStudent['user']);
 		_.metaInfo = {};
 		_.studentInfo['currentSchool'] = currentStudent['currentSchool'] ?? '';
 		_.studentInfo['currentPlan'] = currentStudent['currentPlan'];
-		_.studentInfo['grade'] = currentStudent['grade'] ? currentStudent['grade']['_id'] : '';
+		_.studentInfo['grade'] = currentStudent['grade'] ? currentStudent['grade']['_id'] ?? currentStudent['grade'] : '';
 		_.studentInfo['userId'] = _.studentInfo['_id'];
 		_.studentInfo['_id'] = currentStudent['_id'];
 		
@@ -540,7 +546,9 @@ export class UsersModule extends AdminPage {
 	fillTableFilter(selector){
 		const _ = this;
 		let filters = _.f(`${selector ?? ''} .filter`);
-		if (filters.length) {
+		if (!filters) {
+			return void 0;
+		} else if (filters.length) {
 			for (let filter of filters) {
 				_.fillOneFilter(filter);
 			}
@@ -560,14 +568,14 @@ export class UsersModule extends AdminPage {
 		paginations.forEach(function (item){
 			let role = item.getAttribute('role') ?? _.subSection;
 			if (!_.searchInfo[role]) _.searchInfo[role] = {page:1};
-			let tpl = _.paginationTpl({limit,total,page:_.searchInfo[role].page})
+			let tpl = _.paginationTpl({limit,total,page:_.searchInfo[role].page});
 			_.clear(item);
 			item.append(_.markup(tpl));
 		})
 	}
 	async getSearchUsers({cont,role}){
+		console.log('getSearchUsers');
 		const _ = this;
-		console.log('getSearchUsers')
 		let usersData = await Model.getUsers({
 			role:role == 'addingParent' ? 'parent' : role,
 			update: true,
@@ -1476,6 +1484,11 @@ export class UsersModule extends AdminPage {
 			}
 		} else if (_._$.addingStep == 3) {
 			if (_.metaInfo['parentAddType'] && !_.metaInfo['parentAssigned']) validate = false;
+		} else if (_._$.addingStep == 1) {
+			if (_.studentInfo['course'] && !_.studentInfo['level']) {
+				validate = false;
+				_._$.addingStep = 1;
+			}
 		}
 		return validate;
 	}

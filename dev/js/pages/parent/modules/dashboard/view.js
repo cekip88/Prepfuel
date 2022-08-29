@@ -1583,9 +1583,7 @@ export const view = {
 				<button class="button" data-click="${_.componentName}:deleteSchedule"><span>Delete</span></button>
 				<button class="button" data-click="${_.componentName}:editSchedule"><span>Edit</span></button>
 			</div>
-			<ul class="schedule-list loader-parent" id="scheduleList">
-				<img src="/img/loader.gif">
-			</ul>
+			<ul class="schedule-list loader-parent" id="scheduleList"></ul>
 			${_.scheduleFooterTpl()}
 		`
 	},

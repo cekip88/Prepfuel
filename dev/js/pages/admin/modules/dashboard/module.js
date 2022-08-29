@@ -697,6 +697,7 @@ export class DashboardModule extends AdminPage{
 			_.perPlanFill({selector:'.revenue .perPlan', data: _.revenueData.perPlan})
 		}
 		_.switchSubNavigate();
+		//_.navigationInit();
 	}
 
 	setInteger(number){

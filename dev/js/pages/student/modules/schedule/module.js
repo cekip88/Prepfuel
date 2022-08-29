@@ -5,6 +5,8 @@ import {StudentPage} from "../../student.page.js";
 export class ScheduleModule extends StudentPage{
 	constructor() {
 		super();
+		const _ = this;
+		_.me = JSON.parse(localStorage.getItem('me'));
 		this.moduleStructure = {
 			'header':'simpleHeader',
 			'header-tabs': null,
@@ -50,7 +52,6 @@ export class ScheduleModule extends StudentPage{
 		const _ = this;
 	}
 	
-	
 	finishSchedule({item}) {
 		const _ = this;
 		Model.finishSchedule({
@@ -87,6 +88,11 @@ export class ScheduleModule extends StudentPage{
 	}
 	removePracticeRow({item}){
 		const _ = this;
+		_.practiceRowsCnt--;
+		item.closest('.practice-schedule-row').remove();
+		if (_.practiceRowsCnt === 0) {
+			item.closest('.section').querySelector('.button-lightblue').removeAttribute('style');
+		}
 	}
 	changeSchedulePage({item}){
 		const _ = this;

@@ -38,7 +38,7 @@ export class CoursesModule extends AdminPage {
 		if(_.subSection == 'folders'){
 			_.createCourseFolders({item: undefined})
 		}
-		
+		//_.navigationInit();
 	}
 
 	// get data methods
@@ -47,12 +47,10 @@ export class CoursesModule extends AdminPage {
 		_.filesData = await Model.getTests();
 		return _.filesData;
 	}
-	
 	isPracticeTest(folderId){
 		const _ = this;
 		return _.practiceNames.indexOf(folderId) > -1;
 	}
-	
 	// end get data methods
 
 	// create methods
@@ -86,9 +84,11 @@ export class CoursesModule extends AdminPage {
 		const _ = this;
 		let rows = _.filesRowsTpl(filesData);
 		let cont = _.f('.folders-table .tbl-body');
-		_.clear(cont);
-		cont.append(...rows);
-		_.connectTableHead();
+		if (cont) {
+			_.clear(cont);
+			cont.append(...rows);
+			_.connectTableHead();
+		}
 	}
 	rebuildBreadCrumbs(item){
 		const _ = this;

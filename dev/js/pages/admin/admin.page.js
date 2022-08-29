@@ -116,10 +116,7 @@ export class AdminPage extends G {
 			await _.moduleRender(params);
 			_.currentSection = '/admin/' + params['module'];
 		}
-
-		setTimeout(()=>{
-			_.navigationInit();
-		},1500)
+		//_.navigationInit();
 	}
 
 	showSuccessPopup(text) {

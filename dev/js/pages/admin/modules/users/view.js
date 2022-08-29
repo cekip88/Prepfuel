@@ -20,6 +20,7 @@ export const view = {
 		`;
 	},
 	usersBodyRowsTpl(usersData,from='users'){
+		console.log('usersBodyRowsTpl')
 		const _ = this;
 		let trs = [];
 		if(usersData['response'])	usersData = usersData['response'];
@@ -40,8 +41,9 @@ export const view = {
 	usersPlansTpl(plan){
 		const _ = this;
 		console.log('usersPlansTpl')
-		let course = plan['course'].title + ' ',courseCls;
+		let course,courseCls;
 		if (plan && plan['course']) {
+			course = plan['course'].title + ' ';
 			if (plan['level']['title'].split(' ')[2]){
 				course += plan['level']['title'].split(' ')[0][0];
 			} else {
@@ -70,7 +72,7 @@ export const view = {
 			</td>
 			<td>
 				<div class="tbl-item">
-						<div class="users-course ${coursesData.courseCls}">${coursesData.course}</div>
+						<div class="users-course ${coursesData.courseCls ?? ''}">${coursesData.course ?? ''}</div>
 				</div>
 			</td>
 			<td>
@@ -115,7 +117,7 @@ export const view = {
 			</td>
 			<td>
 				<div class="tbl-item">
-					<div class="users-course ${coursesData.courseCls}">${coursesData.course}</div>
+					<div class="users-course ${coursesData.courseCls ?? ''}">${coursesData.course ?? ''}</div>
 			</div>
 		</td>
 			<td>
@@ -2269,10 +2271,10 @@ export const view = {
 				<div class="student-profile-right">
 					<h4 class="admin-block-graytitle">Courses & Plans</h4>
 					<div class="student-profile-courses-btns">
-						<button class="student-profile-courses-btn">ISEE</button>
-						<button class="student-profile-courses-btn">SSAT</button>
-						<button class="student-profile-courses-btn active">SHSAT</button>
-					</div>
+								<button class="student-profile-courses-btn${(!_.isEmpty(_.studentInfo['currentPlan']) && _.studentInfo['currentPlan']['course']['title'] == 'ISEE') ? ' active' : ''}">ISEE</button>
+								<button class="student-profile-courses-btn${_.isEmpty(_.studentInfo['currentPlan']) ? ' active' : _.studentInfo['currentPlan']['course']['title'] == 'SSAT' ? ' active' : ''}">SSAT</button>
+								<button class="student-profile-courses-btn${(!_.isEmpty(_.studentInfo['currentPlan']) && _.studentInfo['currentPlan']['course']['title'] == 'SHSAT') ? ' active' : ''}">SHSAT</button>
+							</div>
 					<div class="student-profile-course-info loader-parent"><img src='/img/loader.gif' class='loader'></div>
 				</div>
 			</div>

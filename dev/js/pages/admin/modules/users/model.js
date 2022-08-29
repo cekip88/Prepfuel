@@ -18,6 +18,7 @@ class _Model {
 			removeCourse: `/user/remove-plan`,
 			wizardData: `/user/wizard-data`,
 			updateAdmin: `/admin/admins`,
+			getStudent: `/user/student`,
 			getParent: `/admin/parents`,
 			updateParent: `/admin/parents`,
 			removeParent: `/admin/parents`,
@@ -50,6 +51,26 @@ class _Model {
 				}
 			} else {
 				_.wrongRequest('assignCourse', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+	getStudent(id){
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('getStudent')}/${id}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('getStudents', response);
+				}
+			} else {
+				_.wrongRequest('getStudents', rawResponse)
 			}
 			resolve(null);
 		});
@@ -139,6 +160,7 @@ class _Model {
 		/*if(!update){
 			if(_[`${role}sData`]) return Promise.resolve(_[`${role}sData`]);
 		}*/
+		console.log(searchInfo)
 		let request = `?role=${role}`;
 		for (let key in searchInfo) {
 			if (key === 'dates' || searchInfo[key] == 'undefined') continue;
