@@ -137,6 +137,15 @@ export default class G_G{
 		if(searchedItems.length === 1) return  searchedItems[0];
 		return searchedItems;
 	}
+	ff(selector){
+		let searchedItems = document.querySelectorAll(selector);
+		if( this instanceof HTMLElement ){
+			searchedItems = this.querySelectorAll(selector);
+		}
+		if(!searchedItems.length) return createAppendPrototype(selector);
+		if(searchedItems.length === 1) return createAppendPrototype(selector,searchedItems[0]);
+		return searchedItems;
+	}
 	clear(domElement){
 		if(!domElement) return void 0;
 		if(domElement instanceof HTMLElement){
@@ -237,3 +246,25 @@ export default class G_G{
 		_.initedUpdate = true;
 	}
 }
+
+function createAppendPrototype(selector,element = null){
+	let appendPrototype = {
+		selector: selector,
+		gappend: function (data) {
+			if (element) {
+				element.append(data)
+			} else {
+				let styles= `
+						background: rgb(54, 153, 255) 16px center no-repeat url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwIDJDMTQuNDEgMiAxOCA1LjU5IDE4IDEwQzE4IDE0LjQxIDE0LjQxIDE4IDEwIDE4QzUuNTkgMTggMiAxNC40MSAyIDEwQzIgNS41OSA1LjU5IDIgMTAgMlpNMTAgMEM0LjQ4IDAgMCA0LjQ4IDAgMTBDMCAxNS41MiA0LjQ4IDIwIDEwIDIwQzE1LjUyIDIwIDIwIDE1LjUyIDIwIDEwQzIwIDQuNDggMTUuNTIgMCAxMCAwWiIgZmlsbD0iI0ZGNDY2NyIgZmlsbC1vcGFjaXR5PSIwLjkiLz4KPHBhdGggZD0iTTkgMTFMOSA1QzkgNC40NSA5LjQ1IDQgMTAgNEMxMC41NSA0IDExIDQuNDUgMTEgNUwxMSAxMUMxMSAxMS41NSAxMC41NSAxMiAxMCAxMkM5LjQ1IDEyIDkgMTEuNTUgOSAxMVoiIGZpbGw9IiNGRjQ2NjciIGZpbGwtb3BhY2l0eT0iMC45Ii8+CjxyZWN0IHg9IjkiIHk9IjE0IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiByeD0iMSIgZmlsbD0iI0ZGNDY2NyIgZmlsbC1vcGFjaXR5PSIwLjkiLz4KPC9zdmc+Cg==");
+						background-size:20px;
+						padding: 10px 10px 10px 50px;
+						display: flex;
+						border-left:2px solid #FF6F6F;color:rgba(255, 255, 255, 1);
+					`;
+				console.log(`%c%s`,styles,`Element with selector "${selector}" not found on page`);
+			}
+		},
+		exists: !!element
+	}
+	return appendPrototype;
+};

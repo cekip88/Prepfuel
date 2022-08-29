@@ -64,6 +64,7 @@ export class DashboardModule extends ParentPage{
 	}
 	async domReady() {
 		const _ = this;
+		console.log('domReady')
 		if ( !_.wizardData ) _.wizardData = await Model.getWizardData();
 		if ( !_.currentStudent ) _.currentStudent = _.me['parent']['students'][0];
 
@@ -94,6 +95,7 @@ export class DashboardModule extends ParentPage{
 	}
 	async changeSection({item, event}) {
 		const _ = this;
+		console.log('changeSection')
 		_.previousSection = _.subSection;
 		let section = item.getAttribute('section');
 		_.subSection = section;
@@ -147,6 +149,7 @@ export class DashboardModule extends ParentPage{
 	}
 	changeStudent({item,event}){
 		const _ = this;
+		console.log('changeStudent')
 		let index = parseInt(item.getAttribute('data-index'));
 		if(_.currentStudent === _.me['parent']['students'][index]) return void 0;
 
@@ -159,12 +162,14 @@ export class DashboardModule extends ParentPage{
 
 	fillWelcome(){
 		const _ = this;
+		console.log('fillWelcome')
 		_.body.append( _.markup( _.welcomeTpl()));
 	}
 
 	//profile
 	async fillProfile() {
 		const _ = this;
+		console.log('fillProfile')
 		_.studentInfo = Object.assign({},_.currentStudent['user']);
 		_.metaInfo = {};
 		_.studentInfo['currentSchool'] = _.currentStudent['currentSchool'] ?? '';
@@ -189,14 +194,17 @@ export class DashboardModule extends ParentPage{
 	}
 	showCancelMembership({item}) {
 		const _ = this;
+		console.log('showCancelMembership')
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#cancelForm','closeBtn':'hide'});
 	}
 	showRemovePopup({item}) {
 		const _ = this;
+		console.log('showRemovePopup')
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#removeForm','closeBtn':'hide'});
 	}
 	async removeCourse({item}) {
 		const _ = this;
+		console.log('removeCourse')
 		let courseInfo = _.f('.student-profile-course-info');
 		_.clear(courseInfo);
 		await Model.removeCourse({
@@ -226,6 +234,7 @@ export class DashboardModule extends ParentPage{
 	}
 	async assignCourse() {
 		const _ = this;
+		console.log('assignCourse')
 		let response = await Model.assignCourse(_.studentInfo);
 		if(!response)	return void 0;
 		_.currentStudent['currentPlan'] = response['currentPlan'];
@@ -238,6 +247,7 @@ export class DashboardModule extends ParentPage{
 	}
 	async updateCourse(){
 		const _ = this;
+		console.log('updateCourse')
 		for (let key in _.courseData) {
 			let response = await Model.updateCourse(_.courseData[key]);
 			if (_.courseData[key]['_id'] == _.currentStudent['currentPlan']['_id']) {
@@ -253,6 +263,7 @@ export class DashboardModule extends ParentPage{
 	}
 	async removeUser({item}){
 		const _ = this;
+		console.log('removeUser')
 		let response = await Model.removeStudent(_.studentInfo['_id']);
 		if (!response) return;
 
@@ -282,6 +293,7 @@ export class DashboardModule extends ParentPage{
 	//dashboard
 	async fillDashboardTabs(){
 		const _ = this;
+		console.log('fillDashboardTabs')
 
 		let cont = _.f('.subnavigate.parent');
 		let imgs = cont.querySelectorAll('[data-id]');
@@ -298,6 +310,7 @@ export class DashboardModule extends ParentPage{
 	}
 	async fillStudentProfile(){
 		const _ = this;
+		console.log('fillStudentProfile')
 		_.fillDashboard();
 		_.fillScheduleBlock( _.currentStudent['_id'] );
 		_.fillStarsBlock();
@@ -344,6 +357,7 @@ export class DashboardModule extends ParentPage{
 
 	fillDashboard(){
 		const _ = this;
+		console.log('fillDashboard')
 
 		let cont = _.f('#studentProfile');
 		_.clear(cont);
@@ -366,18 +380,28 @@ export class DashboardModule extends ParentPage{
 		}
 	}
 	async fillScheduleBlock(id){
+		console.log('fillScheduleBlock')
 		const _ = this;
-		let
-			schedule = await Model.getSchedule(id),
-			scheduleList = document.querySelector('#scheduleList');
+		let scheduleList = document.querySelector('#scheduleList');
+		scheduleList.classList.add('loader-parent');
+		scheduleList.append(_.markup(`<img src="/img/loader.gif">`))
+		let schedule = await Model.getSchedule(id);
+		let scheduleFooter = scheduleList.nextElementSibling;
 		_.clear(scheduleList);
-		if (!schedule) return;
-		let
-			scheduleTpl = _.scheduleBlock(schedule);
-		scheduleList.append(_.markup(scheduleTpl));
+
+		if (_.isEmpty(schedule)) {
+			scheduleFooter.classList.add('schedule-hidden');
+			scheduleList.append(_.markup(`<li class="block-empty-text">Student has not created the practice schedule yet.</li>`))
+		} else {
+			scheduleFooter.classList.remove('schedule-hidden');
+			let scheduleTpl = _.scheduleBlock(schedule);
+			scheduleList.append(_.markup(scheduleTpl));
+		}
+		scheduleList.classList.remove('loader-parent');
 	}
 	async fillStarsBlock(){
 		const _ = this;
+		console.log('fillStarsBlock')
 		let starsCont = _.f('#starsBlock');
 		let starsInfo = {
 			items: [
@@ -394,6 +418,7 @@ export class DashboardModule extends ParentPage{
 	}
 	showCircleGraphic(data,cont){
 		const _ = this;
+		console.log('showCircleGraphic')
 		let starsCont = cont.querySelector('.stars-circle');
 		if (!starsCont) return;
 
@@ -429,20 +454,9 @@ export class DashboardModule extends ParentPage{
 
 		starsCont.prepend(svg);
 	}
-	setInteger(number){
-		const _ = this;
-		if (number < 1000) return number;
-		let string = Math.ceil(number).toString();
-		let result = '';
-		for ( let i = 0; i < string.length; i++ ){
-			if (!(i%3) && i) {
-				result = ',' + result;
-			}
-			result = string[string["length"] - i - 1] + result;
-		}
-		return result;
-	}
+
 	fillScheduleItemsTpl(dashSchedule){
+		console.log('fillScheduleItemsTpl')
 		const _ = this;
 		let schData = [
 			dashSchedule['skillTest'],
@@ -499,6 +513,7 @@ export class DashboardModule extends ParentPage{
 	}
 	drawCircleGraphic(item,color){
 		const _ = this;
+		console.log('drawCircleGraphic')
 		let
 			svg = `</svg>`,
 			radius = 67,
@@ -516,6 +531,7 @@ export class DashboardModule extends ParentPage{
 	// add student methods
 	fillStudentInfo({item}){
 		const _ = this;
+		console.log('fillStudentInfo')
 		if (item.value) {
 			item.setMarker();
 		} else {
@@ -530,6 +546,7 @@ export class DashboardModule extends ParentPage{
 	}
 	inputCourseData({item}){
 		const _ = this;
+		console.log('inputCourseData')
 		_.fillStudentInfo({item});
 		let courseId = _.studentInfo['currentPlan']['_id'];
 		if (!_.courseData) _.courseData = {};
@@ -544,12 +561,14 @@ export class DashboardModule extends ParentPage{
 	}
 	fillAddingStudent(){
 		const _ = this;
+		console.log('fillAddingStudent')
 		_.body.append( _.markup( _.addingStudentTpl()));
 		_.handleAddingSteps(1);
 	}
 
 	cancelAddStudent(){
 		const _ = this;
+		console.log('cancelAddStudent')
 		let btn = document.createElement('BUTTON');
 		if (_.previousSection === 'profile') _.previousSection = 'dashboard'
 		btn.setAttribute('section',_.previousSection);
@@ -579,6 +598,7 @@ export class DashboardModule extends ParentPage{
 	//end add student methods
 	//update methods
 	updateMe(){
+		console.log('updateMe')
 		const _ = this;
 		_.me['parent']['students'].find((student,index)=>{
 			if (student['_id'] == _.currentStudent['_id']) {
@@ -588,6 +608,7 @@ export class DashboardModule extends ParentPage{
 		localStorage.setItem('me',JSON.stringify(_.me));
 	}
 	async updateStudent({item}){
+		console.log('updateStudent')
 		const _ = this;
 		let response = await Model.updateStudent({
 			'_id': _.studentInfo['_id'],
@@ -618,11 +639,13 @@ export class DashboardModule extends ParentPage{
 	}
 	showRemoveUserPopup({item}){
 		const _ = this;
+		console.log('showRemoveUserPopup')
 		_.studentInfo['_id'] = item.getAttribute('data-id');
 		G_Bus.trigger('modaler','showModal', {item:item,type:'html',target:'#removeUserForm','closeBtn':'hide'});
 	}
 	async saveChangePassword({item}){
 		const _ = this;
+		console.log('saveChangePassword')
 		let
 			form = item.closest('.passwords'),
 			inputs = form.querySelectorAll('G-INPUT[type="password"]'),
@@ -714,12 +737,14 @@ export class DashboardModule extends ParentPage{
 	//change methods
 	changeStudentLevel({item}) {
 		const _ = this;
+		console.log('changeStudentLevel')
 		if (item.parentNode.querySelector('.active')) item.parentNode.querySelector('.active').classList.remove('active');
 		item.classList.add('active');
 		_.studentInfo.level = item.getAttribute('data-id');
 	}
 	async changeTestType({item}) {
 		const _ = this;
+		console.log('changeTestType')
 		if(item.parentNode.querySelector('.active'))  item.parentNode.querySelector('.active').classList.remove('active');
 		item.classList.add('active');
 
@@ -737,6 +762,7 @@ export class DashboardModule extends ParentPage{
 		levelButtons.innerHTML = _.levelButtons(_.wizardData['courses'][pos]);
 	}
 	changePayMethod({item}){
+		console.log('changePayMethod')
 		const _ = this;
 		let
 			cont = item.parentElement,
@@ -752,6 +778,8 @@ export class DashboardModule extends ParentPage{
 	}
 	//end change methods
 
+
+	//auxiliary methods
 	hideProfile({item}){
 		const _ = this;
 		let cont = item.closest('.parent-student-info');
@@ -773,8 +801,6 @@ export class DashboardModule extends ParentPage{
 		item.nextElementSibling.classList.toggle('active');
 		item.classList.toggle('active')
 	}
-
-	//auxiliary methods
 	generatePassword({item}){
 		const _ = this;
 		let
@@ -894,6 +920,19 @@ export class DashboardModule extends ParentPage{
 			_.studentInfo.testDatePicked = true;
 		}
 	}
+	setInteger(number){
+		const _ = this;
+		if (number < 1000) return number;
+		let string = Math.ceil(number).toString();
+		let result = '';
+		for ( let i = 0; i < string.length; i++ ){
+			if (!(i%3) && i) {
+				result = ',' + result;
+			}
+			result = string[string["length"] - i - 1] + result;
+		}
+		return result;
+	}
 	dateToFormat( date, format ){
 		const _ = this;
 		let
@@ -931,15 +970,18 @@ export class DashboardModule extends ParentPage{
 
 	showAddCard({item}){
 		const _ = this;
+		console.log('showAddCard')
 		G_Bus.trigger('modaler','showModal',{type:'html',target:'#addCard'})
 	}
 	showAddBillingAddress({item}){
 		const _ = this;
+		console.log('showAddBillingAddress')
 		G_Bus.trigger('modaler','showModal',{type:'html',target:'#addBillingAddress'})
 	}
 
 	fillParentCardsInfo(cardsInfo){
 		const _ = this;
+		console.log('fillParentCardsInfo')
 		let cardsCont = _.f('#cards');
 		_.clear(cardsCont)
 		if (cardsInfo.length) {
@@ -948,6 +990,7 @@ export class DashboardModule extends ParentPage{
 	}
 	fillParentAddressesInfo(addressesInfo){
 		const _ = this;
+		console.log('fillParentAddressesInfo')
 		let addressesCont = _.f('#billing-addresses');
 		_.clear(addressesCont)
 		if (addressesInfo.length) {
@@ -957,7 +1000,7 @@ export class DashboardModule extends ParentPage{
 
 	async addingStep({item}){
 		const _ = this;
-
+		console.log('addingStep')
 		let cont = item.closest('#parent');
 		let targetStep = item.getAttribute('step');
 		if (targetStep > _.currentStep) {
@@ -969,10 +1012,12 @@ export class DashboardModule extends ParentPage{
 	}
 	assignStep({item}){
 		const _ = this;
+		console.log('assignStep')
 		_._$.assignStep = parseInt(item.getAttribute('step'));
 	}
 	async handleAddingSteps({addingStep = 1}){
 		const _ = this;
+		console.log('handleAddingSteps')
 		if(!_.initedUpdate){
 			_.wizardData = await Model.getWizardData();
 			_.addingSteps = {
@@ -1054,6 +1099,7 @@ export class DashboardModule extends ParentPage{
 	}
 	async handleAssignSteps({assignStep = 1}){
 		const _ = this;
+		console.log('handleAssignSteps')
 		if( !_.initedAssign ) {
 			_.assignSteps = {
 				0: 'changeSection',
@@ -1126,11 +1172,13 @@ export class DashboardModule extends ParentPage{
 	}
 	fillassignCourse(){
 		const _ = this;
+		console.log('fillassignCourse')
 		_.body.append( _.markup( _.assignCourseTpl()));
 		_.handleAssignSteps(1);
 	}
 
 	async addingStepValidate(cont){
+		console.log('addingStepValidate')
 		const _ = this;
 		let inputs = cont.querySelectorAll(`[data-required]`);
 		let validate = true;

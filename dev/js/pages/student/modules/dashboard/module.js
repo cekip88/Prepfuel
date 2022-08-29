@@ -53,7 +53,7 @@ export class DashboardModule extends StudentPage{
 	
 
 	// Show methods
-	async fillScheduleBlock(){
+	/*async fillScheduleBlock(){
 		const _ = this;
 		let
 			schedule = await Model.getDashSchedule(),
@@ -62,6 +62,27 @@ export class DashboardModule extends StudentPage{
 
 		let scheduleTpl = _.scheduleBlock(schedule);
 		scheduleList.append(_.markup(scheduleTpl))
+	}*/
+	async fillScheduleBlock(){
+		console.log('fillScheduleBlock')
+		const _ = this;
+		let list = document.querySelector('#scheduleList');
+		list.classList.add('loader-parent');
+		list.append(_.markup(`<img src="/img/loader.gif">`))
+		let scheduleData = await Model.getSchedule();
+		console.log(scheduleData)
+		let footer = list.nextElementSibling;
+		_.clear(list);
+
+		if (_.isEmpty(scheduleData)) {
+			footer.classList.add('schedule-hidden');
+			list.append(_.markup(`<li class="block-empty-text">Student has not created the practice schedule yet.</li>`))
+		} else {
+			footer.classList.remove('schedule-hidden');
+			let tpl = _.scheduleBlock(scheduleData);
+			list.append(_.markup(tpl));
+		}
+		list.classList.remove('loader-parent');
 	}
 	drawCircleGraphic(item,color){
 		const _ = this;

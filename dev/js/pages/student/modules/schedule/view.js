@@ -56,7 +56,7 @@ export const view = {
 						<use xlink:href="#badge"></use>
 					</svg>
 				</div>
-				<h5 class="practice-schedule-title">Your ISEE Date</h5>
+				<h5 class="practice-schedule-title">Your ${_.me.student.currentPlan ? _.me.student.currentPlan.course.title : ''} Date</h5>
 				<div class="practice-schedule-date">
 					<g-input type="date" class="input-date" icon=false id='schedule-date' placeholder="Choose your test date" value="${_.testDate}" format="weekDay, month DD, YYYY" data-change="${_.componentName}:changeScheduleDate"></g-input>
 				</div>

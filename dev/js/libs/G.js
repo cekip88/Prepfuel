@@ -209,6 +209,79 @@ export class G extends G_G{
 		template = null;
 	}
 
+	navigationInit() {
+		const _ = this;
+		let list = _.f('.navigate-list');
+		if (!list) return;
+
+		let label = list.querySelector('.navigate-label');
+		_.setActiveNavItem(list,label);
+		window.addEventListener('resize',()=>{
+			let activeBtn = list.querySelector('.active');
+			if (activeBtn) _.showActiveNavItem(activeBtn,list);
+		})
+		label.classList.add('active');
+	}
+	subnavigate(clickData){
+		const _ = this;
+		if (!clickData) return;
+		let
+			target = clickData.event.target,
+			btn = _.ascent(target,'.subnavigate-button','subnavigate');
+
+		_.changeActiveNavItem(btn);
+	}
+	setActiveNavItem(list,label){
+		const _ = this;
+		let
+			route = location.pathname.split('/')[2],
+			newActiveBtn = list.querySelector(`.${route}`),
+			activeBtn = list.querySelector('.active');
+
+		if(newActiveBtn) {
+			label.style = `width: ${newActiveBtn.clientWidth}px;left:${newActiveBtn.offsetLeft}px;`
+			_.navigate({item:list, event:{target:newActiveBtn}})
+		} else {
+			if (activeBtn){
+				label.style = `width: ${activeBtn.clientWidth}px;left:${activeBtn.offsetLeft}px;`
+				_.navigate({item:list, event:{target:activeBtn}})
+			} else {
+				label.style = `display:block;width: 0px;left: 999999px;`;
+			}
+		}
+	}
+	changeActiveNavItem(item){
+		const _ = this;
+		let
+			cont = item.parentElement,
+			curItem = cont.querySelector('.active');
+		_.removeCls(curItem,'active');
+		item.classList.add('active')
+	}
+	showActiveNavItem(btn){
+		let
+			width = btn.clientWidth,
+			x = btn.offsetLeft,
+			label = this.f('.navigate-label');
+
+		if(!label) return void 'Navigate label not found';
+		label.style = `width: ${width}px;left: ${x}px;`
+	}
+	changeTab(btn,parentCls){
+		const _ = this;
+		let
+			list = btn.parentElement.children,
+			parent = btn.closest('.' + parentCls),
+			targetSelector = parent.getAttribute('data-tabs'),
+			tabsContainer = _.f(targetSelector);
+
+		if (!targetSelector || !tabsContainer) return;
+
+		_.removeCls(tabsContainer.querySelector(`${targetSelector}>.active`),'active');
+		for (let i = 0; i < list.length; i++) {
+			if (list[i] === btn && tabsContainer.children[i]) tabsContainer.children[i].classList.add('active');
+		}
+	}
 
 
 
@@ -279,5 +352,13 @@ export class G extends G_G{
 			</div>
 		`;
 		return tpl;
+	}
+
+	isEmpty(obj){
+		const _ = this;
+		for (let key in obj) {
+			return false;
+		}
+		return true;
 	}
 }
