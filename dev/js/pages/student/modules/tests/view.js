@@ -180,9 +180,9 @@ export const view = {
 		return	`
 			<div class="section">
 				<div class="section-header">
-					<h1 class="title">${Model.currentSection['welcome'].headerTitle}</h1>
+					<h1 class="title">Welcome</h1>
 					<button class="button-white" data-click="StudentPage:changeSection" section="/student/tests">
-						<span>Don’t start this section now</span>
+						<span>Don’t start this test now</span>
 					</button>
 				</div>
 			</div>
@@ -279,7 +279,7 @@ export const view = {
 				<div class="section-header">
 					<h2 class="title">Practice Test Score - Section Name</h2>
 					<button class="button-white" data-click="StudentPage:changeSection" section="/student/tests">
-						<span>Exit this section</span>
+						<span>Exit this test</span>
 					</button>
 				</div>
 			</div>
@@ -331,7 +331,7 @@ export const view = {
 					</div>
 					<div class="test-footer">
 						<a class="test-footer-back" data-click="${_.componentName}:changeSection" section="questions">
-							<span>Review this section</span>
+							<span>Review this test</span>
 						</a>
 						<!--button class="button-blue"><span>Start the next section: Quantitative Reasoning</span></button -->
 					</div>
@@ -372,13 +372,31 @@ export const view = {
 				<button class="test-footer-button dir-button" data-click="${this.componentName}:changeSection" section="directions">
 					<span>Directions</span>
 				</button>
+				${ _.questionPos>0 ?_.addBackToQuestionBtnTpl(_.getPrevStepCnt()) : ''}
 				<button class="button skip-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="next">
 					<span><em class="skip-to-question-title">Skip to questions</em> <b class="skip-to-question">${pos}</b></span>
 				</button>
 			</div>
 			`;
 	},
-
+	addBackToQuestionBtnTpl(pos){
+		const _ = this;
+		let questionData = Model.currentQuestionData(_.questionPos-1);
+		let questPos = `${pos[0]}-${pos[1]}`;
+		if(questionData['type'] != 'passage'){
+			questPos = pos[0]-1;
+		}
+		if(pos == -1){
+			return `
+				<button class="test-footer-back back-to-question-button" data-click="${this.componentName}:changeTestSection" data-section-pos="0">
+					<span>Back to the previous section</span>
+				</button>`;
+		}else{
+			return `<button class="test-footer-back back-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="prev">
+						<span>Back to questions ${questPos}</span>
+					</button>`;
+		}
+	},
 	questionsListNavTabs(){
 		const _ = this;
 		let tpl = `
@@ -954,7 +972,7 @@ export const view = {
 			<div class="test-results-item" style="background-color:rgba(${_.sectionColors[cnt]},.2);color:rgb(${_.sectionColors[cnt]})">
 				<h6 class="test-results-item-title">${result['sectionName']}</h6>
 				<span class="test-results-item-value">${Math.round(Math.random()*1000)}</span>
-				<button class="test-results-item-button" style="background-color:rgb(${_.sectionColors[cnt]})" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="questions">Review this section</button>
+				<button class="test-results-item-button" style="background-color:rgb(${_.sectionColors[cnt]})" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="questions">Review this test</button>
 			</div>
 			`;
 			cnt++;
@@ -1064,7 +1082,7 @@ export const view = {
 										<h6 class="test-pick-title">Verbal Reasoning</h6>
 										<p class="text">40 questions</p>
 									</div>
-									<button class="button"><span>Review this section</span></button>
+									<button class="button"><span>Review this test</span></button>
 								</li>
 								<li class="test-pick-item blue">
 									<div class="test-pick-time"><span>35</span><span>min</span></div>
