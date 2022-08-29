@@ -209,12 +209,15 @@ export class G extends G_G{
 		template = null;
 	}
 
+
+
 	navigationInit() {
 		const _ = this;
 		let list = _.f('.navigate-list');
 		if (!list) return;
 
 		let label = list.querySelector('.navigate-label');
+		if (label.classList.contains('active')) return;
 		_.setActiveNavItem(list,label);
 		window.addEventListener('resize',()=>{
 			let activeBtn = list.querySelector('.active');

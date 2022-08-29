@@ -144,9 +144,9 @@ export class UsersModule extends AdminPage {
 			_.fillAdminProfile(data);
 			_._$.assignStep = 1;
 		}
-		console.log(_.ff('.blocfk-header-item.button-blue'))
-		_.ff('.block-header-itefm.button-blue').gappend(_.markup('<span>Hello</span>'))
-		_.navigationInit();
+		//console.log(_.ff('.blocfk-header-item.button-blue'))
+		//_.ff('.block-header-itefm.button-blue').gappend(_.markup('<span>Hello</span>'))
+		//_.navigationInit();
 	}
 
 	// Create methods
@@ -546,7 +546,9 @@ export class UsersModule extends AdminPage {
 	fillTableFilter(selector){
 		const _ = this;
 		let filters = _.f(`${selector ?? ''} .filter`);
-		if (filters.length) {
+		if (!filters) {
+			return void 0;
+		} else if (filters.length) {
 			for (let filter of filters) {
 				_.fillOneFilter(filter);
 			}
