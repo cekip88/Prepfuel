@@ -331,7 +331,7 @@ export const view = {
 						<div class="icon"><svg><use xlink:href="#graphic-1"></use></svg></div>
 						<h5 class="practice-table-row-title">${item.concept}</h5>
 					</div>
-					<button class="button" data-click="${_.componentName}:changeSection;" section="welcome" data-id="${item.concept}" data-category="${itemsInfo['category']}"><span>Practice</span></button>
+					<button class="button" data-click="${_.componentName}:changeSection;${_.componentName}:setSkillInfo" section="welcome" data-id="${item.concept}" data-category="${itemsInfo['category']}"><span>Practice</span></button>
 					<button class="video">
 						<svg><use xlink:href="#play"></use></svg>
 						<span>Video example</span>
@@ -467,7 +467,7 @@ export const view = {
 				<div class="section-header">
 					<h1 class="title" id="welcome-header-title"></h1>
 					<button class="button-white" data-click="${this.componentName}:changeSection" section="mathematics">
-						<span>Don’t start this section now</span>
+						<span>Exit this Practice</span>
 					</button>
 				</div>
 			</div>
@@ -535,7 +535,7 @@ export const view = {
 						</ul>
 					</div>
 					<div class="test-footer">
-						<button class="button-blue" id="welcome-btn"	type="button" data-click="${this.componentName}:changeSection" section="directions">
+						<button class="button-blue" id="welcome-btn"	type="button" data-click="${this.componentName}:changeSection" section="directions" data-id="${_._$.currentQuestion}">
 							<span>Start skill practice</span>
 						</button>
 					</div>
@@ -726,9 +726,9 @@ export const view = {
 					<span>Directions</span>
 				</a>
 				<div class="pagination pagination-top">
-								<div class="pagination-info"><span>Do <strong class="questions-length"></strong> questions</span></div>
-								<div class="pagination-links" id="question-pagination"></div>
-							</div>
+					<div class="pagination-info" id="pagination-title"><span>Do <strong class="questions-length"></strong> questions</span></div>
+					<div class="pagination-links" id="question-pagination"></div>
+				</div>
 			<a class="button-blue" disabled="" id="check-answer-btn" data-click="${_.componentName}:checkAnswer"><span>Check answer</span></a>
 			</div>`;
 	},

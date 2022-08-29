@@ -73,7 +73,7 @@ export class PracticeModule extends StudentPage{
 			'showForm','saveBookmark','saveNote','saveBookmark','changeInnerQuestionId',
 			'showTestLabelModal','editNote','deleteNote','saveReport','changeQuestion','viewResult',
 			'startQuiz','checkQuizAnswer','setWrongAnswer','setQuizInfo','changeQuizQuestion',
-		'viewStartResult'
+			'viewStartResult','setSkillInfo'
 		])
 	}
 	
@@ -163,15 +163,6 @@ export class PracticeModule extends StudentPage{
 		directionsBtn.textContent = 'Start the quiz';
 		_.f("#testType").textContent = _.currentTestType;
 	}
-	async fillDirectionsSection({item}){
-		const _ = this;
-		let
-			conceptName = item.getAttribute('data-id'),
-			{currentConcept} = Model.getCurrentConcept(conceptName);
-		_.f('#directions-header-title').textContent = currentConcept['concept'];
-		_.f('#directions-btn').setAttribute('data-id',currentConcept['concept']);
-		_.f('#directions-btn').setAttribute('data-category',currentConcept['category']);
-	}
 	async fillQuizQuestionSection({item}){
 		const _ = this;
 		if(!_.quizTests.length){
@@ -185,8 +176,8 @@ export class PracticeModule extends StudentPage{
 		_.f('#question-pagination').append(_.markup(_.quizQuestionNavigation()));
 		_.f("#testType").textContent = _.currentTestType;
 		let
-			innerItem = _.f('.pagination-link'),
-			pos = _.questionPos;
+		innerItem = _.f('.pagination-link'),
+		pos = _.questionPos;
 		if(_.f('.pagination-link.active')){ _.f('.pagination-link.active').classList.remove('active'); }
 		innerItem[pos].classList.add('active');
 		
@@ -197,19 +188,36 @@ export class PracticeModule extends StudentPage{
 		
 		_._$.currentQuizQuestion =_.quizTests[_.questionPos];
 	}
+	async fillDirectionsSection({item}){
+		const _ = this;
+		let
+			conceptName = item.getAttribute('data-id'),
+			{currentConcept} = Model.getCurrentConcept(conceptName);
+		_.f('#directions-header-title').textContent = currentConcept['concept'];
+		_.f('#directions-btn').setAttribute('data-id',currentConcept['concept']);
+		_.f('#directions-btn').setAttribute('data-category',currentConcept['concept']);
+	}
 	async fillQuestionSection({item}){
 		const _ = this;
 		let
 			conceptName = item.getAttribute('data-id'),
 			{currentConcept,currentCategory} = Model.getCurrentConcept(conceptName);
 		_.currentTestType = 'skill';
-		let response = await Model.start(currentConcept['concept'],currentCategory);
-
+		if(!_.testFinished){
+			let response = await Model.start(_.currentConcept,_.currentCategory);
+			_.skillTests = await Model.getSkillPractice(_.currentConcept,_.currentCategory);
+		}
 		
-		_.skillTests = await Model.getSkillPractice(conceptName,currentCategory);
-		_.f('#question-header-title').textContent = currentConcept['concept'];
+		_.f('#question-header-title').textContent = _.currentConcept;
 		_.f('.questions-length').textContent = _.questionsLength;
 		_.f('#question-pagination').append(_.markup(_.questionNavigation()));
+		
+		if(_.testFinished){
+			console.log(_.currentAnswers);
+			_.setSkillPaginationAnswers(_.currentAnswers);
+		}
+		
+		_.f('#directions-btn').setAttribute('data-id',_.currentConcept);
 		
 		_._$.currentQuestion = _.skillTests[_.questionPos];
 		
@@ -612,17 +620,36 @@ export class PracticeModule extends StudentPage{
 	
 		let
 			summary,questionBody = _.f('#question-inner-body');
+		let answerBtn = _.f('#check-answer-btn');
+		answerBtn.textContent = 'Review your answers';
 		if(_.currentTestType == 'quiz'){
 			summary = await Model.getQuizSummary();
 			questionBody.innerHTML = await _.quizSummary(summary);
-			_.f('#check-answer-btn').setAttribute('data-click',`${_.componentName}:reviewAnswers`);
-			_.f('#check-answer-btn').textContent = 'Review your answers';
-			_.f('#check-answer-btn').before(_.markup(_.exitThisQuiz()));
+			answerBtn.setAttribute('data-click',`${_.componentName}:reviewAnswers`);
+			answerBtn.before(_.markup(_.exitThisQuiz()));
 			let {currentAnswers, placedAnswers} = await _.getAnswer(_._$.currentQuizQuestion);
 			_.setPaginationAnswers(placedAnswers);
 		}else{
 			summary = await Model.getSummary();
 			questionBody.innerHTML = await _.skillSummary(summary,	Model.currentCategory,Model.currentConcept['concept']);
+			_.f('#testType').textContent = 'Review';
+			answerBtn.setAttribute('data-click',`${_.componentName}:changeSection`)
+			answerBtn.setAttribute('section',`questions`);
+			_.clear(_.f('#pagination-title'));
+			_.f('#pagination-title').append(_.markup(
+			`
+				<span>Jump to a question: </span>
+			`));
+			if(!_.f("#exit-practice-btn")){
+				_.questionPos = 0;
+				_.finishTest = true;
+				_.isFinished = true;
+				answerBtn.before(_.markup(
+					`<button class="test-footer-back back-to-question-button" id='exit-practice-btn' data-click="${this.componentName}:changeSection" section="mathematics">
+						<span>Exit this practice</span>
+					</button>`
+				));
+			}
 		}
 
 	}
@@ -725,6 +752,9 @@ export class PracticeModule extends StudentPage{
 			ul,
 			answerVariant,
 			questionId = item.parentNode.getAttribute('data-question-id');
+		if(_.f('.answer-item.correct')){
+			return void 0;
+		}
 		if(type == 'simple'){
 			answer = item.parentNode;
 			ul = answer.parentNode;
@@ -746,7 +776,6 @@ export class PracticeModule extends StudentPage{
 			if(!_.isLastQuestion){
 				_.changeNextButtonToAnswer()
 			}else{
-			
 			}
 		}else{
 			_.setAvailableCheckBtn();
@@ -795,9 +824,23 @@ export class PracticeModule extends StudentPage{
 		btn.setAttribute('data-click',`${_.componentName}:viewResult`);
 		btn.textContent = 'View my results';
 	}
+	setSummarySkillBtn(){
+		const _ = this;
+		let btn = _.f('#check-answer-btn');
+		btn.setAttribute('data-click',`${_.componentName}:viewResult`);
+		btn.textContent = 'View my results';
+	}
 	setAvailableCheckBtn(){
 		const _ = this;
 		_.f('#check-answer-btn').removeAttribute('disabled');
+	}
+	setSkillInfo({item}){
+		const _ = this;
+		let
+			concept = item.getAttribute('data-id'),
+			category = item.getAttribute('data-category');
+		_.currentConcept =concept;
+		_.currentCategory = category;
 	}
 	setQuizInfo({item}){
 		const _ = this;
@@ -962,11 +1005,15 @@ export class PracticeModule extends StudentPage{
 						_.f('.grid.empty').setAttribute('hidden','hidden');
 						_.f('.grid.incorrect').removeAttribute('hidden');
 					}
-					
 				}
 			});
+			
+			let currentAnswers = await _.getAnswerSkill(_._$.currentQuestion);
+			_.fillExplanation(_._$.currentQuestion);
+			_.setLetterAnswer(currentAnswers);
+			
 			if(_.isLastQuestion){
-				_.setSummaryBtn();
+				_.setSummarySkillBtn();
 				_.testFinished = true;
 			}
 		}
@@ -1107,7 +1154,26 @@ export class PracticeModule extends StudentPage{
 			}
 			
 		}
-		
+	}
+	setSkillPaginationAnswers(currentAnswers){
+		const _ = this;
+		_.skillTests.forEach( (skill,index) => {
+			if(currentAnswers[skill['_id']]){
+				currentAnswers[skill['_id']][0]['pos'] = index;
+				skill['questions'].forEach(question=>{
+					currentAnswers[skill['_id']][0]['correctAnswer'] = question['correctAnswer'];
+				});
+			}
+		});
+		for(let key in currentAnswers){
+			let answer = currentAnswers[key][0];
+			if(answer['answer'] == answer['correctAnswer']){
+				_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('done');
+			}else{
+				_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('error');
+			}
+			
+		}
 	}
 	async startQuiz({item}){
 		const _ = this;
@@ -1171,6 +1237,37 @@ export class PracticeModule extends StudentPage{
 		return {currentAnswers,placedAnswers};
 	}
 	
+	async getAnswerSkill(currentQuestion){
+		const _ = this;
+		return  new Promise( async function(resolve){
+		let rawAnswers = [];
+			rawAnswers = await Model.getTestResults();
+		
+		let	placedAnswers = {};
+			if( (!rawAnswers) ||  (!rawAnswers.length)) resolve(null);
+			rawAnswers.forEach( (item) => {
+				if(!placedAnswers[item.questionDatasId]) placedAnswers[item.questionDatasId] = [];
+				placedAnswers[item.questionDatasId].push({
+					questionId: item.questionId,
+					answer: item.answer,
+					note: item.note,
+					bookmark: item.bookmark
+				});
+			});
+			let currentAnswers = placedAnswers[currentQuestion['_id']];
+			if(!currentAnswers){
+				resolve( null);
+				return void '';
+			}
+			currentAnswers.forEach( answer =>{
+				if(!_.answerVariant[answer.questionId]) _.answerVariant[answer.questionId] = {};
+				_.answerVariant[answer.questionId] = answer;
+			});
+			_.currentAnswers = placedAnswers;
+			resolve(currentAnswers);
+		})
+	}
+	
 	async init(){
 		const _ = this;
 		//Model.deleteQuiz();
@@ -1189,28 +1286,14 @@ export class PracticeModule extends StudentPage{
 			}
 			let questionBody = _.f('#question-inner-body');
 			questionBody.innerHTML = await _.getQuestionTpl();
-			let rawAnswers = [];
-			rawAnswers = await Model.getTestResults();
-			
-			let	placedAnswers = {};
-			if( (!rawAnswers) ||  (!rawAnswers.length)) return void  'No answers from Server';
-	
-			rawAnswers.forEach( (item) => {
-				if(!placedAnswers[item.questionDatasId]) placedAnswers[item.questionDatasId] = [];
-				placedAnswers[item.questionDatasId].push({
-					questionId: item.questionId,
-					answer: item.answer,
-					note: item.note,
-					bookmark: item.bookmark
-				});
-			});
-			let currentAnswers = placedAnswers[currentQuestion['_id']];
-			if(!currentAnswers)	return  void 'No current answers';
-			currentAnswers.forEach( answer =>{
-				if(!_.answerVariant[answer.questionId]) _.answerVariant[answer.questionId] = {};
-				_.answerVariant[answer.questionId] = answer;
-			});
-			
+			if(!_.testFinished ){
+				_.setDisableCheckBtn();
+			}else{
+				//_.setNextButton();
+			}
+
+			let currentAnswers =  await _.getAnswerSkill(currentQuestion);
+			if(!currentAnswers)  return void  'answers not found';
 			
 			if( _.isGrid() ){
 				_.setGridAnswer(currentAnswers);
@@ -1220,12 +1303,7 @@ export class PracticeModule extends StudentPage{
 			_.fillExplanation(currentQuestion);
 			_.fillNote(currentAnswers);
 			_.setBookmark(currentAnswers);
-			
-			if(!_.testFinished ){
-				_.setDisableCheckBtn();
-			}else{
-				//_.setNextButton();
-			}
+		
 		},['currentQuestion']);
 		_._( async ({currentQuizQuestion})=>{
 			if( !_.initedUpdate ){
@@ -1268,8 +1346,6 @@ export class PracticeModule extends StudentPage{
 			_.setBookmark(currentAnswers);
 			
 		},['currentQuizQuestion']);
-		
-		
 	}
 	
 	
