@@ -784,6 +784,7 @@ export class UsersModule extends AdminPage {
 		}
 		if(pos == 6){
 			parentInner.classList.remove('short');
+			console.log(_.parentInfo)
 			_.fillParentProfile({_id:_.parentInfo['_id'],outerId:_.parentInfo['outerId']});
 		}
 		if (pos == 9) {
@@ -879,7 +880,7 @@ export class UsersModule extends AdminPage {
 		let table = container.querySelector('.tbl-body');
 		let parentId = _.parentInfo['_id'];
 		_.clear(table);
-		let tableData = await Model.getParentStudents(parentId);
+		let tableData = await Model.getParentStudents(parentId,item.getAttribute('value'));
 
 		let role = item.getAttribute('role');
 

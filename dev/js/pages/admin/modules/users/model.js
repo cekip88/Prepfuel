@@ -95,10 +95,10 @@ class _Model {
 			resolve(null);
 		});
 	}
-	getParentStudents(parentId){
+	getParentStudents(parentId,sort = ''){
 		const _ = this;
 		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.getEndpoint('parentStudents')}/${parentId}/students`, {
+			let rawResponse = await fetch(`${_.getEndpoint('parentStudents')}/${parentId}/students${sort ? '?sort=' + sort + '' : ''}`, {
 				method: 'GET',
 				headers: _.baseHeaders,
 			});
