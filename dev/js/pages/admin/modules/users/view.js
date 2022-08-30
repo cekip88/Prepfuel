@@ -30,33 +30,32 @@ export const view = {
 			tr.className= 'tbl-row';
 			tr.setAttribute('user-id',item['_id']);
 			if(from === 'users') {
-				tr.innerHTML = _.usersBodyRowTpl(item['currentPlan'], item['user'], item);
+				tr.innerHTML = _.usersBodyRowTpl(item['plans'], item['user'], item);
 			} else {
-				tr.innerHTML = _.studentsBodyRowTpl(item['plans'][0], item['user'], item);
+				tr.innerHTML = _.studentsBodyRowTpl(item['plans'], item['user'], item);
 			}
 			trs.push(tr);
 		}
 		return trs;
 	},
-	usersPlansTpl(plan){
-		const _ = this;
+	usersPlansTpl(plans){
 		console.log('usersPlansTpl')
-		let course,courseCls;
-		if (plan && plan['course']) {
-			course = plan['course'].title + ' ';
-			if (plan['level']['title'].split(' ')[2]){
-				course += plan['level']['title'].split(' ')[0][0];
-			} else {
-				course += plan['level']['title'].split(' ')[0];
-			}
-			courseCls = plan['course'].title + '-' + plan['level']['title'].split(' ')[0];
+		const _ = this;
+		let ans = [];
+		if (!plans || !plans.length) return [];
+		for (let item of plans) {
+			let
+				course = item.level.levelTag,
+				courseWords = item.level.levelTag.split(' '),
+				courseCls = `${courseWords[0]}-${courseWords[1]}`;
+			ans.push({course,courseCls});
 		}
-		return {course,courseCls};
+		return ans;
 	},
-	usersBodyRowTpl(plan,rowData,user){
+	usersBodyRowTpl(plans,rowData,user){
 		console.log('usersBodyRowTpl')
 		const _ = this;
-		let coursesData = _.usersPlansTpl(plan);
+		let coursesData = _.usersPlansTpl(plans);
 		let avatar = rowData.avatar ? rowData.avatar.avatar.split('.')[0] : '';
 		let tpl = `
 			<td>
@@ -71,8 +70,11 @@ export const view = {
 				</div>
 			</td>
 			<td>
-				<div class="tbl-item">
-						<div class="users-course ${coursesData.courseCls ?? ''}">${coursesData.course ?? ''}</div>
+				<div class="tbl-item">`;
+		for (let courseData of coursesData) {
+			tpl += `<div class="users-course ${courseData.courseCls ?? ''}">${courseData.course ?? ''}</div>`;
+		}
+		tpl += `
 				</div>
 			</td>
 			<td>
@@ -98,10 +100,10 @@ export const view = {
 		`
 		return tpl;
 	},
-	studentsBodyRowTpl(plan,rowData,user){
+	studentsBodyRowTpl(plans,rowData,user){
 		console.log('studentsBodyRowTpl')
 		const _ = this;
-		let coursesData = _.usersPlansTpl(plan);
+		let coursesData = _.usersPlansTpl(plans);
 		let avatar = rowData.avatar ? rowData.avatar.avatar.split('.')[0] : '';
 		let tpl = `
 			<td>
@@ -116,8 +118,11 @@ export const view = {
 				</div>
 			</td>
 			<td>
-				<div class="tbl-item">
-					<div class="users-course ${coursesData.courseCls ?? ''}">${coursesData.course ?? ''}</div>
+				<div class="tbl-item">`;
+		for (let courseData of coursesData) {
+			tpl += `<div class="users-course ${courseData.courseCls ?? ''}">${courseData.course ?? ''}</div>`
+		}
+		tpl += `
 			</div>
 		</td>
 			<td>

@@ -511,8 +511,7 @@ export class UsersModule extends AdminPage {
 			return void 'no users data';
 		}
 
-		let
-			tableData = _.usersBodyRowsTpl(usersData,'parent');
+		let tableData = _.usersBodyRowsTpl(usersData,'parent');
 		tbody.append(...tableData);
 		_.connectTableHead(selector);
 	}
