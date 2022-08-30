@@ -35,15 +35,6 @@ class StudentPage extends G{
 		G_Bus
 			.on(_,['changeSection','navigate'])
 	}
-	navigate(clickData){
-		const _ = this;
-		let
-			list = clickData.item,
-			target = clickData.event.target,
-			btn = _.ascent(target,'.navigate-item','navigate-list');
-		_.showActiveNavItem(btn,list);
-		_.changeActiveNavItem(btn);
-	}
 	
 	createdAtFormat(value,format = 'month DD, YYYY'){
 		if (!value) return 'No date'
@@ -102,9 +93,6 @@ class StudentPage extends G{
 			await _.moduleRender(params);
 			_.currentSection = '/student/' + params['module'];
 		}
-		setTimeout(()=>{
-			_.navigationInit();
-		},1000)
 	}
 	
 }

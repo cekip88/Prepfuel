@@ -29,6 +29,7 @@ export class ScheduleModule extends StudentPage{
 		
 		_.practiceTests = [];
 		_.practiceAt = '4:00 PM';
+		_.datePicked = true;
 		
 		
 		_.questionsTarget= 10;
@@ -40,11 +41,13 @@ export class ScheduleModule extends StudentPage{
 		G_Bus.on(_, [
 			'changeSchedulePage',
 			'changeScheduleDate',
+			'changePracticeTime',
 			'addPracticeRow',
 			'removePracticeRow',
 			'changeDay',
 			'changeNumberOfQuestions',
-			'finishSchedule','domReady'
+			'finishSchedule','domReady',
+			'skipTestDate',
 		]);
 	}
 	
@@ -55,7 +58,7 @@ export class ScheduleModule extends StudentPage{
 	finishSchedule({item}) {
 		const _ = this;
 		Model.finishSchedule({
-			testDate: _.testDate,
+			testDate: _.datePicked ? _.testDate : null,
 			practiceDays: _._$.daysPerWeek,
 			practiceTime: _.practiceAt,
 			practiceSkill: _._$.numberOfQuestions,
@@ -81,18 +84,14 @@ export class ScheduleModule extends StudentPage{
 		if(_.practiceRowsCnt === 4){
 			item.setAttribute('style','display:none;')
 		}
-		let
-			rowsCont = _.f('#shedule-rows');
+		let rowsCont = _.f('#shedule-rows');
 		rowsCont.append(_.markup(_.practiceTestRow()));
-		
 	}
 	removePracticeRow({item}){
 		const _ = this;
 		_.practiceRowsCnt--;
 		item.closest('.practice-schedule-row').remove();
-		if (_.practiceRowsCnt === 0) {
-			item.closest('.section').querySelector('.button-lightblue').removeAttribute('style');
-		}
+		_.f('.button-lightblue').removeAttribute('style');
 	}
 	changeSchedulePage({item}){
 		const _ = this;
@@ -100,29 +99,46 @@ export class ScheduleModule extends StudentPage{
 
 		if(direction === 'next'){
 			if(_._$.currentStep < _.maxStep){
-				_._$.currentStep++;
+				if (_._$.currentStep === 2) {
+					if (_.practiceRowsCnt) _._$.currentStep++;
+				} else _._$.currentStep++;
 			}
 		} else {
 			if(_._$.currentStep > _.minStep){
 				_._$.currentStep--;
 			}
 		}
+		console.log(_)
 	}
 	changeScheduleDate({item}){
 		this.testDate = item.value;
 	}
+	changePracticeTime({item}){
+		this.practiceAt = item.value;
+	}
 	
 	changeBtnToCreate() {
 		const _ = this;
-		let btn = 	_.f('#schedule-next-btn');
+		let btn = _.f('#schedule-next-btn');
 		btn.textContent = 'Create';
 		btn.setAttribute('data-click',`${this.componentName}:finishSchedule`);
 	}
 	changeBtnToNext() {
 		const _ = this;
-		let btn = 	_.f('#schedule-next-btn');
+		let btn = _.f('#schedule-next-btn');
 		btn.textContent = 'Next';
 		btn.setAttribute('data-click',`${this.componentName}:changeSchedulePage`);
+	}
+	skipTestDate({item}){
+		const _ = this;
+		let dateInput = _.f('#schedule-date');
+		if (item.checked) {
+			dateInput.setAttribute('disabled',true);
+			_.datePicked = false;
+		} else {
+			dateInput.removeAttribute('disabled');
+			_.datePicked = true;
+		}
 	}
 	
 	init(){
@@ -135,19 +151,27 @@ export class ScheduleModule extends StudentPage{
 			_.innerCont = _.f('.test-inner');
 			_.f('#step-item').textContent = currentStep;
 			if(currentStep === 1 ){
+				let practiceRows = document.querySelectorAll('#shedule-rows .practice-schedule-row');
+				_.practiceRows = [];
+				_.practiceTests = [];
+				for(let row of practiceRows){
+					_.practiceRows.push(row);
+					let
+						date = row.querySelector('.schedule-date').value,
+						time = row.querySelector('.schedule-time').value;
+
+					_.practiceTests.push({date:`${date}T${time}:00Z`});
+				}
 				_.innerCont.innerHTML = _.stepOneTpl();
+				_.changeBtnToNext();
 			}
 			if(currentStep === 2 ){
-				let
-					scheduleDate = _.f('#schedule-date');
-				if(!_.testDate){
-					scheduleDate.doValidate();
-					currentStep--;
-				} else {
-					_.innerCont.innerHTML = _.stepTwoTpl();
-				}
+				let dateInput = _.f('#schedule-date');
+				_.testDate = dateInput ? dateInput.value : _.testDate;
+				_.innerCont.innerHTML = _.stepTwoTpl();
+				_.changeBtnToNext();
 			}
-			if(currentStep  === 3 ){
+			if(currentStep === 3 ){
 				let practiceRows = document.querySelectorAll('#shedule-rows .practice-schedule-row');
 				_.practiceRows = [];
 				_.practiceTests = [];
@@ -162,10 +186,12 @@ export class ScheduleModule extends StudentPage{
 				_.innerCont.innerHTML = _.stepThreeTpl();
 				_.changeBtnToCreate();
 			}
-			
-			_.f('.pagination-links .active').classList.remove('active');
-			_.f(`.pagination-links .pagination-link:nth-child(${currentStep-1})`).classList.add('done');
-			_.f(`.pagination-links .pagination-link:nth-child(${currentStep})`).classList.add('active');
+
+			let pagination = _.f('.pagination-links'),
+				prevPaginationLink = pagination.querySelector(`.pagination-link:nth-child(${currentStep - 1})`);
+			pagination.querySelector('.active').classList.remove('active');
+			prevPaginationLink ? prevPaginationLink.classList.add('done') : '';
+			pagination.querySelector(`.pagination-link:nth-child(${currentStep})`).classList.add('active');
 			
 			
 		},['currentStep']);

@@ -6,6 +6,10 @@ export class ProfileModule extends G {
 	define() {
 		const _ = this;
 	}
+	domReady(){
+		const _ = this;
+		_.navigationInit();
+	}
 	
 	init() {
 		const _ = this;

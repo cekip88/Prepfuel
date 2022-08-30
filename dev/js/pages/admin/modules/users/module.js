@@ -99,8 +99,7 @@ export class UsersModule extends AdminPage {
 	async domReady(data){
 		console.log('domReady');
 		const _ = this;
-		//_.parentInfo = {};
-		//_.studentInfo = {};
+		_.navigationInit();
 		_.wizardData = Model.wizardData ?? await Model.getWizardData();
 		let tableData = {};
 		if (_.subSection === 'student' || _.subSection === 'parent' || _.subSection === 'admin') {
@@ -146,7 +145,6 @@ export class UsersModule extends AdminPage {
 		}
 		//console.log(_.ff('.blocfk-header-item.button-blue'))
 		//_.ff('.block-header-itefm.button-blue').gappend(_.markup('<span>Hello</span>'))
-		//_.navigationInit();
 	}
 
 	// Create methods

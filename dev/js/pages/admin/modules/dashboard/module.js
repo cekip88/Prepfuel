@@ -677,7 +677,9 @@ export class DashboardModule extends AdminPage{
 		}
 	}
 	domReady() {
+		console.log('domReady')
 		const _ = this;
+		_.navigationInit();
 		if (_.subSection == 'students') {
 			_.statsBlockFill({data: _.userStats['stats'], selector: '.user-stats'});
 			_.statsBlockFill({data: _.systemStats['stats'], selector: '.system-stats'});
@@ -697,7 +699,6 @@ export class DashboardModule extends AdminPage{
 			_.perPlanFill({selector:'.revenue .perPlan', data: _.revenueData.perPlan})
 		}
 		_.switchSubNavigate();
-		//_.navigationInit();
 	}
 
 	setInteger(number){

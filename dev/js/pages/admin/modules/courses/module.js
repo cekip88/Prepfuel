@@ -35,10 +35,10 @@ export class CoursesModule extends AdminPage {
 	}
 	async domReady(data){
 		const _ = this;
+		_.navigationInit();
 		if(_.subSection == 'folders'){
 			_.createCourseFolders({item: undefined})
 		}
-		//_.navigationInit();
 	}
 
 	// get data methods
@@ -78,7 +78,7 @@ export class CoursesModule extends AdminPage {
 		let countCont = _.f(selector);
 		_.clear(countCont);
 		let text = count + (count === 1 ? ' item' : ' items');
-		countCont.textContent = text;
+		if (countCont) countCont.textContent = text;
 	}
 	fillFoldersTable(filesData){
 		const _ = this;

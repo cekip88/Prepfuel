@@ -58,7 +58,7 @@ export class G extends G_G{
 		const _ = this;
 		_.pageStructure[prop] = id;
 	}
-	define(){	}
+	define(){}
 	async render(updateStructure,renderData){
 		const _ = this;
 		if(!updateStructure) {
@@ -218,12 +218,31 @@ export class G extends G_G{
 
 		let label = list.querySelector('.navigate-label');
 		if (label.classList.contains('active')) return;
-		_.setActiveNavItem(list,label);
+
+		let activeBtn = _.setActiveNavItem(list);
+		if (!activeBtn) return void 0;
+
+		let activeButtonsWidth = activeBtn.clientWidth;
+		let interval = setInterval(()=>{
+			let newWidth = activeBtn.clientWidth;
+			if (newWidth === activeButtonsWidth) {
+				_.navigate({item:activeBtn})
+				clearInterval(interval);
+			}
+			activeButtonsWidth = newWidth;
+		},200);
+
 		window.addEventListener('resize',()=>{
-			let activeBtn = list.querySelector('.active');
+			activeBtn = list.querySelector('.active');
 			if (activeBtn) _.showActiveNavItem(activeBtn,list);
 		})
-		label.classList.add('active');
+
+	}
+	navigate({item}){
+		const _ = this;
+		let list = item.closest('.navigate-list');
+		_.showActiveNavItem(item,list);
+		_.changeActiveNavItem(item,list);
 	}
 	subnavigate(clickData){
 		const _ = this;
@@ -234,41 +253,27 @@ export class G extends G_G{
 
 		_.changeActiveNavItem(btn);
 	}
-	setActiveNavItem(list,label){
+	setActiveNavItem(list){
 		const _ = this;
 		let
 			route = location.pathname.split('/')[2],
-			newActiveBtn = list.querySelector(`.${route}`),
-			activeBtn = list.querySelector('.active');
-
-		if(newActiveBtn) {
-			label.style = `width: ${newActiveBtn.clientWidth}px;left:${newActiveBtn.offsetLeft}px;`
-			_.navigate({item:list, event:{target:newActiveBtn}})
-		} else {
-			if (activeBtn){
-				label.style = `width: ${activeBtn.clientWidth}px;left:${activeBtn.offsetLeft}px;`
-				_.navigate({item:list, event:{target:activeBtn}})
-			} else {
-				label.style = `display:block;width: 0px;left: 999999px;`;
-			}
-		}
+			activeBtn = list.querySelector(`.${route}`);
+		if (!activeBtn) activeBtn = list.querySelector('.active');
+		return activeBtn ?? null;
 	}
-	changeActiveNavItem(item){
+	changeActiveNavItem(item,cont){
 		const _ = this;
-		let
-			cont = item.parentElement,
-			curItem = cont.querySelector('.active');
+		let curItem = cont.querySelector('BUTTON.active');
 		_.removeCls(curItem,'active');
 		item.classList.add('active')
 	}
-	showActiveNavItem(btn){
+	showActiveNavItem(btn,list){
 		let
 			width = btn.clientWidth,
 			x = btn.offsetLeft,
-			label = this.f('.navigate-label');
-
-		if(!label) return void 'Navigate label not found';
-		label.style = `width: ${width}px;left: ${x}px;`
+			label = list.querySelector('.navigate-label');
+		label.classList.add('active');
+		label.style = `width: ${width}px;left: ${x}px;`;
 	}
 	changeTab(btn,parentCls){
 		const _ = this;

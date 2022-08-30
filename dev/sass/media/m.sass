@@ -798,6 +798,9 @@ button.student-profile-plan-edit
 				line-height: calc(18em / 12)
 			&-button
 				color: rgb($blue-text)
+.input-date
+	&[disabled='true']
+		opacity: .5
 
 
 .schedule
@@ -3154,6 +3157,9 @@ div.tbl-head
 				+wh(16px)
 				position: absolute
 				left: 4px
+		&-checkbox
+			&:before,&:after
+				border-radius: 4px
 	&-buttons
 		@extend %dfa
 		margin-top: 12px

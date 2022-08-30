@@ -9,7 +9,7 @@ export const studentView = {
 		return `
 			<section class="navigate" data-active=".navigate-item:nth-child(1)" data-tabs=".dashboard-tabs">
 				<div class="section">
-					<nav class="navigate-list" data-click="StudentPage:navigate">
+					<nav class="navigate-list">
 						<button class="navigate-item dashboard" data-click="StudentPage:changeSection;StudentPage:navigate" section="/student/dashboard"><span>Dashboard</span></button>
 						<button class="navigate-item practice" data-click="StudentPage:changeSection;StudentPage:navigate" section="/student/practice"><span>Practice</span></button>
 						<button class="navigate-item tests" data-click="StudentPage:changeSection;StudentPage:navigate" section="/student/tests"><span>Tests</span></button>

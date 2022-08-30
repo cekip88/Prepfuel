@@ -10,7 +10,10 @@ export class ProfileModule extends AdminPage {
 			'body':'profileBody'
 		}
 	}
-	domReady(){}
+	domReady(){
+		const _ = this;
+		_.navigationInit();
+	}
 	define() {
 		const _ = this;
 		_.componentName = 'Profile';

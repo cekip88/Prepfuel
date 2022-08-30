@@ -50,15 +50,41 @@ export const view = {
 			<div class="practice-schedule-text">
 				<p class="test-subtitle small">What is your test date?</p>
 			</div>
-			<div class="practice-schedule-row">
-				<div class="blue-icon">
-					<svg>
-						<use xlink:href="#badge"></use>
-					</svg>
+			<div class="practice-schedule-row aifs">
+				<div class="practice-schedule-row">
+					<div class="blue-icon">
+						<svg>
+							<use xlink:href="#badge"></use>
+						</svg>
+					</div>
+					<h5 class="practice-schedule-title">Your ${_.me.student.currentPlan ? _.me.student.currentPlan.course.title : ''} Date</h5>
 				</div>
-				<h5 class="practice-schedule-title">Your ${_.me.student.currentPlan ? _.me.student.currentPlan.course.title : ''} Date</h5>
-				<div class="practice-schedule-date">
-					<g-input type="date" class="input-date" icon=false id='schedule-date' placeholder="Choose your test date" value="${_.testDate}" format="weekDay, month DD, YYYY" data-change="${_.componentName}:changeScheduleDate"></g-input>
+				<div class="practice-schedule-date" style="padding-top: 3px;">
+					<div class="adding-inpt adding-radio-row">
+						<g-input 
+							type="date" 
+							class="input-date" 
+							icon=false 
+							id='schedule-date' 
+							placeholder="Choose your test date" 
+							value="${_.testDate}" 
+							format="weekDay, month DD, YYYY" 
+							${!_.datePicked ? "disabled='true'" : ''}
+							data-change="${_.componentName}:changeScheduleDate"
+						></g-input>
+					</div>
+					<div class="adding-inpt">
+						<div class="form-label-row">
+							<input 
+								type="checkbox" 
+								id="have_yet" 
+								class="adding-radio" 
+								name="registered" 
+								data-change="${_.componentName}:skipTestDate" 
+								${!_.datePicked ? 'checked' : ''}>
+							<label class="form-label adding-label-have adding-label-checkbox" for="have_yet">Skip date</label>
+						</div>
+					</div>
 				</div>
 			</div>
 		`;
@@ -89,7 +115,7 @@ export const view = {
 						</svg>
 					</div>
 					<h5 class="practice-schedule-title">Your ISEE Date</h5>
-					<div class="practice-schedule-date"><span>${_.testDate}</span></div>
+					<div class="practice-schedule-date"><span>${_.datePicked ? _.testDate : 'Date skipped'}</span></div>
 				</div>
 			</div>
 			<button class="button-lightblue" data-click="${_.componentName}:addPracticeRow">
@@ -102,6 +128,25 @@ export const view = {
 	},
 	stepThreeTpl(){
 		const _ = this;
+		let days = [
+			{"value":"S","text":"S","disabled":true},
+			{"value":"M","text":"M"},
+			{"value":"T","text":"T"},
+			{"value":"W","text":"W"},
+			{"value":"Th","text":"Th"},
+			{"value":"F","text":"F"},
+			{"value":"Sa","text":"Sa","disabled":true}];
+		let times = [
+			{"text":"4:00 PM","value":"4:00 PM","active":true},
+			{"text":"5:00 PM","value":"5:00 PM"},
+			{"text":"6:00 PM","value":"6:00 PM"},
+			{"text":"7:00 PM","value":"7:00 PM"},
+			{"text":"8:00 PM","value":"8:00 PM"}
+		];
+		let questions = [
+			{"text":"5 questions","value":5,"active":true},
+			{"text":"10 questions","value":10}
+		];
 		return `
 			<h4 class="test-subtitle">
 				<span>Skill practice plan</span>
@@ -117,28 +162,35 @@ export const view = {
 				<div class="practice-schedule-row">
 					<h5 class="practice-schedule-title">Practice on</h5>
 					<div class="practice-schedule-right">
-						<g-input class="inpt-checkbox inpt-days" data-change="${_.componentName}:changeDay" type="checkbox" name="day" classname="inpt-days" items='[
-							{"value":"S","text":"S","disabled":true},
-							{"value":"M","text":"M"},
-							{"value":"T","text":"T"},
-							{"value":"W","text":"W"},
-							{"value":"Th","text":"Th"},
-							{"value":"F","text":"F"},
-							{"value":"Sa","text":"Sa","disabled":true}]'></g-input>
+						<g-input 
+							class="inpt-checkbox inpt-days" 
+							data-change="${_.componentName}:changeDay" 
+							type="checkbox" 
+							name="day" 
+							classname="inpt-days" 
+							items='${JSON.stringify(days)}'
+						></g-input>
 					</div>
 				</div>
 				<div class="practice-schedule-row">
 					<h5 class="practice-schedule-title">Number of questions</h5>
 					<div class="practice-schedule-right">
-						<g-select class="g-select-gray" disabled data-change="${_.componentName}:changeNumberOfQuestions" items='[{"text":"5 questions","value":5,"active":true},{"text":"10 questions","value":10}]' value="5" classname="g-select-gray" style="--class:g-select-gray; --value:5; --classname:g-select-gray;">
-							<input type="hidden" name="null" slot="value" value="5">
-						</g-select>
+						<g-select class="g-select-gray" disabled data-change="${_.componentName}:changeNumberOfQuestions" 
+							items='${JSON.stringify(questions)}' 
+							value="5" 
+							classname="g-select-gray" 
+						></g-select>
 					</div>
 				</div>
 				<div class="practice-schedule-row">
 					<h5 class="practice-schedule-title">Practice at</h5>
 					<div class="practice-schedule-right">
-						<g-select class="g-select-gray" items='[{"text":"4:00 PM","value":"4:00","active":true},{"text":"5:00 PM","value":"5:00"},{"text":"6:00 PM","value":"6:00"},{"text":"7:00 PM","value":"7:00"},{"text":"8:00 PM","value":"8:00"}]' classname="g-select-gray" style="--class:g-select-gray; --classname:g-select-gray;"><input type="hidden" name="null" slot="value" value="4:00"></g-select>
+						<g-select 
+							class="g-select-gray" 
+							data-change="${_.componentName}:changePracticeTime"
+							items='${JSON.stringify(times)}' 
+							classname="g-select-gray"
+						></g-select>
 					</div>
 				</div>
 				<div class="practice-schedule-row">
@@ -147,22 +199,26 @@ export const view = {
 				</div>
 				<div class="practice-schedule-row">
 					<h5 class="practice-schedule-title">Days per week</h5>
-					<div class="practice-schedule-dots"></div><span class="practice-schedule-title"> <i id="daysPerWeek">${_._$.daysPerWeek.length}</i> days / week</span>
+					<div class="practice-schedule-dots"></div>
+					<span class="practice-schedule-title"><i id="daysPerWeek">${_._$.daysPerWeek.length}</i> days / week</span>
 				</div>
 				<div class="practice-schedule-row">
 					<h5 class="practice-schedule-title">Total weeks</h5>
-					<div class="practice-schedule-dots"></div><span class="practice-schedule-title">15 weeks</span>
+					<div class="practice-schedule-dots"></div>
+					<span class="practice-schedule-title">15 weeks</span>
 				</div>
 				<div class="practice-schedule-row">
 					<h5 class="practice-schedule-title">Questions completed to date</h5>
-					<div class="practice-schedule-dots"></div><span class="practice-schedule-title"><i id="totalQuestionsCnt">${_._$.totalQuestionsCnt}</i> questions</span>
+					<div class="practice-schedule-dots"></div>
+					<span class="practice-schedule-title"><i id="totalQuestionsCnt">${_._$.totalQuestionsCnt}</i> questions</span>
 				</div>
 				<div class="practice-schedule-row">
 					<div class="line"></div>
 				</div>
 				<div class="practice-schedule-row">
 					<h5 class="practice-schedule-title bold">Goal (total practice until test date)</h5>
-					<div class="practice-schedule-dots"></div><span class="practice-schedule-title">50 questions</span>
+					<div class="practice-schedule-dots"></div>
+					<span class="practice-schedule-title">50 questions</span>
 				</div>
 			</div>
 		`;

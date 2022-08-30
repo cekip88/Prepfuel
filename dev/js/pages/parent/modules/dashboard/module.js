@@ -63,8 +63,9 @@ export class DashboardModule extends ParentPage{
 		]);
 	}
 	async domReady() {
-		const _ = this;
 		console.log('domReady')
+		const _ = this;
+		_.navigationInit();
 		if ( !_.wizardData ) _.wizardData = await Model.getWizardData();
 		if ( !_.currentStudent ) _.currentStudent = _.me['parent']['students'][0];
 

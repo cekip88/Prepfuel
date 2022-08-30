@@ -90,6 +90,7 @@ export class PracticeModule extends StudentPage{
 	// Work with dom
 	async domReady(data){
 		const _ = this;
+		_.navigationInit();
 		
 		if( _.subSection == 'mathematics' ){
 			_.fillMathematicsSection();
@@ -570,6 +571,7 @@ export class PracticeModule extends StudentPage{
 		_.innerQuestionId = item.getAttribute('data-question-id');
 	}
 	async changeSection({item,event}) {
+		console.log('changeSection')
 		const _ = this;
 		_.subSection = item.getAttribute('section');
 		let struct = _.flexible();

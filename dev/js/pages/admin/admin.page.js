@@ -47,22 +47,15 @@ export class AdminPage extends G {
 		const _ = this;
 		let cont = _.f('.subnavigate');
 		if(!cont.querySelector(`[section="${_.subSection}"]`)) return 0;
-		if(cont.querySelector('.active'))	cont.querySelector('.active').classList.remove('active');
+		let activeItem = cont.querySelector('.active');
+		if(activeItem) activeItem.classList.remove('active');
 		cont.querySelector(`[section="${_.subSection}"]`).classList.add('active')
 	}
 	showUserList({item}) {
 		const _ = this;
 		item.classList.toggle('show');
 	}
-	navigate(clickData){
-		const _ = this;
-		let
-			list = clickData.item,
-			target = clickData.event.target,
-			btn = _.ascent(target,'.navigate-item','navigate-list');
-		_.showActiveNavItem(btn,list);
-		_.changeActiveNavItem(btn);
-	}
+
 	changeSection({item,event}){
 		const _ = this;
 		let
@@ -116,7 +109,6 @@ export class AdminPage extends G {
 			await _.moduleRender(params);
 			_.currentSection = '/admin/' + params['module'];
 		}
-		//_.navigationInit();
 	}
 
 	showSuccessPopup(text) {

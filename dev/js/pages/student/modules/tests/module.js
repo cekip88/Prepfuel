@@ -67,6 +67,7 @@ export class TestsModule extends StudentPage{
 	}
 	async domReady(){
 		const _ = this;
+		_.navigationInit();
 		if(_.subSection == 'tests-list'){
 		
 		

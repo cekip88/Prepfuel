@@ -13,7 +13,6 @@ export class DashboardModule extends StudentPage{
 		};
 	}
 
-
 	async asyncDefine(){
 		const _ = this;
 	/*	_.set({
@@ -42,10 +41,7 @@ export class DashboardModule extends StudentPage{
 	
 	async domReady() {
 		const _ = this;
-		_.navigate({
-			item:document.querySelector('.navigate-list '),
-			event:{target:document.querySelector('.dashboard')}
-		})
+		_.navigationInit();
 		if( _.subSection === 'overview' ){
 			_.fillScheduleBlock();
 		}
@@ -66,12 +62,14 @@ export class DashboardModule extends StudentPage{
 	async fillScheduleBlock(){
 		console.log('fillScheduleBlock')
 		const _ = this;
-		let list = document.querySelector('#scheduleList');
+		let
+			list = document.querySelector('#scheduleList'),
+			footer = list.nextElementSibling;
+
 		list.classList.add('loader-parent');
 		list.append(_.markup(`<img src="/img/loader.gif">`))
+
 		let scheduleData = await Model.getSchedule();
-		console.log(scheduleData)
-		let footer = list.nextElementSibling;
 		_.clear(list);
 
 		if (_.isEmpty(scheduleData)) {

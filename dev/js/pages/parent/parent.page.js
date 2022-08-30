@@ -44,15 +44,6 @@ class ParentPage extends G{
 			'showSuccessPopup','showErrorPopup','closePopup',
 		]);
 	}
-	navigate(clickData){
-		const _ = this;
-		let
-			list = clickData.item,
-			target = clickData.event.target,
-			btn = _.ascent(target,'.navigate-item','navigate-list');
-		_.showActiveNavItem(btn,list);
-		_.changeActiveNavItem(btn);
-	}
 	createdAtFormat(value,format = 'month DD, YYYY'){
 		if (!value) return 'No date'
 		value = value.split('T')[0].split('-');
@@ -155,9 +146,6 @@ class ParentPage extends G{
 			await _.moduleRender(params);
 			_.currentSection = '/parent/' + params['module'];
 		}
-		setTimeout(()=>{
-			_.navigationInit();
-		},1500)
 	}
 }
 
