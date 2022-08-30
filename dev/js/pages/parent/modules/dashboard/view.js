@@ -1156,10 +1156,12 @@ export const view = {
 	},
 	studentProfileTpl( studentInfo ){
 		const _ = this;
+		let avatarTpl = '';
+		if (studentInfo.user.avatar) avatarTpl = `<img data-id="${studentInfo['user']['avatar']['_id'] ?? studentInfo['user']['avatar']}" data-type="avatars" data-title="avatar">`;
 		let tpl = `
 			<div class="df aifs">
 				<div class="parent-student-avatar">
-					<img data-id="${studentInfo['user']['avatar']['_id'] ?? studentInfo['user']['avatar']}" data-type="avatars" data-title="avatar">
+					${avatarTpl}
 				</div>
 				<div class="parent-student-info">
 					<div class="unit df aic jcsb">
