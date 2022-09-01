@@ -59,28 +59,25 @@ export class DashboardModule extends StudentPage{
 		let scheduleTpl = _.scheduleBlock(schedule);
 		scheduleList.append(_.markup(scheduleTpl))
 	}*/
-	async fillScheduleBlock(){
+	async fillScheduleBlock(id){
 		console.log('fillScheduleBlock')
 		const _ = this;
-		let
-			list = document.querySelector('#scheduleList'),
-			footer = list.nextElementSibling;
+		let scheduleList = document.querySelector('#scheduleList');
+		scheduleList.classList.add('loader-parent');
+		scheduleList.append(_.markup(`<img src="/img/loader.gif">`))
+		let schedule = await Model.getSchedule(id);
+		let scheduleFooter = scheduleList.nextElementSibling;
+		_.clear(scheduleList);
 
-		list.classList.add('loader-parent');
-		list.append(_.markup(`<img src="/img/loader.gif">`))
-
-		let scheduleData = await Model.getSchedule();
-		_.clear(list);
-
-		if (_.isEmpty(scheduleData)) {
-			footer.classList.add('schedule-hidden');
-			list.append(_.markup(`<li class="block-empty-text">Student has not created the practice schedule yet.</li>`))
+		if (_.isEmpty(schedule)) {
+			scheduleFooter.classList.add('schedule-hidden');
+			scheduleList.append(_.markup(`<li class="block-empty-text">Student has not created the practice schedule yet.</li>`))
 		} else {
-			footer.classList.remove('schedule-hidden');
-			let tpl = _.scheduleBlock(scheduleData);
-			list.append(_.markup(tpl));
+			scheduleFooter.classList.remove('schedule-hidden');
+			let scheduleTpl = _.scheduleBlock(schedule);
+			scheduleList.append(_.markup(scheduleTpl));
 		}
-		list.classList.remove('loader-parent');
+		scheduleList.classList.remove('loader-parent');
 	}
 	drawCircleGraphic(item,color){
 		const _ = this;

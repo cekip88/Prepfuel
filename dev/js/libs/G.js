@@ -58,7 +58,9 @@ export class G extends G_G{
 		const _ = this;
 		_.pageStructure[prop] = id;
 	}
-	define(){}
+	define(){
+		const _ = this;
+	}
 	async render(updateStructure,renderData){
 		const _ = this;
 		if(!updateStructure) {
@@ -221,22 +223,14 @@ export class G extends G_G{
 
 		let activeBtn = _.setActiveNavItem(list);
 		if (!activeBtn) return void 0;
-
-		let activeButtonsWidth = activeBtn.clientWidth;
-		let interval = setInterval(()=>{
-			let newWidth = activeBtn.clientWidth;
-			if (newWidth === activeButtonsWidth) {
-				_.navigate({item:activeBtn})
-				clearInterval(interval);
-			}
-			activeButtonsWidth = newWidth;
-		},200);
+		_.changeActiveNavItem(activeBtn,list);
+		activeBtn.prepend(label)
+		label.classList.add('active');
 
 		window.addEventListener('resize',()=>{
 			activeBtn = list.querySelector('.active');
 			if (activeBtn) _.showActiveNavItem(activeBtn,list);
 		})
-
 	}
 	navigate({item}){
 		const _ = this;
@@ -271,9 +265,18 @@ export class G extends G_G{
 		let
 			width = btn.clientWidth,
 			x = btn.offsetLeft,
-			label = list.querySelector('.navigate-label');
-		label.classList.add('active');
-		label.style = `width: ${width}px;left: ${x}px;`;
+			label = list.querySelector('.navigate-label'),
+			activeBtn = list.querySelector('.active');
+		if (btn == activeBtn) return;
+
+		if (label.parentElement == activeBtn) {
+			let
+				oldX = activeBtn.offsetLeft,
+				oldWidth = activeBtn.clientWidth;
+			label.style = `transition:0;width: ${oldWidth}px;left: ${oldX}px;`;
+			list.append(label);
+		}
+		setTimeout(()=>{label.style = `width: ${width}px;left: ${x}px;transition: .35s ease`;})
 	}
 	changeTab(btn,parentCls){
 		const _ = this;

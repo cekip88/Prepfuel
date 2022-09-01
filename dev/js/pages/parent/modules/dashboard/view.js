@@ -727,6 +727,7 @@ export const view = {
 							class="select adding-select" 
 							name="firstSchool"
 							together="applyingSchool"
+							exceptions='${JSON.stringify(['6307b9ab166cad4538383287'])}'
 							data-required
 							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
@@ -743,6 +744,7 @@ export const view = {
 							class="select adding-select" 
 							name="secondSchool"
 							together="applyingSchool"
+							exceptions='${JSON.stringify(['6307b9ab166cad4538383287'])}'
 							data-required
 							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
@@ -758,6 +760,7 @@ export const view = {
 							class="select adding-select" 
 							name="thirdSchool" 
 							together="applyingSchool"
+							exceptions='${JSON.stringify(['6307b9ab166cad4538383287'])}'
 							data-required
 							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 

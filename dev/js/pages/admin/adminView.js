@@ -14,7 +14,7 @@ export const adminView = {
 						<button class="navigate-item courses" data-click="AdminPage:changeSection;AdminPage:navigate" section="/admin/courses"><span>Courses</span></button>
 						<button class="navigate-item history" data-click="AdminPage:changeSection;AdminPage:navigate" section="/admin/history"><span>Billing history</span></button>
 						<button class="navigate-item reports" data-click="AdminPage:changeSection;AdminPage:navigate" section="/admin/reports"><span>Reports</span></button>
-						<div class="navigate-label" style="width: 210px;left: 15px;">
+						<div class="navigate-label">
 							<div class="navigate-label-left"></div>
 							<div class="navigate-label-right"></div>
 						</div>

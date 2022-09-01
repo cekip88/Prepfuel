@@ -52,8 +52,9 @@ export const view = {
 			testDate = dashSchedule['test'] ? new Date(dashSchedule['test']['date']) : undefined;
 		let tpl = ``;
 		let itemsData = _.fillScheduleItemsTpl(dashSchedule);
+		console.log(dashSchedule,itemsData)
+		if (!itemsData || !itemsData.length) return;
 		for (let item of itemsData) {
-			if (!item) continue;
 			tpl += _.scheduleItemTpl(item);
 		}
 		return tpl;

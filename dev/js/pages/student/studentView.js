@@ -16,7 +16,7 @@ export const studentView = {
 						<button class="navigate-item review" data-click="StudentPage:changeSection" section="/student/review"><span>Review</span></button>
 						<button class="navigate-item bookmarks" data-click="StudentPage:changeSection" section="/student/bookmarks"><span>Bookmarks&Notes</span></button>
 						<button class="navigate-item tips-button" data-click="StudentPage:changeSection" section="/student/tips"><span>Tips&Strategies</span></button>
-						<div class="navigate-label" style="left: 15px;">
+						<div class="navigate-label">
 							<div class="navigate-label-left"></div>
 							<div class="navigate-label-right"></div>
 						</div>

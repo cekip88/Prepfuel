@@ -384,13 +384,12 @@ g-modaler
 .navigate
 	background-color: rgb($blue)
 	&-label
-		display: none
-		opacity: 0
+		width: 100%
 		position: absolute
-		transition: .35s ease
+
+		opacity: 0
 		&.active
 			opacity: 1
-			display: block
 	&-list
 		@extend %dfi
 		padding: 10px 0
@@ -2960,13 +2959,13 @@ div.tbl-head
 		margin-right: 8px
 		font-family: $p_medium
 		font-size: $fz12
-		&.SSAT-Elementary,&.ISEE-Lower
+		&.SSAT-Elementary,&.SSAT-E,&.ISEE-Lower
 			color: rgb($orange)
 			background-color: rgb($orange-light)
-		&.SSAT-Middle
+		&.SSAT-Middle,&.SSAT-E
 			color: #00AFAF
 			background-color: #DCFDFD
-		&.ISEE-Middle
+		&.ISEE-Middle,&.ISEE-M
 			color: #366CF9
 			background-color: #F1F5FF
 		&.ISEE-Upper

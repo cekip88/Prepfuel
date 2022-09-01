@@ -389,6 +389,7 @@ export class DashboardModule extends ParentPage{
 		let schedule = await Model.getSchedule(id);
 		let scheduleFooter = scheduleList.nextElementSibling;
 		_.clear(scheduleList);
+		console.log(schedule)
 
 		if (_.isEmpty(schedule)) {
 			scheduleFooter.classList.add('schedule-hidden');

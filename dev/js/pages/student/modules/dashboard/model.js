@@ -29,7 +29,7 @@ export class _Model{
 	getSchedule(){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.endpoints['schedule']}`,{
+			let rawResponse = await fetch(`${_.endpoints['dashSchedule']}`,{
 				method: 'GET',
 				headers:_.baseHeaders
 			});

@@ -160,7 +160,6 @@ class _Model {
 		/*if(!update){
 			if(_[`${role}sData`]) return Promise.resolve(_[`${role}sData`]);
 		}*/
-		console.log(searchInfo)
 		let request = `?role=${role}`;
 		for (let key in searchInfo) {
 			if (key === 'dates' || searchInfo[key] == 'undefined') continue;

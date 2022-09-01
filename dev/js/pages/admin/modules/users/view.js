@@ -371,6 +371,20 @@ export const view = {
 			</div>
 		`;
 	},
+	removedCourseTpl(){
+		const _ = this;
+		return `
+			<div class="modal-block student-profile-remove-popup" id="removedCourse">
+				<h6 class="modal-title">
+					<span>Assign a Course</span>
+				</h6>
+				<p class="modal-text">Please assign a course to this student. At least one course must be assigned to a student</p>
+				<div class="modal-row">
+					<button class="button" type="button" data-click="modaler:closeModal"><span>Ok</span></button>
+				</div>
+			</div>
+		`;
+	},
 	removeUserTpl(){
 		const _ = this;
 		return `
@@ -419,8 +433,8 @@ export const view = {
 	assignStudent(){
 		const _ = this;
 		return `
-			<div class="admin-modal"	id="assignForm">
-					<div class="block adding-block">
+			<div class="admin-modal" id="assignForm">
+				<div class="block adding-block">
 					<div class="test-header">
 						<h5 class="block-title test-title adding-header-title">
 							<span>Assign Course</span>
@@ -465,26 +479,29 @@ export const view = {
 						<button class="test-footer-back step-prev-btn" data-click="${_.componentName}:changePrevStep" type="assign" step="1">
 							<span>Cancel</span>
 						</button>
-						<button class="button-blue step-next-btn" data-click="${_.componentName}:changeNextStep" type='assign'  step="2">
+						<button class="button-blue step-next-btn" data-click="${_.componentName}:changeNextStep" type='assign' step="2">
 							<span>Next</span>
 						</button>
 					</div>
 				</div>
-				</div>
+			</div>
 		`;
 	},
 
 	choiceSelectStudent(choiceData,title='School you are interested in applying to'){
 		const _ = this;
-		let activeFirst,activeSecond,activeThird;
+		let
+			plan = _.studentInfo.currentPlan,
+			activeFirst,activeSecond,activeThird;
 
-		if(_.studentInfo.firstSchool) activeFirst = `_id:${_.studentInfo.firstSchool}`;
-		if(_.studentInfo.secondSchool) activeSecond = `_id:${_.studentInfo.secondSchool}`;
-		if(_.studentInfo.thirdSchool) activeThird = `_id:${_.studentInfo.thirdSchool}`;
+		if(plan.firstSchool) activeFirst = `_id:${plan.firstSchool._id ?? plan.firstSchool}`;
+		if(plan.secondSchool) activeSecond = `_id:${plan.secondSchool._id ?? plan.secondSchool}`;
+		if(plan.thirdSchool) activeThird = `_id:${plan.thirdSchool._id ?? plan.thirdSchool}`;
 		let
 			firstItems = _.createSelectItems(choiceData.schools,"value:_id;text:school",activeFirst),
 			secondItems = _.createSelectItems(choiceData.schools,"value:_id;text:school",activeSecond),
-			thirdItems = _.createSelectItems(choiceData.schools,"value:_id;text:school",activeThird);
+			thirdItems = _.createSelectItems(choiceData.schools,"value:_id;text:school",activeThird),
+			selectFunction = 'fillStudentInfo';
 		return `
 			<div class="adding-section selects-cont">
 					<h4 class="adding-subtitle withmar">${title}</h4>
@@ -496,7 +513,8 @@ export const view = {
 							class="select adding-select" 
 							name="firstSchool" 
 							together="applyingSchool"
-							data-change="${_.componentName}:${_.subSection === 'profile' && _.studentInfo.currentPlan ? 'inputCourseData' : 'fillStudentInfo'}" 
+							exceptions='${JSON.stringify(['6307b9ab166cad4538383287'])}'
+							data-change="${_.componentName}:${selectFunction}" 
 							data-required
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
@@ -510,9 +528,10 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="secondSchool" 
+							exceptions='${JSON.stringify(['6307b9ab166cad4538383287'])}'
 							together="applyingSchool"
 							data-required
-							data-change="${_.componentName}:${_.subSection == 'profile' && _.studentInfo.currentPlan ? 'inputCourseData' : 'fillStudentInfo'}" 
+							data-change="${_.componentName}:${selectFunction}" 
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
 							title=""
@@ -525,9 +544,10 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="thirdSchool" 
+							exceptions='${JSON.stringify(['6307b9ab166cad4538383287'])}'
 							together="applyingSchool"
 							data-required
-							data-change="${_.componentName}:${_.subSection == 'profile' && _.studentInfo.currentPlan ? 'inputCourseData' : 'fillStudentInfo'}" 
+							data-change="${_.componentName}:${selectFunction}" 
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
 							title=""
@@ -764,15 +784,18 @@ export const view = {
 	},
 	levelButtons(stepData){
 		const _ = this;
-			let tpl = ``;
-		stepData.levels.forEach( (item) => {
+		let
+			tpl = ``,
+			curPlan = _.courseData ?? _.studentInfo.currentPlan;
+
+		stepData.levels.forEach( (item,index) => {
 			let activeClass = '';
-			if(_.studentInfo['level']){
-				if(_.studentInfo['level'] == item._id){
-					activeClass = 'active';
-				}
+			if (curPlan && curPlan['level']) {
+				if(curPlan['level']._id == item._id) activeClass = 'active';
+			} else {
+				if (!index) activeClass = 'active';
 			}
-			tpl+=`<button class="adding-button ${ activeClass }" data-id="${item._id}" data-click="${_.componentName}:changeStudentLevel">${item.title}</button>`;
+			tpl += `<button class="adding-button ${ activeClass }" data-id="${item._id}" data-click="${_.componentName}:changeStudentLevel">${item.title}</button>`;
 		});
 		return tpl;
 	},
@@ -835,25 +858,31 @@ export const view = {
 
 	// Adding steps
 	addingStepOne(stepData){
+		console.log('addingStepOne')
 		const _ = this;
-		//console.log(stepData)
 		let
 			courses = stepData['courses'],
 			tpl = `
 				<h3 class="adding-title">Course & Plan</h3>
 				<div class="adding-section">
 					<div class="adding-label">What test is the student purchasing?</div>
-					<div class="adding-buttons">
+					<div class="adding-buttons course-buttons">
 		`;
 		courses.forEach( (item,cnt) => {
 			let activeClass = '';
-			if(_.studentInfo['course']){
-				if(_.studentInfo['course'] == item._id){
-					activeClass = 'active';
-				}
+			if(_.studentInfo.currentPlan.course._id == item._id){
+				_.coursePos = cnt;
+				activeClass = 'active';
 			}
 			tpl += `
-				<button class="adding-button ${ activeClass }" pos="${cnt}" data-click="${_.componentName}:changeTestType" data-id="${item._id}">
+				<button 
+					class="adding-button 
+					${ activeClass }" 
+					pos="${cnt}" 
+					data-click="${_.componentName}:changeTestType" 
+					data-id="${item._id}"
+					${_.courseAction === 'assign' && !activeClass.length ? 'disabled' : ''}
+				>
 					<span>${item.title}</span>
 				</button>
 			`;
@@ -1115,8 +1144,13 @@ export const view = {
 	addingStepSix(){
 		const _ = this;
 		let testDate = 'Have not registered yet';
-		if (_.studentInfo.testDatePicked) testDate = _.createdAtFormat(_.studentInfo['testDate']);
-		let schoolTitles = [_.metaInfo.firstSchool,_.metaInfo.secondSchool,_.metaInfo.thirdSchool];
+		let curCourseTitle = _.studentInfo.currentPlan.course.title;
+		if (_.studentInfo.testDatePicked) testDate = _.createdAtFormat(_.courseData[curCourseTitle]['testDate']);
+		let schoolTitles = [
+			_.courseData[curCourseTitle].firstSchool.school,
+			_.courseData[curCourseTitle].secondSchool.school,
+			_.courseData[curCourseTitle].thirdSchool.school
+		];
 		return `
 			<div class="adding-center">
 				<h3 class="adding-title">Summary</h3>
@@ -1128,11 +1162,11 @@ export const view = {
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
 							<span>Chosen Course:</span>
-							<strong>${_.metaInfo.course}</strong>
+							<strong>${_.courseData[curCourseTitle].course.title}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Chosen Level:</span>
-							<strong>${_.metaInfo.level}</strong>
+							<strong>${_.courseData[curCourseTitle].level.title}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Plan:</span>
@@ -1148,15 +1182,15 @@ export const view = {
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
 							<span>First Name:</span>
-							<strong>${_.studentInfo.firstName ?? ''}</strong>
+							<strong>${_.studentInfo.firstName}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Last Name:</span>
-							<strong>${_.studentInfo.lastName ?? ''}</strong>
+							<strong>${_.studentInfo.lastName}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Email:</span>
-							<strong>${_.studentInfo.email ?? ''}</strong>
+							<strong>${_.studentInfo.email}</strong>
 						</li>
 					</ul>
 				</div>
@@ -1177,11 +1211,11 @@ export const view = {
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
 							<span>Current School:</span>
-							<strong>${_.studentInfo.currentSchool ?? ''}</strong>
+							<strong>${_.studentInfo.currentSchool}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Grade:</span>
-							<strong>${_.metaInfo.grade ?? ''}</strong>
+							<strong>${_.studentInfo.grade.grade}</strong>
 						</li>
 						${_.addingSummarySchoolsTpl(schoolTitles)}
 					</ul>
@@ -1189,7 +1223,7 @@ export const view = {
 				<div class="adding-section">
 					<div class="adding-summary">
 						<strong class="adding-summary-title">Test Information</strong>
-						<button class="adding-summary-btn"  data-click="${_.componentName}:jumpToStep" type='adding' step="5">Edit</button>
+						<button class="adding-summary-btn" data-click="${_.componentName}:jumpToStep" type='adding' step="5">Edit</button>
 					</div>
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
@@ -1646,6 +1680,7 @@ export const view = {
 
 	///
 	emptyCourseInfo(){
+		console.log('emptyCourseInfo')
 		const _ = this;
 		return `
 			<h5 class="student-profile-course-empty">Currently, there is no ISEE course assign to this student</h5>
@@ -1657,13 +1692,26 @@ export const view = {
 			</button>
 		`;
 	},
-	courseInfo(choiceData){
+	courseInfo(choiceData,plan = this.studentInfo.currentPlan){
+		console.log('courseInfo')
 		const _ = this;
 		let
-			plan = _.studentInfo["currentPlan"],
-			course = plan && plan['course'] ? plan['course'].title : '',
-			level = plan && plan['level'] ? plan['level'].title : '',
+			courseData,
+			course = '',
+			level = '',
 			testDate = plan && plan['testDate'] ? _.createdAtFormat(plan['testDate']) : '';
+
+		if (plan && plan.course) {
+			if (plan.course.title) {
+				course = plan.course.title;
+				level = plan.level ? plan.level.title : '';
+			} else {
+				courseData = plan && plan['course'] ? choiceData.courses.find((item)=>{if (item._id == plan.course) return item}) : '';
+				course = courseData ? courseData.title : '';
+				level = courseData ? courseData.levels.find((item)=>{if (item._id == plan.level) return item}).title  : '';
+			}
+		}
+
 		return `
 			<div class="adding-section">
 				<h4 class="adding-subtitle withmar">Course & Test Information</h4>
@@ -1685,7 +1733,7 @@ export const view = {
 						value="${testDate}" 
 						class="g-form-item" 
 						classname="form-input adding-inpt"
-						data-change="${_.componentName}:inputCourseData"
+						data-change="${_.componentName}:fillStudentInfo"
 					></g-input>
 					</div>
 			</div>
@@ -2212,6 +2260,17 @@ export const view = {
 		let gradeActive;
 		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade}`;
 		let gradeItems = _.createSelectItems(_.wizardData.grades, 'value:_id;text:grade', gradeActive);
+
+		let currentCourse;
+		if (!_.isEmpty(_.studentInfo['currentPlan'])) {
+			if (_.studentInfo['currentPlan']['course']) {
+				if (_.studentInfo['currentPlan']['course'].title) {
+					currentCourse = _.studentInfo['currentPlan']['course'].title;
+				}
+			}
+		}
+		if (!currentCourse) currentCourse = 'ISEE';
+
 		return `
 			<div class="student-profile-row student-profile-body">
 				<div class="student-profile-left">
@@ -2276,10 +2335,10 @@ export const view = {
 				<div class="student-profile-right">
 					<h4 class="admin-block-graytitle">Courses & Plans</h4>
 					<div class="student-profile-courses-btns">
-								<button class="student-profile-courses-btn${(!_.isEmpty(_.studentInfo['currentPlan']) && _.studentInfo['currentPlan']['course']['title'] == 'ISEE') ? ' active' : ''}">ISEE</button>
-								<button class="student-profile-courses-btn${_.isEmpty(_.studentInfo['currentPlan']) ? ' active' : _.studentInfo['currentPlan']['course']['title'] == 'SSAT' ? ' active' : ''}">SSAT</button>
-								<button class="student-profile-courses-btn${(!_.isEmpty(_.studentInfo['currentPlan']) && _.studentInfo['currentPlan']['course']['title'] == 'SHSAT') ? ' active' : ''}">SHSAT</button>
-							</div>
+						<button class="student-profile-courses-btn${currentCourse == 'ISEE' ? ' active' : ''}" data-click="${_.componentName}:changeCurrentCourse" value="ISEE">ISEE</button>
+						<button class="student-profile-courses-btn${currentCourse == 'SSAT' ? ' active' : ''}" data-click="${_.componentName}:changeCurrentCourse" value="SSAT">SSAT</button>
+						<button class="student-profile-courses-btn${currentCourse == 'SHSAT' ? ' active' : ''}" data-click="${_.componentName}:changeCurrentCourse" value="SHSAT">SHSAT</button>
+					</div>
 					<div class="student-profile-course-info loader-parent"><img src='/img/loader.gif' class='loader'></div>
 				</div>
 			</div>
@@ -2478,6 +2537,7 @@ export const view = {
 				${_.changePassword()}
 				${_.assignStudent()}
 				${_.removeCourseTpl()}
+				${_.removedCourseTpl()}
 				${_.removeUserTpl()}
 				${_.removeAdminTpl()}
 				${_.removeParentTpl()}

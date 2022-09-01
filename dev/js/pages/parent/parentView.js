@@ -11,7 +11,7 @@ export const parentView = {
 					<nav class="navigate-list">
 						<button class="navigate-item dashboard" data-click="StudentPage:changeSection;StudentPage:navigate" section="/parent/dashboard"><span>Student Academic Profile</span></button>
 						<button class="navigate-item practice" data-click="StudentPage:changeSection" section="/parent/students"><span>Students</span></button>
-						<div class="navigate-label" style="left: 15px;">
+						<div class="navigate-label">
 							<div class="navigate-label-left"></div>
 							<div class="navigate-label-right"></div>
 						</div>

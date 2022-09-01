@@ -36,6 +36,7 @@ export class UsersModule extends AdminPage {
 		//G_Bus.trigger(_.componentName,'showErrorPopup','Error, try again later')
 	}
 	define(){
+		console.log('define')
 		const _ = this;
 		_.componentName = 'UsersModule';
 		_.maxStep = 6;
@@ -44,10 +45,10 @@ export class UsersModule extends AdminPage {
 		_.coursePos = 0;
 		_.parentInfo = {};
 		_.studentInfo = {};
+		_.courseData = {};
 		_.metaInfo = {};
 		_.adminInfo = {};
 		_.subSection = 'student';
-		_.validationsSteps = [/*2,3,4,5*/];
 		_.parentSkipped =  false;
 		_.searchInfo = {};
 		_.set({
@@ -66,7 +67,7 @@ export class UsersModule extends AdminPage {
 				'assignParent','addNewParent','assignCourse','skipParent','updateParent',
 				'changeTestType','changeStudentLevel','changeSection',
 				'fillAdminInfo',
-				'fillStudentInfo','createStudent','skipTestDate','inputCourseData',
+				'fillStudentInfo','createStudent','skipTestDate','changeCurrentCourse',
 				'fillParentInfo','assignStudentToParent','removeAssignedParent',
 				'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
 				'showSuccessPopup','showErrorPopup','closePopup',
@@ -114,14 +115,15 @@ export class UsersModule extends AdminPage {
 			});
 		}
 		if (_.subSection === 'student'){
-			if(_._$.addingStep !== 1) _._$.addingStep = 1;
+			_._$.addingStep = 1;
 			_.fillTableFilter('#usersBody');
 			_.fillUserTable({usersData:tableData,selector:'#usersBody'});
 			_.paginationFill({total:tableData.total,limit:tableData.limit,selector:'#usersBody'});
 		}
 		if( _.subSection === 'profile'){
 			_.fillProfile(data);
-			_._$.assignStep = 1;
+			_.courseStatus = null;
+			_.removedCourseData = {};
 		}
 		if( _.subSection === 'parent'){
 			_.fillTableFilter('#bodyParents');
@@ -141,7 +143,6 @@ export class UsersModule extends AdminPage {
 		}
 		if( _.subSection === 'adminProfile'){
 			_.fillAdminProfile(data);
-			_._$.assignStep = 1;
 		}
 		//console.log(_.ff('.blocfk-header-item.button-blue'))
 		//_.ff('.block-header-itefm.button-blue').gappend(_.markup('<span>Hello</span>'))
@@ -178,13 +179,28 @@ export class UsersModule extends AdminPage {
 	}
 	async createStudent(){
 		const _ = this;
-		if(!_.parentSkipped){
-			if(!_.studentInfo['parentId']){
-				let parent = await Model.createParent(_.parentInfo);
-				_.studentInfo['parentId'] = parent['_id'];
-			}
+		if(!_.studentInfo['parentId']){
+			let parent = await Model.createParent(_.parentInfo);
+			_.studentInfo['parentId'] = parent['_id'];
 		}
-		let response = await Model.createStudent(_.studentInfo);
+		let curCourseData = _.courseData[_.studentInfo.currentPlan.course.title];
+		let createInfo = {
+			firstName: _.studentInfo.firstName,
+			lastName: _.studentInfo.lastName,
+			email: _.studentInfo.email,
+			password: _.studentInfo.password,
+			avatar: _.studentInfo.avatar,
+			grade: _.studentInfo.grade._id,
+			currentSchool: _.studentInfo.currentSchool,
+			course: curCourseData.course._id,
+			level: curCourseData.level._id,
+			testDate: curCourseData.testDate,
+			firstSchool: curCourseData.firstSchool._id,
+			secondSchool: curCourseData.secondSchool._id,
+			thirdSchool: curCourseData.thirdSchool._id,
+			parentId: _.studentInfo.parentId
+		};
+		let response = await Model.createStudent(createInfo);
 		if (!response) {
 			return void 0;
 		}
@@ -200,6 +216,35 @@ export class UsersModule extends AdminPage {
 	// Update methods
 	async updateStudent({item}){
 		const _ = this;
+		if (_.courseStatus == 'removed') {
+			_.showRemovedCoursePopup();
+			return
+		}
+		if (!_.isEmpty(_.courseData)) {
+			if (!_.isEmpty(_.removedCourseData)){
+				await Model.removeCourse(_.removedCourseData);
+				_.courseStatus = null;
+				let courseInfo = {
+					"studentId": _.studentInfo._id,
+					"course": _.studentInfo.course,
+					"level": _.studentInfo.level,
+					"testDate": _.studentInfo.testDate,
+					"firstSchool": _.studentInfo.currentPlan.firstSchool,
+					"secondSchool": _.studentInfo.currentPlan.secondSchool,
+					"thirdSchool": _.studentInfo.currentPlan.thirdSchool
+				};
+				console.log(_.courseData,courseInfo)
+				let assignResponse = await Model.assignCourse(courseInfo);
+				if(!assignResponse)	return void 0;
+				_.studentInfo['currentPlan'] = assignResponse['currentPlan'];
+			} else {
+				for (let key in _.courseData) {
+					await Model.updateCourse(_.courseData[key]);
+				}
+			}
+		}
+
+
 		let response = await Model.updateStudent({
 			'studentId': _.studentInfo['_id'],
 			'firstName': _.studentInfo['firstName'],
@@ -212,11 +257,6 @@ export class UsersModule extends AdminPage {
 		});
 		if(!response) return void 0;
 
-		if (!_.isEmpty(_.courseData)) {
-			for (let key in _.courseData) {
-				await Model.updateCourse(_.courseData[key]);
-			}
-		}
 
 		item.setAttribute('rerender',true);
 		G_Bus.trigger(_.componentName,'changeSection',{item})
@@ -305,31 +345,32 @@ export class UsersModule extends AdminPage {
 		}
 		_['parentInfo'][prop] = value;
 	}
-	fillStudentInfo({item}){
+	async fillStudentInfo({item}){
 		const _ = this;
 		let
-			prop = item.getAttribute('name'),
-			value = item.value;
-		if( typeof value == 'object'){
-			value = value + '';
-		}
-		if( (prop == 'firstSchool') || (prop == 'secondSchool')|| (prop == 'thirdSchool')|| (prop == 'grade')){
-			_.metaInfo[prop] = item.textContent;
-		}
-		_['studentInfo'][prop] = value;
-	}
-	inputCourseData({item}){
-		const _ = this;
-		_.fillStudentInfo({item});
-		let courseId = _.studentInfo['currentPlan']['_id'];
-		if (!_.courseData) _.courseData = {};
-		_.courseData[courseId] = {
-			'_id': courseId,
-			'studentId':_.studentInfo['_id'],
-			'firstSchool': _.studentInfo['firstSchool'],
-			'secondSchool': _.studentInfo['secondSchool'],
-			'thirdSchool': _.studentInfo['thirdSchool'],
-			'testDate': _.studentInfo['testDate'] ?? ''
+			name = item.getAttribute('name'),
+			value = item.value,
+			courseNames = ['firstSchool','secondSchool','thirdSchool','testDate','level','course'];
+
+		let wizardData = _.wizardData ?? await Model.getWizardData();
+		if( typeof value == 'object') value = value + '';
+		if(name == 'grade') _.metaInfo[name] = item.textContent;
+		let curPlanTitle = _.studentInfo.currentPlan.course.title;
+		if (!_.courseData[curPlanTitle]) _.courseData[curPlanTitle] = {};
+
+		if (courseNames.indexOf(name) >= 0) {
+			let schools = ['firstSchool','secondSchool','thirdSchool'];
+			if (schools.indexOf(name) >= 0) {
+				_.courseData[curPlanTitle][name] = wizardData.schools.find((unit)=>{
+					if (unit._id == item.value) return unit;
+				})
+			} else _.courseData[curPlanTitle][name] = value;
+		} else {
+			if (name == 'grade') {
+				_.studentInfo[name] = wizardData.grades.find((unit)=>{
+					if (unit._id == item.value) return unit;
+				})
+			} else _.studentInfo[name] = value;
 		}
 	}
 	fillAdminInfo({item}){
@@ -426,25 +467,24 @@ export class UsersModule extends AdminPage {
 		} else {
 			studentId = profileData['_id'];
 		}
-		//let currentStudent = Model.studentsData.response.filter( student => student['_id'] == studentId )[0];
 		let currentStudent = await Model.getStudent(studentId);
+		console.log(currentStudent)
 		_.studentInfo = Object.assign({},currentStudent['user']);
 		_.metaInfo = {};
-		_.studentInfo['currentSchool'] = currentStudent['currentSchool'] ?? '';
+		_.studentInfo['currentSchool'] = currentStudent['currentSchool'];
 		_.studentInfo['currentPlan'] = currentStudent['currentPlan'];
 		_.studentInfo['grade'] = currentStudent['grade'] ? currentStudent['grade']['_id'] ?? currentStudent['grade'] : '';
 		_.studentInfo['userId'] = _.studentInfo['_id'];
 		_.studentInfo['_id'] = currentStudent['_id'];
+		_.studentInfo['plans'] = currentStudent['plans'];
+		console.log(_.studentInfo)
 		
 		_.f('.student-profile-inner').innerHTML = _.personalInfo();
-		_._$.addingStep = 1;
 
-		if (currentStudent['currentPlan']){
-			_.studentInfo['firstSchool'] = currentStudent['currentPlan'].firstSchool ? currentStudent['currentPlan'].firstSchool['_id'] : '';
-			_.studentInfo['secondSchool'] = currentStudent['currentPlan'].secondSchool ? currentStudent['currentPlan'].secondSchool['_id'] : '';
-			_.studentInfo['thirdSchool'] = currentStudent['currentPlan'].thirdSchool ? currentStudent['currentPlan'].thirdSchool['_id'] : '';
-			_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.getWizardData());
-		} else _.f('.student-profile-course-info').innerHTML = _.emptyCourseInfo();
+		let courseInfoCont = _.f('.student-profile-course-info');
+		if (currentStudent['currentPlan']) courseInfoCont.innerHTML = _.courseInfo(_.wizardData ?? await Model.getWizardData());
+		else courseInfoCont.innerHTML = _.emptyCourseInfo();
+
 		_.f('.breadcrumbs').innerHTML = _.breadCrumbsTpl([{title:'Users'},{title:'Students'},{title:`${_.studentInfo['firstName']} ${_.studentInfo['lastName']} Profile`}]);
 	}
 	async fillAdminProfile(profileData) {
@@ -538,6 +578,8 @@ export class UsersModule extends AdminPage {
 		_.metaInfo = {};
 		_.parentSkipped = false;
 		_.coursePos = 0;
+		_.courseData = {};
+		_.courseAction = '';
 	}
 	// fill tables methods
 	fillTableFilter(selector){
@@ -573,6 +615,7 @@ export class UsersModule extends AdminPage {
 	async getSearchUsers({cont,role}){
 		console.log('getSearchUsers');
 		const _ = this;
+		//_.searchInfo[role].page = 1;
 		let usersData = await Model.getUsers({
 			role:role == 'addingParent' ? 'parent' : role,
 			update: true,
@@ -599,7 +642,10 @@ export class UsersModule extends AdminPage {
 			cont:cont.querySelector('.pagination'),
 			page:_.searchInfo[role].page,
 			limit:usersData.limit,
-			total:usersData.total
+		}
+		paginationData.total = usersData.total;
+		if (paginationData.page == 1) {
+			if (usersData.find < usersData.limit) paginationData.total = usersData.find
 		}
 		_.rebuildPagination(paginationData);
 	}
@@ -642,13 +688,15 @@ export class UsersModule extends AdminPage {
 
 		let listCont = _.f('.avatars-list');
 		if (!listCont.children.length ) {
-			_.avatars = await Model.wizardData['avatars'];
+			let wizardData = _.wizardData ?? await Model.getWizardData();
+			_.avatars = wizardData['avatars'];
 			listCont.append(_.markup(_.avatarsItemsTpl()));
 		}
 
 		let activeAvatar = listCont.querySelector('.active');
 		if (activeAvatar) activeAvatar.classList.remove('active');
-		let avatarInfo = _.studentInfo ? _.studentInfo.avatar : null;
+
+		let avatarInfo = _.studentInfo.avatar;
 		if (avatarInfo) {
 			listCont.querySelector(`[value="${avatarInfo['_id'] ?? avatarInfo}"]`).classList.add('active');
 		}
@@ -704,26 +752,39 @@ export class UsersModule extends AdminPage {
 	// Change methods
 	changeStudentLevel({item}) {
 		const _ = this;
-		if(item.parentNode.querySelector('.active')) item.parentNode.querySelector('.active').classList.remove('active');
+
+		let activeButton = item.parentNode.querySelector('.active');
+		if(activeButton) activeButton.classList.remove('active');
 		item.classList.add('active');
-		_['studentInfo']['level'] = item.getAttribute('data-id');
-		_['metaInfo']['level'] = item.textContent;
+
+		let levelId = item.getAttribute('data-id');
+		let currentCourseTitle = _.studentInfo.currentPlan.course.title;
+		_.courseData[currentCourseTitle].level = _.courseData[currentCourseTitle].course.levels.find((item)=>{
+			if (item._id == levelId) return item;
+		});
 	}
 	async changeTestType({item}) {
 		const _ = this;
-		if(item.parentNode.querySelector('.active')) item.parentNode.querySelector('.active').classList.remove('active');
+		if (item.hasAttribute('disabled')) return;
+
+		let activeButton = item.parentNode.querySelector('.active');
+		if(activeButton) activeButton.classList.remove('active');
 		item.classList.add('active');
+
 		let
 			pos = parseInt(item.getAttribute('pos')),
 			levelButtons = item.closest('.adding-body').querySelector('.level-buttons');
 		_.clear(levelButtons);
 		levelButtons.innerHTML = '<img src="/img/loader.gif">';
-		let stepData = await Model.getWizardData();
+		let stepData = _.wizardData ?? await Model.getWizardData();
+
 		_.coursePos = pos;
-		_['studentInfo'].course = stepData['courses'][pos]['_id'];
-		_['studentInfo'].level = stepData['courses'][pos]['levels'][0]['_id'];
-		_['metaInfo'].course = stepData['courses'][pos]['title'];
-		_['metaInfo'].level = stepData['courses'][pos]['levels'][0]['title'];
+		let courseTitle = stepData.courses[pos].title;
+		if (!_.courseData[courseTitle]) _.courseData[courseTitle] = {};
+		_.studentInfo.currentPlan.course = stepData['courses'][pos];
+		_.courseData[courseTitle].course = stepData['courses'][pos];
+		_.courseData[courseTitle].level = stepData['courses'][pos]['levels'][0];
+
 		levelButtons.innerHTML = _.levelButtons(stepData['courses'][pos]);
 	}
 	async changeSection({item,event}) {
@@ -891,6 +952,33 @@ export class UsersModule extends AdminPage {
 			_.connectTableHead('.parent-profile-inner');
 		}
 	}
+	async changeCurrentCourse({item}){
+		const _ = this;
+		let
+			value = item.getAttribute('value'),
+			parent = item.parentElement,
+			activeBtn = parent.querySelector('.active');
+
+		if (activeBtn == item) return null;
+
+		activeBtn.classList.remove('active');
+		item.classList.add('active');
+
+		let newPlan = _.studentInfo.plans.find((item)=>{
+			if (item.course.title == value) return item;
+		});
+		let wizardData = _.wizardData ?? Model.getWizardData();
+		if (!newPlan) newPlan = {
+			course: wizardData.courses.find((item)=>{
+				if (item.title == value) return item;
+			})
+		};
+
+		_.studentInfo.currentPlan = newPlan;
+		let courseInfoCont = _.f('.student-profile-course-info');
+		if (newPlan.level) courseInfoCont.innerHTML = _.courseInfo(_.wizardData ?? await Model.getWizardData());
+		else courseInfoCont.innerHTML = _.emptyCourseInfo();
+	}
 	flexible(){
 		const _ = this;
 		if(_.subSection === 'profile') {
@@ -923,13 +1011,19 @@ export class UsersModule extends AdminPage {
 	
 	// Show methods
 	async showAssignPopup({item}) {
+		console.log('showAssignPopup')
 		const _ = this;
+		return
 		_._$.assignStep = _._$.assignStep;
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#assignForm'});
 	}
 	showRemovePopup({item}) {
 		const _ = this;
 		G_Bus.trigger('modaler','showModal', {type:'html',target:'#removeForm','closeBtn':'hide'});
+	}
+	showRemovedCoursePopup() {
+		const _ = this;
+		G_Bus.trigger('modaler','showModal', {type:'html',target:'#removedCourse','closeBtn':'hide'});
 	}
 	showRemoveUserPopup({item}){
 		const _ = this;
@@ -1259,22 +1353,14 @@ export class UsersModule extends AdminPage {
 	}
 	async assignCourse({item}) {
 		const _ = this;
-		let courseInfo = {
-			"studentId": _.studentInfo._id,
-			"course": _.studentInfo.course,
-			"level": _.studentInfo.level,
-			"testDate": _.studentInfo.testDate,
-			"firstSchool": _.studentInfo.firstSchool,
-			"secondSchool": _.studentInfo.secondSchool,
-			"thirdSchool": _.studentInfo.thirdSchool
-		};
-		let response = await Model.assignCourse(courseInfo);
-		if(!response)	return void 0;
-		_.studentInfo['currentPlan'] = response['currentPlan'];
-		let wizardData = await Model.getWizardData();
-		_.f('.student-profile-course-info').innerHTML = _.courseInfo(wizardData);
+		let wizardData = _.wizardData ?? await Model.getWizardData();
+
+		_.courseData.studentId = _.studentInfo._id;
+		_.courseStatus = 'assigned';
+
+		_.f('.student-profile-course-info').innerHTML = _.courseInfo(wizardData,_.courseData);
 		G_Bus.trigger('modaler','closeModal');
-		_.showSuccessPopup('Course has been successfully assigned');
+		//_.showSuccessPopup('Course has been successfully assigned');
 	}
 	async assignFirstParent({item}) {
 		const _ = this;
@@ -1292,22 +1378,28 @@ export class UsersModule extends AdminPage {
 	
 	// Remove methods
 	async removeCourse({item}) {
+		console.log('removeCourse')
 		const _ = this;
+		if (!_.removedCourseData) _.removedCourseData = {};
+		_.removedCourseData[_.studentInfo.currentPlan.course.title] = {
+			studentId: _.studentInfo._id,
+			planId: _.studentInfo.currentPlan._id
+		};
+
 		let courseInfo = _.f('.student-profile-course-info');
 		_.clear(courseInfo);
-		await Model.removeCourse({
-			studentId:_.studentInfo['_id'],
-			planId:_.studentInfo.currentPlan['_id'],
-		});
+
+		_.studentInfo.currentPlan.firstSchool = null;
+		_.studentInfo.currentPlan.secondSchool = null;
+		_.studentInfo.currentPlan.thirdSchool = null;
+		_.studentInfo.currentPlan.testDate = null;
+		_.studentInfo.currentPlan.level = null;
+		_._$.assignStep = 1;
+
 		courseInfo.innerHTML = _.emptyCourseInfo();
 		G_Bus.trigger('modaler','closeModal');
-		_.studentInfo.firstSchool = null;
-		_.studentInfo.secondSchool = null;
-		_.studentInfo.thirdSchool = null;
-		_.studentInfo.testDate = null;
-		_.studentInfo.testDatePicked = false;
-		_._$.assignStep = 1;
-		_.showSuccessPopup('Course has been successfully removed')
+		_.courseStatus = 'removed';
+		//_.showSuccessPopup('Course has been successfully removed')
 	}
 	async removeUser({item}){
 		const _ = this;
@@ -1343,7 +1435,13 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		let response = await Model.removeParent(_.parentInfo['_id']);
 		if (!response) return;
-		_.f(`TR[user-id="${_.parentInfo['_id']}"]`).remove();
+		if (_.subSection == 'parentProfile') {
+			item.setAttribute('rerender',true);
+			item.setAttribute('section','student');
+			G_Bus.trigger(_.componentName,'changeSection',{item})
+		} else {
+			_.f(`TR[user-id="${_.parentInfo['_id']}"]`).remove();
+		}
 		G_Bus.trigger('modaler','closeModal')
 		_.showSuccessPopup('Parent profile deleted');
 	}
@@ -1386,6 +1484,7 @@ export class UsersModule extends AdminPage {
 		if (!value) return;
 		if (!_.searchInfo[role]) _.searchInfo[role] = {page: 1};
 		_.searchInfo[role]['sort'] = value;
+		_.searchInfo[role].page = 1;
 		_.getSearchUsers({cont,role})
 	}
 
@@ -1398,6 +1497,7 @@ export class UsersModule extends AdminPage {
 			dates = item.value.split('|');
 		if (!_.searchInfo[role]) _.searchInfo[role] = {page:1};
 		_.searchInfo[role]['startDate'] = dates[0];
+		_.searchInfo[role].page = 1;
 		_.searchInfo[role]['endDate'] = dates[1] ?? dates[0];
 		_.searchInfo[role][item.getAttribute('name')] = item.value;
 
@@ -1439,6 +1539,7 @@ export class UsersModule extends AdminPage {
 		
 	}
 	async changeNextStep({item}) {
+		console.log('changeNextStep')
 		const _ = this;
 		let type = item.getAttribute('type');
 		if( type == 'adding' ) {
@@ -1452,6 +1553,7 @@ export class UsersModule extends AdminPage {
 		}
 	}
 	changePrevStep({item}) {
+		console.log('changePrevStep')
 		const _ = this;
 		let type = item.getAttribute('type');
 		if( type == 'adding' ) {
@@ -1491,6 +1593,7 @@ export class UsersModule extends AdminPage {
 		return validate;
 	}
 	jumpToStep({item}) {
+		console.log('jumpToStep')
 		const _ = this;
 		let
 		type = item.getAttribute('type'),
@@ -1503,8 +1606,9 @@ export class UsersModule extends AdminPage {
 	}
 	async handleAddingSteps({addingStep}) {
 		const _ = this;
+		console.log('test')
 		if(!_.initedUpdate){
-			let wizardData = await Model.getWizardData();
+			let wizardData = _.wizardData ?? await Model.getWizardData();
 			_.stepsObj = {
 				1: _.addingStepOne.bind(_,wizardData),
 				2: _.addingStepTwo.bind(_,wizardData),
@@ -1515,6 +1619,7 @@ export class UsersModule extends AdminPage {
 			};
 			return void 0;
 		}
+		_.courseAction = 'adding';
 		let addingBody = _.f('#addingForm .adding-body');
 		if (!addingBody) return void 0;
 		addingBody.innerHTML = '<img src="/img/loader.gif">';
@@ -1532,10 +1637,11 @@ export class UsersModule extends AdminPage {
 		}
 		if(addingStep == 1){
 			let stepOneData = _.wizardData ?? await Model.getWizardData();
-			if (!_.studentInfo.course) _['studentInfo'].course = stepOneData['courses'][0]['_id'];
-			if (!_.studentInfo.level) _['studentInfo'].level = stepOneData['courses'][0]['levels'][0]['_id'];
-			if (!_['metaInfo'].course) _['metaInfo'].course = stepOneData['courses'][0]['title'];
-			if (!_['metaInfo'].level) _['metaInfo'].level = stepOneData['courses'][0]['levels'][0]['title'];
+			_.studentInfo.currentPlan = {
+				course: stepOneData['courses'][0],
+				level: stepOneData['courses'][0]['levels'][0],
+			};
+			_.courseData[_.studentInfo.currentPlan.course.title] = Object.assign({},_.studentInfo.currentPlan);
 		} else if (addingStep == 3) {
 			_.searchInfo['addingParent'] = {page:1};
 			_.parents = await Model.getUsers({role:'parent',searchInfo:_.searchInfo['addingParent']})
@@ -1561,17 +1667,27 @@ export class UsersModule extends AdminPage {
 			};
 			return void 0;
 		}
+		_.courseAction = 'assign';
 		let
+			wizardData = _.wizardData ?? await Model.getWizardData(),
 			addingBody = _.f('#assignForm .adding-body');
 		if (!addingBody) return void 0;
 		_.clear(addingBody);
 		
 		if (assignStep === 1) {
-			let wizardData = await Model.getWizardData();
-			_['studentInfo'].course = wizardData['courses'][0]['_id'];
-			_['studentInfo'].level = wizardData['courses'][0]['levels'][0]['_id'];
-			_['metaInfo'].course = wizardData['courses'][0]['title'];
-			_['metaInfo'].level = wizardData['courses'][0]['levels'][0]['title'];
+			if (!_.isEmpty(_.studentInfo.currentPlan)) {
+				_.courseData[_.studentInfo.currentPlan.course.title] = {};
+				_.courseData[_.studentInfo.currentPlan.course.title].course = _.studentInfo.currentPlan.course._id;
+				_.courseData[_.studentInfo.currentPlan.course.title].level = wizardData['courses'].find((item)=>{
+					if (item._id == _.studentInfo.currentPlan.course._id) return item;
+				})['levels'][0]['_id'];
+			} else {
+				_.studentInfo.currentPlan = {};
+				_.studentInfo.currentPlan.course = wizardData['courses'][0]['_id'];
+				_.studentInfo.currentPlan.level = wizardData['courses'][0]['levels'][0]['_id'];
+				_['metaInfo'].course = wizardData['courses'][0]['title'];
+				_['metaInfo'].level = wizardData['courses'][0]['levels'][0]['title'];
+			}
 		}
 		if ( assignStep == _.minStep){
 			_.setCancelBtn('assign');
@@ -1622,8 +1738,10 @@ export class UsersModule extends AdminPage {
 		_.paginate({item})
 	}
 	rebuildPagination({cont,page = 1,limit,total}){
+		console.log('rebuildPagination')
 		const _ = this;
-		let from = cont.querySelector('.gusers-page'),
+		let
+			from = cont.querySelector('.gusers-page'),
 			to = cont.querySelector('.gusers-limit'),
 			count = cont.querySelector('.gusers-count'),
 			inner = cont.querySelector('.pagination-inner'),
@@ -1643,10 +1761,13 @@ export class UsersModule extends AdminPage {
 				i = (page - 2) + index;
 			}
 			if (inner.children.length > len) {
-				inner.children[inner.children.length - 1].remove();
+				let rawBtn = inner.children[inner.children.length - 1];
+				if (rawBtn.classList.contains('active')) rawBtn.previousElementSibling.classList.add('active')
+					rawBtn.remove();
 			} else {
 				if (!button && len > index) {
 					button = document.createElement('BUTTON');
+					button.setAttribute('data-click',`${_.componentName}:paginate`)
 					button.className = 'pagination-link';
 					inner.append(button);
 				}
