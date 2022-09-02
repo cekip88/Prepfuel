@@ -105,6 +105,12 @@ export class AdminPage extends G {
 		let
 			params = blockData['params'];
 		_.header = await _.getBlock({name:'header'},'blocks');
+		if(blockData && blockData['params']){
+			params = blockData['params'];
+		}
+		if(params['redirect']){
+			await _.getMe();
+		}
 		if(params){
 			await _.moduleRender(params);
 			_.currentSection = '/admin/' + params['module'];

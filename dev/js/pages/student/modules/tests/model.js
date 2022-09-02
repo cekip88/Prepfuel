@@ -73,7 +73,8 @@ class _Model{
 	}
 	get questionsDatas(){
 		const _ = this;
-		return _.currentSection['subSections']['questionsData'][_.currentSubSectionPos];
+		return _.currentSection['subSections'][_.currentSubSectionPos]['questionData']
+	//	return _.currentSection['subSections']['questionsData'][_.currentSubSectionPos];
 	}
 	
 	async getStudentTests(type='practice'){

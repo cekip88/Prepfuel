@@ -147,7 +147,7 @@ export const view = {
 				<div class="section-header">
 					<h1 class="title">${Model.currentSection['directions'].headerTitle}</h1>
 					<div class="test-timer"><span class="test-timer-value">${Model.test.testTime}</span> minutes left</div>
-					<button class="button-white"	data-click="${this.componentName}:showConfirmModal"><span>Finish this test</span></button>
+					<button class="button-white"	data-click="${this.componentName}:showConfirmModal" section="score"><span>Finish this test</span></button>
 				</div>
 			</div>
 			<div class="section row">
@@ -233,22 +233,6 @@ export const view = {
 						{"value":"typo","text":"I caught a typo."},
 						{"value":"confus","text":"The question or explanations are confusing or unclear."},
 						{"value":"broken","text":"Something isn’t working / something seems broken."}]'></g-input>
-						<!--<div class="check-item">
-							<input type="radio" name="answer" id="report-wrong">
-							<label class="check-label" for="report-wrong"><span class="check-label-icon radio"></span><span class="check-label-text">The answer is wrong.</span></label>
-						</div>
-						<div class="check-item">
-							<input type="radio" name="answer" id="report-typo">
-							<label class="check-label" for="report-typo"><span class="check-label-icon radio"></span><span class="check-label-text">I caught a typo.</span></label>
-						</div>
-						<div class="check-item">
-							<input type="radio" name="answer" id="report-confusing">
-							<label class="check-label" for="report-confusing"><span class="check-label-icon radio"></span><span class="check-label-text">The question or explanations are confusing or unclear.</span></label>
-						</div>
-						<div class="check-item">
-							<input type="radio" name="answer" id="report-broken">
-							<label class="check-label" for="report-broken"><span class="check-label-icon radio"></span><span class="check-label-text">Something isn’t working / something seems broken.</span></label>
-						</div>-->
 					</div>
 					<h6 class="modal-title"><span>Description of issue</span></h6>
 					<textarea class="modal-area g-form-item" name="description"></textarea>
@@ -382,9 +366,13 @@ export const view = {
 	addBackToQuestionBtnTpl(pos){
 		const _ = this;
 		let questionData = Model.currentQuestionData(_.questionPos-1);
-		let questPos = `${pos[0]}-${pos[1]}`;
-		if(questionData['type'] != 'passage'){
-			questPos = pos[0]-1;
+		let questPos = `${pos[0]}`;
+		if(questionData){
+			if(questionData['type'] != 'passage'){
+				questPos = pos[0]-1;
+			}else{
+				questPos = `${pos[0]}-${pos[1]}`
+			}
 		}
 		if(pos == -1){
 			return `
@@ -406,7 +394,7 @@ export const view = {
 			sections = Model.test.sections;
 		for (let i = 0; i < sections.length; i++) {
 			let section = sections[i];
-			tpl += `<button class="questions-nav-btn${i === 0 ? ' active' : ''}"  data-section-pos="${i}"  data-click="${_.componentName}:changeTestSection" >${section.sectionName}</button>`
+			tpl += `<button class="questions-nav-btn${i === 0 ? ' active' : ''}"  data-section-pos="${i}"  data-click="${_.componentName}:changeTestSection"  data-changed-type="fromTab">${section.sectionName}</button>`
 		}
 		tpl += `
 				</div>
@@ -848,8 +836,12 @@ export const view = {
 	},
 	async standartQuestion(){
 		const _ = this;
-		let
+		let currentQuestion;
+		if(_._$.currentQuestion['questions']){
+			currentQuestion = _._$.currentQuestion['questions'][0]
+		}else {
 			currentQuestion = _._$.currentQuestion;
+		}
 		let
 			{ text,intro,content } = await _.getQuestionFields(currentQuestion),
 			tpl = `
@@ -995,7 +987,7 @@ export const view = {
 	
 	testPickTpl(test){
 		const _ = this;
-		let status = "Start", section = 'welcome'
+		let status = "Start", section = 'welcome';
 		if(Model.test['status'] == 'in progress'){
 			status = "Continue";
 			section = "directions";
