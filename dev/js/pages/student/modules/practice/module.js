@@ -53,6 +53,7 @@ export class PracticeModule extends StudentPage{
 		_.isLastQuestion = false;
 		_.testFinished = false;
 		_.currentTestType = 'quiz';
+		_.isQuizJump = false;
 		
 		_.skillTests  = [];
 		_.quizTests = [];
@@ -518,6 +519,8 @@ export class PracticeModule extends StudentPage{
 	}
 	jumpToQuizQuestion({item}){
 		const _ = this;
+		_.isQuizJump = true;
+		_.checkQuizAnswer({item});
 		let questionPos = item.getAttribute('data-pos');
 		_.questionPos = questionPos;
 		_._$.currentQuizQuestion =  Model.skillTest[questionPos];
@@ -601,6 +604,7 @@ export class PracticeModule extends StudentPage{
 		_._$.currentQuizQuestion =  Model.skillTest[pos];
 		innerItem.classList.remove('active');
 		innerItem.nextElementSibling.classList.add('active');
+		_.isQuizJump = false;
 	}
 	
 	// end change methods
@@ -958,7 +962,7 @@ export class PracticeModule extends StudentPage{
 				_.currentQuizStatus = 'finished';
 				_.testFinished = true;
 			}else{
-				_.changeQuizQuestion({item});
+				if(!_.isQuizJump)   	_.changeQuizQuestion({item});
 			}
 		}
 	}
