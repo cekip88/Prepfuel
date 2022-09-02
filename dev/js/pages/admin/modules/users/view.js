@@ -1079,7 +1079,7 @@ export const view = {
 	addingStepFour(stepData){
 		const _ = this;
 		let gradeActive;
-		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade}`;
+		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade._id}`;
 		let gradeItems = _.createSelectItems(stepData.grades, 'value:_id;text:grade', gradeActive);
 		return `
 			<div class="adding-center">
@@ -1127,10 +1127,28 @@ export const view = {
 					<h4 class="adding-subtitle withmar">Registered Official Test Date</h4>
 					<div class="adding-inpt adding-radio-row">
 						<div class="form-label-row">
-							<input type="radio" id="have_registered" class="adding-radio" name="registered" data-change="${_.componentName}:skipTestDate" ${_.courseData[_.courseData.currentPlan].testDatePicked ? 'checked' : ''}>
+							<input 
+								type="radio" 
+								id="have_registered" 
+								class="adding-radio" 
+								name="registered" 
+								data-change="${_.componentName}:skipTestDate" 
+								${_.courseData[_.courseData.currentPlan].testDatePicked ? 'checked' : ''}>
 							<label class="form-label adding-label-have" for="have_registered">Have registered</label>
 						</div>
-						<g-input disabled type='date' format="month DD, YYYY" value="${_.studentInfo.testDate ?? ''}" data-change="${_.componentName}:fillStudentInfo" class="select adding-select" name="testDate" classname="adding-select" icon="false" xlink="select-arrow-bottom" placeholder="Press to choose your official test date"></g-input>
+						<g-input 
+							${_.courseData[_.courseData.currentPlan].testDatePicked ? '' : 'disabled'} 
+							type='date' 
+							format="month DD, YYYY" 
+							value="${_.courseData[_.courseData.currentPlan].testDate ?? ''}" 
+							data-change="${_.componentName}:fillStudentInfo" 
+							class="select adding-select" 
+							name="testDate" 
+							classname="adding-select" 
+							icon="false" 
+							xlink="select-arrow-bottom" 
+							placeholder="Press to choose your official test date"
+						></g-input>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
@@ -1626,6 +1644,7 @@ export const view = {
 
 	createSelectItems(items,template,active){
 		const _ = this;
+		console.log(items,template,active)
 		let outItems = [];
 		let templateSplit = template.split(';');
 		for (let item of items) {
@@ -2334,7 +2353,7 @@ export const view = {
 				</div>
 			</div>
 			<div class="student-profile-footer">
-				<button class="student-profile-delete" data-click="${_.componentName}:showRemoveUserPopup" data-id="${_.studentInfo['studentId']}">Delete User Profile</button>
+				<button class="student-profile-delete" data-click="${_.componentName}:showRemoveUserPopup" data-id="${_.studentInfo['_id']}">Delete User Profile</button>
 				<div class="student-profile-actions">
 					<button class="test-footer-back" data-click="${_.componentName}:changeSection" section="${_.prevSubSection}" ${_.prevSubSection == 'parentProfile' ? 'data-outerId=' + _.parentInfo['outerId'] : '' } rerender>
 						<span>Discard</span>

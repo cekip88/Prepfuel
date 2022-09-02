@@ -764,6 +764,10 @@ export class UsersModule extends AdminPage {
 			_id: levelId,
 			title: item.textContent
 		};
+		_.studentInfo.currentPlan.level = {
+			_id: levelId,
+			title: item.textContent
+		};
 	}
 	async changeTestType({item}) {
 		const _ = this;
@@ -783,7 +787,9 @@ export class UsersModule extends AdminPage {
 		_.coursePos = pos;
 		let courseTitle = stepData.courses[pos].title;
 		if (!_.courseData[courseTitle]) _.courseData[courseTitle] = {};
+		_.courseData.currentPlan = courseTitle;
 		_.studentInfo.currentPlan.course = stepData['courses'][pos];
+		_.studentInfo.currentPlan.level = stepData['courses'][pos]['levels'][0];
 		_.courseData[courseTitle].course = stepData['courses'][pos];
 		_.courseData[courseTitle].level = stepData['courses'][pos]['levels'][0];
 
@@ -1642,10 +1648,12 @@ export class UsersModule extends AdminPage {
 		if(addingStep == 1){
 			let stepOneData = _.wizardData ?? await Model.getWizardData();
 			if (_.subSection === 'student') {
-				_.studentInfo.currentPlan = {
-					course: stepOneData['courses'][0],
-					level: stepOneData['courses'][0]['levels'][0],
-				};
+				if (_.isEmpty(_.studentInfo.currentPlan)) {
+					_.studentInfo.currentPlan = {
+						course: stepOneData['courses'][0],
+						level: stepOneData['courses'][0]['levels'][0],
+					};
+				}
 				_.courseData = {};
 				_.courseData.currentPlan = _.studentInfo.currentPlan.course.title;
 				_.courseData[_.courseData.currentPlan] = Object.assign({},_.studentInfo.currentPlan);
