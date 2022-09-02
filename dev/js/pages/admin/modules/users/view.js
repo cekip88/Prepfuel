@@ -20,7 +20,6 @@ export const view = {
 		`;
 	},
 	usersBodyRowsTpl(usersData,from='users'){
-		console.log('usersBodyRowsTpl')
 		const _ = this;
 		let trs = [];
 		if(usersData['response'])	usersData = usersData['response'];
@@ -39,7 +38,6 @@ export const view = {
 		return trs;
 	},
 	usersPlansTpl(plans){
-		console.log('usersPlansTpl')
 		const _ = this;
 		let ans = [];
 		if (!plans || !plans.length) return [];
@@ -53,7 +51,6 @@ export const view = {
 		return ans;
 	},
 	usersBodyRowTpl(plans,rowData,user){
-		console.log('usersBodyRowTpl')
 		const _ = this;
 		let coursesData = _.usersPlansTpl(plans);
 		let avatar = rowData.avatar ? rowData.avatar.avatar.split('.')[0] : '';
@@ -101,7 +98,6 @@ export const view = {
 		return tpl;
 	},
 	studentsBodyRowTpl(plans,rowData,user){
-		console.log('studentsBodyRowTpl')
 		const _ = this;
 		let coursesData = _.usersPlansTpl(plans);
 		let avatar = rowData.avatar ? rowData.avatar.avatar.split('.')[0] : '';
@@ -491,12 +487,15 @@ export const view = {
 	choiceSelectStudent(choiceData,title='School you are interested in applying to'){
 		const _ = this;
 		let
-			plan = _.studentInfo.currentPlan,
+			plan = _.courseData[_.courseData.currentPlan],
 			activeFirst,activeSecond,activeThird;
 
-		if(plan.firstSchool) activeFirst = `_id:${plan.firstSchool._id ?? plan.firstSchool}`;
-		if(plan.secondSchool) activeSecond = `_id:${plan.secondSchool._id ?? plan.secondSchool}`;
-		if(plan.thirdSchool) activeThird = `_id:${plan.thirdSchool._id ?? plan.thirdSchool}`;
+		if (plan) {
+			if(plan.firstSchool) activeFirst = `_id:${plan.firstSchool._id ?? plan.firstSchool}`;
+			if(plan.secondSchool) activeSecond = `_id:${plan.secondSchool._id ?? plan.secondSchool}`;
+			if(plan.thirdSchool) activeThird = `_id:${plan.thirdSchool._id ?? plan.thirdSchool}`;
+		}
+
 		let
 			firstItems = _.createSelectItems(choiceData.schools,"value:_id;text:school",activeFirst),
 			secondItems = _.createSelectItems(choiceData.schools,"value:_id;text:school",activeSecond),
@@ -858,7 +857,6 @@ export const view = {
 
 	// Adding steps
 	addingStepOne(stepData){
-		console.log('addingStepOne')
 		const _ = this;
 		let
 			courses = stepData['courses'],
@@ -870,7 +868,7 @@ export const view = {
 		`;
 		courses.forEach( (item,cnt) => {
 			let activeClass = '';
-			if(_.studentInfo.currentPlan.course._id == item._id){
+			if(item.title === _.courseData.currentPlan){
 				_.coursePos = cnt;
 				activeClass = 'active';
 			}
@@ -1288,7 +1286,6 @@ export const view = {
 	},
 	assignParentTpl(asked = false){
 		const _ = this;
-		console.log('assignParentTpl')
 		let
 			count = asked ? _.parents.total : null,
 			limit = asked ? _.parents.limit : null;
@@ -1393,7 +1390,6 @@ export const view = {
 		return trs;
 	},
 	parentsBodyRowTpl(rowData){
-		console.log('parentsBodyRowTpl')
 		const _ = this;
 		let tpl = `
 			<td>
@@ -1447,7 +1443,6 @@ export const view = {
 		return tpl;
 	},
 	parentsSingleBodyRowTpl(rowData){
-		console.log('parentsSingleBodyRowTpl')
 		const _ = this;
 		let tpl = `
 			<td>
@@ -1680,7 +1675,6 @@ export const view = {
 
 	///
 	emptyCourseInfo(){
-		console.log('emptyCourseInfo')
 		const _ = this;
 		return `
 			<h5 class="student-profile-course-empty">Currently, there is no ISEE course assign to this student</h5>
@@ -1692,8 +1686,7 @@ export const view = {
 			</button>
 		`;
 	},
-	courseInfo(choiceData,plan = this.studentInfo.currentPlan){
-		console.log('courseInfo')
+	courseInfo(choiceData,plan = this.courseData[this.courseData.currentPlan]){
 		const _ = this;
 		let
 			courseData,
@@ -1823,7 +1816,6 @@ export const view = {
 		return tpl;
 	},
 	activityHistory(){
-		console.log('activityHistory')
 		const _ = this;
 		let tpl = `
 			<div class="activity-header-list">${_.activityHistoryHeaderTpl(_.activityHeaderData)}</div>
@@ -1899,7 +1891,6 @@ export const view = {
 		return tpl;
 	},
 	activityTableTpl(){
-		console.log('activityTableTpl')
 		const _ = this;
 		return `
 			<div class="tbl">
@@ -1974,7 +1965,6 @@ export const view = {
 		return tpl;
 	},
 	parentsInfoRow(rowData){
-		console.log("parentsInfoRow")
 		const _ = this;
 		let tpl = `
 			<td>
@@ -2079,7 +2069,6 @@ export const view = {
 		return tpl;
 	},
 	assignedParent(parentInfo){
-		console.log('assignedParent')
 		const _ = this;
 		let studentsTpl = ``,students = parentInfo.students;
 		if (students.length) {
@@ -2198,7 +2187,6 @@ export const view = {
 		return tpl;
 	},
 	parentsInfo(){
-		console.log('parentsInfo')
 		const _ = this;
 		return `
 			<div class="tbl">
@@ -2474,7 +2462,6 @@ export const view = {
 		`;
 	},
 	parentChildesInfoTpl(){
-		console.log('parentChildesInfoTpl')
 		const _ = this;
 		return `
 			<div class="section users-page" id="parentsStudentTable">
@@ -3092,7 +3079,6 @@ export const view = {
 		return tpl;
 	},
 	parentsStudentsTpl(){
-		console.log('parentsStudentsTpl')
 		const _ = this;
 		let tpl = `
 			<div class="tbl">
@@ -3150,8 +3136,6 @@ export const view = {
 		return tpl;
 	},
 	parentsStudentsRowsTpl(studentsData){
-		console.log('parentsStudentsRowsTpl')
-		console.log(studentsData)
 		const _ = this;
 		let tpl = '';
 		for (let item of studentsData) {
@@ -3265,7 +3249,6 @@ export const view = {
 		return tpl;
 	},
 	adminSingleBodyRowTpl(rowData){
-		console.log('adminSingleBodyRowTpl')
 		const _ = this;
 		let tpl = `
 			<td>
