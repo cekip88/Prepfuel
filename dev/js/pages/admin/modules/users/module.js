@@ -180,7 +180,7 @@ export class UsersModule extends AdminPage {
 			let parent = await Model.createParent(_.parentInfo);
 			_.studentInfo['parentId'] = parent['_id'];
 		}
-		let curCourseData = _.courseData[_.studentInfo.currentPlan.course.title];
+		let curCourseData = _.courseData[_.courseData.currentPlan];
 		let createInfo = {
 			firstName: _.studentInfo.firstName,
 			lastName: _.studentInfo.lastName,
@@ -198,9 +198,8 @@ export class UsersModule extends AdminPage {
 			parentId: _.studentInfo.parentId
 		};
 		let response = await Model.createStudent(createInfo);
-		if (!response) {
-			return void 0;
-		}
+		if (!response) return void 0;
+
 		_.clearData();
 		G_Bus.trigger('modaler','closeModal');
 		G_Bus.trigger(_.componentName,'showSuccessPopup','Student has been successfully added');
@@ -208,6 +207,7 @@ export class UsersModule extends AdminPage {
 		_._$.addingStep = 1;
 		let users = await Model.getUsers({role:'student',page: 1,update: true});
 		_.fillUserTable({usersData:users,selector:'#usersBody'});
+		_.rebuildPagination({page:1,limit:users.limit,total:users.total,cont:_.f('.pagination')})
 	}
 	// Create methods
 	
@@ -218,30 +218,33 @@ export class UsersModule extends AdminPage {
 			_.showRemovedCoursePopup();
 			return
 		}
-		if (!_.isEmpty(_.courseData)) {
-			if (!_.isEmpty(_.removedCourseData)){
-				await Model.removeCourse(_.removedCourseData);
-				_.courseStatus = null;
-				let courseInfo = {
-					"studentId": _.studentInfo._id,
-					"course": _.studentInfo.course,
-					"level": _.studentInfo.level,
-					"testDate": _.studentInfo.testDate,
-					"firstSchool": _.studentInfo.currentPlan.firstSchool,
-					"secondSchool": _.studentInfo.currentPlan.secondSchool,
-					"thirdSchool": _.studentInfo.currentPlan.thirdSchool
-				};
-				let assignResponse = await Model.assignCourse(courseInfo);
-				if(!assignResponse)	return void 0;
-				_.studentInfo['currentPlan'] = assignResponse['currentPlan'];
-			} else {
-				for (let key in _.courseData) {
-					if (!_.courseData[key]._id) continue;
-					await Model.updateCourse(_.courseData[key]);
-				}
+		if (!_.isEmpty(_.removedCourseData)){
+			for (let key in _.removedCourseData) {
+				await Model.removeCourse(_.removedCourseData[key]);
 			}
 		}
 
+		for (let key in _.courseData) {
+			if (key === 'currentPlan' || key === 'studentId') continue;
+			let courseResponse;
+
+			if (_.courseData[key]._id) {
+				courseResponse = await Model.updateCourse(_.courseData[key]);
+			} else {
+				if (_.courseData[key].firstSchool) {
+					let courseInfo = {
+						"studentId": _.studentInfo._id,
+						"course": _.courseData[key].course._id,
+						"level": _.courseData[key].level._id,
+						"testDate": _.courseData[key].testDate,
+						"firstSchool": _.courseData[key].firstSchool._id,
+						"secondSchool": _.courseData[key].secondSchool._id,
+						"thirdSchool": _.courseData[key].thirdSchool._id
+					};
+					courseResponse = await Model.assignCourse(courseInfo);
+				}
+			}
+		}
 
 		let response = await Model.updateStudent({
 			'studentId': _.studentInfo['_id'],
@@ -352,9 +355,8 @@ export class UsersModule extends AdminPage {
 		let wizardData = _.wizardData ?? await Model.getWizardData();
 		if( typeof value == 'object') value = value + '';
 		if(name == 'grade') _.metaInfo[name] = item.textContent;
-		let curPlanTitle = _.studentInfo.currentPlan.course.title;
+		let curPlanTitle = _.courseData.currentPlan;
 		if (!_.courseData[curPlanTitle]) _.courseData[curPlanTitle] = {};
-		if (_.studentInfo.currentPlan._id) _.courseData[curPlanTitle]._id = _.studentInfo.currentPlan._id;
 
 		if (courseNames.indexOf(name) >= 0) {
 			let schools = ['firstSchool','secondSchool','thirdSchool'];
@@ -381,15 +383,15 @@ export class UsersModule extends AdminPage {
 			cont = item.closest('.adding-section'),
 			inputDate = cont.querySelector('g-input');
 		if (item.id == "have_yet") {
-			_.studentInfo.testDate = null;
-			_.studentInfo.testDatePicked = false;
+			_.courseData[_.courseData.currentPlan] = null;
+			_.courseData[_.courseData.currentPlan].testDatePicked = false;
 			inputDate.setAttribute('disabled',true);
 			inputDate.removeAttribute('data-required');
 			inputDate.value = '';
 		} else {
 			inputDate.removeAttribute('disabled');
 			inputDate.setAttribute('data-required','');
-			_.studentInfo.testDatePicked = true;
+			_.courseData[_.courseData.currentPlan].testDatePicked = true;
 		}
 	}
 	fillDataByClass({className,data}){
@@ -757,10 +759,11 @@ export class UsersModule extends AdminPage {
 		item.classList.add('active');
 
 		let levelId = item.getAttribute('data-id');
-		let currentCourseTitle = _.studentInfo.currentPlan.course.title;
-		_.courseData[currentCourseTitle].level = _.courseData[currentCourseTitle].course.levels.find((item)=>{
-			if (item._id == levelId) return item;
-		});
+		let currentCourseTitle = _.courseData.currentPlan;
+		_.courseData[currentCourseTitle].level = {
+			_id: levelId,
+			title: item.textContent
+		};
 	}
 	async changeTestType({item}) {
 		const _ = this;
@@ -1351,7 +1354,7 @@ export class UsersModule extends AdminPage {
 		_.courseData.studentId = _.studentInfo._id;
 		_.courseStatus = 'assigned';
 
-		_.f('.student-profile-course-info').innerHTML = _.courseInfo(wizardData,_.courseData);
+		_.f('.student-profile-course-info').innerHTML = _.courseInfo(wizardData);
 		G_Bus.trigger('modaler','closeModal');
 		//_.showSuccessPopup('Course has been successfully assigned');
 	}
@@ -1382,7 +1385,11 @@ export class UsersModule extends AdminPage {
 		let tempCurPlan = Object.assign({},_.courseData[_.courseData.currentPlan]);
 		_.courseData[_.courseData.currentPlan] = {
 			course: tempCurPlan.course,
-			level: tempCurPlan.level
+			level: _.wizardData.courses.find((item)=>{
+				if (item._id == tempCurPlan.course._id) {
+					return item
+				}
+			}).levels[0]
 		};
 
 		let courseInfo = _.f('.student-profile-course-info');
@@ -1392,7 +1399,14 @@ export class UsersModule extends AdminPage {
 
 		courseInfo.innerHTML = _.emptyCourseInfo();
 		G_Bus.trigger('modaler','closeModal');
+
 		_.courseStatus = 'removed';
+		for (let key in _.courseData) {
+			if (!_.isEmpty(_.courseData[key].firstSchool)) {
+				_.courseStatus = null;
+				break;
+			}
+		}
 		//_.showSuccessPopup('Course has been successfully removed')
 	}
 	async removeUser({item}){

@@ -600,10 +600,14 @@ export const view = {
 	},
 	assignStepFour(){
 		const _ = this;
-
 		let testDate = 'Have not registered yet';
-		if (_.studentInfo.testDatePicked) testDate = _.createdAtFormat(_.studentInfo['testDate']);
-		let schoolTitles = [_.metaInfo.firstSchool,_.metaInfo.secondSchool,_.metaInfo.thirdSchool];
+		console.log(_.courseData[_.courseData.currentPlan])
+		if (_.courseData[_.courseData.currentPlan].testDatePicked) testDate = _.createdAtFormat(_.courseData[_.courseData.currentPlan].testDate);
+		let schoolTitles = [
+			_.courseData[_.courseData.currentPlan].firstSchool.school,
+			_.courseData[_.courseData.currentPlan].secondSchool.school,
+			_.courseData[_.courseData.currentPlan].thirdSchool.school,
+		];
 		return `
 			<div class="adding-center">
 				<h3 class="adding-title">Summary</h3>
@@ -615,11 +619,11 @@ export const view = {
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
 							<span>Chosen Course:</span>
-							<strong>${_.metaInfo.course}</strong>
+							<strong>${_.courseData[_.courseData.currentPlan].course.title}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Chosen Level:</span>
-							<strong>${_.metaInfo.level}</strong>
+							<strong>${_.courseData[_.courseData.currentPlan].level.title}</strong>
 						</li>
 						<li class="adding-summary-item">
 							<span>Plan:</span>
@@ -785,7 +789,7 @@ export const view = {
 		const _ = this;
 		let
 			tpl = ``,
-			curPlan = _.courseData ?? _.studentInfo.currentPlan;
+			curPlan = _.courseData[_.courseData.currentPlan] ?? _.studentInfo.currentPlan;
 
 		stepData.levels.forEach( (item,index) => {
 			let activeClass = '';
@@ -874,8 +878,7 @@ export const view = {
 			}
 			tpl += `
 				<button 
-					class="adding-button 
-					${ activeClass }" 
+					class="adding-button ${ activeClass }" 
 					pos="${cnt}" 
 					data-click="${_.componentName}:changeTestType" 
 					data-id="${item._id}"
@@ -1124,14 +1127,14 @@ export const view = {
 					<h4 class="adding-subtitle withmar">Registered Official Test Date</h4>
 					<div class="adding-inpt adding-radio-row">
 						<div class="form-label-row">
-							<input type="radio" id="have_registered" class="adding-radio" name="registered" data-change="${_.componentName}:skipTestDate" ${_.studentInfo.testDatePicked ? 'checked' : ''}>
+							<input type="radio" id="have_registered" class="adding-radio" name="registered" data-change="${_.componentName}:skipTestDate" ${_.courseData[_.courseData.currentPlan].testDatePicked ? 'checked' : ''}>
 							<label class="form-label adding-label-have" for="have_registered">Have registered</label>
 						</div>
 						<g-input disabled type='date' format="month DD, YYYY" value="${_.studentInfo.testDate ?? ''}" data-change="${_.componentName}:fillStudentInfo" class="select adding-select" name="testDate" classname="adding-select" icon="false" xlink="select-arrow-bottom" placeholder="Press to choose your official test date"></g-input>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
-							<input type="radio" id="have_yet" class="adding-radio" name="registered" data-change="${_.componentName}:skipTestDate" ${!_.studentInfo.testDatePicked ? 'checked' : ''}>
+							<input type="radio" id="have_yet" class="adding-radio" name="registered" data-change="${_.componentName}:skipTestDate" ${!_.courseData[_.courseData.currentPlan].testDatePicked ? 'checked' : ''}>
 							<label class="form-label adding-label-have" for="have_yet">Have not registered yet</label>
 						</div>
 					</div>
@@ -1143,7 +1146,7 @@ export const view = {
 		const _ = this;
 		let testDate = 'Have not registered yet';
 		let curCourseTitle = _.studentInfo.currentPlan.course.title;
-		if (_.studentInfo.testDatePicked) testDate = _.createdAtFormat(_.courseData[curCourseTitle]['testDate']);
+		if (_.courseData[_.courseData.currentPlan].testDatePicked) testDate = _.createdAtFormat(_.courseData[curCourseTitle]['testDate']);
 		let schoolTitles = [
 			_.courseData[curCourseTitle].firstSchool.school,
 			_.courseData[curCourseTitle].secondSchool.school,
