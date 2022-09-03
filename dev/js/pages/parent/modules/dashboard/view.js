@@ -227,6 +227,7 @@ export const view = {
 	},
 	addingStepOne(){
 		const _ = this;
+		console.log(_.courseAction)
 		let
 			courses = _.wizardData['courses'],
 			tpl = `
@@ -238,11 +239,12 @@ export const view = {
 				<div class="adding-section">
 					<div class="adding-label">What test is the student purchasing?</div>
 					<div class="adding-buttons">
-			`;
+		`;
 		courses.forEach( (item,cnt) => {
 			let activeClass = '';
-			if(_.studentInfo['course']){
-				if(_.studentInfo['course'] == item._id) activeClass = 'active';
+			if(item.title === _.courseData.currentPlan){
+				_.coursePos = cnt;
+				activeClass = 'active';
 			}
 			tpl += `
 				<button 
@@ -250,6 +252,7 @@ export const view = {
 					pos="${cnt}" 
 					data-click="${_.componentName}:changeTestType" 
 					data-id="${item._id}"
+					${_.courseAction === 'assign' && !activeClass.length ? 'disabled' : ''}
 				>
 					<span>${item.title}</span>
 				</button>
@@ -259,9 +262,7 @@ export const view = {
 				</div>
 			</div>
 			<div class="adding-section">
-				<div class="adding-label">
-					What level of the test student plan to take?
-				</div>
+				<div class="adding-label">What level of the test student plan to take?</div>
 				<div class="adding-buttons level-buttons loader-parent">
 					${_.levelButtons(courses[_.coursePos])}
 				</div>
@@ -312,9 +313,7 @@ export const view = {
 					<h4 class="adding-subtitle">Student Personal Info</h4>
 					<div class="adding-avatar">
 						<button data-click="${_.componentName}:selectAvatar">
-							<strong class="adding-avatar-letter">
-								${_.studentInfo.avatarName ? '<img src="/img/' + _.studentInfo.avatarName + '.svg">' : 'K'}
-							</strong>
+							<strong class="adding-avatar-letter">${_.studentInfo.avatarName ? '<img src="/img/' + _.studentInfo.avatarName + '.svg">' : 'K'}</strong>
 							<span class="adding-avatar-link">Select Avatar</span>
 						</button>
 					</div>
@@ -325,107 +324,93 @@ export const view = {
 							<div class="form-label-row">
 								<label class="form-label">First name</label>
 							</div>
-							<g-input 
-								type="text" 
-								value="${_.studentInfo['firstName'] ?? ''}" 
-								name="firstName" class="g-form-item"
-								classname="form-input adding-inpt" 
+							<g-input
+								type="text"
+								value="${_.studentInfo['firstName'] ?? ''}"
+								name="firstName"
+								class="g-form-item"
 								data-required
-								data-input="${_.componentName}:fillStudentInfo"
-							></g-input>
+								classname="form-input adding-inpt"
+								data-input="${_.componentName}:fillStudentInfo"></g-input>
 						</div>
 						<div class="adding-inpt small">
 							<div class="form-label-row">
 								<label class="form-label">Last name</label>
 							</div>
-							<g-input 
-								type="text" 
-								value="${_.studentInfo['lastName'] ?? ''}" 
-								name="lastName" 
-								class="g-form-item" 
+							<g-input
+								type="text"
+								value="${_.studentInfo['lastName'] ?? ''}"
+								name="lastName"
 								data-required
-								data-input="${_.componentName}:fillStudentInfo" 
-								classname="form-input adding-inpt"
-							></g-input>
+								class="g-form-item"
+								data-input="${_.componentName}:fillStudentInfo"
+								classname="form-input adding-inpt"></g-input>
 						</div>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
 							<label class="form-label">Email</label>
 						</div>
-							<g-input 
-								type="text" 
-								name="email" 
-								value="${_.studentInfo['email'] ?? ''}"
-								class="g-form-item" 
+							<g-input
+								type="email"
 								data-required
-								data-outfocus="${_.componentName}:checkEmail" 
-								data-input="${_.componentName}:fillStudentInfo" 
-								classname="form-input adding-inpt"
-							></g-input>
-							<span class="form-label-desc" style="display:none;">
-								Email is not free
-							</span>
+								name="email"
+								value="${_.studentInfo['email'] ?? ''}"
+								class="g-form-item"
+								data-outfocus="${_.componentName}:checkEmail"
+								data-input="${_.componentName}:fillStudentInfo"
+								classname="form-input adding-inpt"></g-input>
+							<span class="form-label-desc" style="display:none;">Email is not free</span>
 						</div>
 				</div>
 				<div class="adding-section">
 					<h4 class="adding-subtitle">Password</h4>
-					<p class="adding-text">
-						Password will be sent to a student via email invitation to the platform
-					</p>
+					<p class="adding-text">Password will be sent to a student via email invitation to the platform</p>
 					<div class="adding-inpt small">
 						<div class="form-label-row">
 							<label class="form-label">Password</label>
 						</div>
-						<g-input 
-							type="password" 
-							name="password" 
-							match="addingStepTwo"
+						<g-input
+							type="password"
+							name="password"
 							data-required
-							value="${_.studentInfo['password'] ?? ''}" 
-							data-outfocus="${_.componentName}:validatePassword" 
-							data-input="${_.componentName}:fillStudentInfo" 
-							class="g-form-item" 
+							match="addingStepTwo"
+							value="${_.studentInfo['password'] ?? ''}"
+							data-outfocus="${_.componentName}:validatePassword"
+							data-callback="${_.componentName}:fillStudentInfo"
+							class="g-form-item"
 							classname="form-input"
 						></g-input>
-						<span class="form-label-desc">
-							8+ characters, with min. one number, one uppercase letter and one special character
-						</span>
+						<span class="form-label-desc">8+ characters, with min. one number, one uppercase letter and one special character</span>
 					</div>
 					<div class="adding-inpt small">
 						<div class="form-label-row">
 							<label class="form-label">Repeat password</label>
 						</div>
-						<g-input 
-							type="password" 
-							name="cpass"  
-							match="addingStepTwo"
+						<g-input
+							type="password"
+							name="cpass"
 							data-required
-							value="${_.studentInfo['cpass'] ?? ''}" 
-							data-outfocus="${_.componentName}:validatePassword" 
-							data-input="${_.componentName}:fillStudentInfo" 
+							match="addingStepTwo"
+							value="${_.studentInfo['cpass'] ?? ''}"
+							data-outfocus="${_.componentName}:validatePassword"
+							data-callback="${_.componentName}:fillStudentInfo"
 							class="g-form-item" classname="form-input"
 						></g-input>
-						<span class="form-label-desc" style="display:none;">
-							Password does not match
-						</span>
+						<span class="form-label-desc" style="display:none;">Password does not match</span>
 					</div>
 				</div>
-				<button 
-					class="adding-generate" 
-					data-click="${_.componentName}:generatePassword"
-				>Generate Password</button>
+				<button
+					class="adding-generate"
+					data-click="${_.componentName}:generatePassword">Generate Password</button>
 			</div>
 		`;
 	},
 	addingStepThree(){
 		const _ = this;
 		let gradeActive;
-		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade}`;
-		let gradeItems = _.createSelectItems(
-			_.wizardData['grades'],
-			'value:_id;text:grade',
-			gradeActive);
+		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade._id}`;
+		let gradeItems = _.createSelectItems(_.wizardData.grades, 'value:_id;text:grade', gradeActive);
 		return `
 			<div class="adding-center">
 				<h3 class="adding-title">School Information</h3>
@@ -435,11 +420,11 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">Current school</label>
 						</div>
-						<g-input 
+						<g-input
 							type="text" 
 							value="${_.studentInfo.currentSchool ?? ''}" 
-							name="currentSchool" 
-							data-required
+							name="currentSchool"
+							data-required 
 							data-input="${_.componentName}:fillStudentInfo" 
 							class="g-form-item" 
 							classname="form-input adding-inpt"></g-input>
@@ -478,31 +463,26 @@ export const view = {
 								class="adding-radio" 
 								name="registered" 
 								data-change="${_.componentName}:skipTestDate" 
-								${_.studentInfo.testDatePicked ? 'checked' : ''}>
+								${_.courseData[_.courseData.currentPlan].testDatePicked ? 'checked' : ''}>
 							<label class="form-label adding-label-have" for="have_registered">Have registered</label>
 						</div>
 						<g-input 
-							disabled 
+							${_.courseData[_.courseData.currentPlan].testDatePicked ? '' : 'disabled'} 
 							type='date' 
 							format="month DD, YYYY" 
-							value="${_.studentInfo.testDate ?? ''}" 
+							value="${_.courseData[_.courseData.currentPlan].testDate ?? ''}" 
 							data-change="${_.componentName}:fillStudentInfo" 
 							class="select adding-select" 
 							name="testDate" 
 							classname="adding-select" 
 							icon="false" 
 							xlink="select-arrow-bottom" 
-							placeholder="Press to choose your official test date"></g-input>
+							placeholder="Press to choose your official test date"
+						></g-input>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
-							<input 
-								type="radio" 
-								id="have_yet" 
-								class="adding-radio" 
-								name="registered" 
-								data-change="${_.componentName}:skipTestDate" 
-								${!_.studentInfo.testDatePicked ? 'checked' : ''}>
+							<input type="radio" id="have_yet" class="adding-radio" name="registered" data-change="${_.componentName}:skipTestDate" ${!_.courseData[_.courseData.currentPlan].testDatePicked ? 'checked' : ''}>
 							<label class="form-label adding-label-have" for="have_yet">Have not registered yet</label>
 						</div>
 					</div>
@@ -541,9 +521,14 @@ export const view = {
 	},
 	addingStepSix(){
 		const _ = this;
-		//if (_.studentInfo.testDatePicked) testDate = _.createdAtFormat(_.studentInfo['testDate']);
-		//let schoolTitles = [_.metaInfo.firstSchool,_.metaInfo.secondSchool,_.metaInfo.thirdSchool];
-		//_.addingSummarySchoolsTpl(schoolTitles)
+		let testDate = 'Have not registered yet';
+		let curCourseTitle = _.courseData.currentPlan;
+		if (_.courseData[_.courseData.currentPlan].testDatePicked) testDate = _.createdAtFormat(_.courseData[curCourseTitle]['testDate']);
+		let schoolTitles = [
+			_.courseData[curCourseTitle].firstSchool.school,
+			_.courseData[curCourseTitle].secondSchool.school,
+			_.courseData[curCourseTitle].thirdSchool.school
+		];
 		let items = [{text: 'Discount',active: true}];
 		return `
 			<div class="adding-center">
@@ -555,7 +540,7 @@ export const view = {
 					<ul class="adding-summary-list">
 						<li class="adding-summary-item">
 							<span>Chosen Course:</span>
-							<strong>${_.metaInfo.course}</strong>
+							<strong>${_.courseData[curCourseTitle].course.title} ${_.courseData[curCourseTitle].level.title}</strong>
 							<button class="adding-summary-btn" data-click="${_.componentName}:addingStep" step="1">Edit</button>
 						</li>
 						<li class="adding-summary-item">
@@ -585,7 +570,7 @@ export const view = {
 						</thead>
 						<tbody>
 							<tr>
-								<td>${_.metaInfo.course}</td>
+								<td>${_.courseData[curCourseTitle].course.title}</td>
 								<td>${_.studentInfo.paymentMethod}</td>
 								<td>Free</td>
 								<td>$ 0.00</td>
@@ -707,15 +692,21 @@ export const view = {
 	},
 	choiceSelectStudent(choiceData,title='School you are interested in applying to'){
 		const _ = this;
-		let activeFirst,activeSecond,activeThird;
-
-		if(_.studentInfo.firstSchool) activeFirst = `_id:${_.studentInfo.firstSchool}`;
-		if(_.studentInfo.secondSchool) activeSecond = `_id:${_.studentInfo.secondSchool}`;
-		if(_.studentInfo.thirdSchool) activeThird = `_id:${_.studentInfo.thirdSchool}`;
 		let
-			firstItems = _.createSelectItems(choiceData['schools'],"value:_id;text:school",activeFirst ?? ''),
-			secondItems = _.createSelectItems(choiceData['schools'],"value:_id;text:school",activeSecond ?? ''),
-			thirdItems = _.createSelectItems(choiceData['schools'],"value:_id;text:school",activeThird ?? '');
+			plan = _.courseData[_.courseData.currentPlan],
+			activeFirst,activeSecond,activeThird;
+
+		if (plan) {
+			if(plan.firstSchool) activeFirst = `_id:${plan.firstSchool._id ?? plan.firstSchool}`;
+			if(plan.secondSchool) activeSecond = `_id:${plan.secondSchool._id ?? plan.secondSchool}`;
+			if(plan.thirdSchool) activeThird = `_id:${plan.thirdSchool._id ?? plan.thirdSchool}`;
+		}
+
+		let
+			firstItems = _.createSelectItems(choiceData.schools,"value:_id;text:school",activeFirst),
+			secondItems = _.createSelectItems(choiceData.schools,"value:_id;text:school",activeSecond),
+			thirdItems = _.createSelectItems(choiceData.schools,"value:_id;text:school",activeThird),
+			selectFunction = 'fillStudentInfo';
 		return `
 			<div class="adding-section selects-cont">
 					<h4 class="adding-subtitle withmar">${title}</h4>
@@ -725,16 +716,15 @@ export const view = {
 						</div>
 						<g-select 
 							class="select adding-select" 
-							name="firstSchool"
+							name="firstSchool" 
 							together="applyingSchool"
 							exceptions='${JSON.stringify(['6307b9ab166cad4538383287'])}'
+							data-change="${_.componentName}:${selectFunction}" 
 							data-required
-							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
 							title=""
-							items='${JSON.stringify(firstItems)}'
-						></g-select>
+							items='${JSON.stringify(firstItems)}'></g-select>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
@@ -742,15 +732,15 @@ export const view = {
 						</div>
 						<g-select 
 							class="select adding-select" 
-							name="secondSchool"
-							together="applyingSchool"
+							name="secondSchool" 
 							exceptions='${JSON.stringify(['6307b9ab166cad4538383287'])}'
+							together="applyingSchool"
 							data-required
-							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
+							data-change="${_.componentName}:${selectFunction}" 
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
 							title=""
-						items='${JSON.stringify(secondItems)}'></g-select>
+							items='${JSON.stringify(secondItems)}'></g-select>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
@@ -759,14 +749,14 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="thirdSchool" 
-							together="applyingSchool"
 							exceptions='${JSON.stringify(['6307b9ab166cad4538383287'])}'
+							together="applyingSchool"
 							data-required
-							data-change="${_.componentName}:${_.subSection == 'profile' ? 'inputCourseData' : 'fillStudentInfo'}" 
+							data-change="${_.componentName}:${selectFunction}" 
 							classname="adding-select" 
 							arrowsvg="/img/sprite.svg#select-arrow-bottom" 
 							title=""
-						items='${JSON.stringify(thirdItems)}'></g-select>
+							items='${JSON.stringify(thirdItems)}'></g-select>
 					</div>
 				</div>
 		`;
@@ -1686,6 +1676,17 @@ export const view = {
 		let gradeActive;
 		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade}`;
 		let gradeItems = _.createSelectItems(_.wizardData.grades, 'value:_id;text:grade', gradeActive);
+
+		let currentCourse;
+		if (!_.isEmpty(_.studentInfo['currentPlan'])) {
+			if (_.studentInfo['currentPlan']['course']) {
+				if (_.studentInfo['currentPlan']['course'].title) {
+					currentCourse = _.studentInfo['currentPlan']['course'].title;
+				}
+			}
+		}
+		if (!currentCourse) currentCourse = 'ISEE';
+
 		return `
 			<div class="section parent">
 				<div class="block">
@@ -1736,10 +1737,10 @@ export const view = {
 										<g-input 
 											type="password" 
 											name="password" 
-											match="changePassword"
+											match="changePassword" 
 											class="g-form-item" 
-											data-outfocus="${_.componentName}:validatePassword"
-											className="form-input adding-inpt"
+											data-outfocus="${_.componentName}:validatePassword" 
+											classname="form-input adding-inpt"
 										></g-input>
 										<span class="form-label-desc">8+ characters, with min. one number, one uppercase letter and one special character</span>
 									</div>
@@ -1750,10 +1751,10 @@ export const view = {
 										<g-input 
 											type="password" 
 											name="confirm_password" 
-											match="changePassword"
+											match="changePassword" 
 											class="g-form-item" 
 											data-outfocus="${_.componentName}:validatePassword" 
-											className="form-input adding-inpt"
+											classname="form-input adding-inpt"
 										></g-input>
 										<span class="form-label-desc" style="display:none;">Password does not match</span>
 									</div>
@@ -1765,54 +1766,30 @@ export const view = {
 									<div class="form-label-row">
 										<label class="form-label">Current school</label>
 									</div>
-									<g-input 
-										type="text" 
-										name="currentSchool" 
-										data-input="${_.componentName}:fillStudentInfo" 
-										value='${_.studentInfo["currentSchool"] ?? ''}' 
-										class="g-form-item" 
-										classname="form-input adding-inpt"
-									></g-input>
+									<g-input type="text" name="currentSchool"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["currentSchool"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
 								</div>
 								<div class="adding-inpt">
 									<div class="form-label-row">
 										<label class="form-label">Grade</label>
 									</div>
-									<g-select 
-										class="select adding-select" 
-										name="grade" 
-										data-change="${_.componentName}:fillStudentInfo" 
-										classname="adding-select" 
-										arrowsvg="/img/sprite.svg#select-arrow-bottom" 
-										title="Course"
-										items=${JSON.stringify(gradeItems)}
-									></g-select>
+									<g-select class="select adding-select" name="grade"  data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course"
+									items=${JSON.stringify(gradeItems)}></g-select>
 								</div>
 							</div>
 						</div>
 						<div class="student-profile-right">
 							<h4 class="admin-block-graytitle">Courses & Plans</h4>
 							<div class="student-profile-courses-btns">
-								<button class="student-profile-courses-btn${(!_.isEmpty(_.studentInfo['currentPlan']) && _.studentInfo['currentPlan']['course']['title'] == 'ISEE') ? ' active' : ''}">ISEE</button>
-								<button class="student-profile-courses-btn${_.isEmpty(_.studentInfo['currentPlan']) ? ' active' : _.studentInfo['currentPlan']['course']['title'] == 'SSAT' ? ' active' : ''}">SSAT</button>
-								<button class="student-profile-courses-btn${(!_.isEmpty(_.studentInfo['currentPlan']) && _.studentInfo['currentPlan']['course']['title'] == 'SHSAT') ? ' active' : ''}">SHSAT</button>
+								<button class="student-profile-courses-btn${currentCourse == 'ISEE' ? ' active' : ''}" data-click="${_.componentName}:changeCurrentCourse" value="ISEE">ISEE</button>
+								<button class="student-profile-courses-btn${currentCourse == 'SSAT' ? ' active' : ''}" data-click="${_.componentName}:changeCurrentCourse" value="SSAT">SSAT</button>
+								<button class="student-profile-courses-btn${currentCourse == 'SHSAT' ? ' active' : ''}" data-click="${_.componentName}:changeCurrentCourse" value="SHSAT">SHSAT</button>
 							</div>
-							<div class="student-profile-course-info loader-parent">
-								<img src='/img/loader.gif' class='loader'>
-							</div>
+							<div class="student-profile-course-info loader-parent"><img src='/img/loader.gif' class='loader'></div>
 						</div>
 					</div>
-					<div class="student-profile-footer">
-						<!--<button class="student-profile-delete" 
-							data-click="${_.componentName}:showRemoveUserPopup" 
-							data-id="${_.studentInfo['studentId']}"
-						>Delete User Profile</button>-->
+					<div class="student-profile-actions">
 						<div class="student-profile-actions">
-							<button class="test-footer-back" 
-								data-clear="true" 
-								data-click="${_.componentName}:changeSection" 
-								section="dashboard"
-							>
+							<button class="test-footer-back" data-clear="true" data-click="${_.componentName}:changeSection" section="dashboard">
 								<span>Discard</span>
 							</button>
 							<button class="button-blue" data-clear="true" data-click="${_.componentName}:updateStudent">
@@ -1824,13 +1801,41 @@ export const view = {
 			</div>
 		`;
 	},
-	courseInfo(choiceData){
+	emptyCourseInfo(){
+		const _ = this;
+		return `
+			<h5 class="student-profile-course-empty">Currently, there is no ${_.courseData.currentPlan} course assign to this student</h5>
+			<button 
+				class="student-profile-course-empty-btn" 
+				data-click="${_.componentName}:changeSection"
+				section="assignCourse"
+			>
+				<svg class="button-icon">
+					<use xlink:href="#plus"></use>
+				</svg>
+				<span>Assign ${_.courseData.currentPlan} Course</span>
+			</button>
+		`;
+	},
+	courseInfo(choiceData,plan = this.courseData[this.courseData.currentPlan]){
 		const _ = this;
 		let
-			plan = _.currentStudent["currentPlan"],
-			course = plan && plan['course'] ? plan['course'].title : '',
-			level = plan && plan['level'] ? plan['level'].title : '',
+			courseData,
+			course = '',
+			level = '',
 			testDate = plan && plan['testDate'] ? _.createdAtFormat(plan['testDate']) : '';
+
+		if (plan && plan.course) {
+			if (plan.course.title) {
+				course = plan.course.title;
+				level = plan.level ? plan.level.title : '';
+			} else {
+				courseData = plan && plan['course'] ? choiceData.courses.find((item)=>{if (item._id == plan.course) return item}) : '';
+				course = courseData ? courseData.title : '';
+				level = courseData ? courseData.levels.find((item)=>{if (item._id == plan.level) return item}).title  : '';
+			}
+		}
+
 		return `
 			<div class="adding-section">
 				<h4 class="adding-subtitle withmar">Course & Test Information</h4>
@@ -1852,7 +1857,7 @@ export const view = {
 						value="${testDate}" 
 						class="g-form-item" 
 						classname="form-input adding-inpt"
-						data-change="${_.componentName}:inputCourseData"
+						data-change="${_.componentName}:fillStudentInfo"
 					></g-input>
 					</div>
 			</div>
@@ -1860,32 +1865,16 @@ export const view = {
 			<div class="adding-section">
 				<h4 class="adding-subtitle withmar">Membership Plan</h4>
 				<div class="student-profile-plan">
-					<h5 class="student-profile-plan-title">${course}</h5>
+					<h5 class="student-profile-plan-title">${_.courseData[_.courseData.currentPlan].course.title}</h5>
 					<div class="student-profile-plan-edit">
 						<button class="button-blue">Edit</button>
-						<button 
-							class="button-white"
-							data-click="${_.componentName}:showCancelMembership"
-						>Cancel</button>
+						<button class="button-white" data-click="Dashboard:showCancelMembership">Cancel</button>
 					</div>
 					<div class="student-profile-plan-price">$20.00 per month</div>
-					<span>Your plan renews on April 21, 2022</span>
-				</div>
+						<span>Your plan renews on April 21, 2022</span>
+					</div>
 				<button class="button student-profile-refund">Request Refund</button>
 			</div>
-			<!--<button class="student-profile-remove" data-click="${_.componentName}:showRemovePopup">Remove This Course</button>-->
-		`;
-	},
-	emptyCourseInfo(){
-		const _ = this;
-		return `
-			<h5 class="student-profile-course-empty">Currently, there is no ISEE course assign to this student</h5>
-			<button  class="student-profile-course-empty-btn" data-click="${_.componentName}:changeSection" section="assignCourse">
-				<svg class="button-icon">
-					<use xlink:href="#plus"></use>
-				</svg>
-				<span>Add Course</span>
-			</button>
 		`;
 	},
 	removeUserTpl(){

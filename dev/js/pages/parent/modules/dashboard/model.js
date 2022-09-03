@@ -6,8 +6,8 @@ export class _Model{
 			"Content-Type": "application/json"
 		}
 		_.endpoints = {
-			schedule: `${env.backendUrl}/parent/schedule/dashboard/`,
-			dashSchedule: `${env.backendUrl}/student/schedule/dashboard`,
+			schedule: `${env.backendUrl}/student/schedule`,
+			dashSchedule: `${env.backendUrl}/parent/schedule/dashboard/`,
 			me: `${env.backendUrl}/user/me`,
 			wizardData: `/user/wizard-data`,
 			checkEmail: `/user/check-email/`,
@@ -130,7 +130,7 @@ export class _Model{
 	getSchedule(id){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.endpoints['schedule']}${id}`,{
+			let rawResponse = await fetch(`${_.endpoints['dashSchedule']}${id}`,{
 				method: 'GET',
 				headers:_.baseHeaders
 			});
@@ -329,6 +329,23 @@ export class _Model{
 			{title:'Address 1',line1:'Ap #285-7193',line2:'Ullamcorper Avenue',state:'Amesbury HI',postcode:' 93373',country:'United States',primary: true},
 			{title:'Address 2',line1:'Ap #285-7193',line2:'Ullamcorper Avenue',state:'Amesbury HI',postcode:' 93373',country:'United States',primary: false},
 		]
+	}
+
+
+	deleteSchedule(){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['schedule']}`,{
+				method: 'DELETE',
+				headers:_.baseHeaders
+			});
+			if(rawResponse.status <= 210){
+				let response = await rawResponse.json();
+				resolve(response);
+			}else{
+				resolve(null);
+			}
+		});
 	}
 
 	//course methods

@@ -447,9 +447,8 @@ export default class GSelect extends GComponent {
 		_.trigger('appended');
 		if (_.isDisabled()) {
 			if (!_.classList.contains('head-select')) _.style = 'opacity:50%;';
-			else {
-				_.shadow.querySelector('.with-arrow').classList.remove('with-arrow');
-			}
+			_.shadow.querySelector('.g-select-head').setAttribute('disabled','');
+			_.shadow.querySelector('.with-arrow').classList.remove('with-arrow');
 		}
 	}
 	
@@ -877,6 +876,9 @@ export default class GSelect extends GComponent {
 			}
 			.course-select .g-select-option {
 				min-width: initial
+			}
+			.g-select-head[disabled] {
+				cursor: auto;
 			}
 		`;
 	}

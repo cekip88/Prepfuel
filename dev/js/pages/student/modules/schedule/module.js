@@ -60,7 +60,7 @@ export class ScheduleModule extends StudentPage{
 		Model.finishSchedule({
 			testDate: _.datePicked ? _.testDate : null,
 			practiceDays: _._$.daysPerWeek,
-			practiceTime: _.practiceAt,
+			practiceTime: _.practiceAt.toString(),
 			practiceSkill: _._$.numberOfQuestions,
 			practiceTests: _.practiceTests
 		});
@@ -108,7 +108,6 @@ export class ScheduleModule extends StudentPage{
 				_._$.currentStep--;
 			}
 		}
-		console.log(_)
 	}
 	changeScheduleDate({item}){
 		this.testDate = item.value;

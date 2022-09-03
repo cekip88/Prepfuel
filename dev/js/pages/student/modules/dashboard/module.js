@@ -24,9 +24,11 @@ export class DashboardModule extends StudentPage{
 		_.componentName = 'Dashboard';
 		_.subSection = 'overview';
 		_.scheduleColors = {
-			"skill test":'#FFA621',
-			"practice test":'#009EF6',
-			'isee':'#4AB58E',
+			"Practice":'#FFA621',
+			"Practice test":'#009EF6',
+			'SHSAT':'#4AB58E',
+			'SSAT':'#4AB58E',
+			'ISEE':'#4AB58E',
 		};
 		_.months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 		G_Bus
@@ -35,6 +37,9 @@ export class DashboardModule extends StudentPage{
 	async deleteSchedule({item}){
 		const _ = this;
 		let response = await Model.deleteSchedule();
+		if (response.status == 'success') {
+			await _.fillScheduleBlock()
+		}
 		console.log(response);
 	}
 	
@@ -59,19 +64,19 @@ export class DashboardModule extends StudentPage{
 		let scheduleTpl = _.scheduleBlock(schedule);
 		scheduleList.append(_.markup(scheduleTpl))
 	}*/
-	async fillScheduleBlock(id){
-		console.log('fillScheduleBlock')
+	async fillScheduleBlock(){
 		const _ = this;
 		let scheduleList = document.querySelector('#scheduleList');
+		_.clear(scheduleList);
 		scheduleList.classList.add('loader-parent');
 		scheduleList.append(_.markup(`<img src="/img/loader.gif">`))
-		let schedule = await Model.getSchedule(id);
+		let schedule = await Model.getSchedule();
 		let scheduleFooter = scheduleList.nextElementSibling;
 		_.clear(scheduleList);
 
 		if (_.isEmpty(schedule)) {
 			scheduleFooter.classList.add('schedule-hidden');
-			scheduleList.append(_.markup(`<li class="block-empty-text">Student has not created the practice schedule yet.</li>`))
+			scheduleList.append(_.markup(`<li class="block-empty-text">The practice schedule has not been yet created.</li>`))
 		} else {
 			scheduleFooter.classList.remove('schedule-hidden');
 			let scheduleTpl = _.scheduleBlock(schedule);

@@ -91,15 +91,16 @@ export const view = {
 	},
 	stepTwoTpl(){
 		const _ = this;
+		console.log(_)
 		let rows = ``;
 		
 		for(let row of _.practiceRows){
-			rows+=row.outerHTML;
+			rows += row.outerHTML;
 		}
 		return `
 			<h4 class="test-subtitle"><span>Practice test days</span></h4>
 			<div class="practice-schedule-text">
-				<p class="test-subtitle small">Preparing for the ISEE is like preparing for a marathon. You wouldn’t wait until the big day to try running a marathon for the first time!</p>
+				<p class="test-subtitle small">Preparing for the ${_.me.student.currentPlan ? _.me.student.currentPlan.course.title : ''} is like preparing for a marathon. You wouldn’t wait until the big day to try running a marathon for the first time!</p>
 				<p class="test-subtitle small">&nbsp;</p>
 				<p class="test-subtitle small">With 15 weeks left until your test, we recommend that you take at least 6 full practice tests (set aside 3-4 hours each) before test day.</p>
 				<p class="test-subtitle small">For more information on planning your practice, you can checkout our Tips and Strategies section.</p>
@@ -114,11 +115,11 @@ export const view = {
 							<use xlink:href="#badge"></use>
 						</svg>
 					</div>
-					<h5 class="practice-schedule-title">Your ISEE Date</h5>
+					<h5 class="practice-schedule-title">Your ${_.me.student.currentPlan ? _.me.student.currentPlan.course.title : ''} Date</h5>
 					<div class="practice-schedule-date"><span>${_.datePicked ? _.testDate : 'Date skipped'}</span></div>
 				</div>
 			</div>
-			<button class="button-lightblue" data-click="${_.componentName}:addPracticeRow">
+			<button class="button-lightblue" data-click="${_.componentName}:addPracticeRow" ${_.practiceRowsCnt == 4 ? 'style="display:none;"' : ''}>
 				<svg class="button-icon">
 				<use xlink:href="#plus"></use>
 				</svg>
@@ -152,7 +153,7 @@ export const view = {
 				<span>Skill practice plan</span>
 			</h4>
 			<div class="practice-schedule-text">
-				<p class="test-subtitle small">When preparing for a marathon, you also have to do sprints, strength work, and other exercises. For the ISEE, in addition to practice tests, you will also work on individual skills and short timed "mini-sections".</p>
+				<p class="test-subtitle small">When preparing for a marathon, you also have to do sprints, strength work, and other exercises. For the ${_.me.student.currentPlan ? _.me.student.currentPlan.course.title : ''}, in addition to practice tests, you will also work on individual skills and short timed "mini-sections".</p>
 				<p class="test-subtitle small">&nbsp;</p>
 				<p class="test-subtitle small">With 15 weeks left until your test, we recommend you do skill practice 1.25 hours/week (hardcore: 3-5 hours/week).</p>
 				<p class="test-subtitle small">15 minutes × 5 days = 1.25 hours/week</p>
@@ -175,7 +176,9 @@ export const view = {
 				<div class="practice-schedule-row">
 					<h5 class="practice-schedule-title">Number of questions</h5>
 					<div class="practice-schedule-right">
-						<g-select class="g-select-gray" disabled data-change="${_.componentName}:changeNumberOfQuestions" 
+						<g-select class="g-select-gray" 
+							disabled 
+							data-change="${_.componentName}:changeNumberOfQuestions" 
 							items='${JSON.stringify(questions)}' 
 							value="5" 
 							classname="g-select-gray" 

@@ -61,7 +61,8 @@ export class DashboardModule extends ParentPage{
 			'showAddCard','showAddBillingAddress',
 			'hideProfile','showHiddenScores',
 			'fillProfile','showRemovePopup','removeCourse','assignCourse','inputCourseData','updateCourse',
-			'showCancelMembership',
+			'changeCurrentCourse',
+			'showCancelMembership','deleteSchedule',
 		]);
 	}
 	async domReady() {
@@ -89,10 +90,12 @@ export class DashboardModule extends ParentPage{
 			_.fillDashboardTabs();
 			_.fillStudentProfile();
 		}
-		if ( _.subSection == 'profile' ){
+		if( _.subSection == 'profile' ){
 			_.body = _.f("g-body");
 			_.clear( _.body );
 			_.fillProfile();
+			_.courseStatus = null;
+			_.removedCourseData = {};
 		}
 	}
 	async changeSection({item, event}) {
@@ -114,7 +117,7 @@ export class DashboardModule extends ParentPage{
 				'footer':'dashboardFooter'
 			}
 		}
-		if(section == 'addingStudent'){
+		if (section == 'addingStudent'){
 			_.moduleStructure = {
 				'header':'fullHeader',
 				'header-tabs':'studentTabs',
@@ -122,15 +125,16 @@ export class DashboardModule extends ParentPage{
 				'footer':'dashboardFooter'
 			}
 		}
-		if(section == 'assignCourse'){
+		if (section == 'assignCourse'){
 			_.moduleStructure = {
 				'header':'fullHeader',
 				'header-tabs':'studentTabs',
 				'body':'',
 				'footer':'dashboardFooter'
 			}
+			_.courseAction === 'assign';
 		}
-		if( section == 'dashboard' ){
+		if (section == 'dashboard'){
 			_.moduleStructure = {
 				'header':'fullHeader',
 				'header-tabs':'studentTabs',
@@ -139,7 +143,7 @@ export class DashboardModule extends ParentPage{
 				'footer':'dashboardFooter'
 			}
 		}
-		if( section == 'profile' ){
+		if (section == 'profile'){
 			_.moduleStructure = {
 				'header':'fullHeader',
 				'body':'',
@@ -170,25 +174,54 @@ export class DashboardModule extends ParentPage{
 		const _ = this;
 		_.studentInfo = Object.assign({},_.currentStudent['user']);
 		_.metaInfo = {};
-		_.studentInfo['currentSchool'] = _.currentStudent['currentSchool'] ?? '';
+		_.studentInfo['currentSchool'] = _.currentStudent['currentSchool'];
 		_.studentInfo['currentPlan'] = _.currentStudent['currentPlan'];
-		_.studentInfo['grade'] = _.currentStudent['grade'] ? _.currentStudent['grade']['_id'] : null;
+		_.studentInfo['grade'] = _.currentStudent['grade'] ? _.currentStudent['grade']['_id'] ?? _.currentStudent['grade'] : '';
 		_.studentInfo['userId'] = _.studentInfo['_id'];
 		_.studentInfo['_id'] = _.currentStudent['_id'];
+		_.studentInfo['plans'] = _.currentStudent['plans'];
 
-		_.body.append( _.markup( _.personalInfo()));
-		if (!_.isEmpty(_.currentStudent['currentPlan'])){
-			if (_.currentStudent['currentPlan']['firstSchool']) {
-				_.studentInfo['firstSchool'] = _.currentStudent['currentPlan']['firstSchool']['_id'] ?? _.currentStudent['currentPlan']['firstSchool'];
-			}
-			if (_.currentStudent['currentPlan']['secondSchool']) {
-				_.studentInfo['secondSchool'] = _.currentStudent['currentPlan']['secondSchool']['_id'] ?? _.currentStudent['currentPlan']['secondSchool'];
-			}
-			if (_.currentStudent['currentPlan']['thirdSchool']) {
-				_.studentInfo['thirdSchool'] = _.currentStudent['currentPlan']['thirdSchool']['_id'] ?? _.currentStudent['currentPlan']['thirdSchool'];
-			}
-			_.f('.student-profile-course-info').innerHTML = _.courseInfo(await Model.getWizardData());
-		} else _.f('.student-profile-course-info').innerHTML = _.emptyCourseInfo();
+		_.courseData = {};
+		for (let item of _.studentInfo['plans']) {
+			_.courseData[item.course.title] = item;
+		}
+		_.courseData.currentPlan = _.studentInfo.currentPlan.course.title;
+		_.body.innerHTML = _.personalInfo();
+
+		let courseInfoCont = _.f('.student-profile-course-info');
+		if (_.currentStudent['currentPlan']) courseInfoCont.innerHTML = _.courseInfo(_.wizardData ?? await Model.getWizardData());
+		else courseInfoCont.innerHTML = _.emptyCourseInfo();
+	}
+	async changeCurrentCourse({item}){
+		const _ = this;
+		let
+			value = item.getAttribute('value'),
+			parent = item.parentElement,
+			activeBtn = parent.querySelector('.active');
+
+		if (activeBtn == item) return null;
+
+		activeBtn.classList.remove('active');
+		item.classList.add('active');
+
+		let newPlan = _.courseData[item.value];
+		let wizardData = _.wizardData ?? Model.getWizardData();
+		if (!newPlan) {
+			let curCourse = wizardData.courses.find((item)=>{
+				if (item.title == value) return item;
+			});
+			newPlan = {
+				course: curCourse,
+				level: curCourse.levels[0]
+			};
+		}
+		_.courseData.currentPlan = newPlan.course.title;
+		_.courseData[_.courseData.currentPlan] = newPlan;
+		_._$.assignStep = 1;
+
+		let courseInfoCont = _.f('.student-profile-course-info');
+		if (newPlan.firstSchool) courseInfoCont.innerHTML = _.courseInfo(_.wizardData ?? await Model.getWizardData());
+		else courseInfoCont.innerHTML = _.emptyCourseInfo();
 	}
 	showCancelMembership({item}) {
 		const _ = this;
@@ -200,30 +233,39 @@ export class DashboardModule extends ParentPage{
 	}
 	async removeCourse({item}) {
 		const _ = this;
+		if (!_.removedCourseData) _.removedCourseData = {};
+		if (_.courseData[_.courseData.currentPlan]._id) {
+			_.removedCourseData[_.courseData.currentPlan] = {
+				studentId: _.studentInfo._id,
+				planId: _.courseData[_.courseData.currentPlan]._id
+			};
+		}
+		let tempCurPlan = Object.assign({},_.courseData[_.courseData.currentPlan]);
+		_.courseData[_.courseData.currentPlan] = {
+			course: tempCurPlan.course,
+			level: _.wizardData.courses.find((item)=>{
+				if (item._id == tempCurPlan.course._id) {
+					return item
+				}
+			}).levels[0]
+		};
+
 		let courseInfo = _.f('.student-profile-course-info');
 		_.clear(courseInfo);
-		await Model.removeCourse({
-			studentId:_.studentInfo['_id'],
-			planId:_.studentInfo.currentPlan['_id'],
-		});
 
-		courseInfo.append( _.markup( _.emptyCourseInfo()));
+		_._$.assignStep = 1;
 
+		courseInfo.innerHTML = _.emptyCourseInfo();
 		G_Bus.trigger('modaler','closeModal');
-		let curPlanIndex;
-		_.currentStudent['plans'].find((item,index)=>{
-			if (_.currentStudent['currentPlan']['_id'] == item['_id']) curPlanIndex = index;
-		})
-		_.currentStudent['plans'].splice(curPlanIndex,curPlanIndex + 1);
-		_.currentStudent['currentPlan'] = {};
-		_.updateMe();
-		_.studentInfo.firstSchool = null;
-		_.studentInfo.secondSchool = null;
-		_.studentInfo.thirdSchool = null;
-		_.studentInfo.testDate = null;
-		_.studentInfo.testDatePicked = false;
 
-		_.showSuccessPopup('Course has been successfully removed');
+		_.courseStatus = 'removed';
+		for (let key in _.courseData) {
+			if (!_.isEmpty(_.courseData[key].firstSchool)) {
+				_.courseStatus = null;
+				break;
+			}
+		}
+		//_.showSuccessPopup('Course has been successfully removed')
 	}
 	async assignCourse() {
 		const _ = this;
@@ -235,6 +277,7 @@ export class DashboardModule extends ParentPage{
 
 		let btn = _.markupElement(`<button section="profile"></button>`)
 		_.changeSection({item:btn})
+		_.courseAction === null;
 		_.showSuccessPopup('Course has been successfully assigned');
 	}
 	async updateCourse(){
@@ -368,6 +411,7 @@ export class DashboardModule extends ParentPage{
 		const _ = this;
 		let scheduleList = document.querySelector('#scheduleList');
 		scheduleList.classList.add('loader-parent');
+		_.clear(scheduleList);
 		scheduleList.append(_.markup(`<img src="/img/loader.gif">`))
 		let schedule = await Model.getSchedule(id);
 		let scheduleFooter = scheduleList.nextElementSibling;
@@ -376,12 +420,24 @@ export class DashboardModule extends ParentPage{
 		if (_.isEmpty(schedule)) {
 			scheduleFooter.classList.add('schedule-hidden');
 			scheduleList.append(_.markup(`<li class="block-empty-text">Student has not created the practice schedule yet.</li>`))
+			let titleBtns = _.f('.block-title-control BUTTON');
+			titleBtns.forEach(function (btn){
+				btn.style = 'display:none;'
+			})
 		} else {
 			scheduleFooter.classList.remove('schedule-hidden');
 			let scheduleTpl = _.scheduleBlock(schedule);
 			scheduleList.append(_.markup(scheduleTpl));
 		}
 		scheduleList.classList.remove('loader-parent');
+	}
+	async deleteSchedule({item}){
+		const _ = this;
+		let response = await Model.deleteSchedule();
+		if (response.status == 'success') {
+			await _.fillScheduleBlock()
+		}
+		console.log(response);
 	}
 	async fillStarsBlock(){
 		const _ = this;
@@ -509,19 +565,33 @@ export class DashboardModule extends ParentPage{
 	}
 
 	// add student methods
-	fillStudentInfo({item}){
+	async fillStudentInfo({item}){
 		const _ = this;
-		if (item.value) {
-			item.setMarker();
+		let
+			name = item.getAttribute('name'),
+			value = item.value,
+			courseNames = ['firstSchool','secondSchool','thirdSchool','testDate','level','course'];
+
+		let wizardData = _.wizardData ?? await Model.getWizardData();
+		if( typeof value == 'object') value = value + '';
+		if(name == 'grade') _.metaInfo[name] = item.textContent;
+		let curPlanTitle = _.courseData.currentPlan;
+		if (!_.courseData[curPlanTitle]) _.courseData[curPlanTitle] = {};
+
+		if (courseNames.indexOf(name) >= 0) {
+			let schools = ['firstSchool','secondSchool','thirdSchool'];
+			if (schools.indexOf(name) >= 0) {
+				_.courseData[curPlanTitle][name] = wizardData.schools.find((unit)=>{
+					if (unit._id == item.value) return unit;
+				})
+			} else _.courseData[curPlanTitle][name] = value;
 		} else {
-			item.setMarker('red')
+			if (name == 'grade') {
+				_.studentInfo[name] = wizardData.grades.find((unit)=>{
+					if (unit._id == item.value) return unit;
+				})
+			} else _.studentInfo[name] = value;
 		}
-		let value = item.value;
-		let name = item.getAttribute('name');
-		if( typeof value == 'object'){
-			value = value + '';
-		}
-		_.studentInfo[name] = value;
 	}
 	inputCourseData({item}){
 		const _ = this;
@@ -553,23 +623,39 @@ export class DashboardModule extends ParentPage{
 	}
 	async createStudent(){
 		const _ = this;
-		let registerData = Object.assign({},_.studentInfo);
-		_.studentInfo = {};
-		_.metaInfo = {};
-		let resp = await Model.createStudent(registerData);
-		if (resp.status == "success") {
-			G_Bus.trigger('modaler','showModal',{
-				target: '#congratulationsPopup',
-				closeBtn: false
-			})
+		let curCourseData = _.courseData[_.courseData.currentPlan];
+		let createInfo = {
+			firstName: _.studentInfo.firstName,
+			lastName: _.studentInfo.lastName,
+			email: _.studentInfo.email,
+			password: _.studentInfo.password,
+			avatar: _.studentInfo.avatar,
+			grade: _.studentInfo.grade._id,
+			currentSchool: _.studentInfo.currentSchool,
+			course: curCourseData.course._id,
+			level: curCourseData.level._id,
+			testDate: curCourseData.testDate,
+			firstSchool: curCourseData.firstSchool._id,
+			secondSchool: curCourseData.secondSchool._id,
+			thirdSchool: curCourseData.thirdSchool._id,
+			parentId: _.studentInfo.parentId
+		};
+		let response = await Model.createStudent(createInfo);
+		if (!response) return void 0;
 
-			_.me['parent'] = await Model.getMe();
-			localStorage.setItem('me',JSON.stringify(_.me))
+		_.studentInfo = {};_.metaInfo = {};_.courseData = {};
 
-			let btn = document.createElement('BUTTON');
-			btn.setAttribute('section','dashboard');
-			_.changeSection({item:btn});
-		}
+		G_Bus.trigger('modaler','showModal',{
+			target: '#congratulationsPopup',
+			closeBtn: false
+		})
+
+		_.me['parent'] = await Model.getMe();
+		localStorage.setItem('me',JSON.stringify(_.me))
+
+		let btn = document.createElement('BUTTON');
+		btn.setAttribute('section','dashboard');
+		_.changeSection({item:btn});
 	}
 	//end add student methods
 	//update methods
@@ -584,8 +670,40 @@ export class DashboardModule extends ParentPage{
 	}
 	async updateStudent({item}){
 		const _ = this;
+		if (_.courseStatus == 'removed') {
+			_.showRemovedCoursePopup();
+			return
+		}
+		if (!_.isEmpty(_.removedCourseData)){
+			for (let key in _.removedCourseData) {
+				await Model.removeCourse(_.removedCourseData[key]);
+			}
+		}
+
+		for (let key in _.courseData) {
+			if (key === 'currentPlan' || key === 'studentId') continue;
+			let courseResponse;
+
+			if (_.courseData[key]._id) {
+				courseResponse = await Model.updateCourse(_.courseData[key]);
+			} else {
+				if (_.courseData[key].firstSchool) {
+					let courseInfo = {
+						"studentId": _.studentInfo._id,
+						"course": _.courseData[key].course._id,
+						"level": _.courseData[key].level._id,
+						"testDate": _.courseData[key].testDate,
+						"firstSchool": _.courseData[key].firstSchool._id,
+						"secondSchool": _.courseData[key].secondSchool._id,
+						"thirdSchool": _.courseData[key].thirdSchool._id
+					};
+					courseResponse = await Model.assignCourse(courseInfo);
+				}
+			}
+		}
+
 		let response = await Model.updateStudent({
-			'_id': _.studentInfo['_id'],
+			'studentId': _.studentInfo['_id'],
 			'firstName': _.studentInfo['firstName'],
 			"lastName": _.studentInfo['lastName'],
 			"email": _.studentInfo['email'],
@@ -596,20 +714,10 @@ export class DashboardModule extends ParentPage{
 		});
 		if(!response) return void 0;
 
-		_.currentStudent = response;
-		_.updateMe()
-
-		if (!_.isEmpty(_.courseData)) await _.updateCourse();
-
-		let
-			passwords = item.closest('.parent').querySelector('.passwords'),
-			passInput = passwords.querySelector('g-input');
-		if (passInput.value) await _.saveChangePassword({item:passInput});
 
 		item.setAttribute('rerender',true);
-		item.setAttribute('section','dashboard');
 		G_Bus.trigger(_.componentName,'changeSection',{item})
-		_.showSuccessPopup('Student profile updated')
+		_.showSuccessPopup('Student profile updated');
 	}
 	showRemoveUserPopup({item}){
 		const _ = this;
@@ -709,13 +817,28 @@ export class DashboardModule extends ParentPage{
 	//change methods
 	changeStudentLevel({item}) {
 		const _ = this;
-		if (item.parentNode.querySelector('.active')) item.parentNode.querySelector('.active').classList.remove('active');
+
+		let activeButton = item.parentNode.querySelector('.active');
+		if(activeButton) activeButton.classList.remove('active');
 		item.classList.add('active');
-		_.studentInfo.level = item.getAttribute('data-id');
+
+		let levelId = item.getAttribute('data-id');
+		let currentCourseTitle = _.courseData.currentPlan;
+		_.courseData[currentCourseTitle].level = {
+			_id: levelId,
+			title: item.textContent
+		};
+		_.studentInfo.currentPlan.level = {
+			_id: levelId,
+			title: item.textContent
+		};
 	}
 	async changeTestType({item}) {
 		const _ = this;
-		if(item.parentNode.querySelector('.active'))  item.parentNode.querySelector('.active').classList.remove('active');
+		if (item.hasAttribute('disabled')) return;
+
+		let activeButton = item.parentNode.querySelector('.active');
+		if(activeButton) activeButton.classList.remove('active');
 		item.classList.add('active');
 
 		let
@@ -723,13 +846,18 @@ export class DashboardModule extends ParentPage{
 			levelButtons = item.closest('.parent-adding-body').querySelector('.level-buttons');
 		_.clear(levelButtons);
 		levelButtons.innerHTML = '<img src="/img/loader.gif">';
+		let stepData = _.wizardData ?? await Model.getWizardData();
 
 		_.coursePos = pos;
-		_.studentInfo.course = _.wizardData['courses'][pos]['_id'];
-		_.studentInfo.level = _.wizardData['courses'][pos]['levels'][0]['_id'];
-		_['metaInfo'].course = _.wizardData['courses'][pos]['title'];
-		_['metaInfo'].level = _.wizardData['courses'][pos]['levels'][0]['title'];
-		levelButtons.innerHTML = _.levelButtons(_.wizardData['courses'][pos]);
+		let courseTitle = stepData.courses[pos].title;
+		if (!_.courseData[courseTitle]) _.courseData[courseTitle] = {};
+		_.courseData.currentPlan = courseTitle;
+		_.studentInfo.currentPlan.course = stepData['courses'][pos];
+		_.studentInfo.currentPlan.level = stepData['courses'][pos]['levels'][0];
+		_.courseData[courseTitle].course = stepData['courses'][pos];
+		_.courseData[courseTitle].level = stepData['courses'][pos]['levels'][0];
+
+		levelButtons.innerHTML = _.levelButtons(stepData['courses'][pos]);
 	}
 	changePayMethod({item}){
 		const _ = this;
@@ -993,13 +1121,9 @@ export class DashboardModule extends ParentPage{
 				7: 'createStudent'
 			};
 			_.studentInfo = {
-				course: _.wizardData['courses'][0]['_id'],
-				level: _.wizardData['courses'][0]['levels'][0]['_id'],
 				paymentMethod: 'monthly'
 			};
 			_.metaInfo = {
-				course : _.wizardData['courses'][0]['title'],
-				level : _.wizardData['courses'][0]['levels'][0]['title'],
 				paymentMethod: 'Pay Monthly',
 			};
 			return void 0;
@@ -1007,6 +1131,17 @@ export class DashboardModule extends ParentPage{
 		if (addingStep === 0 || addingStep === 7) {
 			_[_.addingSteps[addingStep]]();
 			return void 0;
+		} else if (addingStep === 1) {
+			let stepOneData = _.wizardData ?? await Model.getWizardData();
+			if (_.isEmpty(_.studentInfo.currentPlan)) {
+				_.studentInfo.currentPlan = {
+					course: stepOneData['courses'][0],
+					level: stepOneData['courses'][0]['levels'][0],
+				};
+			}
+			_.courseData = {};
+			_.courseData.currentPlan = _.studentInfo.currentPlan.course.title;
+			_.courseData[_.courseData.currentPlan] = Object.assign({},_.studentInfo.currentPlan);
 		}
 		_.currentStep = addingStep;
 
@@ -1073,7 +1208,7 @@ export class DashboardModule extends ParentPage{
 			return void 0;
 		}
 
-
+		_.courseAction === 'assign';
 		if (assignStep === 0 || assignStep === 4) {
 			if (assignStep === 0) {
 				let btn = _.markupElement(`<button section="profile"></button>`)
@@ -1090,6 +1225,7 @@ export class DashboardModule extends ParentPage{
 
 
 		let assignFooter = _.f('#assign-footer');
+		if (!assignFooter) return;
 		if (assignStep >= 2) assignFooter.classList.add('narrow');
 		else assignFooter.classList.remove('narrow');
 		assignFooter.querySelectorAll('BUTTON').forEach((btn)=>{
@@ -1101,7 +1237,6 @@ export class DashboardModule extends ParentPage{
 		let assignBody = _.f('#assign-body');
 		_.clear(assignBody);
 		assignBody.append( _.markup( _[_.assignSteps[assignStep]]()))
-
 
 		let
 			aside = _.f('#assign-list'),
