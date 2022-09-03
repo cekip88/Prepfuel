@@ -166,7 +166,6 @@ class _Model{
 		if(answer){
 			answer['status'] = 'in progress';
 		}
-		console.log(answer);
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['results']}/${_.test['resultId']}`,{
 				method: 'PUT',
@@ -206,6 +205,7 @@ class _Model{
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
+				console.log(response);
 				G_Bus.trigger('TestPage','showResults',response);
 				let sections = response['response']['sections'];
 				_.testServerAnswers = {};

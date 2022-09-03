@@ -341,6 +341,7 @@ export const view = {
 			pos,
 			pp = _.getNextStepCnt(),
 			questionData = Model.currentQuestionData(_.questionPos+1);
+
 		if(questionData){
 			if(questionData['type'] == 'passage'){
 				if(pp[0] > pp[1]){
