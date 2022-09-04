@@ -161,6 +161,3 @@ script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
 script.setAttribute('id', 'MathJax-script');
 document.head.appendChild(script);
 
-window.onerror = (message, url, lineNumber) => {
-	console.log('test');
-}

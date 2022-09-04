@@ -481,7 +481,7 @@ export const testView = {
 	async markCorrectAnswer(){
 		const _ = this;
 		let isGrid = await G_Bus.trigger(_.componentName,'isGrid');
-		if(isGrid) return void 0;
+
 		let handle = (questionId,correctVariant)=>{
 			let
 				answerItem = _.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${correctVariant}"]`);

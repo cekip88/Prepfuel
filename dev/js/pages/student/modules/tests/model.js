@@ -205,7 +205,6 @@ class _Model{
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
-				console.log(response);
 				G_Bus.trigger('TestPage','showResults',response);
 				let sections = response['response']['sections'];
 				_.testServerAnswers = {};
