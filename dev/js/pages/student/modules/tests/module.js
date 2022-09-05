@@ -48,7 +48,7 @@ export class TestsModule extends StudentPage{
 		_.rawQuestionPos = 0;
 		_.questionPos = 0;
 		_.changedType = 'fromLastQuestion'; // 'fromTab'
-		
+		_.changeSectionFromLastQuestion = false;
 		_.currentPos = 0;
 		_.currentQuestionPos = 0;
 		_.innerQuestionId = 1;
@@ -307,16 +307,27 @@ export class TestsModule extends StudentPage{
 		_.datasPos = 0;
 		_.sectionChanged = true;
 		_.questionPos = 0;
-	//	_._$.currentQuestion = Model.currentQuestionData(_.datasPos);
-		if(pos == '0'){
-			/*let currentQuestion = Model.allquestions[Model.allquestions.length-1];
-			_.questionPos = Model.currentQuestionDataPosById(currentQuestion['_id'])
-			_._$.currentQuestion = Model.questionsDatas[Model.questionsDatas.length-1];*/
+		if(_.isLastQuestion){
+			_.changeSectionFromLastQuestion = true;
 		}else{
-		
+			if( changedType == 'fromTab'){
+				_.changeSectionFromLastQuestion = false;
+			}
 		}
 		
-		_._$.currentQuestion = Model.questionsDatas[0];
+	//	_._$.currentQuestion = Model.currentQuestionData(_.datasPos);
+		
+		if(pos == '0'){
+			if(_.changeSectionFromLastQuestion){
+				let currentQuestion = Model.allquestions[Model.allquestions.length-1];
+			_._$.currentQuestion = Model.questionsDatas[Model.questionsDatas.length-1];
+			_.questionPos = Model.currentQuestionDataPosById(_._$.currentQuestion['_id'])
+			}else{
+				_._$.currentQuestion = Model.questionsDatas[0];
+			}
+		}else{
+			_._$.currentQuestion = Model.questionsDatas[0];
+		}
 		_.changedType = changedType;
 
 		_.isJump = false;
@@ -532,6 +543,7 @@ export class TestsModule extends StudentPage{
 				_.f(`.questions-list .questions-item[data-question-id="${questionId}"]`).classList.toggle('checked');
 		}else{
 			_.f(`.bookmarked-button[data-question-id="${questionId}"]`).classList.toggle('checked');
+			_.f(`.questions-list .questions-item[data-question-id="${questionId}"]`).classList.toggle('checked');
 		}
 		
 	}
@@ -625,7 +637,7 @@ export class TestsModule extends StudentPage{
 						answer = {};
 						let
 							bookmarkedButton = _.f(`.bookmarked-button[data-question-id="${quest['_id']}"]`);
-						if(bookmarkedButton.classList.contains('active')){
+						if(!answer['bookmark']){
 							_.saveBookmark({
 								item: bookmarkedButton
 							});
@@ -642,6 +654,9 @@ export class TestsModule extends StudentPage{
 							});
 							answer['bookmark'] = true;
 						}
+					}else{
+						let bookmarkedButton = _.f(`.bookmarked-button[data-question-id="${quest['_id']}"]`);
+						answer['bookmark'] = bookmarkedButton.classList.contains('active');
 					}
 					outArr.push(await handle(answer))
 				}
@@ -851,12 +866,10 @@ export class TestsModule extends StudentPage{
 		if(_.isGrid()){
 			_.setGridAnswer(currentTestObj['answer'])
 		}else{
-			console.log(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${currentTestObj['answer']}"]`);
 			if(_.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${currentTestObj['answer']}"]`)){
 				_.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${currentTestObj['answer']}"]`).classList.add('active');
 			}
 		}
-		
 	}
 
 	enterGridAnswer({item,event}){
@@ -1050,7 +1063,7 @@ export class TestsModule extends StudentPage{
 			);
 			_.isLastQuestion = false;
 			_.setActions(['bookmark','note']);
-			
+			console.log(_.questionPos);
 			if( _.questionPos < _.questionsLength ){
 				let
 					pp = _.getNextStepCnt(),
@@ -1114,7 +1127,7 @@ export class TestsModule extends StudentPage{
 					// mark choosed answer
 					if(currentStorageTest['answer'] != 'O'){
 						_.fillAnswer(currentStorageTest['questionId'],currentStorageTest);
-						_.changeSkipButtonToNext();
+						if(!_.isLastQuestion)	_.changeSkipButtonToNext();
 					}
 				}
 				if(currentStorageTest['disabledAnswers']){

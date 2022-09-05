@@ -965,7 +965,6 @@ export const view = {
 	},
 	resultsTabBodyTpl(summary){
 		const _ = this;
-		console.log(summary);
 		let tpl = `
 			<div class="test-tabs-body">
 				<h5 class="block-title test-title">
@@ -1200,7 +1199,7 @@ export const view = {
                 You will not able to return later to answer more questions if you finish this test.
               </p>
               <div class="modal-row">
-	              <button class="button" data-click="${_.componentName}:changeSection" section="score">Yes, I’m done with this section</button>
+	              <button class="button" data-click="${_.componentName}:changeSection" section="score">Yes, I’m done with this test</button>
 	              <button class="button-blue" data-click="modaler:closeModal">No, take me to my first skipped question</button>
               </div>
             </div>
