@@ -2293,20 +2293,20 @@ export const view = {
 								<div class="form-label-row">
 									<label class="form-label">First name</label>
 								</div>
-								<g-input type="text" name="firstName"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["firstName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+								<g-input type="text" name="firstName" data-required data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["firstName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
 							</div>
 							<div class="adding-inpt small">
 								<div class="form-label-row">
 									<label class="form-label">Last name</label>
 								</div>
-								<g-input type="text" name="lastName"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["lastName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+								<g-input type="text" name="lastName" data-required data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["lastName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
 							</div>
 						</div>
 						<div class="adding-inpt">
 							<div class="form-label-row">
 								<label class="form-label">Email</label>
 							</div>
-							<g-input type="text" name="email"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["email"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+							<g-input type="email" name="email" data-required data-outfocus="${_.componentName}:checkEmail" data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["email"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
 							</div>
 						<div class="adding-inpt">
 							<div class="form-label-row">
@@ -2327,13 +2327,13 @@ export const view = {
 							<div class="form-label-row">
 								<label class="form-label">Current school</label>
 							</div>
-							<g-input type="text" name="currentSchool"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["currentSchool"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+							<g-input type="text" name="currentSchool" data-required data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["currentSchool"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
 						</div>
 						<div class="adding-inpt">
 							<div class="form-label-row">
 								<label class="form-label">Grade</label>
 							</div>
-							<g-select class="select adding-select" name="grade"  data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course"
+							<g-select class="select adding-select" name="grade" data-required data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course"
 							items=${JSON.stringify(gradeItems)}></g-select>
 						</div>
 					</div>

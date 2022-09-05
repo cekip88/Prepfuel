@@ -15,7 +15,7 @@ class _loginModel{
 			'forgot': `${env.backendUrl}/auth/forgot-password`,
 			'reset': `${env.backendUrl}/auth/reset-password`,
 			'wizardData': `${env.backendUrl}/user/wizard-data`,
-			'checkEmail': `${env.backendUrl}/user/check-email/`,
+			'checkEmail': `${env.backendUrl}/auth/check-email/`,
 		};
 		
 		this.dashboards = {
@@ -67,7 +67,7 @@ class _loginModel{
 			..._.baseHeaders,
 			body: JSON.stringify(formData),
 		});
-		if( _.isSuccessStatus(rawResponse.status) ){
+		/*if( _.isSuccessStatus(rawResponse.status) ){
 			let response = await rawResponse.json();
 			if( _.isSuccessResponse(response) ){
 				await G_Bus.trigger(_.componentName,'registerSuccess',response['token']);
@@ -78,7 +78,9 @@ class _loginModel{
 				"response": response,
 				"formData": formData
 			});
-		}
+		}*/
+		let response = await rawResponse.json();
+		return response;
 	}
 	async doForgot(formData){
 		const _ = this;
@@ -89,7 +91,6 @@ class _loginModel{
 		});
 		if( _.isSuccessStatus(rawResponse.status) ){
 			let response = await rawResponse.json();
-			console.log(response)
 			if( _.isSuccessResponse(response) ){
 				await G_Bus.trigger(_.componentName,'forgotSuccess',response['token']);
 			}else{
@@ -118,7 +119,6 @@ class _loginModel{
 				"response": response,
 				"formData": formData
 			});
-			console.error(response);
 		}
 	}
 	async isLogin(){
@@ -162,10 +162,10 @@ class _loginModel{
 				if(response['status'] == 'success') {
 					resolve(response['response']);
 				} else {
-					_.wrongResponse('checkEmail', response);
+					resolve(response['response']);
 				}
 			} else {
-				_.wrongRequest('checkEmail', rawResponse)
+				resolve(null);
 			}
 			resolve(null);
 		});

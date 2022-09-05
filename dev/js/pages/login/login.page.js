@@ -51,7 +51,7 @@ class LoginPage extends G{
 				'changeSection',
 				'changeAgree',
 				'formInputHandle',
-				'checkEmail',
+				'checkEmail','validatePassword',
 		]);
 	}
 
@@ -99,9 +99,11 @@ class LoginPage extends G{
 		const _ = this;
 		if (e) e.preventDefault();
 		let handle = form.getAttribute('data-handle');
-		let formData = _.prepareForm(form);
-		if(!formData){return void 0}
+		let formData = _.gFormDataCapture(form);
+		if(!formData) return void 0;
 
+		let validation = await _.formValidation(form);
+		if (!validation) return void 0;
 
 		if (handle == 'doLogin') {
 			let remember = form.querySelector('[name="remember"]');
@@ -112,10 +114,80 @@ class LoginPage extends G{
 				}
 				localStorage.setItem('loginData',JSON.stringify(loginData));
 			}
-			else localStorage.removeItem('loginData')
+			else localStorage.removeItem('loginData');
+		} else if (handle == 'doRegister') {
+			let resp = await loginModel[handle](formData);
+			if (resp.status == 'success') _.showSuccessPopup(resp.message)
+		}
+	}
+	showSuccessPopup(text) {
+		const _ =  this;
+		_.closePopup();
+		_.f('BODY').append(_.markup(_.successPopupTpl(text,'green')));
+		setTimeout(_.closePopup.bind(_),3000)
+	}
+	showErrorPopup(text) {
+		const _ =  this;
+		_.closePopup();
+		_.f('BODY').append(_.markup(_.successPopupTpl(text,'red')));
+		setTimeout(_.closePopup.bind(_),3000);
+	}
+	closePopup(clickData) {
+		const _ = this;
+		let label;
+		if (clickData && clickData.item) label = clickData.item.closest('.label');
+		else label = _.f('.label');
+		if (label) label.remove();
+	}
+	async formValidation(cont){
+		const _ = this;
+		let inputs = cont.querySelectorAll(`[data-required]`);
+		let validate = true;
+
+		if (inputs.length) {
+			for (let item of inputs) {
+				if (item.hasAttribute('data-outfocus')) {
+					let rawvalidate = await _[item.getAttribute('data-outfocus').split(':')[1]]({item});
+					if (!rawvalidate) {
+						validate = false;
+					}
+				} else if (item.tagName == 'G-SELECT') {
+					if (!item.value.length) {
+						validate = false;
+						item.doValidate("This field can't be empty");
+					}
+				} else if (!item.value) {
+					validate = false;
+					item.doValidate("This field can't be empty");
+				}
+
+			}
+		}
+		return validate;
+	}
+	validatePassword({item}){
+		const _ = this;
+		let
+			cont = item.closest('.passwords'),
+			inputs = cont.querySelectorAll('G-INPUT[type="password"]'),
+			text = item.nextElementSibling,
+			validate;
+
+		if (item == inputs[0]) {
+			validate = /(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{8,}/g.test(item.value);
+		} else {
+			validate = (item.value === inputs[0].value);
 		}
 
-		await loginModel[handle](formData);
+		if (validate) {
+			item.setMarker();
+			text.removeAttribute('style');
+			if (item == inputs[1]) text.setAttribute('style','display:none;')
+		} else {
+			item.setMarker('red');
+			text.style = 'color: red;';
+		}
+		return validate
 	}
 	changeSection({item,event}){
 		const _ = this;

@@ -214,6 +214,12 @@ export class UsersModule extends AdminPage {
 	// Update methods
 	async updateStudent({item}){
 		const _ = this;
+		let cont = _.f('.student-profile-left');
+		let validate = await _.nextStepBtnValidation(cont);
+		if (!validate) return void 0;
+
+		console.log(validate)
+
 		if (_.courseStatus == 'removed') {
 			_.showRemovedCoursePopup();
 			return

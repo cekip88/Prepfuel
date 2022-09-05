@@ -861,8 +861,6 @@ export class DashboardModule extends ParentPage{
 			text = item.nextElementSibling,
 			validate = true;
 
-
-
 		if (item == inputs[0]) {
 			validate = /(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{8,}/g.test(item.value);
 		} else {

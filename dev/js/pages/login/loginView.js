@@ -58,55 +58,88 @@ export const loginView = {
 	registerTpl(){
 		const _ = this;
 		return `
-			<div class="login-right">
-				<form class="login-form" data-submit="${_.componentName}:doFormAction" data-handle="doRegister">
-					<h2 class="login-title">
-						<span>Sign Up to Prepfuel</span>
-					</h2>
-					<h5 class="login-subtitle">
-						<span>Already have an account?</span>
-						<a class="link" data-click="${_.componentName}:changeSection" section="login"><span>Sign In</span></a>
-					</h5>
-					<div class="login-row">
-						<div class="form-block">
-							<div class="form-label-row">
-								<label class="form-label">First Name</label>
-							</div>
-							<g-input type="text" class="g-form-item" className="form-input" required name="firstName"></g-input>
+		<div class="login-right">
+			<form class="login-form" data-submit="${_.componentName}:doFormAction" data-handle="doRegister">
+				<h2 class="login-title"><span>Sign Up to Prepfuel</span></h2>
+				<h5 class="login-subtitle">
+					<span>Already have an account?</span>
+					<a class="link" data-click="${_.componentName}:changeSection" section="login"><span>Sign In</span></a>
+				</h5>
+				<div class="login-row">
+					<div class="form-block">
+						<div class="form-label-row">
+							<label class="form-label">First Name</label>
 						</div>
-						<div class="form-block">
-							<div class="form-label-row">
-								<label class="form-label">Last Name</label>
-							</div>
-							<g-input type="text" class="g-form-item" className="form-input" required name="lastName"></g-input>
-						</div>
-				</div>
-				<div class="form-block">
-					<div class="form-label-row">
-						<label class="form-label">Email</label>
-					</div>
-						<g-input type="email" class="g-form-item" className="form-input" required name="email"></g-input>
+						<g-input
+							type="text"
+							class="g-form-item"
+							className="form-input" 
+							data-required 
+							name="firstName"
+						></g-input>
 					</div>
 					<div class="form-block">
-					<div class="form-label-row">
-						<label class="form-label">Password</label>
+						<div class="form-label-row">
+							<label class="form-label">Last Name</label>
+						</div>
+						<g-input 
+							type="text" 
+							class="g-form-item" 
+							className="form-input" 
+							data-required 
+							name="lastName"
+						></g-input>
 					</div>
-					<g-input type="password" class="g-form-item" className="form-input" required name="password"></g-input>
-					<span class="form-block-comment">8+ characters, with min. one number, one uppercase letter and one special character</span>
-				</div>
-				<div class="form-block">
-				<div class="form-checkbox-row">
-				<label class="form-checkbox-label">
-					<g-input type="checkbox" class="" items='[{"value":1,"text":""}]' data-change="${_.componentName}:changeAgree"></g-input>
-					<span class="form-checkbox-label-text">I agree to the</span>
-				</label><a class="link" href="#"><span>Terms &amp; Conditions</span></a><span>and</span><a class="link" href="#"><span>Privacy Policy</span></a>
-				</div>
 				</div>
 					<div class="form-block">
-						<button class="button-blue" id="create-account-btn" disabled>
-							<span>Create account</span>
-						</button>
-						<span class="login-span">or</span>
+						<div class="form-label-row">
+							<label class="form-label">Email</label>
+						</div>
+						<g-input 
+							type="email" 
+							class="g-form-item" 
+							name="email"
+							className="form-input"
+							data-outfocus="${_.componentName}:checkEmail"
+							data-required 
+						></g-input>
+					</div>
+					<div class="form-block passwords">
+						<div class="form-label-row">
+							<label class="form-label">Password</label>
+						</div>
+						<g-input 
+							type="password" 
+							class="g-form-item" 
+							className="form-input" 
+							data-required 
+							name="password"
+							data-outfocus="${_.componentName}:validatePassword"
+						></g-input>
+						<span class="form-block-comment">8+ characters, with min. one number, one uppercase letter and one special character</span>
+					</div>
+				<div class="form-block">
+					<div class="form-checkbox-row">
+						<label class="form-checkbox-label">
+							<g-input 
+								type="checkbox" 
+								class="" 
+								data-required 
+								items='[{"value":1,"text":""}]' 
+								data-change="${_.componentName}:changeAgree"
+							></g-input>
+							<span class="form-checkbox-label-text">I agree to the</span>
+						</label>
+						<a class="link" href="#"><span>Terms &amp; Conditions</span></a>
+						<span>and</span>
+						<a class="link" href="#"><span>Privacy Policy</span></a>
+					</div>
+				</div>
+				<div class="form-block">
+					<button class="button-blue" id="create-account-btn" disabled>
+						<span>Create account</span>
+					</button>
+					<span class="login-span">or</span>
 					<a class="button-lightblue" href="https://live-prepfuelbackend-mydevcube.apps.devinci.co//api/auth/google">
 						<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path d="M19.9895 10.1871C19.9895 9.36767 19.9214 8.76973 19.7742 8.14966H10.1992V11.848H15.8195C15.7062 12.7671 15.0943 14.1512 13.7346 15.0813L13.7155 15.2051L16.7429 17.4969L16.9527 17.5174C18.879 15.7789 19.9895 13.221 19.9895 10.1871Z" fill="#4285F4"></path>
@@ -116,9 +149,9 @@ export const loginView = {
 						</svg>
 						<span>Continue with Google</span>
 					</a>
-					</div>
-				</form>
-			</div>
+				</div>
+			</form>
+		</div>
 		`;
 	},
 	forgotDoneTpl(){
@@ -262,5 +295,16 @@ export const loginView = {
 			<section class='login'>
 			</section>
 		`;
-	}
+	},
+	successPopupTpl(text,color){
+		const _ = this;
+		return `
+			<div class="success-label label ${color}">
+				<svg><use xlink:href="#checkmark-reverse"></use></svg>
+				<span>${text}</span>
+				<button data-click="${_.componentName}:closePopup">
+					<svg><use xlink:href="#close-transparent"></use></svg>
+				</button>
+			</div>`
+	},
 }
