@@ -87,27 +87,10 @@ export default class GSelect extends GComponent {
 		options.forEach(function (opt){
 			if (exceptions.indexOf(opt.value) >= 0) {
 				let thisExceptions = _.getAttribute('exceptions');
-				if (!thisExceptions || JSON.parse(thisExceptions).indexOf(opt.value) < 0) opt.style = 'display:none';
+				if (thisExceptions) thisExceptions = JSON.parse(thisExceptions);
+				if (!thisExceptions || (thisExceptions.indexOf(opt.value) < 0 && thisExceptions.indexOf(opt.textContent) < 0)) opt.style = 'display:none';
 			}
 			else opt.removeAttribute('style');
-		})
-	}
-	hideOption({value,text}){
-		const _ = this;
-		let opt = _.shadow.querySelectorAll(`.g-select-option[${value ? 'value="' + value + '"' : ''}]`);
-		opt.forEach(function (option){
-			if (text && text == option.textContent || !text) {
-				option.style = 'display:none';
-			}
-		})
-	}
-	showOption({value,text}){
-		const _ = this;
-		let opt = _.shadow.querySelectorAll(`.g-select-option[${value ? 'value="' + value + '"' : ''}]`);
-		opt.forEach(function (option){
-			if (text && text == option.textContent || !text) {
-				option.removeAttribute('style');
-			}
 		})
 	}
 

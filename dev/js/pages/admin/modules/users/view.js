@@ -511,8 +511,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="firstSchool" 
-							together="applyingSchool"
-							exceptions='${JSON.stringify(['6307b9ab166cad4538383287'])}'
+							exceptions='${JSON.stringify(['Have not decided yet'])}'
 							data-change="${_.componentName}:${selectFunction}" 
 							data-required
 							classname="adding-select" 
@@ -527,8 +526,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="secondSchool" 
-							exceptions='${JSON.stringify(['6307b9ab166cad4538383287'])}'
-							together="applyingSchool"
+							exceptions='${JSON.stringify(['Have not decided yet'])}'
 							data-required
 							data-change="${_.componentName}:${selectFunction}" 
 							classname="adding-select" 
@@ -543,8 +541,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="thirdSchool" 
-							exceptions='${JSON.stringify(['6307b9ab166cad4538383287'])}'
-							together="applyingSchool"
+							exceptions='${JSON.stringify(['Have not decided yet'])}'
 							data-required
 							data-change="${_.componentName}:${selectFunction}" 
 							classname="adding-select" 

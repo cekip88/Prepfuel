@@ -87,21 +87,21 @@ export const view = {
 					</div>
 					<div class="parent-adding-inner">
 						<div class="block adding-list" id="assign-list">
-							<button class="adding-list-item active" data-click="${_.componentName}:assignStep" step="1">
+							<button class="adding-list-item active">
 								<strong class="adding-list-digit">1</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">Course & Plan</h5>
 									<h6 class="adding-list-subtitle">Set Type of a Test & Membership </h6>
 								</div>
 							</button>
-							<button class="adding-list-item" data-click="${_.componentName}:assignStep" step="2">
+							<button class="adding-list-item">
 								<strong class="adding-list-digit">2</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">School Information</h5>
 									<h6 class="adding-list-subtitle">Student’s School Related Info</h6>
 								</div>
 							</button>
-							<button class="adding-list-item" data-click="${_.componentName}:assignStep" step="3">
+							<button class="adding-list-item">
 								<strong class="adding-list-digit">3</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">Test Information</h5>
@@ -140,42 +140,42 @@ export const view = {
 					</div>
 					<div class="parent-adding-inner">
 						<div class="block adding-list">
-							<button class="adding-list-item active" data-click="${_.componentName}:addingStep" step="1">
+							<button class="adding-list-item active">
 								<strong class="adding-list-digit">1</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">Course & Plan</h5>
 									<h6 class="adding-list-subtitle">Set Type of a Test & Membership </h6>
 								</div>
 							</button>
-							<button class="adding-list-item" data-click="${_.componentName}:addingStep" step="2">
+							<button class="adding-list-item">
 								<strong class="adding-list-digit">2</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">Account Settings</h5>
 									<h6 class="adding-list-subtitle">Setup Student Account Settings</h6>
 								</div>
 							</button>
-							<button class="adding-list-item" data-click="${_.componentName}:addingStep" step="3">
+							<button class="adding-list-item">
 								<strong class="adding-list-digit">3</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">School Information</h5>
 									<h6 class="adding-list-subtitle">Student’s School Related Info</h6>
 								</div>
 							</button>
-							<button class="adding-list-item" data-click="${_.componentName}:addingStep" step="4">
+							<button class="adding-list-item">
 								<strong class="adding-list-digit">4</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">Test Information</h5>
 									<h6 class="adding-list-subtitle">Set Test Info</h6>
 								</div>
 							</button>
-							<button class="adding-list-item" data-click="${_.componentName}:addingStep" step="5">
+							<button class="adding-list-item">
 								<strong class="adding-list-digit">5</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">Billing Details</h5>
 									<h6 class="adding-list-subtitle">Set Your Payment Methods</h6>
 								</div>
 							</button>
-							<button class="adding-list-item" data-click="${_.componentName}:addingStep" step="6">
+							<button class="adding-list-item">
 								<strong class="adding-list-digit">6</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">Make Payment</h5>
@@ -712,8 +712,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="firstSchool" 
-							together="applyingSchool"
-							exceptions='${JSON.stringify(['6307b9ab166cad4538383287'])}'
+							exceptions='${JSON.stringify(['Have not decided yet'])}'
 							data-change="${_.componentName}:${selectFunction}" 
 							data-required
 							classname="adding-select" 
@@ -728,8 +727,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="secondSchool" 
-							exceptions='${JSON.stringify(['6307b9ab166cad4538383287'])}'
-							together="applyingSchool"
+							exceptions='${JSON.stringify(['Have not decided yet'])}'
 							data-required
 							data-change="${_.componentName}:${selectFunction}" 
 							classname="adding-select" 
@@ -744,8 +742,7 @@ export const view = {
 						<g-select 
 							class="select adding-select" 
 							name="thirdSchool" 
-							exceptions='${JSON.stringify(['6307b9ab166cad4538383287'])}'
-							together="applyingSchool"
+							exceptions='${JSON.stringify(['Have not decided yet'])}'
 							data-required
 							data-change="${_.componentName}:${selectFunction}" 
 							classname="adding-select" 
@@ -1698,20 +1695,28 @@ export const view = {
 										<div class="form-label-row">
 											<label class="form-label">First name</label>
 										</div>
-										<g-input type="text" name="firstName"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["firstName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+										<g-input type="text" name="firstName" data-required data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["firstName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
 									</div>
 									<div class="adding-inpt small">
 										<div class="form-label-row">
 											<label class="form-label">Last name</label>
 										</div>
-										<g-input type="text" name="lastName"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["lastName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+										<g-input type="text" name="lastName" data-required data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["lastName"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
 									</div>
 								</div>
 								<div class="adding-inpt">
 									<div class="form-label-row">
 										<label class="form-label">Email</label>
 									</div>
-									<g-input type="text" name="email"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["email"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+									<g-input 
+										type="text" 
+										name="email" 
+										data-required
+										data-outfocus="${_.componentName}:checkEmail" 
+										data-input="${_.componentName}:fillStudentInfo" 
+										value='${_.studentInfo["email"]}' 
+										class="g-form-item" 
+										classname="form-input adding-inpt"></g-input>
 									</div>
 								<div class="adding-inpt">
 									<div class="form-label-row">
@@ -1762,6 +1767,7 @@ export const view = {
 									<g-input 
 										type="text" 
 										name="currentSchool"  
+										data-required
 										data-input="${_.componentName}:fillStudentInfo" 
 										value='${_.studentInfo["currentSchool"]}' 
 										class="g-form-item" 
@@ -1775,6 +1781,7 @@ export const view = {
 									<g-select 
 										class="select adding-select" 
 										name="grade"  
+										data-required
 										data-change="${_.componentName}:fillStudentInfo" 
 										classname="adding-select" 
 										arrowsvg="/img/sprite.svg#select-arrow-bottom" 

@@ -189,7 +189,7 @@ export class DashboardModule extends ParentPage{
 		_.body.innerHTML = _.personalInfo();
 
 		let courseInfoCont = _.f('.student-profile-course-info');
-		if (_.studentInfo['currentPlan']) courseInfoCont.innerHTML = _.courseInfo(_.wizardData ?? await Model.getWizardData());
+		if (_.courseData[_.courseData.currentPlan].firstSchool) courseInfoCont.innerHTML = _.courseInfo(_.wizardData ?? await Model.getWizardData());
 		else courseInfoCont.innerHTML = _.emptyCourseInfo();
 	}
 	async changeCurrentCourse({item}){
@@ -372,9 +372,11 @@ export class DashboardModule extends ParentPage{
 			scheduleFooter.classList.add('schedule-hidden');
 			scheduleList.append(_.markup(`<li class="block-empty-text">Student has not created the practice schedule yet.</li>`))
 			let titleBtns = _.f('.block-title-control BUTTON');
-			titleBtns.forEach(function (btn){
-				btn.style = 'display:none;'
-			})
+			if (titleBtns.length) {
+				titleBtns.forEach(function (btn){
+					btn.style = 'display:none;'
+				})
+			}
 		} else {
 			scheduleFooter.classList.remove('schedule-hidden');
 			let scheduleTpl = _.scheduleBlock(schedule);
@@ -605,9 +607,14 @@ export class DashboardModule extends ParentPage{
 	}
 	async updateStudent({item}){
 		const _ = this;
+		let cont = _.f('.student-profile-left');
+		let validate = await _.nextStepBtnValidation(cont);
+		if (!validate) return void 0;
+
 		let updateResp = await _.saveCourses();
 		if (!updateResp) return void 0;
-		let response = await Model.updateStudent({
+
+		let updateData = {
 			'_id': _.studentInfo['_id'],
 			'firstName': _.studentInfo['firstName'],
 			"lastName": _.studentInfo['lastName'],
@@ -616,8 +623,10 @@ export class DashboardModule extends ParentPage{
 			"avatar": _.studentInfo['avatar'],
 			"grade": _.studentInfo['grade'],
 			"currentSchool": _.studentInfo['currentSchool']
-		});
+		};
+		let response = await Model.updateStudent(updateData);
 		if(!response) return void 0;
+		_.currentStudent = response;
 		_.updateMe();
 
 		item.setAttribute('rerender',true);
@@ -1005,14 +1014,20 @@ export class DashboardModule extends ParentPage{
 		let cont = item.closest('#parent');
 		let targetStep = item.getAttribute('step');
 		if (targetStep > _.currentStep) {
-			let validate = await _.addingStepValidate(cont);
+			let validate = await _.nextStepBtnValidation(cont);
 			if (!validate) return;
 		}
 
 		_._$.addingStep = parseInt(targetStep);
 	}
-	assignStep({item}){
+	async assignStep({item}){
 		const _ = this;
+		let cont = item.closest('#parent');
+		let targetStep = item.getAttribute('step');
+		if (targetStep > _.currentStep) {
+			let validate = await _.nextStepBtnValidation(cont);
+			if (!validate) return;
+		}
 		_._$.assignStep = parseInt(item.getAttribute('step'));
 	}
 	async handleAddingSteps({addingStep = 1}){
@@ -1031,9 +1046,6 @@ export class DashboardModule extends ParentPage{
 			};
 			_.studentInfo = {
 				paymentMethod: 'monthly'
-			};
-			_.metaInfo = {
-				paymentMethod: 'Pay Monthly',
 			};
 			return void 0;
 		}
@@ -1174,23 +1186,32 @@ export class DashboardModule extends ParentPage{
 		_._$.assignStep = 1;
 	}
 
-	async addingStepValidate(cont){
+	async nextStepBtnValidation(cont){
 		const _ = this;
 		let inputs = cont.querySelectorAll(`[data-required]`);
 		let validate = true;
 
-		for (let item of inputs) {
-			if (item.hasAttribute('data-outfocus')) {
-				let rawvalidate = await _[item.getAttribute('data-outfocus').split(':')[1]]({item});
-				if (!rawvalidate) validate = false;
-			} else if (item.tagName == 'G-SELECT') {
-				if (!item.value.length) {
+		if (inputs.length) {
+			for (let item of inputs) {
+				if (item.hasAttribute('data-outfocus')) {
+					let rawvalidate = await _[item.getAttribute('data-outfocus').split(':')[1]]({item});
+					if (!rawvalidate) validate = false;
+				} else if (item.tagName == 'G-SELECT') {
+					if (!item.value.length) {
+						validate = false;
+						item.doValidate("This field can't be empty");
+					}
+				} else if (!item.value) {
 					validate = false;
 					item.doValidate("This field can't be empty");
 				}
-			} else if (!item.value) {
+			}
+		} else if (_._$.addingStep == 3) {
+			if (_.metaInfo['parentAddType'] && !_.metaInfo['parentAssigned']) validate = false;
+		} else if (_._$.addingStep == 1) {
+			if (_.studentInfo['course'] && !_.studentInfo['level']) {
 				validate = false;
-				item.doValidate("This field can't be empty");
+				_._$.addingStep = 1;
 			}
 		}
 		return validate;
