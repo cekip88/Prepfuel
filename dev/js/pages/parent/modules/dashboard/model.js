@@ -13,8 +13,6 @@ export class _Model{
 			checkEmail: `/user/check-email/`,
 			createStudent: `/user/create-student`,
 			updateStudent: `/user/update-student`,
-			removeStudent: `/user/delete-student`,
-			removeCourse: `/user/remove-plan`,
 			assignCourse: `/user/assign-plan`,
 			updateCourse: `/user/update-plan`,
 			changePassword: `/user/change-password`,
@@ -77,26 +75,6 @@ export class _Model{
 				}
 			} else {
 				_.wrongRequest('updateStudent', rawResponse)
-			}
-			resolve(null);
-		});
-	}
-	removeStudent(studentId){
-		const _ = this;
-		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.getEndpoint('removeStudent')}/${studentId}`, {
-				method: 'DELETE',
-				headers: _.baseHeaders
-			});
-			if(rawResponse.status < 210) {
-				let response = await rawResponse.json();
-				if(response['status'] == 'success') {
-					resolve(response['response']);
-				} else {
-					_.wrongResponse('removeStudent', response);
-				}
-			} else {
-				_.wrongRequest('removeStudent', rawResponse)
 			}
 			resolve(null);
 		});
@@ -373,6 +351,7 @@ export class _Model{
 	updateCourse(updateData) {
 		const _ = this;
 		return new Promise(async resolve => {
+			console.log(updateData)
 			let rawResponse = await fetch(`${_.getEndpoint('updateCourse')}/${updateData._id}`, {
 				method: 'PUT',
 				headers: _.baseHeaders,
@@ -391,28 +370,6 @@ export class _Model{
 			resolve(null);
 		});
 	}
-	removeCourse(removeData){
-		const _ = this;
-		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.getEndpoint('removeCourse')}`, {
-				method: 'DELETE',
-				headers: _.baseHeaders,
-				body: JSON.stringify(removeData)
-			});
-			if(rawResponse.status < 210) {
-				let response = await rawResponse.json();
-				if(response['status'] == 'success') {
-					resolve(response['response']);
-				} else {
-					_.wrongResponse('removeCourse', response);
-				}
-			} else {
-				_.wrongRequest('removeCourse', rawResponse)
-			}
-			resolve(null);
-		});
-	}
-
 }
 
 export const Model = new _Model();

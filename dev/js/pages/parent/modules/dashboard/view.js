@@ -60,8 +60,6 @@ export const view = {
 				${_.addCardForm()}
 				${_.addBillingAddress()}
 				${_.registerSuccessPopup()}
-				${_.removeCourseTpl()}
-				${_.removeUserTpl()}
 				${_.cancelMembershipTpl()}
 			</div>
 		`;
@@ -75,22 +73,6 @@ export const view = {
 				<button class="button-blue" data-click="modaler:closeModal">Continue</button>
 			</div>
 		`
-	},
-
-	removeCourseTpl(){
-		const _ = this;
-		return `
-			<div class="modal-block student-profile-remove-popup" id="removeForm">
-				<h6 class="modal-title">
-					<span>Removing course</span>
-				</h6>
-				<p class="modal-text">Are you sure want to remove this course?</p>
-				<div class="modal-row">
-					<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
-					<button class="button-red" data-click="${_.componentName}:removeCourse"><span>Remove</span></button>
-				</div>
-			</div>
-		`;
 	},
 
 	assignCourseTpl(){
@@ -227,7 +209,6 @@ export const view = {
 	},
 	addingStepOne(){
 		const _ = this;
-		console.log(_.courseAction)
 		let
 			courses = _.wizardData['courses'],
 			tpl = `
@@ -258,7 +239,8 @@ export const view = {
 				</button>
 			`;
 		});
-		tpl+=	`
+		let memType = _.studentInfo['paymentMethod'] ? _.studentInfo['paymentMethod'].type : 'monthly';
+		tpl += `
 				</div>
 			</div>
 			<div class="adding-section">
@@ -271,12 +253,12 @@ export const view = {
 				<div class="adding-label">Type of membership?</div>
 				<div class="adding-buttons">
 					<button 
-						class="adding-button active" 
+						class="adding-button ${memType == 'monthly' ? 'active' : ''}" 
 						data-type="monthly" 
 						data-click="${_.componentName}:changePayMethod"
 					>Pay Monthly</button>
 					<button 
-						class="adding-button" 
+						class="adding-button ${memType == 'yearly' ? 'active' : ''}" 
 						data-type="yearly" 
 						data-click="${_.componentName}:changePayMethod"
 					>Pay Yearly</button>
@@ -609,22 +591,35 @@ export const view = {
 			</div>
 		`;
 	},
+	assignStepTwo(){
+		const _ = this;
+		return `
+			<div class="adding-center">
+				<h3 class="adding-title">Application School List</h3>
+				${_.choiceSelectStudent(_.wizardData)}
+			</div>
+		`
+	},
 
 //steps auxiliary tpls
 	levelButtons(stepData){
 		const _ = this;
 		let tpl = ``;
+		let curPlan = _.courseData[_.courseData.currentPlan];
 		stepData['levels'].forEach( (item,count) => {
 			let activeClass = '';
-			if(_.studentInfo['level']){
-				if(_.studentInfo['level'] == item._id){
+			if(curPlan['level']){
+				if(item._id == curPlan['level']._id){
 					activeClass = 'active';
 				}
 			} else if (!count) {
 				activeClass = 'active';
 			}
 			tpl += `
-				<button class="adding-button ${ activeClass }" data-id="${item._id}" data-click="${_.componentName}:changeStudentLevel">
+				<button 
+					class="adding-button ${ activeClass }" 
+					data-id="${item._id}" 
+					data-click="${_.componentName}:changeStudentLevel">
 					${item.title}
 				</button>
 			`;
@@ -1678,11 +1673,9 @@ export const view = {
 		let gradeItems = _.createSelectItems(_.wizardData.grades, 'value:_id;text:grade', gradeActive);
 
 		let currentCourse;
-		if (!_.isEmpty(_.studentInfo['currentPlan'])) {
-			if (_.studentInfo['currentPlan']['course']) {
-				if (_.studentInfo['currentPlan']['course'].title) {
-					currentCourse = _.studentInfo['currentPlan']['course'].title;
-				}
+		if (!_.isEmpty(_.courseData[_.courseData.currentPlan])) {
+			if (_.courseData[_.courseData.currentPlan].course) {
+				currentCourse = _.courseData[_.courseData.currentPlan].course.title;
 			}
 		}
 		if (!currentCourse) currentCourse = 'ISEE';
@@ -1766,14 +1759,27 @@ export const view = {
 									<div class="form-label-row">
 										<label class="form-label">Current school</label>
 									</div>
-									<g-input type="text" name="currentSchool"  data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["currentSchool"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+									<g-input 
+										type="text" 
+										name="currentSchool"  
+										data-input="${_.componentName}:fillStudentInfo" 
+										value='${_.studentInfo["currentSchool"]}' 
+										class="g-form-item" 
+										classname="form-input adding-inpt"
+									></g-input>
 								</div>
 								<div class="adding-inpt">
 									<div class="form-label-row">
 										<label class="form-label">Grade</label>
 									</div>
-									<g-select class="select adding-select" name="grade"  data-change="${_.componentName}:fillStudentInfo" classname="adding-select" arrowsvg="/img/sprite.svg#select-arrow-bottom" title="Course"
-									items=${JSON.stringify(gradeItems)}></g-select>
+									<g-select 
+										class="select adding-select" 
+										name="grade"  
+										data-change="${_.componentName}:fillStudentInfo" 
+										classname="adding-select" 
+										arrowsvg="/img/sprite.svg#select-arrow-bottom" 
+										title="Course"
+										items=${JSON.stringify(gradeItems)}></g-select>
 								</div>
 							</div>
 						</div>
@@ -1792,7 +1798,7 @@ export const view = {
 							<button class="test-footer-back" data-clear="true" data-click="${_.componentName}:changeSection" section="dashboard">
 								<span>Discard</span>
 							</button>
-							<button class="button-blue" data-clear="true" data-click="${_.componentName}:updateStudent">
+							<button class="button-blue" section="dashboard" data-clear="true" data-click="${_.componentName}:updateStudent">
 								<span>Save Changes</span>
 							</button>
 						</div>
@@ -1820,19 +1826,14 @@ export const view = {
 	courseInfo(choiceData,plan = this.courseData[this.courseData.currentPlan]){
 		const _ = this;
 		let
-			courseData,
 			course = '',
 			level = '',
 			testDate = plan && plan['testDate'] ? _.createdAtFormat(plan['testDate']) : '';
 
 		if (plan && plan.course) {
 			if (plan.course.title) {
-				course = plan.course.title;
-				level = plan.level ? plan.level.title : '';
-			} else {
-				courseData = plan && plan['course'] ? choiceData.courses.find((item)=>{if (item._id == plan.course) return item}) : '';
-				course = courseData ? courseData.title : '';
-				level = courseData ? courseData.levels.find((item)=>{if (item._id == plan.level) return item}).title  : '';
+				course = plan.course.title.trim();
+				level = plan.level ? plan.level.title.trim() : '';
 			}
 		}
 
@@ -1843,7 +1844,14 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Course</label>
 					</div>
-					<g-input type="text" name="course" value='${course} ${level}' class="g-form-item" classname="form-input adding-inpt" disabled></g-input>
+					<g-input 
+						type="text" 
+						name="course" 
+						value='${course} ${level}' 
+						class="g-form-item" 
+						classname="form-input adding-inpt" 
+						disabled
+					></g-input>
 					</div>
 				<div class="adding-inpt">
 					<div class="form-label-row">
@@ -1874,21 +1882,6 @@ export const view = {
 						<span>Your plan renews on April 21, 2022</span>
 					</div>
 				<button class="button student-profile-refund">Request Refund</button>
-			</div>
-		`;
-	},
-	removeUserTpl(){
-		const _ = this;
-		return `
-			<div class="modal-block student-profile-remove-popup" id="removeUserForm">
-				<h6 class="modal-title">
-					<span>Delete student profile</span>
-				</h6>
-				<p class="modal-text">Are you sure you want to delete this student profile?</p>
-				<div class="modal-row">
-					<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
-					<button class="button-red" data-click="${_.componentName}:removeUser"><span>Remove</span></button>
-				</div>
 			</div>
 		`;
 	},

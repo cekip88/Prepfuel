@@ -354,7 +354,6 @@ export class UsersModule extends AdminPage {
 
 		let wizardData = _.wizardData ?? await Model.getWizardData();
 		if( typeof value == 'object') value = value + '';
-		if(name == 'grade') _.metaInfo[name] = item.textContent;
 		let curPlanTitle = _.courseData.currentPlan;
 		if (!_.courseData[curPlanTitle]) _.courseData[curPlanTitle] = {};
 
@@ -367,7 +366,7 @@ export class UsersModule extends AdminPage {
 			} else _.courseData[curPlanTitle][name] = value;
 		} else {
 			if (name == 'grade') {
-				_.studentInfo[name] = wizardData.grades.find((unit)=>{
+				_.studentInfo.grade = wizardData.grades.find((unit)=>{
 					if (unit._id == item.value) return unit;
 				})
 			} else _.studentInfo[name] = value;
@@ -475,6 +474,7 @@ export class UsersModule extends AdminPage {
 		_.studentInfo['userId'] = _.studentInfo['_id'];
 		_.studentInfo['_id'] = currentStudent['_id'];
 		_.studentInfo['plans'] = currentStudent['plans'];
+		console.log(_.studentInfo)
 
 		_.courseData = {};
 		for (let item of _.studentInfo['plans']) {
