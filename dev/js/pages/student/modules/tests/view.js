@@ -29,6 +29,7 @@ export const view = {
 	noteTpl(question){
 		const _ = this;
 		let tpl = ``;
+		if(!_.storageTest) return tpl;
 		if(!_.storageTest[question['_id']]) return tpl;
 		if(_.storageTest[question['_id']].note) {
 			tpl = `<div class="test-label-block note-block">
@@ -85,15 +86,14 @@ export const view = {
 			if(currentQuestion['type'] == 'passage'){
 				currentQuestion = currentQuestion.questions.find( question => question['_id'] == currentQuestionId )
 			}
-			if( answeredQuestion && answeredQuestion['answer']){
-				if(currentQuestion['correctAnswer']){
-					if( (currentQuestion['correctAnswer'].toUpperCase() !== answeredQuestion['answer'].toUpperCase())  && (answeredQuestion['answer'].toUpperCase() == answer.toUpperCase()) ) {
-						status = 'incorrect';
-					}
-				}
+			currentQuestion['correctAnswer'] = 'B'; // stub and delete in future
+			if( (currentQuestion['correctAnswer'].toUpperCase() !== answeredQuestion['answer'].toUpperCase())  && (answeredQuestion['answer'].toUpperCase() == answer.toUpperCase()) ) {
+				status = 'incorrect';
 			}
 			output.innerHTML = question['answers'][answer];
-			let text = await MathJax.typesetPromise([output]).then( () => output.innerHTML);
+			
+			let
+				text = await MathJax.typesetPromise([output]).then( () => output.innerHTML);
 				tpl = `
 					<li class="answer-item ${status}" data-question-id="${question['_id']}" data-variant="${answer}">
 						<button class="answer-button">
@@ -257,9 +257,9 @@ export const view = {
 	/* Cacrass templates*/
 	async scoreCarcass(){
 		const _ = this;
-		let summary = await Model.getTestSummary();
-		return	`
-			<div class="section">
+		let summaries = await Model.getTestSummary();
+		let tpl = `
+				<div class="section">
 				<div class="section-header">
 					<h2 class="title">Practice Test Score - Section Name</h2>
 					<button class="button-white" data-click="StudentPage:changeSection" section="/student/tests">
@@ -276,9 +276,14 @@ export const view = {
 						<h5 class="block-title test-title">
 							<span>You finished ${Model.test['testType']} ${Model.test['testNumber']}</span>
 						</h5>
-						<p class="test-text">
-							${Model.test['description'] ?? ''}
-						</p>
+		`;
+		if(summaries){
+			for(let sum of summaries){
+				let summary = sum['result']
+				tpl+=`
+					<p class="test-text">
+						${sum['title']}
+					</p>
 					<div class="test-result">
 						<div class="test-result-block violet">
 							<h6 class="test-result-title"><span>Questions Answered</span></h6>
@@ -312,7 +317,11 @@ export const view = {
 						</div>
 					</div>
 					</div>
-					</div>
+				`;
+			}
+		}
+		
+		tpl+=`</div>
 					<div class="test-footer">
 						<a class="test-footer-back" data-click="${_.componentName}:changeSection" section="questions">
 							<span>Review this test</span>
@@ -320,17 +329,17 @@ export const view = {
 						<!--button class="button-blue"><span>Start the next section: Quantitative Reasoning</span></button -->
 					</div>
 				</div>
-			</div>
-		`;
+			</div>`;
+		return tpl;
 	},
 	questionHeader(){
 		const _ = this;
-		return new Promise( (resolve) =>{resolve(`
+		return new Promise( (resolve) =>{ resolve(`
 			<div class="section">
 				<div class="section-header">
 					<h1 class="title">Practice test ${Model.test['testNumber']} &mdash; <strong id="test-section-name">${Model.currentSection.sectionName}</strong></h1>
 					<div class="test-timer"><span class="test-timer-value">${Model.test.testTime}</span> minutes left</div>
-					<button class="button-white" data-click="${this.componentName}:showConfirmModal" section="score"><span>Finish this test</span></button>
+					<button class="button-white header-question-btn" data-click="${this.componentName}:showConfirmModal" section="score"><span>Finish this test</span></button>
 				</div>
 			</div>
 	`)});
@@ -341,6 +350,7 @@ export const view = {
 			pos,
 			pp = _.getNextStepCnt(),
 			questionData = Model.currentQuestionData(_.questionPos+1);
+
 		if(questionData){
 			if(questionData['type'] == 'passage'){
 				if(pp[0] > pp[1]){
@@ -477,7 +487,7 @@ export const view = {
 			tpl =	`
 			<div class="test-header">
 				<h5 class="block-title test-title"><span>Question ${_.getStep()[0]-1} of ${_.questionsLength}</span></h5>
-				${_.actionsTpl(_._$.currentQuestion)}
+				${_.actionsTpl(currentQuestion)}
 			</div>
 			<div class="test-inner ">
 			<div class="test-row">
@@ -488,6 +498,8 @@ export const view = {
 				tpl+=`<img src="${fileLink}" alt="">`;
 			}
 		}
+	//	let correctAns = currentQuestion.correctAnswer.split('');
+		let correctAns = '-1234'.split(''); // stub delete in future
 		tpl+=`
 			<p class="test-text">
 				<span>${intro}</span>
@@ -498,9 +510,10 @@ export const view = {
 			<p class="test-text">
 				<span>${content}</span>
 			</p>
+			<div class="answer-block" data-question-id="${currentQuestion['_id']}">${_.noteTpl(currentQuestion)}</div>
 			${Model.isFinished() ? await _.explanationAnswer(currentQuestion) : ''}
 			</div>
-				<div class="test-col narrow grid empty" data-click="${_.componentName}:enterGridAnswer">
+				<div class="test-col narrow grid empty"  data-click="${_.componentName}:enterGridAnswer">
 					<div class="grid-row">
 						<input id="grid-value" type="hidden" data-question-id="${currentQuestion['_id']}">
 						<div class="grid-input">
@@ -546,7 +559,7 @@ export const view = {
 						</div>
 					</div>
 				</div>
-				<div class="test-col narrow grid correct" hidden data-click="${_.componentName}:enterGridAnswer">
+				<div class="test-col narrow grid correct"  hidden data-click="${_.componentName}:enterGridAnswer">
 					<div class="marker">
 						<span>Correct</span>
 						<svg><use xlink:href="#correct"></use></svg>
@@ -596,7 +609,7 @@ export const view = {
 						</div>
 					</div>
 				</div>
-				<div class="test-col narrow grid incorrect" hidden data-click="${_.componentName}:enterGridAnswer">
+				<div class="test-col narrow grid incorrect"  hidden data-click="${_.componentName}:enterGridAnswer">
 					<div class="marker">
 						<span>Incorrect</span>
 						<svg><use xlink:href="#incorrect"></use></svg>
@@ -647,10 +660,24 @@ export const view = {
 					</div>
 					<span class="grid-title">Correct answer:</span>
 					<div class="grid-row ans" data-question-id="${currentQuestion['_id']}">
+				`;
+		for (let i = 0; i < 5; i++) {
+			let curAns = '';
+			if (correctAns[0] == '-') {
+				curAns = correctAns[i] ?? '';
+			} else {
+				curAns = correctAns[i - 1] ?? '';
+			}
+			tpl += `
+				<div class="grid-col" data-col="${i + 1}" >
+					<button class="grid-button" style="background-color: rgb(var(--green-light));color:rgb(var(--green-dark))">${ curAns }</button>
 				</div>
-				<div class="answer-block" data-question-id="${currentQuestion['_id']}">${_.noteTpl(currentQuestion)}</div>
-			</div>
-		`;
+			`
+		}
+		tpl += `
+					</div>
+				</div>
+			</div>`;
 		return tpl;
 	},
 	async compareQuestion(){
@@ -691,36 +718,31 @@ export const view = {
 		const _ = this;
 		let isGrid = await G_Bus.trigger(_.componentName,'isGrid');
 	
-	/*	if(isGrid){
-			return void 0;
-		}*/
 		let handle = ( questionId,correctVariant )=>{
 			if(isGrid){
 				let
 					id = questionId,
-					question = _._$.currentQuestion
-					let ans =   _.storageTest[id]['answer'];
-					if(_.isGrid()){
-						if(_.storageTest[id]['answer'] != 'O'){
-							if(typeof  _.storageTest[id]['answer'] == 'object'){
-								ans =   _.storageTest[id]['answer'].join('');
-								ans = ans.replaceAll('_','');
-							}else{
-								ans =  _.storageTest[id]['answer'];
-							}
-						}
-					}
-					if(question['correctAnswer'] == ans){
-						if( _.isGrid()){
-							_.f('.grid.empty').setAttribute('hidden','hidden');
-							_.f('.grid.correct').removeAttribute('hidden');
-						}
+					question = _._$.currentQuestion,
+					ans =   _.storageTest[id]['answer'];
+				
+				if(_.storageTest[id]['answer'] != 'O'){
+					if(typeof  _.storageTest[id]['answer'] == 'object'){
+						ans =   _.storageTest[id]['answer'].join('');
+						ans = ans.replaceAll('_','');
 					}else{
-						if( _.isGrid()){
-							_.f('.grid.empty').setAttribute('hidden','hidden');
-							_.f('.grid.incorrect').removeAttribute('hidden');
-						}
+						ans =  _.storageTest[id]['answer'];
 					}
+				}
+				if(question['correctAnswer'] == ans){
+					_.f('.grid.empty').setAttribute('hidden','hidden');
+					_.f('.grid.correct').removeAttribute('hidden');
+					_.setGridAnswer(ans.split(''),'.grid.correct');
+				}else{
+					_.f('.grid.empty').setAttribute('hidden','hidden');
+					_.f('.grid.incorrect').removeAttribute('hidden');
+					if(ans != 'O')
+					_.setGridAnswer(ans.split(''),'.grid.incorrect');
+				}
 			}else{
 				let
 					answerItem = _.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${correctVariant}"]`);
@@ -730,22 +752,19 @@ export const view = {
 			}
 		};
 		if(_._$.currentQuestion['questions']){
-			if(_._$.currentQuestion['questions'].length > 1){
-				for(let question of _._$.currentQuestion['questions']){
-					let
-						answeredQuestion = Model.allquestions[_.questionPos],//Model.questions[question['id']],
-					correctVariant = answeredQuestion['correctAnswer'];
-				//	correctVariant = '4'; // stub, delete in future
-					handle(question['_id'],correctVariant);
-				}
+			for(let question of _._$.currentQuestion['questions']){
+				let
+				answeredQuestion = Model.allquestions[_.questionPos],//Model.questions[question['id']],
+				correctVariant = answeredQuestion['correctAnswer'];
+				correctVariant = 'A'; // stub, delete in future
+				handle(question['_id'],correctVariant.toLowerCase());
 			}
 		}else{
 			let
 				currentQuestion = _._$.currentQuestion,
 				answeredQuestion = Model.allquestions[_.questionPos],
 				correctVariant = answeredQuestion['correctAnswer'];
-		
-			handle(currentQuestion['_id'],correctVariant);
+			handle(currentQuestion['_id'],correctVariant.toLowerCase());
 		}
 		
 	},
@@ -946,6 +965,7 @@ export const view = {
 	},
 	resultsTabBodyTpl(summary){
 		const _ = this;
+		console.log(summary);
 		let tpl = `
 			<div class="test-tabs-body">
 				<h5 class="block-title test-title">
@@ -954,16 +974,16 @@ export const view = {
 				<div class="test-results">
 					<div class="total">
 						<span>Total</span>
-					<div class="total-value" id="test-result-total">${summary['score']}</div>
+					<div class="total-value" id="test-result-total">${summary[0]['result']['score']+summary[1]['result']['score']}</div>
 				</div>
 				<div class="test-results-list">
 		`;
 		let cnt=0;
-		for (let result of Model.test['sections']) {
+		for (let result of summary) {
 			tpl += `
 			<div class="test-results-item" style="background-color:rgba(${_.sectionColors[cnt]},.2);color:rgb(${_.sectionColors[cnt]})">
-				<h6 class="test-results-item-title">${result['sectionName']}</h6>
-				<span class="test-results-item-value">${Math.round(Math.random()*1000)}</span>
+				<h6 class="test-results-item-title">${result['title']}</h6>
+				<span class="test-results-item-value">${result['result']['score']}</span>
 				<button class="test-results-item-button" style="background-color:rgb(${_.sectionColors[cnt]})" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="questions">Review this test</button>
 			</div>
 			`;
@@ -1174,10 +1194,10 @@ export const view = {
 		const _ = this;
 		return `
 			 <div class="modal modal-block finish" id="finish" slot="modal-item">
-              <h6 class="modal-title"><span>Are you sure you want to finish this section</span></h6>
+              <h6 class="modal-title"><span>Are you sure you want to finish this test</span></h6>
               <p class="modal-text">
                 You have <span id="finish-minutes"></span> minutes left to work on the <span id="finish-questions-length"></span> questions you haven’t answered, and to double-check your other answers.
-                You will not able to return later to answer more questions if you finish this section.
+                You will not able to return later to answer more questions if you finish this test.
               </p>
               <div class="modal-row">
 	              <button class="button" data-click="${_.componentName}:changeSection" section="score">Yes, I’m done with this section</button>

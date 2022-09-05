@@ -166,7 +166,6 @@ class _Model{
 		if(answer){
 			answer['status'] = 'in progress';
 		}
-		console.log(answer);
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['results']}/${_.test['resultId']}`,{
 				method: 'PUT',

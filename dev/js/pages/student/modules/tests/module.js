@@ -30,7 +30,8 @@ export class TestsModule extends StudentPage{
 		//TestModel = new TestModel();
 		_.isLastQuestion = false;
 		_.isJump = false;
-		_.storageTest = Model.getTestFromStorage();
+		//_.storageTest = Model.getTestFromStorage();
+		_.storageTest = Model.testServerAnswers;
 		_.types = {
 			'Multiple Choice':'standart',
 			'text':'standart',
@@ -90,6 +91,8 @@ export class TestsModule extends StudentPage{
 		_.subSection = 'tests-list';
 		_.datasPos = 0;
 		_.changedType = 'fromLastQuestion';
+		_.storageTest = {};
+		clearInterval(_.timerInterval);
 	}
 	async fillTestsBody(){
 		const _ = this;
@@ -117,6 +120,7 @@ export class TestsModule extends StudentPage{
 			currentQuestion: Model.firstQuestion,
 		});
 		_.currentQuestion = Model.firstQuestion;
+		
 		let
 			container = _.f('#testAsideList');
 		container.innerHTML = '<img src="/img/loader.gif" alt="Loading...">';
@@ -130,7 +134,14 @@ export class TestsModule extends StudentPage{
 		_.fillTestsBody();
 	}
 	
-	
+	get timerTime(){
+		const _ = this;
+		let createdAt = _.resultObj['testStartedAt'],
+		startTime = new Date(createdAt).getTime(),
+		nowTime =new Date().getTime(),
+		currentTime = nowTime - startTime;
+		return  _.testTime - Math.round(currentTime/ 60000);
+	}
 	get questionsPages(){return Model.currentSection['subSections'][Model.currentSubSectionPos]['questionData']}
 	get questionsLength(){
 		const _ = this;
@@ -165,12 +176,10 @@ export class TestsModule extends StudentPage{
 		}
 		if(section == 'directions') {
 			// start of test
-
 			let started = await Model.start();
-			
-		
 			if(!started) return void 0;
 			let results = await Model.getTestResults();
+			_.storageTest =results['testResults'];
 			_.resultObj = results['resultObj'];
 			if(results['status'] === 'finished'){
 				section = 'score';
@@ -179,19 +188,33 @@ export class TestsModule extends StudentPage{
 			}
 		}
 	//	_._$.currentSection = section;
+		
+		if( (section == 'questions') && (Model.isFinished()) ){
+			let results = await Model.getTestResults();
+			_.storageTest =results['testResults'];
+		}
+		
 		await _.render();
 		if(section == 'directions') {
+
 			_.f('#directionsQuestion').textContent = _.getStep()[0]-1//_.questionPos+1;
 			_.tickTimer();
 		}
 		if(section == 'questions'){
 			_.fillCheckedAnswers();
-			_.tickTimer();
 			if(Model.isFinished()){
+				_.f('.test-timer').textContent ='';
+				let headerBtn = _.f('.header-question-btn');
+				headerBtn.textContent = 'Exit this review';
+				headerBtn.setAttribute('data-click',`${_.componentName}:changeSection`);
+				headerBtn.setAttribute('section',"score");
 				await Model.getTestResults();
 				_.markAnswers();
 				_.markCorrectAnswer();
-				
+			}else{
+				_.set({
+					timerTime: _.timerTime
+				});
 			}
 		}
 		
@@ -208,6 +231,8 @@ export class TestsModule extends StudentPage{
 		await Model.resetTest(item.getAttribute('data-id'));
 		item.textContent = 'Test reseted';
 		_.fillTestsList();
+		_.clearData();
+		location.reload()
 	}
 	// Change current question
 	async changeQuestion({ item, event }){
@@ -243,7 +268,7 @@ export class TestsModule extends StudentPage{
 			_._$.currentQuestion=  Model.questions[index+1];
 		}
 		_.isJump = false;
-		_.tickTimer();
+		
 	}
 	async jumpToQuestion({item,event}){
 		const _ = this;
@@ -264,7 +289,7 @@ export class TestsModule extends StudentPage{
 		}
 		_.questionPos = jumpQuestionPos;
 		location.hash= item.parentNode.getAttribute('data-question-id');
-		_.tickTimer();
+	
 	}
 	async changeTestSection({item}){
 		const _ = this;
@@ -290,6 +315,7 @@ export class TestsModule extends StudentPage{
 		}else{
 		
 		}
+		
 		_._$.currentQuestion = Model.questionsDatas[0];
 		_.changedType = changedType;
 
@@ -302,7 +328,11 @@ export class TestsModule extends StudentPage{
 				}
 			},50);
 		}
-		_.tickTimer();
+		_.fillCheckedAnswers();
+	/*	if(Model.isFinished()){
+			_.markAnswers();
+			_.markCorrectAnswer();
+		}*/
 	}
 	async changePracticeTest({item}){
 		const _ = this;
@@ -335,18 +365,28 @@ export class TestsModule extends StudentPage{
 		_.storageTest = Model.getTestFromStorage();
 	}
 	
-	showConfirmModal({item}){
+	async showConfirmModal({item}){
 		const _ = this;
 		if( _.subSection != 'directions' ){
 			G_Bus.trigger('modaler','showModal',{
 				target: '#finish',
 				type: 'html'
 			});
+			clearInterval(_.timerInterval);
+			let
+				notAnsweredCnt = 0,
+				test = Model.testServerAnswers;
+			_.f('#finish-minutes').textContent = _.timerTime;
+			for(let prop in test){
+				if(test[prop]['answer'] == 'O') notAnsweredCnt++
+			}
+			_.f('#finish-questions-length').textContent = notAnsweredCnt;
 			return void 0;
 		}
 		_.changeSection({
 			item: item
-		})
+		});
+		
 	}
 	showTestLabelModal(clickData){
 		let btn = clickData.item,
@@ -362,14 +402,19 @@ export class TestsModule extends StudentPage{
 			target: `#${id}`
 		});
 	}
+	
 	tickTimer(){
 		const _ = this;
-		if(!_.resultObj) return void 0;
-		let createdAt = _.resultObj['testStartedAt'],
-			startTime = new Date(createdAt).getTime(),
-			nowTime =new Date().getTime(),
-			currentTime = nowTime - startTime;
-		_.f('.test-timer-value').textContent = _.testTime - Math.round(currentTime/ 60000);
+		_.set({
+			timerTime: _.timerTime
+		})
+		_.timerInterval = setInterval(  ()=>{
+			_.set({
+				timerTime: _.timerTime
+			})
+		},1000*60);
+		
+	
 	}
 	
 	
@@ -378,7 +423,7 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		let questionId= item.getAttribute('data-question-id');
 		
-		let note = _.storageTest[questionId]['note'];
+		let note = Model.testServerAnswers[questionId]['note'];
 		
 		G_Bus.trigger('modaler','showModal',{
 			type:'html',
@@ -402,22 +447,28 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		let test = await Model.getTestResults();//Model.getTestFromStorage();
 		test = test['testResults'];
-		
 		for(let t in test){
 			//if(( test[t]['answer'] == 'O') && (!test[t]['bookmark']) && (!test[t]['note'])  && (!test[t]['disabledAnswers']) ) continue;
 			let
 				currentTestObj = test[t],
 				questionId= currentTestObj['questionId']; // if request was not in local storage, try another prop for
+			
 			if(currentTestObj['bookmark']) {
 				let listAnswerItem = _.f(`.questions-list .questions-item[data-question-id="${questionId}"]`);
 				if(listAnswerItem) listAnswerItem.classList.add('checked');
 			}
 			if(currentTestObj['answer'] && (currentTestObj['answer'] != 'O')) {
 				let listAnswerItemVariant = _.f(`.questions-list .questions-item[data-question-id="${questionId}"] .questions-variant`);
-				if(listAnswerItemVariant)
-				_.f(`.questions-list .questions-item[data-question-id="${questionId}"] .questions-variant`).textContent = currentTestObj['answer'].toUpperCase();
+				if( questionId == _._$.currentQuestion['_id']){
+					_.fillAnswer(questionId,currentTestObj)
+					_.changeSkipButtonToNext();
+				}
+				if(listAnswerItemVariant){
+					_.f(`.questions-list .questions-item[data-question-id="${questionId}"] .questions-variant`).textContent = currentTestObj['answer'].toUpperCase();
+				}
+				
 			}
-			_.fillAnswer(questionId,currentTestObj)
+			
 		}
 		_.setActions(['bookmark','note']);
 	}
@@ -434,11 +485,12 @@ export class TestsModule extends StudentPage{
 				variant = item.querySelector('.questions-variant').textContent;
 			if(Model.testServerAnswers && Model.testServerAnswers[id]){
 				//console.log(serverQuestion['correctAnswer']);
-				//serverQuestion['correctAnswer'] = '4'; // stub, delete in the future
-				if(Model.testServerAnswers[id]['answer']){
+				serverQuestion['correctAnswer'] = 'B'; // stub, delete in the future
+				if(Model.testServerAnswers[id]['answer'] != 'O'){
 					let
 						answer = Model.testServerAnswers[id]['answer'].toUpperCase(),
 						serverAnswer = serverQuestion['correctAnswer'].toUpperCase();
+				
 					if(answer === serverAnswer){
 						item.classList.add('correct')
 					}else{
@@ -469,7 +521,7 @@ export class TestsModule extends StudentPage{
 		let
 			questionId = item.getAttribute('data-question-id'),
 			bookmarked = item.classList.contains('active');
-		//if()
+		
 		Model.saveTestToStorage({
 			questionId: questionId,
 			bookmark: !bookmarked
@@ -494,7 +546,7 @@ export class TestsModule extends StudentPage{
 		G_Bus.trigger(_.componentName,'updateStorageTest')
 		let answerList = _.f(`.answer-block[data-question-id="${_.innerQuestionId}"]`);
 		_.clear(answerList);
-		formData['_id'] = _.innerQuestionId
+		formData['_id'] = _.innerQuestionId;
 		answerList.append(_.markup(_.noteTplFromForm(formData)));
 		G_Bus.trigger('modaler','closeModal');
 		// Show active note button
@@ -502,13 +554,16 @@ export class TestsModule extends StudentPage{
 	}
 		// Нижнего переднего рычага задний сайлентблоки
 	
-	setActions(types = ['bookmark']){
+	async setActions(types = ['bookmark']){
 		//='bookmark'
 		const _ = this;
+		let test = await Model.getTestResults();
+		test = test['testResults'];
 		let handle = (currentTest)=>{
 			if(currentTest) {
 				types.forEach( type => {
 					if(currentTest[type]) {
+						(type == 'bookmark') ? type+='ed' : '';
 						if(_.f(`.${type}-button[data-question-id="${currentTest['questionId']}"]`))  _.f(`.${type}-button[data-question-id="${currentTest['questionId']}"]`).classList.add('active')
 					}
 				});
@@ -517,11 +572,11 @@ export class TestsModule extends StudentPage{
 		if(_._$.currentQuestion['questions']){
 			if(_._$.currentQuestion.questions.length > 2){
 				for(let q of _._$.currentQuestion.questions) {
-					handle(_.storageTest[q['_id']]);
+					handle(test[q['_id']]);
 				}
 			}
 		}
-		let currentTest = _.storageTest[_._$.currentQuestion['_id']];
+		let currentTest = test[_._$.currentQuestion['_id']];
 		handle(currentTest);
 	}
 	
@@ -540,7 +595,13 @@ export class TestsModule extends StudentPage{
 			}
 			let questionData = Model.currentQuestionData(_.questionPos);
 			if(_._$.currentQuestion['questions']) questionData = _._$.currentQuestion;
+			
 			let handle = async (answer)=>{
+				//console.log(answer);
+				if(!answer['questionId']) {
+					console.log('QuestionId not found ');
+					return void 0;
+				}
 				let testSaved =  await Model.saveAnswer({
 					answer:{
 						sectionName: Model.currentSection['sectionName'],
@@ -557,44 +618,54 @@ export class TestsModule extends StudentPage{
 				return testSaved;
 			}
 			if(questionData['questions'].length > 1){
-				//for(let i=0; i < questionData['questions'].length;i++){
-				
 				for(let quest of questionData['questions']){
-					//let quest = questionData['questions'][i];
 					let answer = _.storageTest[quest['_id']];
+			//		console.log(answer,quest);
 					if(!answer){
 						answer = {};
 						let
 							bookmarkedButton = _.f(`.bookmarked-button[data-question-id="${quest['_id']}"]`);
-						_.saveBookmark({
-							item: bookmarkedButton
-						});
+						if(bookmarkedButton.classList.contains('active')){
+							_.saveBookmark({
+								item: bookmarkedButton
+							});
+							answer['bookmark'] = true;
+						}else{
+							answer['bookmark'] = false;
+						}
 						answer['questionId'] = quest['_id'];
-						answer['bookmark'] = true;
 					}else if(answer['answer'] == 'O'){
-					//	console.log('not o a');
 						let bookmarkedButton = _.f(`.bookmarked-button[data-question-id="${quest['_id']}"]`);
-						answer['bookmark'] = true;
-						_.saveBookmark({
-							item: bookmarkedButton
-						});
+						if(!answer['bookmark']){
+							_.saveBookmark({
+								item: bookmarkedButton
+							});
+							answer['bookmark'] = true;
+						}
 					}
-				//	console.log('here',answer);
 					outArr.push(await handle(answer))
 				}
 				resolve(outArr);
 			}else{
-				let answer = _.storageTest[_._$.currentQuestion['_id']];
+				let currentQuestion = _._$.currentQuestion;
+				if(currentQuestion['questions']){
+					currentQuestion = _._$.currentQuestion['questions'][0];
+				}
+				let answer = Model.testServerAnswers[currentQuestion['_id']];
 				if(answer && (answer['answer'] != 'O')){
 					// if user choosed answer save it to db
+					answer['bookmark'] = _.f(`.bookmarked-button[data-question-id="${answer['questionId']}"]`).classList.contains('active');
 					resolve(await handle(answer));
 				}else{
 					// else set bookmarked this answer
 					if(!answer)	answer = {};
-					_.saveBookmark({
-						item: _.f('.bookmarked-button')
-					});
-					answer['bookmark'] = true;
+					if(!answer['bookmark']){
+						_.saveBookmark({
+							item: _.f('.bookmarked-button')
+						});
+						answer['bookmark'] = true;
+					}
+					
 					resolve(await handle(answer));
 					resolve('Answer not found in storageTest');
 				}
@@ -627,7 +698,6 @@ export class TestsModule extends StudentPage{
 				answer.classList.remove('active');
 				G_Bus.trigger(_.componentName,'updateStorageTest')
 			}
-			
 			if(!currentTest){
 				obj['disabledAnswers'] = [];
 			}else{
@@ -755,12 +825,38 @@ export class TestsModule extends StudentPage{
 			_.f('.back-to-question-button').remove();
 		}
 	}
-
+	setGridAnswer(value,classN='.grid.empty'){
+		const _ = this;
+		if( !value.length ) return void 0;
+		let
+			answerText = value;
+		if(!answerText) return void 0;
+		let	answerDigits = (typeof answerText == 'string') ? answerText.split('') :  answerText;
+		let
+			className = classN;//   '.grid.empty';
+		
+		answerDigits.forEach( (digit,index) => {
+			let currentCol = _.f(`${className} [data-col="${index+1}"] .grid-button`);
+			currentCol.forEach( (item) => {
+				if(item.textContent.trim() == digit){
+					item.classList.add('active');
+				}
+			});
+			let inputValue = _.f(`${className} .grid-input span:nth-child(${index+1})`);
+			if(digit != '_') inputValue.textContent = digit;
+		})
+	}
 	fillAnswer(questionId,currentTestObj){
 		const _ = this
-		if(_.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${currentTestObj['answer']}"]`)){
-			_.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${currentTestObj['answer']}"]`).classList.add('active');
+		if(_.isGrid()){
+			_.setGridAnswer(currentTestObj['answer'])
+		}else{
+			console.log(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${currentTestObj['answer']}"]`);
+			if(_.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${currentTestObj['answer']}"]`)){
+				_.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${currentTestObj['answer']}"]`).classList.add('active');
+			}
 		}
+		
 	}
 
 	enterGridAnswer({item,event}){
@@ -802,7 +898,6 @@ export class TestsModule extends StudentPage{
 	
 	async getQuestionTpl(){
 		const _ = this;
-		console.log(`${_.types[_._$.currentQuestion['type']]}Question`);
 		return await _[`${_.types[_._$.currentQuestion['type']]}Question`]();
 	}
 	flexible(section){
@@ -815,11 +910,15 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		let pos = 0;
 		let currentQuestion;
-		if(_._$.currentQuestion['questions']){
+		currentQuestion = _._$.currentQuestion;
+		if(_.sectionChanged){
+			currentQuestion = _._$.currentQuestion['questions'][0]
+		}
+		/*if(_._$.currentQuestion['questions']){
 			currentQuestion = _._$.currentQuestion['questions'][0]
 		}else {
 			currentQuestion = _._$.currentQuestion;
-		}
+		}*/
 		Model.questions.find((item,index)=> {
 			if( item['questions']){
 				let findedInQuestions = false;
@@ -942,16 +1041,15 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		_._( async ({currentQuestion})=>{
 			let cont = _.f('.tt-ii');
+			
 			if(!cont) return;
 			_.clear(cont);
 			cont.append(
 				_.markup(await _.getQuestionTpl()),
 				_.markup(_.questionFooter())
 			);
-			_.fillCheckedAnswers();
 			_.isLastQuestion = false;
 			_.setActions(['bookmark','note']);
-			
 			
 			if( _.questionPos < _.questionsLength ){
 				let
@@ -968,8 +1066,6 @@ export class TestsModule extends StudentPage{
 					}
 				}
 			}
-			
-		
 			if( _.questionPos == _.questionsLength - 1 ){
 				_.isLastQuestion = true;
 				if(Model.currentSectionPos == 1){
@@ -1003,31 +1099,48 @@ export class TestsModule extends StudentPage{
 				}
 				_.markAnswers();
 				_.markCorrectAnswer();
-				return void 0;
+				//return void 0;
 			}
-
 			// work on marked answers
-			let currentStorageTest = _.storageTest[ _.currentQuestion['_id'] ];
+		//	let test = await Model.getTestResults();
+		//	let currentStorageTest = test['testResults'][currentQuestion['_id']];//_.storageTest[ _.currentQuestion['_id'] ];
 			_.sectionChanged = false;
-			if(!currentStorageTest) return void 0;
-			if(currentStorageTest['answer']){
-				// mark choosed answer
-				if(!_.isGrid()){
-					let answerItem = _.f(`.answer-list .answer-item[data-question-id="${currentStorageTest['questionId']}"][data-variant="${currentStorageTest['answer']}"]`);
-					if (answerItem) answerItem.classList.add('active');
-				}else{
-					console.log('Grid answer: ',currentStorageTest['answer']);
+			let storageTestHandle = (currentStorageTest)=>{
+			//	let currentStorageTest = Model.testServerAnswers[cc['_id']];
+				
+				
+				if(!currentStorageTest) return void 0;
+				if(currentStorageTest['answer']){
+					// mark choosed answer
+					if(currentStorageTest['answer'] != 'O'){
+						_.fillAnswer(currentStorageTest['questionId'],currentStorageTest);
+						_.changeSkipButtonToNext();
+					}
 				}
-				//_.changeSkipButtonToNext();
-			}
-			if(currentStorageTest['disabledAnswers']){
-				// mark disabled answer
-				for(let dis of currentStorageTest['disabledAnswers']){
-					let item = _.f(`.answer-list .answer-item[data-question-id="${currentStorageTest['questionId']}"][data-variant="${dis}"]`);
-					item.classList.remove('active');
-					item.setAttribute('disabled', 'disabled');
+				if(currentStorageTest['disabledAnswers']){
+					// mark disabled answer
+					for(let dis of currentStorageTest['disabledAnswers']){
+						let item = _.f(`.answer-list .answer-item[data-question-id="${currentStorageTest['questionId']}"][data-variant="${dis}"]`);
+						item.classList.remove('active');
+						item.setAttribute('disabled', 'disabled');
+					}
 				}
+			};
+			if(currentQuestion['questions']){
+				for(let cc of currentQuestion['questions']){
+					storageTestHandle(Model.testServerAnswers[cc['_id']]);
+				}
+			}else{
+				storageTestHandle(Model.testServerAnswers[currentQuestion['_id']]);
 			}
+		
 		},['currentQuestion']);
+		
+		_._( ({timerTime})=>{
+			if(!_.initedUpdate) return void 0;
+			_.f('.test-timer-value').textContent = timerTime;
+		},['timerTime'])
 	}
+	
+	
 }
