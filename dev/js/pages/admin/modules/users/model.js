@@ -10,24 +10,25 @@ class _Model {
 		_.endpoints = {
 			usersList: `/admin`,
 			createStudent: `/user/create-student`,
-			updateStudent: `/user/update-student`,
-			removeStudent: `/user/delete-student`,
-			removeAdmin: `/admin/admins`,
 			createParent: `/admin/create-parent`,
-			assignCourse: `/user/assign-plan`,
-			removeCourse: `/user/remove-plan`,
 			wizardData: `/user/wizard-data`,
-			updateAdmin: `/admin/admins`,
 			getStudent: `/user/student`,
 			getParent: `/admin/parents`,
-			updateParent: `/admin/parents`,
-			removeParent: `/admin/parents`,
 			studentParents: `/admin/student`,
 			parentStudents: `/admin/parent`,
+			assignCourse: `/user/assign-plan`,
 			assignStudentToParent: `/admin/assign/student-to-parent`,
 			changePassword: `/user/change-password`,
 			checkEmail: `/auth/check-email/`,
+			updateStudent: `/user/update-student`,
+			updateAdmin: `/admin/admins`,
+			updateParent: `/admin/parents`,
 			updateCourse: `/user/update-plan`,
+			removeParent: `/admin/parents`,
+			removeCourse: `/user/remove-plan`,
+			removeStudent: `/user/delete-student`,
+			removeAdmin: `/admin/admins`,
+			sendResetPassword: `/auth/forgot-password/`
 		};
 	}
 	
@@ -658,6 +659,22 @@ class _Model {
 				}
 			} else {
 				_.wrongRequest('checkEmail', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+
+	sendResetPassword(userId,userEmail) {
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('sendResetPassword')}${userId}`, {
+				method: 'POST',
+				headers: _.baseHeaders,
+				body: JSON.stringify({email:userEmail})
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				resolve(response);
 			}
 			resolve(null);
 		});

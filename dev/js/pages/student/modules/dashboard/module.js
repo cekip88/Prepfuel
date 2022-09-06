@@ -71,13 +71,16 @@ export class DashboardModule extends StudentPage{
 		scheduleList.classList.add('loader-parent');
 		scheduleList.append(_.markup(`<img src="/img/loader.gif">`))
 		let schedule = await Model.getSchedule();
+		let scheduleButtons = _.f('.block-title-control button');
 		let scheduleFooter = scheduleList.nextElementSibling;
 		_.clear(scheduleList);
 
 		if (_.isEmpty(schedule)) {
+			scheduleButtons.forEach(function (item){item.setAttribute('style','display:none;')});
 			scheduleFooter.classList.add('schedule-hidden');
-			scheduleList.append(_.markup(`<li class="block-empty-text">The practice schedule has not been yet created.</li>`))
+			scheduleList.append(_.markup(`<li class="block-empty-text">The practice schedule has not been created yet.</li>`))
 		} else {
+			scheduleButtons.forEach(function (item){item.removeAttribute('style')});
 			scheduleFooter.classList.remove('schedule-hidden');
 			let scheduleTpl = _.scheduleBlock(schedule);
 			scheduleList.append(_.markup(scheduleTpl));

@@ -43,7 +43,13 @@ export const view = {
 								<div class="form-label-row">
 									<label class="form-label">Email</label>
 								</div>
-								<g-input type="email" name="email" class="g-form-item" classname="form-input profile-form-input" value="admin@mail.ru"></g-input>
+								<g-input 
+									type="email" 
+									name="email" 
+									class="g-form-item" 
+									classname="form-input profile-form-input" 
+									value="admin@mail.ru"
+								></g-input>
 							</div>
 							<div class="profile-form-row">
 								<div class="form-label-row">

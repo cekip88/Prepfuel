@@ -989,6 +989,7 @@ export const view = {
 								data-required
 								name="email"
 								value="${_.studentInfo['email'] ?? ''}"
+								data-value="${_.studentInfo['email'] ?? ''}"
 								class="g-form-item"
 								data-outfocus="${_.componentName}:checkEmail"
 								data-input="${_.componentName}:fillStudentInfo"
@@ -1528,7 +1529,8 @@ export const view = {
 			<div class="adding-section">
 				<h4 class="adding-subtitle">Parent Personal Info</h4>
 				<div class="adding-avatar">
-					<div class="profile-img-row">
+					<label for="parent-file" class="profile-img-row file-cont">
+						<input type="file" class="file" id="parent-file" data-change="${_.componentName}:uploadParentPhoto">
 						<div class="profile-img">
 							<div class="profile-img-letter">
 								${this.super_$.firstName[0].toUpperCase()}
@@ -1538,7 +1540,7 @@ export const view = {
 							Allowed *.jpeg,*.jpg, *.png, *.gif<br>
 							Max size of 3.1 MB
 						</div>
-					</div>
+					</label>
 				</div>
 			</div>
 			<div class="adding-section">
@@ -2306,7 +2308,16 @@ export const view = {
 							<div class="form-label-row">
 								<label class="form-label">Email</label>
 							</div>
-							<g-input type="email" name="email" data-required data-outfocus="${_.componentName}:checkEmail" data-input="${_.componentName}:fillStudentInfo" value='${_.studentInfo["email"]}' class="g-form-item" classname="form-input adding-inpt"></g-input>
+							<g-input 
+								type="email" 
+								name="email" 
+								data-required 
+								data-outfocus="${_.componentName}:checkEmail" 
+								data-input="${_.componentName}:fillStudentInfo" 
+								value='${_.studentInfo["email"]}'
+								data-value='${_.studentInfo["email"]}' 
+								class="g-form-item" 
+								classname="form-input adding-inpt"></g-input>
 							</div>
 						<div class="adding-inpt">
 							<div class="form-label-row">
@@ -2318,7 +2329,7 @@ export const view = {
 					<div class="adding-section">
 						<h4 class="adding-subtitle">Password</h4>
 						<p class="adding-text">Students' password can be changed by a linked parent or by admin manually</p>
-						<button class="adding-generate student-profile-send">Send Link To A Parent To Reset Password</button>
+						<button class="adding-generate student-profile-send" data-click="${_.componentName}:sendResetPassword" role="student">Send Link To A Parent To Reset Password</button>
 						<button class="student-profile-change" data-click="${_.componentName}:showChangePassword">Change Manually</button>
 					</div>
 					<div class="adding-section">
@@ -2466,7 +2477,16 @@ export const view = {
 						<label class="form-label">Email</label>
 					</div>
 					<div class="profile-form-row-input">
-						<g-input type="email" data-outfocus="${_.componentName}:checkEmail" name="email" value="${_.parentInfo.email ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+						<g-input 
+							type="email" 
+							data-outfocus="${_.componentName}:checkEmail" 
+							name="email" 
+							value="${_.parentInfo.email ?? ''}" 
+							data-value="${_.parentInfo.email ?? ''}" 
+							data-input="${_.componentName}:fillParentInfo" 
+							data-required
+							class="g-form-item" 
+							classname="form-input profile-form-input"></g-input>
 						<span class="form-label-desc" style="display:none;">Email is not free</span>
 					</div>
 				</div>
@@ -2792,20 +2812,29 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">First name</label>
 						</div>
-						<g-input type="text" value="${_.parentInfo.firstName ?? ''}" name="firstName" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+						<g-input type="text" value="${_.parentInfo.firstName ?? ''}" data-required name="firstName" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 					</div>
 					<div class="profile-form-row">
 						<div class="form-label-row">
 							<label class="form-label">Last name</label>
 						</div>
-						<g-input type="text" name="lastName" value="${_.parentInfo.lastName ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+						<g-input type="text" name="lastName" value="${_.parentInfo.lastName ?? ''}" data-required data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 					</div>
 					<div class="profile-form-row">
 						<div class="form-label-row">
 							<label class="form-label">Email</label>
 						</div>
 						<div class="profile-form-row-input">
-							<g-input type="email" name="email" value="${_.parentInfo.email ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+							<g-input 
+								type="email" 
+								name="email" 
+								value="${_.parentInfo.email ?? ''}" 
+								data-value="${_.parentInfo.email ?? ''}" 
+								data-required
+								data-outfocus="${_.componentName}:checkEmail"
+								data-input="${_.componentName}:fillParentInfo" 
+								class="g-form-item" 
+								classname="form-input profile-form-input"></g-input>
 							<span class="form-label-desc" style="display:none;">Email is not free</span>
 						</div>
 					</div>
@@ -2818,7 +2847,7 @@ export const view = {
 					<div class="admin-profile-line"></div>
 					<div class="admin-profile-password">
 						<h3 class="admin-profile-password-title">Change Password</h3>
-						<button class="admin-profile-password-link">
+						<button class="admin-profile-password-link" data-click="${_.componentName}:sendResetPassword" role="parent">
 							<svg><use xlink:href="#mail"></use></svg>
 							<span>Send Link To Reset Password</span>
 						</button>
@@ -3359,20 +3388,43 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">First name</label>
 						</div>
-						<g-input type="text" value="${_.adminInfo.firstName ?? ''}" name="firstName" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+						<g-input 
+							type="text" 
+							value="${_.adminInfo.firstName ?? ''}" 
+							data-required
+							name="firstName" 
+							data-input="${_.componentName}:fillAdminInfo" 
+							class="g-form-item" 
+							classname="form-input profile-form-input"></g-input>
 					</div>
 					<div class="profile-form-row">
 						<div class="form-label-row">
 							<label class="form-label">Last name</label>
 						</div>
-						<g-input type="text" name="lastName" value="${_.adminInfo.lastName ?? ''}" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+						<g-input 
+							type="text" 
+							name="lastName" 
+							value="${_.adminInfo.lastName ?? ''}" 
+							data-required
+							data-input="${_.componentName}:fillAdminInfo" 
+							class="g-form-item" 
+							classname="form-input profile-form-input"></g-input>
 					</div>
 					<div class="profile-form-row">
 						<div class="form-label-row">
 							<label class="form-label">Email</label>
 						</div>
 						<div class="profile-form-row-input">
-							<g-input type="email" data-outfocus="${_.componentName}:checkEmail" name="email" value="${_.adminInfo.email ?? ''}" data-input="${_.componentName}:fillAdminInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+							<g-input 
+								type="email" 
+								data-outfocus="${_.componentName}:checkEmail" 
+								name="email" 
+								value="${_.adminInfo.email ?? ''}" 
+								data-value="${_.adminInfo.email ?? ''}" 
+								data-required
+								data-input="${_.componentName}:fillAdminInfo" 
+								class="g-form-item" 
+								classname="form-input profile-form-input"></g-input>
 							<span class="form-label-desc" style="display:none;">Email is not free</span>
 						</div>
 					</div>
@@ -3395,7 +3447,7 @@ export const view = {
 					<div class="admin-profile-line"></div>
 					<div class="admin-profile-password">
 						<h3 class="admin-profile-password-title">Change Password</h3>
-						<button class="admin-profile-password-link">
+						<button class="admin-profile-password-link" data-click="${_.componentName}:sendResetPassword" role="admin">
 							<svg><use xlink:href="#mail"></use></svg>
 							<span>Send Link To Reset Password</span>
 						</button>
