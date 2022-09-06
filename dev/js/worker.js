@@ -84,6 +84,7 @@ self.addEventListener('fetch', event => {
 			return fetch(new Request('/', {method: 'GET'}));
 		}
 		if(response.status == 401){
+			console.log(await response.json())
 			console.log(`%c%s`,styles,`User not authorized for this action: ${response.url.substr(response.url.lastIndexOf('.co/')+3)}` );
 			return fetch(new Request('/errors.json', {
 				mode:'no-cors'

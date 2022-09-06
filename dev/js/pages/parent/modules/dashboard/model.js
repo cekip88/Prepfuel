@@ -10,7 +10,7 @@ export class _Model{
 			dashSchedule: `${env.backendUrl}/parent/schedule/dashboard/`,
 			me: `${env.backendUrl}/user/me`,
 			wizardData: `/user/wizard-data`,
-			checkEmail: `/user/check-email/`,
+			checkEmail: `/auth/check-email/`,
 			createStudent: `/user/create-student`,
 			updateStudent: `/user/update-student`,
 			assignCourse: `/user/assign-plan`,

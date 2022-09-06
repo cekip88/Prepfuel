@@ -36,7 +36,6 @@ class _loginModel{
 	}
 	
 	async doLogin(formData){
-		console.log('loginModel','doLogin')
 		const _ = this;
 		let rawResponse = await fetch(_.endpoints['login'],{
 			method: 'POST',
@@ -44,7 +43,6 @@ class _loginModel{
 			body: JSON.stringify(formData),
 		});
 		let response = await rawResponse.json();
-		console.log(response)
 		if( _.isSuccessResponse(response) ){
 			let user = response['user'];
 			await G_Bus.trigger(_.componentName,'loginSuccess',response);
@@ -140,7 +138,7 @@ class _loginModel{
 
 			let rawResponse = await fetch(`${_.endpoints['wizardData']}`, {
 				method: 'GET',
-				headers: _.baseHeaders,
+				..._.baseHeaders
 			});
 			if(rawResponse.status < 210) {
 				let response = await rawResponse.json();
