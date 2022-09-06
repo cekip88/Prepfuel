@@ -53,6 +53,9 @@ export class TestsModule extends StudentPage{
 		_.currentQuestionPos = 0;
 		_.innerQuestionId = 1;
 		_.subSection = 'tests-list';
+		_.lastSkippedQuestion= {
+			'data-questionPage-id': -1
+		};
 		
 		_.sectionColors = [
 			'80,205,137','4,200,200'
@@ -92,6 +95,9 @@ export class TestsModule extends StudentPage{
 		_.datasPos = 0;
 		_.changedType = 'fromLastQuestion';
 		_.storageTest = {};
+		_.lastSkippedQuestion= {
+			'data-questionPage-id': -1
+		};
 		clearInterval(_.timerInterval);
 	}
 	async fillTestsBody(){
@@ -247,6 +253,9 @@ export class TestsModule extends StudentPage{
 			if( index == 0 ){
 				return void 0;
 			}
+			if( !Model.isFinished() ){
+				await _.saveAnswerToDB()
+			}
 		//	_.currentPos-=1;
 		//	_.datasPos-=1;
 			_.questionPos-=1;
@@ -319,9 +328,9 @@ export class TestsModule extends StudentPage{
 		
 		if(pos == '0'){
 			if(_.changeSectionFromLastQuestion){
-				let currentQuestion = Model.allquestions[Model.allquestions.length-1];
+			//	let currentQuestion = Model.allquestions[Model.allquestions.length-1];
 			_._$.currentQuestion = Model.questionsDatas[Model.questionsDatas.length-1];
-			_.questionPos = Model.currentQuestionDataPosById(_._$.currentQuestion['_id'])
+			_.questionPos = Model.questionsDatas.length-1;
 			}else{
 				_._$.currentQuestion = Model.questionsDatas[0];
 			}
@@ -332,13 +341,13 @@ export class TestsModule extends StudentPage{
 
 		_.isJump = false;
 		_.f('#test-section-name').textContent = Model.currentSection.sectionName;
-		if(pos == '0') {
+	/*	if(pos == '0') {
 			setTimeout(  ()=>{
 				if(_.f('.back-to-question-button')){
 					_.f('.back-to-question-button').remove();
 				}
 			},50);
-		}
+		}*/
 		_.fillCheckedAnswers();
 	/*	if(Model.isFinished()){
 			_.markAnswers();
@@ -383,7 +392,7 @@ export class TestsModule extends StudentPage{
 				target: '#finish',
 				type: 'html'
 			});
-			clearInterval(_.timerInterval);
+			
 			let
 				notAnsweredCnt = 0,
 				test = Model.testServerAnswers;
@@ -496,13 +505,13 @@ export class TestsModule extends StudentPage{
 				variant = item.querySelector('.questions-variant').textContent;
 			if(Model.testServerAnswers && Model.testServerAnswers[id]){
 				//console.log(serverQuestion['correctAnswer']);
-				serverQuestion['correctAnswer'] = 'B'; // stub, delete in the future
+				//serverQuestion['correctAnswer'] = 'B'; // stub, delete in the future
 				if(Model.testServerAnswers[id]['answer'] != 'O'){
 					let
 						answer = Model.testServerAnswers[id]['answer'].toUpperCase(),
 						serverAnswer = serverQuestion['correctAnswer'].toUpperCase();
-				
-					if(answer === serverAnswer){
+					console.log(answer.trim(), serverAnswer.trim());
+					if(answer.trim() === serverAnswer.trim()){
 						item.classList.add('correct')
 					}else{
 						item.classList.add('wrong')
@@ -532,7 +541,6 @@ export class TestsModule extends StudentPage{
 		let
 			questionId = item.getAttribute('data-question-id'),
 			bookmarked = item.classList.contains('active');
-		
 		Model.saveTestToStorage({
 			questionId: questionId,
 			bookmark: !bookmarked
@@ -925,7 +933,12 @@ export class TestsModule extends StudentPage{
 		let currentQuestion;
 		currentQuestion = _._$.currentQuestion;
 		if(_.sectionChanged){
-			currentQuestion = _._$.currentQuestion['questions'][0]
+			if(_._$.currentQuestion['questions'].length > 1 ){
+				currentQuestion = _._$.currentQuestion;
+			}else{
+				currentQuestion = _._$.currentQuestion['questions'][0];
+			}
+			
 		}
 		/*if(_._$.currentQuestion['questions']){
 			currentQuestion = _._$.currentQuestion['questions'][0]
@@ -1063,7 +1076,6 @@ export class TestsModule extends StudentPage{
 			);
 			_.isLastQuestion = false;
 			_.setActions(['bookmark','note']);
-			console.log(_.questionPos);
 			if( _.questionPos < _.questionsLength ){
 				let
 					pp = _.getNextStepCnt(),
@@ -1084,15 +1096,20 @@ export class TestsModule extends StudentPage{
 				if(Model.currentSectionPos == 1){
 					_.changeSkipButtonToFinish();
 				}else{
+					_.removeBackToQuestionBtn();
+					_.addBackToQuestionBtn(_.getPrevStepCnt());
 					_.changeSkipButtonToNextSection();
 				}
 			}else if(_.questionPos > 0){
 				_.removeBackToQuestionBtn();
 				_.addBackToQuestionBtn(_.getPrevStepCnt());
+			}else if( (Model.currentSectionPos == 1) && (_.questionPos == 0)){
+				_.addBackToQuestionBtn(-1);
 			}
-			if(_.sectionChanged && (_.changedType == 'fromLastQuestion')){
+			
+/*			if(_.sectionChanged && (_.changedType == 'fromLastQuestion')){
 				_.changeSkipButtonToNextSection();
-			}
+			}*/
 			G_Bus.trigger(_.componentName,'updateStorageTest'); // update test info in storage
 			_.currentQuestion = _._$.currentQuestion;
 			if(_.sectionChanged) {
@@ -1146,7 +1163,6 @@ export class TestsModule extends StudentPage{
 			}else{
 				storageTestHandle(Model.testServerAnswers[currentQuestion['_id']]);
 			}
-		
 		},['currentQuestion']);
 		
 		_._( ({timerTime})=>{

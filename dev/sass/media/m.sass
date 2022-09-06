@@ -2357,7 +2357,16 @@ button.student-profile-plan-edit
 		&[disabled]
 			.answer
 				&-value
-					text-decoration: line-through
+					position: relative
+					//text-decoration: line-through
+					&:after
+						+wh(100%,1px)
+						+af
+						position: absolute
+						background: rgb($neutral-400)
+						left: 0
+						top: 50%
+						
 		&.correct,&.incorrect,&.another-correct
 			padding-right: 2px
 		&.correct,&.incorrect
