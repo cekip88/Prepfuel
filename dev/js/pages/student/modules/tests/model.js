@@ -382,6 +382,7 @@ class _Model{
 		}
 	}
 	
+	
 	hasTestFromStorage(){
 		return localStorage.getItem('test') ? true : false;
 	}
@@ -427,8 +428,6 @@ class _Model{
 	}
 	
 
-	
-	
 	isFinished(){
 		return this.testStatus == 'finished';
 	}
