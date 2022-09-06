@@ -91,6 +91,7 @@ class LoginPage extends G{
 	}
 	
 	async doFormAction({item:form,event:e}){
+		console.log('login','doFormAction')
 		/**
 		 * @param { string } handle - form attribute for LoginModel action exmp 'doLogin'
 		 * @param { object } formData - capture form data
@@ -99,11 +100,11 @@ class LoginPage extends G{
 		const _ = this;
 		if (e) e.preventDefault();
 		let handle = form.getAttribute('data-handle');
-		let formData = _.gFormDataCapture(form);
+		let formData = _.prepareForm(form);
 		if(!formData) return void 0;
 
-		let validation = await _.formValidation(form);
-		if (!validation) return void 0;
+		/*let validation = await _.formValidation(form);
+		if (!validation) return void 0;*/
 
 		if (handle == 'doLogin') {
 			let remember = form.querySelector('[name="remember"]');
@@ -115,10 +116,13 @@ class LoginPage extends G{
 				localStorage.setItem('loginData',JSON.stringify(loginData));
 			}
 			else localStorage.removeItem('loginData');
-		} else if (handle == 'doRegister') {
-			let resp = await loginModel[handle](formData);
-			if (resp.status == 'success') _.showSuccessPopup(resp.message)
 		}
+		await loginModel[handle](formData);
+		/*let resp = await loginModel[handle](formData);
+		console.log(resp)
+		if (handle == 'doRegister') {
+			if (resp.status == 'success') _.showSuccessPopup(resp.message)
+		}*/
 	}
 	showSuccessPopup(text) {
 		const _ =  this;
@@ -210,6 +214,7 @@ class LoginPage extends G{
 		else accountBtn.removeAttribute('disabled');
 	}
 	loginSuccess(response){
+		console.log('login','loginSuccess')
 		const _ = this;
 		_.storageSave('authorization','true');
 		for(let prop in response['user']){
