@@ -338,6 +338,7 @@ export const view = {
 								data-required
 								name="email"
 								value="${_.studentInfo['email'] ?? ''}"
+								data-value="${_.studentInfo['email'] ?? ''}"
 								class="g-form-item"
 								data-outfocus="${_.componentName}:checkEmail"
 								data-input="${_.componentName}:fillStudentInfo"
@@ -1715,6 +1716,7 @@ export const view = {
 										data-outfocus="${_.componentName}:checkEmail" 
 										data-input="${_.componentName}:fillStudentInfo" 
 										value='${_.studentInfo["email"]}' 
+										data-value='${_.studentInfo["email"]}' 
 										class="g-form-item" 
 										classname="form-input adding-inpt"></g-input>
 									</div>

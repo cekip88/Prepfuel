@@ -245,7 +245,14 @@ export const loginView = {
 						<div class="form-label-row">
 							<label class="form-label">Email</label>
 						</div>
-						<g-input class="g-form-item" type="email" data-keydown="${_.componentName}:formInputHandle" value="${loginData ? loginData.email : 'admin@mail.ru'}" name="email" className="form-input" required></g-input>
+						<g-input 
+							class="g-form-item" 
+							type="email" 
+							data-keydown="${_.componentName}:formInputHandle" 
+							value="${loginData ? loginData.email : 'admin@mail.ru'}" 
+							name="email" 
+							className="form-input" 
+							required></g-input>
 					</div>
 					<div class="form-block">
 						<div class="form-label-row">
@@ -295,6 +302,23 @@ export const loginView = {
 			<section class='login'>
 			</section>
 		`;
+	},
+	registerSuccessTpl(){
+		const _ = this;
+		return `
+			<main>
+        <section class="login">
+          <div class="login-full login-success">
+            <h2 class="login-main-title"><span>Thanks for signing up!</span></h2>
+            <div class="login-main-subtitle"><span>Please check your inbox messages and confirm your email address to finish your account setup.</span></div>
+            <div class="form-checkbox-row login-checkbox">
+              <button class="link" data-click="${_.componentName}:changeSection" section="login">Login</button>
+						</div>
+						<img class="login-success-img" src="img/S_email.png" alt=""/>
+          </div>
+        </section>
+      </main>
+		`
 	},
 	successPopupTpl(text,color){
 		const _ = this;

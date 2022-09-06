@@ -269,7 +269,6 @@ export class DashboardModule extends ParentPage{
 		return true;
 	}
 
-
 	//dashboard
 	async fillDashboardTabs(){
 		const _ = this;
@@ -884,7 +883,6 @@ export class DashboardModule extends ParentPage{
 		return validate;
 	}
 	async checkEmail({item}){
-		const _ = this;
 		let value = item.value;
 		if (!value) {
 			item.doValidate("Email can't be empty");
@@ -903,7 +901,10 @@ export class DashboardModule extends ParentPage{
 			return false;
 		}
 		if (response.substr(response.length - 4) !== 'free') {
-			item.doValidate('User with this email address already exists')
+			if (item.getAttribute('data-value')) {
+				if (value == item.getAttribute('data-value')) return true;
+			}
+			item.doValidate('User with this email address already exists');
 			return false;
 		}
 		return true;

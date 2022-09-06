@@ -77,6 +77,7 @@ export class UsersModule extends AdminPage {
 				'notificationNavigate','showAddCard','showAddBillingAddress','searchUsers','sortBy','filterUsersByDates','sortParentStudentsBy',
 				'checkEmail',
 				'paginate','paginateTo',
+				'uploadParentPhoto','sendResetPassword',
 			]);
 
 		_.initialState = {
@@ -218,8 +219,6 @@ export class UsersModule extends AdminPage {
 		let validate = await _.nextStepBtnValidation(cont);
 		if (!validate) return void 0;
 
-		console.log(validate)
-
 		if (_.courseStatus == 'removed') {
 			_.showRemovedCoursePopup();
 			return
@@ -300,6 +299,10 @@ export class UsersModule extends AdminPage {
 	}
 	async updateParent({item}){
 		const _ = this;
+		let form = item.closest('.parent-profile-inner');
+		let validate = await _.nextStepBtnValidation(form);
+		if (!validate) return void 0;
+
 		let response = await Model.updateParent({
 			'_id': _.parentInfo['_id'],
 			'firstName': _.parentInfo['firstName'],
@@ -1180,7 +1183,10 @@ export class UsersModule extends AdminPage {
 			return false;
 		}
 		if (response.substr(response.length - 4) !== 'free') {
-			item.doValidate('User with this email address already exists')
+			if (item.getAttribute('data-value')) {
+				if (value == item.getAttribute('data-value')) return true;
+			}
+			item.doValidate('User with this email address already exists');
 			return false;
 		}
 		return true;
@@ -1334,8 +1340,8 @@ export class UsersModule extends AdminPage {
 			cont.append( _.markup( `<img src="/img/loader.gif">` ));
 
 			await Model.assignStudentToParent( parentId,_.studentInfo['_id'] );
-			G_Bus.trigger('modaler','closeModal');
-			let sectionButton = _.f('g-body .section-button.active');
+			G_Bus.trigger( 'modaler','closeModal' );
+			let sectionButton = _.f( 'g-body .section-button.active' );
 
 			_.changeProfileTab({item:sectionButton});
 			return;
@@ -1357,7 +1363,7 @@ export class UsersModule extends AdminPage {
 		_.parentInfo = _.currentParent['user'];
 		_.parentInfo.type = 'assigned';
 		_.metaInfo.parentAssigned = true;
-		_.connectTableHead()
+		_.connectTableHead();
 	}
 	async assignCourse({item}) {
 		const _ = this;
@@ -1587,9 +1593,11 @@ export class UsersModule extends AdminPage {
 
 		if (inputs.length) {
 			for (let item of inputs) {
-				if (item.hasAttribute('data-outfocus')) {
-					let rawvalidate = await _[item.getAttribute('data-outfocus').split(':')[1]]({item});
-					if (!rawvalidate) validate = false;
+				let outFocus = item.getAttribute('data-outfocus');
+				if (outFocus) {
+					let outFocusMethod = outFocus.split(':')[1];
+					let rawValidate = await _[outFocusMethod]({item});
+					if (!rawValidate) validate = false;
 				} else if (item.tagName == 'G-SELECT') {
 					if (!item.value.length) {
 						validate = false;
@@ -1716,6 +1724,24 @@ export class UsersModule extends AdminPage {
 			return false;
 		}
 		return true;
+	}
+
+	uploadParentPhoto({item}){
+		const _ = this;
+		let file = item.files[0];
+		console.log(file)
+	}
+	async sendResetPassword({item}){
+		const _ = this;
+		let role = item.getAttribute('role');
+		let info = _[`${role}Info`];
+		let email = info.email;
+		if (role == 'student') {
+			let parentInfo = await Model.getStudentParents(info._id);
+			if (parentInfo.status == 'success') email = parentInfo.response[0].user.email;
+		}
+		let response = await Model.sendResetPassword(info._id,email);
+		console.log(response);
 	}
 
 	// Paginate

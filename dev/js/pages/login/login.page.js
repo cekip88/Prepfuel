@@ -7,7 +7,7 @@ class LoginPage extends G{
 	constructor() {
 		super();
 		const _ = this;
-		let gRow= document.createElement('g-row'),
+		let gRow = document.createElement('g-row'),
 				gLeft = document.createElement('g-left'),
 				gRight = document.createElement('g-right');
 		gRow.className = 'login';
@@ -118,7 +118,11 @@ class LoginPage extends G{
 		}
 		let resp = await loginModel[handle](formData);
 		if (handle == 'doRegister') {
-			if (resp.status == 'success') _.showSuccessPopup(resp.message)
+			if (resp.status == 'success') {
+				let btn = document.createElement('BUTTON');
+				btn.setAttribute('section','registerSuccess');
+				_.changeSection({item:btn});
+			}
 		}
 	}
 	showSuccessPopup(text) {
@@ -196,9 +200,12 @@ class LoginPage extends G{
 			section = item.getAttribute('section'),
 			part = (section == 'reset') ? 'row' : 'right';
 
-		if(section == 'welcome'){
-			//_.welcomeTpl();
-		}else{
+		if(section !== 'welcome'){
+			if (section === 'registerSuccess') {
+				_.pageStructure.left.container.style = 'display:none';
+			} else {
+				_.pageStructure.left.container.removeAttribute('style')
+			}
 			_.moduleStructure['right'] = `${section}Tpl`;
 		}
 		_.render();
