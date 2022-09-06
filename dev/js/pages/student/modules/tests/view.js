@@ -86,7 +86,7 @@ export const view = {
 			if(currentQuestion['type'] == 'passage'){
 				currentQuestion = currentQuestion.questions.find( question => question['_id'] == currentQuestionId )
 			}
-			currentQuestion['correctAnswer'] = 'B'; // stub and delete in future
+			if(!currentQuestion['correctAnswer'])  currentQuestion['correctAnswer'] = 'B'; // stub and delete in future
 			if( (currentQuestion['correctAnswer'].toUpperCase() !== answeredQuestion['answer'].toUpperCase())  && (answeredQuestion['answer'].toUpperCase() == answer.toUpperCase()) ) {
 				status = 'incorrect';
 			}
@@ -258,6 +258,7 @@ export const view = {
 	async scoreCarcass(){
 		const _ = this;
 		let summaries = await Model.getTestSummary();
+		clearInterval(_.timerInterval);
 		let tpl = `
 				<div class="section">
 				<div class="section-header">
@@ -498,8 +499,8 @@ export const view = {
 				tpl+=`<img src="${fileLink}" alt="">`;
 			}
 		}
-	//	let correctAns = currentQuestion.correctAnswer.split('');
-		let correctAns = '-1234'.split(''); // stub delete in future
+		let correctAns = currentQuestion.correctAnswer.split('');
+	//	let correctAns = '-1234'.split(''); // stub delete in future
 		tpl+=`
 			<p class="test-text">
 				<span>${intro}</span>
@@ -725,6 +726,10 @@ export const view = {
 					question = _._$.currentQuestion,
 					ans =   _.storageTest[id]['answer'];
 				
+				if( _._$.currentQuestion['questions']){
+					question = _._$.currentQuestion['questions'][0];
+				}
+				
 				if(_.storageTest[id]['answer'] != 'O'){
 					if(typeof  _.storageTest[id]['answer'] == 'object'){
 						ans =   _.storageTest[id]['answer'].join('');
@@ -733,7 +738,9 @@ export const view = {
 						ans =  _.storageTest[id]['answer'];
 					}
 				}
-				if(question['correctAnswer'] == ans){
+		/*		let answeredQuestion = Model.allquestions[_.questionPos]
+				*/
+				if(question['correctAnswer'].trim() == ans.trim()){
 					_.f('.grid.empty').setAttribute('hidden','hidden');
 					_.f('.grid.correct').removeAttribute('hidden');
 					_.setGridAnswer(ans.split(''),'.grid.correct');
@@ -744,6 +751,7 @@ export const view = {
 					_.setGridAnswer(ans.split(''),'.grid.incorrect');
 				}
 			}else{
+			//	console.log(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${correctVariant}"]`);
 				let
 					answerItem = _.f(`.answer-list[data-question-id="${questionId}"] .answer-item[data-variant="${correctVariant}"]`);
 				if(!answerItem) return void 0;
@@ -754,16 +762,17 @@ export const view = {
 		if(_._$.currentQuestion['questions']){
 			for(let question of _._$.currentQuestion['questions']){
 				let
-				answeredQuestion = Model.allquestions[_.questionPos],//Model.questions[question['id']],
-				correctVariant = answeredQuestion['correctAnswer'];
-				correctVariant = 'A'; // stub, delete in future
+					answeredQuestion = Model.allquestions[_.questionPos],//Model.questions[question['id']],
+				correctVariant = question['correctAnswer'];//answeredQuestion['correctAnswer'];
+	//			correctVariant = 'A'; // stub, delete in future
+				console.log(question,answeredQuestion);
 				handle(question['_id'],correctVariant.toLowerCase());
 			}
 		}else{
 			let
 				currentQuestion = _._$.currentQuestion,
 				answeredQuestion = Model.allquestions[_.questionPos],
-				correctVariant = answeredQuestion['correctAnswer'];
+				correctVariant = currentQuestion['correctAnswer'];//answeredQuestion['correctAnswer'];
 			handle(currentQuestion['_id'],correctVariant.toLowerCase());
 		}
 		
@@ -1191,6 +1200,13 @@ export const view = {
 	
 	confirmFinishTpl(){
 		const _ = this;
+		/*
+		* 	_.lastSkippedQuestion= {
+					'data-questionPage-id': _._$.currentQuestion['type'] == 'passage' ?_._$.currentQuestion['_id'] : -1,
+					'data-question-id': _._$.currentQuestion['questions'][0]['_id']
+				}
+		*
+		* */
 		return `
 			 <div class="modal modal-block finish" id="finish" slot="modal-item">
               <h6 class="modal-title"><span>Are you sure you want to finish this test</span></h6>
@@ -1200,7 +1216,10 @@ export const view = {
               </p>
               <div class="modal-row">
 	              <button class="button" data-click="${_.componentName}:changeSection" section="score">Yes, I’m done with this test</button>
-	              <button class="button-blue" data-click="modaler:closeModal">No, take me to my first skipped question</button>
+	              <button class="button-blue" data-click="modaler:closeModal;${_.componentName}:jumpToQuestion">
+	               No, take me to my first skipped question
+	              </button>
+		
               </div>
             </div>
 		`;

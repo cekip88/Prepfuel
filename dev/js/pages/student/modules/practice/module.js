@@ -74,7 +74,7 @@ export class PracticeModule extends StudentPage{
 			'showForm','saveBookmark','saveNote','saveBookmark','changeInnerQuestionId',
 			'showTestLabelModal','editNote','deleteNote','saveReport','changeQuestion','viewResult',
 			'startQuiz','checkQuizAnswer','setWrongAnswer','setQuizInfo','changeQuizQuestion',
-			'viewStartResult','setSkillInfo'
+			'viewStartResult','setSkillInfo','reviewAnswers'
 		])
 	}
 	
@@ -84,8 +84,11 @@ export class PracticeModule extends StudentPage{
 		_.innerQuestionId = 1;
 		_.answerVariant = {};
 		_.isLastQuestion = false;
+		_.currentTestType = 'quiz';
 		_.testFinished = false;
-		_.skillTests = null;
+		_.isQuizJump = false;
+		_.skillTests  = [];
+		_.quizTests = [];
 	}
 	
 	// Work with dom
@@ -95,6 +98,7 @@ export class PracticeModule extends StudentPage{
 		
 		if( _.subSection == 'mathematics' ){
 			_.fillMathematicsSection();
+			_.clearData();
 		}
 		if( _.subSection == 'welcome' ){
 			_.testFinished = false;
@@ -115,10 +119,10 @@ export class PracticeModule extends StudentPage{
 		if( _.subSection == 'summary' ){
 			_.fillSummary();
 		}
-	}
-	
-	
-	// Fill methods
+}
+
+
+// Fill methods
 	async fillMathematicsSection(){
 		const _ = this;
 		let inner = _.f('#bodyInner');
@@ -126,8 +130,8 @@ export class PracticeModule extends StudentPage{
 		inner.append(_.markup(_.practiceTasksTpl()));
 		let cont = _.f('.practices-task-list');
 		_.clear(cont);
+	
 		await _.rcQuizFill();
-		
 		let skills = await Model.getSectionCategories('math');
 		_.rcAchievementFill(skills);
 
@@ -141,7 +145,6 @@ export class PracticeModule extends StudentPage{
 		_.clear(cont);
 		await _.rcQuizFill('english');
 		let skills = await Model.getSectionCategories('english');
-		
 		_.rcAchievementFill(skills);
 	}
 	async fillWelcomeSection({item}){
@@ -170,6 +173,7 @@ export class PracticeModule extends StudentPage{
 		if(!_.quizTests.length){
 			let currentQuiz = await Model.getCurrentQuiz(_.currentQuizSubject,_.currentQuizNum);
 			_.quizTests = currentQuiz['tests'];
+			console.log(_.quizTests);
 			let quizObj = await Model.startQuiz();
 		}
 		//console.log(_.currentQuizSubject);
@@ -195,6 +199,7 @@ export class PracticeModule extends StudentPage{
 		let
 			conceptName = item.getAttribute('data-id'),
 			{currentConcept} = Model.getCurrentConcept(conceptName);
+	
 		_.f('#directions-header-title').textContent = currentConcept['concept'];
 		_.f('#directions-btn').setAttribute('data-id',currentConcept['concept']);
 		_.f('#directions-btn').setAttribute('data-category',currentConcept['concept']);
@@ -288,7 +293,6 @@ export class PracticeModule extends StudentPage{
 		_.clear(cont);
 		if (!itemsTpl.length) return;
 		cont.append(...itemsTpl);
-		
 	}
 	async rcPracticeFill(){
 		const _ = this;
@@ -310,14 +314,17 @@ export class PracticeModule extends StudentPage{
 			cont.append(_.markup(listTpl));
 		}
 	}
-	
+	reviewAnswers({item}){
+		const _ = this;
+		
+	}
 	
 	// Getters
 	async getQuestionFields(currentQuestion){
 		const _ = this;
 		let
 			output = document.createElement('div');
-			output.innerHTML = currentQuestion['questionText'];
+			output.innerHTML = currentQuestion ? currentQuestion['questionText'] : '';
 		let
 		handle = async () => await MathJax.typesetPromise([output]).then( () => {
 			if(output.innerHTML != 'undefined'){
@@ -326,11 +333,11 @@ export class PracticeModule extends StudentPage{
 			return '';
 		} ),
 		text = await handle();
-		output.innerHTML = currentQuestion['questionIntro'];
+		output.innerHTML = currentQuestion ? currentQuestion['questionIntro'] : '';
 		let intro = await handle();
-		output.innerHTML = currentQuestion['questionContent'];
+		output.innerHTML = currentQuestion ? currentQuestion['questionContent']: '';
 		let content =  await handle();
-		output.innerHTML = currentQuestion['title'];
+		output.innerHTML = currentQuestion ? currentQuestion['title'] : '';
 		let title =  await handle();
 		let step,len;
 		if(_.currentTestType == 'quiz')  {
@@ -439,7 +446,13 @@ export class PracticeModule extends StudentPage{
 		}
 		_.answerVariant[questionId]['report'] = gformData;
 		G_Bus.trigger('modaler','closeModal');
-		console.log(_.answerVariant);
+		if(_.currentTestType == 'quiz'){
+			if(!_.isLastQuestion){
+				_.changeNextButtonToAnswer()
+			}
+		}else{
+			_.setAvailableCheckBtn();
+		}
 	}
 	saveBookmark({item}){
 		const _ = this;
@@ -451,6 +464,13 @@ export class PracticeModule extends StudentPage{
 		}
 		_.answerVariant[questionId]['bookmark'] = !bookmarked;
 		item.classList.toggle('active');
+		if(_.currentTestType == 'quiz'){
+			if(!_.isLastQuestion){
+				_.changeNextButtonToAnswer()
+			}
+		}else{
+			_.setAvailableCheckBtn();
+		}
 	}
 	async saveNote({item:form,event}){
 		const _ = this;
@@ -468,7 +488,13 @@ export class PracticeModule extends StudentPage{
 		G_Bus.trigger('modaler','closeModal');
 		// Show active note button
 		_.f(`.note-button[data-question-id="${_.innerQuestionId}"]`).classList.add('active');
-		_.setAvailableCheckBtn();
+		if(_.currentTestType == 'quiz'){
+			if(!_.isLastQuestion){
+				_.changeNextButtonToAnswer()
+			}
+		}else{
+			_.setAvailableCheckBtn();
+		}
 	}
 
 	
@@ -482,6 +508,7 @@ export class PracticeModule extends StudentPage{
 	}
 	async changePracticeTab({item}){
 		const _ = this;
+		_.quizTests = [];
 		let pos = item.getAttribute('data-pos');
 		if(item.parentNode.querySelector('.active')){
 			item.parentNode.querySelector('.active').classList.remove('active');
@@ -517,10 +544,10 @@ export class PracticeModule extends StudentPage{
 		_.f('.pagination-link.active').classList.remove('active');
 		item.classList.add('active');
 	}
-	jumpToQuizQuestion({item}){
+	async jumpToQuizQuestion({item}){
 		const _ = this;
 		_.isQuizJump = true;
-		_.checkQuizAnswer({item});
+		await _.checkQuizAnswer({item});
 		let questionPos = item.getAttribute('data-pos');
 		_.questionPos = questionPos;
 		_._$.currentQuizQuestion =  Model.skillTest[questionPos];
@@ -538,6 +565,7 @@ export class PracticeModule extends StudentPage{
 		btn.textContent = 'Skip to question';
 		btn.className= 'button';
 		btn.removeAttribute('disabled');
+		btn.removeAttribute('is-finished');
 		btn.setAttribute('data-click',`${this.componentName}:changeQuizQuestion`);
 	}
 	changeAnswerButtonToFinish(){
@@ -547,13 +575,22 @@ export class PracticeModule extends StudentPage{
 		btn.className= 'skip-to-question-button button-blue';
 		btn.removeAttribute('disabled');
 		btn.setAttribute('data-click',`${this.componentName}:checkQuizAnswer`);
+		btn.setAttribute('is-finished',true);
 	}
-	changeAnswerButtonToNext(){
+	changeAnswerButtonToNext(step=''){
 		const _ = this;
 		let btn = _.f('#check-answer-btn');
-		btn.textContent = 'Next to question';
+		btn.textContent = 'Next to question '+step;
 		btn.className= 'skip-to-question-button button-blue';
 		btn.setAttribute('data-click',`${this.componentName}:changeQuestion`);
+	}
+	changeAnswerButtonToQuizNext(step=''){
+		const _ = this;
+		let btn = _.f('#check-answer-btn');
+		btn.textContent = 'Next to question '+step;
+		btn.className= 'skip-to-question-button button-blue';
+		btn.removeAttribute('is-finished');
+		btn.setAttribute('data-click',`${this.componentName}:changeQuizQuestion`);
 	}
 	changeNextButtonToAnswer(){
 		const _ = this;
@@ -574,7 +611,6 @@ export class PracticeModule extends StudentPage{
 		_.innerQuestionId = item.getAttribute('data-question-id');
 	}
 	async changeSection({item,event}) {
-		console.log('changeSection')
 		const _ = this;
 		_.subSection = item.getAttribute('section');
 		let struct = _.flexible();
@@ -593,8 +629,9 @@ export class PracticeModule extends StudentPage{
 		innerItem.classList.remove('active');
 		innerItem.nextElementSibling.classList.add('active');
 	}
-	changeQuizQuestion({item,event}){
+	async changeQuizQuestion({item,event}){
 		const _ = this;
+		//await _.checkQuizAnswer({item});
 		let
 			innerItem = _.f('.pagination-link.active');
 		if(!innerItem.nextElementSibling) return 0;
@@ -617,8 +654,9 @@ export class PracticeModule extends StudentPage{
 			_.subSection = 'quizQuestions';
 			let struct = _.flexible();
 			await _.render(struct,{item});
-			_.f('#check-answer-btn').style.opacity = 0;
-			_.f('#check-answer-btn').before(_.markup(_.exitThisQuiz()));
+			//_.f('#check-answer-btn').style.display = 'none';
+			let exitBtn  = _.f('#exit-pagination-btn');
+			if(!exitBtn) _.f('#check-answer-btn').before(_.markup(_.exitThisQuiz()));
 		}
 	}
 	async viewResult({item}){
@@ -632,7 +670,9 @@ export class PracticeModule extends StudentPage{
 			summary = await Model.getQuizSummary();
 			questionBody.innerHTML = await _.quizSummary(summary);
 			answerBtn.setAttribute('data-click',`${_.componentName}:reviewAnswers`);
-			answerBtn.before(_.markup(_.exitThisQuiz()));
+			let exitBtn  = _.f('#exit-pagination-btn');
+			if(!exitBtn) 	answerBtn.before(_.markup(_.exitThisQuiz()));
+		
 			let {currentAnswers, placedAnswers} = await _.getAnswer(_._$.currentQuizQuestion);
 			_.setPaginationAnswers(placedAnswers);
 		}else{
@@ -781,7 +821,6 @@ export class PracticeModule extends StudentPage{
 		if(_.currentTestType == 'quiz'){
 			if(!_.isLastQuestion){
 				_.changeNextButtonToAnswer()
-			}else{
 			}
 		}else{
 			_.setAvailableCheckBtn();
@@ -827,6 +866,7 @@ export class PracticeModule extends StudentPage{
 	setSummaryBtn(){
 		const _ = this;
 		let btn = _.f('#check-answer-btn');
+		btn.classList.add('button-blue');
 		btn.setAttribute('data-click',`${_.componentName}:viewResult`);
 		btn.textContent = 'View my results';
 	}
@@ -908,6 +948,9 @@ export class PracticeModule extends StudentPage{
 		}
 		if( (_.subSection === 'questions') || (_.subSection === 'quizQuestions')) {
 			return {
+				'header':'simpleHeader',
+				'header-tabs':null,
+				'body-tabs':null,
 				'body': 'questionsCarcass'
 			}
 		}else if (_.subSection === 'reports') {
@@ -928,43 +971,52 @@ export class PracticeModule extends StudentPage{
 	}
 	async checkQuizAnswer({item}){
 		const _ = this;
-		for(let id in _.answerVariant){
-			let
-				answerObj = {
-					"questionId": id,
-					"questionDatasId": _._$.currentQuizQuestion['_id'],
-					"answer": _.answerVariant[id]['answer'],
-				},
-				fullAnswer = {
-					"answer": answerObj,
-					"subject": _.currentQuizSubject,
-					"testNumber": _.currentQuizNum
+		return new Promise( async (resolve)=>{
+			for(let id in _.answerVariant){
+				let
+					answerObj = {
+						"questionId": id,
+						"questionDatasId": _._$.currentQuizQuestion['_id'],
+						"answer": _.answerVariant[id]['answer'],
+					},
+					fullAnswer = {
+						"answer": answerObj,
+						"subject": _.currentQuizSubject,
+						"testNumber": _.currentQuizNum
+					}
+			/*	if(_.isLastQuestion){
+				
+				}else{
+				//	_.changeAnswerButtonToNext();
+				}*/
+				if(item.hasAttribute('is-finished')){
+					fullAnswer['status'] = 'finished';
 				}
-			if(_.isLastQuestion){
-				fullAnswer['status'] = 'finished';
-			}else{
-				_.changeAnswerButtonToNext();
+				if(_.answerVariant[id]['note']){
+					answerObj['note'] = _.answerVariant[id]['note'];
+				}
+				if(_.answerVariant[id]['bookmark']){
+					answerObj['bookmark'] = _.answerVariant[id]['bookmark'];
+				}
+				if(_.answerVariant[id]['disabledAnswers']){
+					answerObj['disabledAnswers'] = _.answerVariant[id]['disabledAnswers'];
+				}
+				if(_.currentQuizStatus != 'finished'){
+					let response = await Model.saveQuizAnswer(fullAnswer);
+					if(_.isLastQuestion){
+						_.setSummaryBtn();
+						_.currentQuizStatus = 'finished';
+						_.testFinished = true;
+					}else{
+						if(!_.isQuizJump){
+							_.changeQuizQuestion({item});
+						}
+					}
+				}
+				_.isQuizJump = false;
 			}
-			if(_.answerVariant[id]['note']){
-				answerObj['note'] = _.answerVariant[id]['note'];
-			}
-			if(_.answerVariant[id]['bookmark']){
-				answerObj['bookmark'] = _.answerVariant[id]['bookmark'];
-			}
-			if(_.answerVariant[id]['disabledAnswers']){
-				answerObj['disabledAnswers'] = _.answerVariant[id]['disabledAnswers'];
-			}
-			if(_.currentQuizStatus != 'finished'){
-				let response = await Model.saveQuizAnswer(fullAnswer);
-			}
-			if(_.isLastQuestion){
-				_.setSummaryBtn();
-				_.currentQuizStatus = 'finished';
-				_.testFinished = true;
-			}else{
-				if(!_.isQuizJump)   	_.changeQuizQuestion({item});
-			}
-		}
+			resolve(true);
+		});
 	}
 	async checkAnswer({item}){
 		const _ = this;
@@ -1088,10 +1140,10 @@ export class PracticeModule extends StudentPage{
 		if(!currentAnswers) return void  0;
 		let handle = (answer)=>{
 			if( answer['answer'] == answer['correctAnswer'] ){
-			_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
+			_.f(`.answer-item[data-variant="${answer['answer'].toLowerCase()}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
 			}else{
-				_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`).classList.add('incorrect');
-				_.f(`.answer-item[data-variant="${answer['correctAnswer']}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
+				if(answer['answer'])	_.f(`.answer-item[data-variant="${answer['answer'].toLowerCase()}"][data-question-id="${answer['questionId']}"]`).classList.add('incorrect');
+				_.f(`.answer-item[data-variant="${answer['correctAnswer'].toLowerCase()}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
 			}
 		}
 		_._$.currentQuizQuestion['questions'].forEach( question =>{
@@ -1153,6 +1205,7 @@ export class PracticeModule extends StudentPage{
 		});
 		for(let key in currentAnswers){
 			let answer = currentAnswers[key][0];
+			if(!answer['answer']) continue;
 			if(answer['answer'] == answer['correctAnswer']){
 				_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('done');
 			}else{
@@ -1328,15 +1381,24 @@ export class PracticeModule extends StudentPage{
 				_.isLastQuestion = false;
 			}
 			if(_.isLastQuestion){
-				_.changeAnswerButtonToFinish();
+				if(_.currentQuizStatus != 'finished'){
+					_.changeAnswerButtonToFinish();
+				}else{
+					_.setSummaryBtn();
+				}
 			}else{
-				_.f('#check-answer-btn').textContent += ` ${_.getQuizStep()+1}`;
+				_.f('#check-answer-btn').textContent += ` ${_.getQuizStep() + 1}`;
 			}
 		
 			let questionBody = _.f('#question-inner-body');
 			questionBody.innerHTML = await _.getQuizQuestionTpl();
 			let {currentAnswers,placedAnswers} = await _.getAnswer(currentQuizQuestion);
-
+			if(currentAnswers){
+				if(!_.isLastQuestion){
+					_.changeAnswerButtonToQuizNext(`${_.getQuizStep()+1}`);
+				}
+				
+			}
 		//	if(!currentAnswers) return  void 'no current answers';
 			if(_.currentQuizStatus == 'finished'){
 				_.setPaginationAnswers(placedAnswers);

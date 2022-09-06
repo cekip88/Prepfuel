@@ -658,6 +658,8 @@ export class _Model {
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
 					resolve(response);
+				}else{
+					resolve(response)
 				}
 			}else{
 				resolve(false);

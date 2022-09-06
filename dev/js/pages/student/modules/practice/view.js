@@ -1048,23 +1048,24 @@ export const view = {
 	async passageQuestion(){
 		const _ = this;
 		/*<p class="test-text"><span>${question['title']}</span></p>*/
-		let { text,intro,content,step,len } = await _.getQuestionFields(_._$.currentQuestion);
+		let currentQuestion = _.getCurrentQuestion();
+		let { text,intro,content,step,len } = await _.getQuestionFields(currentQuestion);
 		let tpl= `
 			<div class="test-inner test-row">
 				<div class="test-col">
 					<div class="test-left">
-						<p class="test-left-text">${_._$.currentQuestion['passageText']}</p>
+						<p class="test-left-text">${currentQuestion['passageText']}</p>
 					</div>
 				</div>
 				<div class="test-col">
 					<div class="test-right">
 		`;
 		let cnt = 0;
-		for(let question of _._$.currentQuestion['questions']){
+		for(let question of currentQuestion['questions']){
 			tpl+= `
 				<div class="test-sec" id="${question['_id']}">
 					<div class="test-header">
-						<h5 class="block-title test-title"><span>Question ${cnt+1} of ${_._$.currentQuestion['questions'].length}</span>
+						<h5 class="block-title test-title"><span>Question ${cnt+1} of ${currentQuestion['questions'].length}</span>
 						</h5>
 						${_.actionsTpl(question)}
 					</div>
@@ -1122,7 +1123,7 @@ export const view = {
 		const _ = this;
 		let currentQuestion;
 		if(_.currentTestType == 'quiz'){
-			if(_._$.currentQuizQuestion['questions']){
+			if(_._$.currentQuizQuestion['questions']  && (_._$.currentQuizQuestion['type']!= 'passage')){
 				currentQuestion = _._$.currentQuizQuestion['questions'][0]
 			}else {
 				currentQuestion = _._$.currentQuizQuestion;
@@ -1184,6 +1185,7 @@ export const view = {
 	},
 	quizSummary(summary){
 		const _ = this;
+		console.log(summary);
 		let tpl= `
 			<div class="test-inner">
 				<h5 class="block-title test-title"><span>Complete</span></h5>
@@ -1258,7 +1260,7 @@ export const view = {
 	exitThisQuiz(){
 		const _ = this;
 		return `
-			<button class="section-button" data-click="${_.componentName}:changeSection" section="welcome">Exit this Quiz</button>
+			<button class="section-button"  id="exit-pagination-btn" data-click="${_.componentName}:changeSection" section="mathematics">Exit this Quiz</button>
 		`;
 	}
 }
