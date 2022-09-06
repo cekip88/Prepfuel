@@ -26,7 +26,7 @@ class _Model {
 			parentStudents: `/admin/parent`,
 			assignStudentToParent: `/admin/assign/student-to-parent`,
 			changePassword: `/user/change-password`,
-			checkEmail: `/user/check-email/`,
+			checkEmail: `/auth/check-email/`,
 			updateCourse: `/user/update-plan`,
 		};
 	}

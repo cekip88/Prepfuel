@@ -27,7 +27,6 @@ export class router {
 		else return _.user['user']['role'];
 	}
 	async getMe(){
-		console.log('getMe')
 		const _ = this;
 		let rawResponse = await fetch(_.endpoints['me'],{
 			..._.baseHeaders,
@@ -35,7 +34,6 @@ export class router {
 		});
 		if(rawResponse.status < 206){
 			let response = await rawResponse.json();
-			console.log(response)
 			_.user = response['response'];
 			return void 0;
 		}else{
@@ -44,21 +42,18 @@ export class router {
 	}
 	
 	async changePage(route){
-		console.log('changePage')
 		const _ = this;
 		//_.user['role'] = 'guest';
 		//if(_.user['role'] == 'guest')
 		await _.getMe();
 		
 		_.currentPageRoute = await _.definePageRoute(route);
-		console.log(_.currentPageRoute)
 		
 		_.clearComponents();
 	
 		await _.includePage(_.currentPageRoute);
 	}
 	async definePageRoute(route){
-		console.log('definePageRoute')
 		const _ = this;
 		if(route) history.pushState(null, null, route);
 		let
@@ -139,7 +134,6 @@ export class router {
 		}
 	}
 	async includePage(blockData){
-		console.log('includePage')
 		const _ = this;
 		return new Promise(async function (resolve,reject) {
 			try{
@@ -175,7 +169,6 @@ export class router {
 		});
 	}
 	clearComponents(modules){
-		console.log('clearComponents')
 		const _ = this;
 		for(let page of _.pages){
 			if(_.isSystemComponent(page[0])){
@@ -190,7 +183,6 @@ export class router {
 		}
 	}
 	async logout(){
-		console.log('logout')
 		const _ = this;
 		Object.keys(localStorage).forEach( key => {
 			if (key == 'loginData') return;
