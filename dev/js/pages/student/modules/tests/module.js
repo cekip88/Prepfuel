@@ -486,7 +486,6 @@ export class TestsModule extends StudentPage{
 				if(listAnswerItemVariant){
 					_.f(`.questions-list .questions-item[data-question-id="${questionId}"] .questions-variant`).textContent = currentTestObj['answer'].toUpperCase();
 				}
-				
 			}
 			
 		}

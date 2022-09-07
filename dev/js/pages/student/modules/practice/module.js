@@ -54,6 +54,8 @@ export class PracticeModule extends StudentPage{
 		_.testFinished = false;
 		_.currentTestType = 'quiz';
 		_.isQuizJump = false;
+		_.tempDisabledAnswerObj = {};
+		
 		
 		_.skillTests  = [];
 		_.quizTests = [];
@@ -61,8 +63,8 @@ export class PracticeModule extends StudentPage{
 			'math':'Mathematics',
 			'english':'English Languages Parts',
 			'rc': 'Reading Comprehension',
-			'rea':'Revising Editing Part A',
-			'reb':'Revising Editing Part B',
+			're-a':'Revising Editing Part A',
+			're-b':'Revising Editing Part B',
 		};
 		_.set({
 			currentQuestion: null
@@ -89,6 +91,7 @@ export class PracticeModule extends StudentPage{
 		_.isQuizJump = false;
 		_.skillTests  = [];
 		_.quizTests = [];
+		_.tempDisabledAnswerObj = {};
 	}
 	
 	// Work with dom
@@ -173,7 +176,6 @@ export class PracticeModule extends StudentPage{
 		if(!_.quizTests.length){
 			let currentQuiz = await Model.getCurrentQuiz(_.currentQuizSubject,_.currentQuizNum);
 			_.quizTests = currentQuiz['tests'];
-			console.log(_.quizTests);
 			let quizObj = await Model.startQuiz();
 		}
 		//console.log(_.currentQuizSubject);
@@ -199,7 +201,7 @@ export class PracticeModule extends StudentPage{
 		let
 			conceptName = item.getAttribute('data-id'),
 			{currentConcept} = Model.getCurrentConcept(conceptName);
-	
+		_.currentTestType = 'practice';
 		_.f('#directions-header-title').textContent = currentConcept['concept'];
 		_.f('#directions-btn').setAttribute('data-id',currentConcept['concept']);
 		_.f('#directions-btn').setAttribute('data-category',currentConcept['concept']);
@@ -209,7 +211,7 @@ export class PracticeModule extends StudentPage{
 		let
 			conceptName = item.getAttribute('data-id'),
 			{currentConcept,currentCategory} = Model.getCurrentConcept(conceptName);
-		_.currentTestType = 'skill';
+		
 		if(!_.testFinished){
 			let response = await Model.start(_.currentConcept,_.currentCategory);
 			_.skillTests = await Model.getSkillPractice(_.currentConcept,_.currentCategory);
@@ -218,7 +220,7 @@ export class PracticeModule extends StudentPage{
 		_.f('#question-header-title').textContent = _.currentConcept;
 		_.f('.questions-length').textContent = _.questionsLength;
 		_.f('#question-pagination').append(_.markup(_.questionNavigation()));
-		
+		_.f("#testType").textContent = _.currentTestType;
 		if(_.testFinished){
 			console.log(_.currentAnswers);
 			_.setSkillPaginationAnswers(_.currentAnswers);
@@ -241,8 +243,12 @@ export class PracticeModule extends StudentPage{
 	}
 	fillExplanation(currentQuestion) {
 		const _ = this;
-		currentQuestion['questions'].forEach(  async (question)=>{
-			if(_.f(`#explanation-field-${question['_id']}`))	_.f(`#explanation-field-${question['_id']}`).append(_.markup(await _.explanationAnswer(question)));
+		currentQuestion['questions'].forEach(  async (question) => {
+			if(_.f(`#explanation-field-${question['_id']}`)){
+				//_.f(`#explanation-field-${question['_id']}`).append(_.markup(await _.explanationAnswer(question)));
+				_.f(`#explanation-field-${question['_id']}`).removeAttribute('hidden');
+			}
+			return 0;
 		});
 	}
 	fillSummary(){
@@ -308,6 +314,7 @@ export class PracticeModule extends StudentPage{
 		//let achieveData = await Model.getAchievementInfo();
 		let cont = _.f('.practices-task-list');
 	//	_.clear(cont)
+		if(!cont ) return void 'Container not found';
 		for (let item of achieveData) {
 			let listTpl = _.achievementItemsTpl(item);
 			if (!listTpl) continue;
@@ -751,7 +758,7 @@ export class PracticeModule extends StudentPage{
 		let
 			answer = item.parentNode,
 			questionId =  answer.getAttribute('data-question-id'),
-			currentTest = _.storageTest[questionId],
+			currentTest = _.storageTest[questionId] ?? _.tempDisabledAnswerObj ,
 			variant = answer.getAttribute('data-variant'),
 			obj  = {
 				questionId: questionId
@@ -760,36 +767,35 @@ export class PracticeModule extends StudentPage{
 			answer.removeAttribute('disabled');
 			if(currentTest['disabledAnswers']){
 				currentTest['disabledAnswers'].splice(currentTest['disabledAnswers'].indexOf(variant),1);
-				G_Bus.trigger(_.componentName,'updateStorageTest')
 			}
 		}else{
 			if(answer.classList.contains('active')){
-				Model.saveTestToStorage({
-					questionId: questionId,
-					answer: null
-				});
 				answer.classList.remove('active');
-				G_Bus.trigger(_.componentName,'updateStorageTest')
 			}
 			if(!currentTest){
-				obj['disabledAnswers'] = [];
+				currentTest['disabledAnswers'] = [];
 			}else{
 				if(!currentTest['disabledAnswers']){
-					obj['disabledAnswers'] = [];
+					currentTest['disabledAnswers'] = [];
 				}else{
-					obj['disabledAnswers'] = currentTest['disabledAnswers'];
+					currentTest['disabledAnswers'] = currentTest['disabledAnswers'];
 				}
 			}
-			if(obj['disabledAnswers'].indexOf(variant) < 0) obj['disabledAnswers'].push(variant)
+			if(currentTest['disabledAnswers'].indexOf(variant) < 0) currentTest['disabledAnswers'].push(variant)
 			answer.setAttribute('disabled',true);
 		}
 		//console.log(obj);
 		if(!_.answerVariant[questionId]){
 			_.answerVariant[questionId] = {};
 		}
-		_.answerVariant[questionId]['disabledAnswers'] = obj['disabledAnswers'];
-		Model.saveTestToStorage(obj);
-		G_Bus.trigger(_.componentName,'updateStorageTest')
+		_.answerVariant[questionId]['disabledAnswers'] = currentTest['disabledAnswers'];
+		if(_.currentTestType == 'quiz'){
+			if(!_.isLastQuestion){
+				_.changeNextButtonToAnswer()
+			}
+		}else{
+			_.setAvailableCheckBtn();
+		}
 	}
 	setCorrectAnswer({item,event,type='simple'}){
 		const _ = this;
@@ -825,8 +831,6 @@ export class PracticeModule extends StudentPage{
 		}else{
 			_.setAvailableCheckBtn();
 		}
-		
-		G_Bus.trigger(_.componentName,'updateStorageTest');
 	}
 	setActions(types = ['bookmark']){
 		const _ = this;
@@ -972,49 +976,54 @@ export class PracticeModule extends StudentPage{
 	async checkQuizAnswer({item}){
 		const _ = this;
 		return new Promise( async (resolve)=>{
-			for(let id in _.answerVariant){
-				let
-					answerObj = {
-						"questionId": id,
-						"questionDatasId": _._$.currentQuizQuestion['_id'],
-						"answer": _.answerVariant[id]['answer'],
-					},
+			let handle = async (answerEntries)=>{
+				for  (let entry of answerEntries){
+					let
+						id = entry[0],
+						ansObj = entry[1],
+						answerObj = {
+							"questionId": id,
+							"questionDatasId": _._$.currentQuizQuestion['_id'],
+							"answer": ansObj['answer'],
+						},
 					fullAnswer = {
 						"answer": answerObj,
 						"subject": _.currentQuizSubject,
 						"testNumber": _.currentQuizNum
+					};
+					
+					if(item.hasAttribute('is-finished')){
+						fullAnswer['status'] = 'finished';
 					}
-			/*	if(_.isLastQuestion){
-				
-				}else{
-				//	_.changeAnswerButtonToNext();
-				}*/
-				if(item.hasAttribute('is-finished')){
-					fullAnswer['status'] = 'finished';
-				}
-				if(_.answerVariant[id]['note']){
-					answerObj['note'] = _.answerVariant[id]['note'];
-				}
-				if(_.answerVariant[id]['bookmark']){
-					answerObj['bookmark'] = _.answerVariant[id]['bookmark'];
-				}
-				if(_.answerVariant[id]['disabledAnswers']){
-					answerObj['disabledAnswers'] = _.answerVariant[id]['disabledAnswers'];
-				}
-				if(_.currentQuizStatus != 'finished'){
-					let response = await Model.saveQuizAnswer(fullAnswer);
-					if(_.isLastQuestion){
-						_.setSummaryBtn();
-						_.currentQuizStatus = 'finished';
-						_.testFinished = true;
-					}else{
-						if(!_.isQuizJump){
-							_.changeQuizQuestion({item});
+					if(ansObj['note']){
+						answerObj['note'] =ansObj['note'];
+					}
+					if(ansObj['bookmark']){
+						answerObj['bookmark'] = ansObj['bookmark'];
+					}
+					if(ansObj['disabledAnswers']){
+						answerObj['disabledAnswers'] = ansObj['disabledAnswers'];
+					}
+					if(_.currentQuizStatus != 'finished'){
+						let response = await Model.saveQuizAnswer(fullAnswer);
+						if(_.isLastQuestion){
+							_.setSummaryBtn();
+							if(item.hasAttribute('is-finished')){
+								_.currentQuizStatus = 'finished';
+								_.testFinished = true;
+							}
+							
 						}
 					}
+					_.isQuizJump = false;
 				}
-				_.isQuizJump = false;
 			}
+			let answerEntries = Object.entries(_.answerVariant);
+			await handle(answerEntries);
+			if( (!_.isLastQuestion)  && (!_.isQuizJump)){
+				_.changeQuizQuestion({item});
+			}
+			
 			resolve(true);
 		});
 	}
@@ -1068,7 +1077,12 @@ export class PracticeModule extends StudentPage{
 			
 			let currentAnswers = await _.getAnswerSkill(_._$.currentQuestion);
 			_.fillExplanation(_._$.currentQuestion);
-			_.setLetterAnswer(currentAnswers);
+			if(_.isGrid()){
+				_.setGridAnswer(currentAnswers);
+			}else{
+				_.setLetterAnswer(currentAnswers);
+			}
+		
 			
 			if(_.isLastQuestion){
 				_.setSummarySkillBtn();
@@ -1273,6 +1287,10 @@ export class PracticeModule extends StudentPage{
 		if(!currentQuestion) return void 0;
 		let rawAnswers = [];
 		rawAnswers = await  Model.getQuizResults(_.currentQuizSubject,_.currentQuizNum);
+		_.storageTest = {};
+		rawAnswers.forEach( ans=>{
+			_.storageTest [ans['questionId']] = ans;
+		});
 		let	placedAnswers = {};
 		if( (!rawAnswers) ||  (!rawAnswers.length)) return  {placedAnswers};
 		
@@ -1282,7 +1300,8 @@ export class PracticeModule extends StudentPage{
 				questionId: item.questionId,
 				answer: item.answer,
 				note: item.note,
-				bookmark: item.bookmark
+				bookmark: item.bookmark,
+				disabledAnswers: item.disabledAnswers
 			});
 		});
 		let currentAnswers = placedAnswers[currentQuestion['_id']];
@@ -1352,8 +1371,10 @@ export class PracticeModule extends StudentPage{
 			}
 
 			let currentAnswers =  await _.getAnswerSkill(currentQuestion);
+			console.log(currentAnswers);
 			if(!currentAnswers)  return void  'answers not found';
 			
+		
 			if( _.isGrid() ){
 				_.setGridAnswer(currentAnswers);
 			} else{
@@ -1362,7 +1383,8 @@ export class PracticeModule extends StudentPage{
 			_.fillExplanation(currentQuestion);
 			_.fillNote(currentAnswers);
 			_.setBookmark(currentAnswers);
-		
+			_.setAvailableCheckBtn();
+			_.changeAnswerButtonToNext();
 		},['currentQuestion']);
 		_._( async ({currentQuizQuestion})=>{
 			if( !_.initedUpdate ){
@@ -1412,7 +1434,25 @@ export class PracticeModule extends StudentPage{
 
 			_.fillNote(currentAnswers);
 			_.setBookmark(currentAnswers);
-			
+			if(currentAnswers){
+				for(let currentAnswer of currentAnswers){
+					if(currentAnswer['disabledAnswers']){
+						for(let disabledAnswers of currentAnswer['disabledAnswers']){
+						if(disabledAnswers){
+							// mark disabled answer
+							for(let dis of disabledAnswers){
+								let item = _.f(`.answer-list .answer-item[data-question-id="${currentAnswers[0]['questionId']}"][data-variant="${dis}"]`);
+								if(!item) continue
+								item.classList.remove('active');
+								item.setAttribute('disabled', 'disabled');
+							}
+						}
+					}
+					}
+				}
+				
+				
+			}
 		},['currentQuizQuestion']);
 	}
 	

@@ -144,8 +144,7 @@ export const view = {
 		let
 			output = document.createElement('div');
 			output.innerHTML = currentQuestion['explanationText'];
-		let
-		handle = async () => await MathJax.typesetPromise([output]).then( () => {
+		let handle = async () => await MathJax.typesetPromise([output]).then( () => {
 			if(output.innerHTML != 'undefined'){
 				return output.innerHTML;
 			}
@@ -153,17 +152,19 @@ export const view = {
 		});
 		let text = await handle();
 		return `
-			<div class="test-label-block">
-				<div class="test-label-icon">
-					<svg>
-						<use xlink:href="#lamp"></use>
-					</svg>
-				</div>
-				<div class="test-label-text">
-					<h5 class="test-label-title">
-						<span>Explanation to correct answer</span>
-					</h5>
-					<p>${text}</p>
+			<div hidden id="explanation-field-${currentQuestion['_id']}">
+				<div class="test-label-block" >
+					<div class="test-label-icon">
+						<svg>
+							<use xlink:href="#lamp"></use>
+						</svg>
+					</div>
+					<div class="test-label-text">
+						<h5 class="test-label-title">
+							<span>Explanation to correct answer</span>
+						</h5>
+						<p>${text}</p>
+					</div>
 				</div>
 			</div>`;
 	},
@@ -689,7 +690,7 @@ export const view = {
 			<div class="section">
 				<div class="section-header">
 					<h1 class="title" id="question-header-title">Concept name</strong></h1>
-					<button class="button-white" data-click="${this.componentName}:changeSection" section="mathematics"><span>Exit this <span id="testType">practice</span></span></button>
+					<button class="button-white" data-click="${this.componentName}:changeSection" section="mathematics"><span>Exit this <span id="testType">${_.currentTestType}</span></span></button>
 				</div>
 			</div>
 	`)});
@@ -822,7 +823,7 @@ export const view = {
 						</div>
 					</div>
 				</div>
-				<div class="test-col narrow grid correct" hidden data-click="${_.componentName}:enterGridAnswer">
+				<div class="test-col narrow grid correct" hidden >
 					<div class="marker">
 						<span>Correct</span>
 						<svg><use xlink:href="#correct"></use></svg>
@@ -872,7 +873,7 @@ export const view = {
 						</div>
 					</div>
 				</div>
-				<div class="test-col narrow grid incorrect" hidden data-click="${_.componentName}:enterGridAnswer">
+				<div class="test-col narrow grid incorrect" hidden >
 					<div class="marker">
 						<span>Incorrect</span>
 						<svg><use xlink:href="#incorrect"></use></svg>
@@ -1048,6 +1049,7 @@ export const view = {
 	async passageQuestion(){
 		const _ = this;
 		/*<p class="test-text"><span>${question['title']}</span></p>*/
+		// 				<div id="explanation-field-${question['_id']}"></div>
 		let currentQuestion = _.getCurrentQuestion();
 		let { text,intro,content,step,len } = await _.getQuestionFields(currentQuestion);
 		let tpl= `
@@ -1077,7 +1079,8 @@ export const view = {
 			}
 			tpl+=`</ul>
 				<div id="note-field-${question['_id']}"></div>
-				<div id="explanation-field-${question['_id']}"></div>
+				${await _.explanationAnswer(question)}
+
 			</div>`;
 			cnt++;
 		}
@@ -1122,6 +1125,7 @@ export const view = {
 	getCurrentQuestion(){
 		const _ = this;
 		let currentQuestion;
+		console.log(_._$.currentQuestion);
 		if(_.currentTestType == 'quiz'){
 			if(_._$.currentQuizQuestion['questions']  && (_._$.currentQuizQuestion['type']!= 'passage')){
 				currentQuestion = _._$.currentQuizQuestion['questions'][0]
@@ -1129,7 +1133,7 @@ export const view = {
 				currentQuestion = _._$.currentQuizQuestion;
 			}
 		}else{
-			if(_._$.currentQuestion['questions']){
+			if(_._$.currentQuestion['questions'] && (_._$.currentQuestion['type']!= 'passage')){
 				currentQuestion = _._$.currentQuestion['questions'][0]
 			}else {
 				currentQuestion = _._$.currentQuestion;
@@ -1185,7 +1189,6 @@ export const view = {
 	},
 	quizSummary(summary){
 		const _ = this;
-		console.log(summary);
 		let tpl= `
 			<div class="test-inner">
 				<h5 class="block-title test-title"><span>Complete</span></h5>
