@@ -757,38 +757,45 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		let
 			answer = item.parentNode,
-			questionId =  answer.getAttribute('data-question-id'),
-			currentTest = _.storageTest[questionId] ?? _.tempDisabledAnswerObj ,
+			questionId =  answer.getAttribute('data-question-id');
+		if(!_.tempDisabledAnswerObj[questionId])	_.tempDisabledAnswerObj[questionId]  = {};
+		let
+			currentTest,
 			variant = answer.getAttribute('data-variant'),
 			obj  = {
 				questionId: questionId
 			};
+		if(_.storageTest[questionId]){
+			currentTest = _.storageTest;
+		}else{
+			currentTest =  _.tempDisabledAnswerObj;
+		}
 		if(answer.hasAttribute('disabled')){
 			answer.removeAttribute('disabled');
-			if(currentTest['disabledAnswers']){
-				currentTest['disabledAnswers'].splice(currentTest['disabledAnswers'].indexOf(variant),1);
+			if(currentTest[questionId]['disabledAnswers']){
+				currentTest[questionId]['disabledAnswers'].splice(currentTest[questionId]['disabledAnswers'].indexOf(variant),1);
 			}
 		}else{
 			if(answer.classList.contains('active')){
 				answer.classList.remove('active');
 			}
 			if(!currentTest){
-				currentTest['disabledAnswers'] = [];
+				currentTest[questionId]['disabledAnswers'] = [];
 			}else{
-				if(!currentTest['disabledAnswers']){
-					currentTest['disabledAnswers'] = [];
+				if(!currentTest[questionId]['disabledAnswers']){
+					currentTest[questionId]['disabledAnswers'] = [];
 				}else{
-					currentTest['disabledAnswers'] = currentTest['disabledAnswers'];
+					currentTest[questionId]['disabledAnswers'] = currentTest[questionId]['disabledAnswers'];
 				}
 			}
-			if(currentTest['disabledAnswers'].indexOf(variant) < 0) currentTest['disabledAnswers'].push(variant)
+			if(currentTest[questionId]['disabledAnswers'].indexOf(variant) < 0) currentTest[questionId]['disabledAnswers'].push(variant)
 			answer.setAttribute('disabled',true);
 		}
-		//console.log(obj);
+		//console.log(	_.answerVariant[questionId],currentTest[questionId]);
 		if(!_.answerVariant[questionId]){
 			_.answerVariant[questionId] = {};
 		}
-		_.answerVariant[questionId]['disabledAnswers'] = currentTest['disabledAnswers'];
+		_.answerVariant[questionId]['disabledAnswers'] = currentTest[questionId]['disabledAnswers'];
 		if(_.currentTestType == 'quiz'){
 			if(!_.isLastQuestion){
 				_.changeNextButtonToAnswer()
@@ -796,6 +803,7 @@ export class PracticeModule extends StudentPage{
 		}else{
 			_.setAvailableCheckBtn();
 		}
+	
 	}
 	setCorrectAnswer({item,event,type='simple'}){
 		const _ = this;
@@ -986,12 +994,11 @@ export class PracticeModule extends StudentPage{
 							"questionDatasId": _._$.currentQuizQuestion['_id'],
 							"answer": ansObj['answer'],
 						},
-					fullAnswer = {
-						"answer": answerObj,
-						"subject": _.currentQuizSubject,
-						"testNumber": _.currentQuizNum
-					};
-					
+						fullAnswer = {
+							"answer": answerObj,
+							"subject": _.currentQuizSubject,
+							"testNumber": _.currentQuizNum
+						};
 					if(item.hasAttribute('is-finished')){
 						fullAnswer['status'] = 'finished';
 					}
@@ -1012,7 +1019,6 @@ export class PracticeModule extends StudentPage{
 								_.currentQuizStatus = 'finished';
 								_.testFinished = true;
 							}
-							
 						}
 					}
 					_.isQuizJump = false;
@@ -1060,6 +1066,10 @@ export class PracticeModule extends StudentPage{
 					ans =   _.answerVariant[id]['answer'].join('');
 					ans = ans.replaceAll('_','');
 				}
+				_.f(`.answer-item[data-question-id="${question['_id']}"]`).forEach(  (ans)=>{
+					ans.classList.add('wrong');
+				});
+				
 				if(question['correctAnswer'] == ans){
 					_.f('#question-pagination .active').classList.add('done');
 					if( _.isGrid()){
@@ -1156,7 +1166,10 @@ export class PracticeModule extends StudentPage{
 			if( answer['answer'] == answer['correctAnswer'] ){
 			_.f(`.answer-item[data-variant="${answer['answer'].toLowerCase()}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
 			}else{
-				if(answer['answer'])	_.f(`.answer-item[data-variant="${answer['answer'].toLowerCase()}"][data-question-id="${answer['questionId']}"]`).classList.add('incorrect');
+				if(answer['answer'])
+					if(_.f(`.answer-item[data-variant="${answer['answer'].toLowerCase()}"][data-question-id="${answer['questionId']}"]`)){
+						_.f(`.answer-item[data-variant="${answer['answer'].toLowerCase()}"][data-question-id="${answer['questionId']}"]`).classList.add('incorrect');
+					}
 				_.f(`.answer-item[data-variant="${answer['correctAnswer'].toLowerCase()}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
 			}
 		}
@@ -1211,20 +1224,25 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		_.quizTests.forEach( (skill,index) => {
 			if(currentAnswers[skill['_id']]){
-				currentAnswers[skill['_id']][0]['pos'] = index;
-				skill['questions'].forEach(question=>{
+				
+				skill['questions'].forEach( (question,i)=>{
+					currentAnswers[skill['_id']][i]['pos'] = index;
 					currentAnswers[skill['_id']][0]['correctAnswer'] = question['correctAnswer'];
 				});
 			}
 		});
 		for(let key in currentAnswers){
-			let answer = currentAnswers[key][0];
-			if(!answer['answer']) continue;
-			if(answer['answer'] == answer['correctAnswer']){
-				_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('done');
-			}else{
-				_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('error');
-			}
+			let
+				answers = currentAnswers[key],
+				pos = answers['pos'];
+			answers.forEach(  answer=>{
+				if(answer['answer'] == answer['correctAnswer']){
+					_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('done');
+				}else{
+					_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('error');
+				}
+			});
+			
 			
 		}
 	}
@@ -1434,24 +1452,23 @@ export class PracticeModule extends StudentPage{
 
 			_.fillNote(currentAnswers);
 			_.setBookmark(currentAnswers);
-			if(currentAnswers){
+			//console.log(currentAnswers);
+			if( currentAnswers ){
 				for(let currentAnswer of currentAnswers){
 					if(currentAnswer['disabledAnswers']){
 						for(let disabledAnswers of currentAnswer['disabledAnswers']){
-						if(disabledAnswers){
-							// mark disabled answer
-							for(let dis of disabledAnswers){
-								let item = _.f(`.answer-list .answer-item[data-question-id="${currentAnswers[0]['questionId']}"][data-variant="${dis}"]`);
-								if(!item) continue
-								item.classList.remove('active');
-								item.setAttribute('disabled', 'disabled');
+							if(disabledAnswers){
+								// mark disabled answer
+								for(let dis of disabledAnswers){
+									let item = _.f(`.answer-list .answer-item[data-question-id="${currentAnswer['questionId']}"][data-variant="${dis}"]`);
+									if(!item) continue
+									item.classList.remove('active');
+									item.setAttribute('disabled', 'disabled');
+								}
 							}
 						}
 					}
-					}
 				}
-				
-				
 			}
 		},['currentQuizQuestion']);
 	}

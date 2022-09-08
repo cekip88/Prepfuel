@@ -1125,7 +1125,6 @@ export const view = {
 	getCurrentQuestion(){
 		const _ = this;
 		let currentQuestion;
-		console.log(_._$.currentQuestion);
 		if(_.currentTestType == 'quiz'){
 			if(_._$.currentQuizQuestion['questions']  && (_._$.currentQuizQuestion['type']!= 'passage')){
 				currentQuestion = _._$.currentQuizQuestion['questions'][0]
