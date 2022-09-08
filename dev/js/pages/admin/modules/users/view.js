@@ -1413,9 +1413,14 @@ export const view = {
 		let tpl = `
 			<td>
 				<div class="tbl-item">
-					<div class="parent-table-avatar">
-						<span>${rowData['user'].firstName.substr(0,1)}</span>
-					</div>
+					<div class="parent-table-avatar">`;
+		if (!rowData['user'].photo){
+			tpl += `<span>${rowData['user'].firstName.substr(0,1)}</span>`;
+		} else {
+			tpl += `<img src="${_.getBackUrl()}${rowData.user.photo}" class="user-photo">`;
+		}
+		tpl += `
+				</div>
 					<div class="users-info">
 						<h6 class="users-info-name">${rowData['user'].firstName} ${rowData['user'].lastName}</h6>
 						<span class="users-info-email">${rowData['user'].email}</span>
@@ -1466,8 +1471,13 @@ export const view = {
 		let tpl = `
 			<td>
 				<div class="tbl-item">
-					<div class="parent-table-avatar">
-						<span>${rowData['user'].firstName.substr(0,1)}</span>
+					<div class="parent-table-avatar">`;
+		if (!rowData['user'].photo){
+			tpl += `<span>${rowData['user'].firstName.substr(0,1)}</span>`;
+		} else {
+			tpl += `<img src="${_.getBackUrl()}${rowData.user.photo}" class="user-photo">`;
+		}
+		tpl += `
 					</div>
 					<div class="users-info">
 						<h6 class="users-info-name">${rowData['user'].firstName} ${rowData['user'].lastName}</h6>
@@ -1529,8 +1539,14 @@ export const view = {
 			<div class="adding-section">
 				<h4 class="adding-subtitle">Parent Personal Info</h4>
 				<div class="adding-avatar">
-					<label for="parent-file" class="profile-img-row file-cont">
-						<input type="file" class="file" id="parent-file" data-change="${_.componentName}:uploadParentPhoto">
+					<label class="profile-img-row file-cont">
+						<input 
+							type="file" 
+							class="file" 
+							data-change="${_.componentName}:uploadPhoto;${_.componentName}:fillParentInfo"
+							role="parent"
+							accept="image/png, image/gif, image/jpeg"
+						>
 						<div class="profile-img">
 							<div class="profile-img-letter">
 								${this.super_$.firstName[0].toUpperCase()}
@@ -1989,8 +2005,13 @@ export const view = {
 		let tpl = `
 			<td>
 				<div class="tbl-item">
-					<div class="parent-table-avatar">
-						<span>${rowData['user'].firstName.substr(0,1)}</span>
+					<div class="parent-table-avatar">`;
+		if (!rowData['user'].photo){
+			tpl += `<span>${rowData['user'].firstName.substr(0,1)}</span>`;
+		} else {
+			tpl += `<img src="${_.getBackUrl()}${rowData.user.photo}" class="user-photo">`;
+		}
+		tpl += `
 					</div>
 					<div class="users-info">
 						<h6 class="users-info-name">${rowData['user'].firstName} ${rowData['user'].lastName}</h6>
@@ -2044,7 +2065,9 @@ export const view = {
 									</div>
 								</li>
 							</ol>
-							<div class="adding-body parent-popup-body"><img src="/img/loader.gif"></div>
+							<div class="adding-body parent-popup-body">
+								<img src="/img/loader.gif">
+							</div>
 						</div>
 					</div>
 					<div class="test-footer">
@@ -2169,8 +2192,13 @@ export const view = {
 								<tr>
 									<td>
 										<div class="tbl-item">
-											<div class="parent-table-avatar">
-												<span>${parentInfo['user']['firstName'].toUpperCase()[0]}</span>
+											<div class="parent-table-avatar">`;
+		if (!parentInfo.user.photo) {
+			tpl += `<span>${parentInfo['user']['firstName'].toUpperCase()[0]}</span>`;
+		} else {
+			tpl += `<img src="${_.getBackUrl()}${parentInfo['user'].photo}" class="user-photo">`;
+		}
+		tpl += `
 											</div>
 											<div class="users-info">
 												<h6 class="users-info-name">${parentInfo['user']['firstName']} ${parentInfo['user']['lastName']}</h6>
@@ -2442,19 +2470,22 @@ export const view = {
 	},
 	parentPersonalInfoTpl(parentInfo){
 		const _ = this;
-		return `
+		let tpl = `
 			<div class="adding-section">
 				<h4 class="adding-subtitle">Parent Personal Info</h4>
 				<div class="adding-avatar">
 					<div class="profile-img-row">
-						<div class="profile-img">
-							<div class="profile-img-letter">
-								${this.super_$.firstName[0].toUpperCase()}
-							</div>
-						</div>
-						<div class="profile-img-desc">
-							Allowed *.jpeg,*.jpg, *.png, *.gif<br>
-							Max size of 3.1 MB
+						<div class="profile-img">`;
+		if (!_.parentInfo.photo) {
+			tpl += `
+				<div class="profile-img-letter">
+					${_.parentInfo.firstName[0].toUpperCase()}
+				</div>
+			`;
+		} else {
+			tpl += `<img src="${_.getBackUrl()}${_.parentInfo.photo}" class="user-photo">`;
+		}
+		tpl += `
 						</div>
 					</div>
 				</div>
@@ -2498,6 +2529,7 @@ export const view = {
 				</div>
 			</div>
 		`;
+		return tpl;
 	},
 	parentChildesInfoTpl(){
 		const _ = this;
@@ -2794,17 +2826,31 @@ export const view = {
 				<div class="adding-section">
 					<h4 class="adding-subtitle">${_.subSection === 'parentProfile' ? 'Parent' : 'Admin'} Personal  Info</h4>
 					<div class="adding-avatar">
-						<div class="profile-img-row">
-							<div class="profile-img">
-								<div class="profile-img-letter">
-									${this.super_$.firstName[0].toUpperCase()}
-								</div>
+						<label class="profile-img-row file-cont">
+							<input 
+								type="file" 
+								class="file" 
+								data-change="${_.componentName}:uploadPhoto"
+								role="parent"
+								accept="image/png, image/gif, image/jpeg"
+							>
+							<div class="profile-img">`;
+		if (!_.parentInfo.photo) {
+			tpl += `
+				<div class="profile-img-letter">
+					${this.super_$.firstName[0].toUpperCase()}
+				</div>
+			`;
+		} else {
+			tpl += `<img src="${_.getBackUrl()}${_.parentInfo.photo}" class="user-photo">`
+		}
+		tpl += `
 							</div>
 							<div class="profile-img-desc">
 								Allowed *.jpeg,*.jpg, *.png, *.gif<br>
 								Max size of 3.1 MB
 							</div>
-						</div>
+						</label>
 					</div>
 				</div>
 				<div class="adding-section">
@@ -3301,9 +3347,14 @@ export const view = {
 			<td>
 				<div class="tbl-item">
 					<div class="table-admin-title">
-						<div class="parent-table-avatar">
-							<span>${rowData['user'].firstName.substr(0,1)}</span>
-						</div>
+						<div class="parent-table-avatar">`;
+		if (!rowData['user'].photo){
+			tpl += `<span>${rowData['user'].firstName.substr(0,1)}</span>`;
+		} else {
+			tpl += `<img src="${_.getBackUrl()}${rowData.user.photo}" class="user-photo">`;
+		}
+		tpl += `
+					</div>
 						<div class="users-info">
 							<h6 class="users-info-name">${rowData['user'].firstName} ${rowData['user'].lastName}</h6>
 							<span class="users-info-email">${rowData['user'].email}</span>
@@ -3370,17 +3421,31 @@ export const view = {
 				<div class="adding-section">
 					<h4 class="adding-subtitle">Admin Personal  Info</h4>
 					<div class="adding-avatar">
-						<div class="profile-img-row">
-							<div class="profile-img">
-								<div class="profile-img-letter">
-									${this.super_$.firstName[0].toUpperCase()}
-								</div>
+						<label class="profile-img-row file-cont">
+							<input 
+								type="file" 
+								class="file" 
+								data-change="${_.componentName}:uploadPhoto"
+								role="admin"
+								accept="image/png, image/gif, image/jpeg"
+							>
+							<div class="profile-img">`;
+		if (!_.adminInfo.photo) {
+			tpl += `
+				<div class="profile-img-letter">
+					${this.super_$.firstName[0].toUpperCase()}
+				</div>
+			`;
+		} else {
+			tpl += `<img src="${_.getBackUrl()}${_.adminInfo.photo}" class="user-photo">`;
+		}
+		tpl += `
 							</div>
 							<div class="profile-img-desc">
 								Allowed *.jpeg,*.jpg, *.png, *.gif<br>
 								Max size of 3.1 MB
 							</div>
-						</div>
+						</label>
 					</div>
 				</div>
 				<div class="adding-section">

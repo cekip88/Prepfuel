@@ -993,13 +993,10 @@ export const view = {
 				<div class="section">`;
 		for (let i = 0; i < _.me['parent']['students']['length']; i++) {
 			let student = _.me['parent']['students'][i];
-			let img;
-			if (student['user']['avatar']) {
-				img = `<div class="subnavigate-button-img" data-id="${student['user']['avatar']['_id'] ?? student['user']['avatar']}"></div>`
-			}
 			tpl += `
 				<button class="subnavigate-button${ i == curStIndex ? ' active' : ''}" data-click="${_.componentName}:changeStudent" data-index="${i}">
-					${img ?? ''}<span>${student['user']['firstName']} ${student['user']['lastName']}</span>
+					<div class="subnavigate-button-img" ${student['user']['avatar'] ? 'data-id="' + (student['user']['avatar']['_id'] ?? student['user']['avatar']) + '"' : ''}></div>
+					<span>${student['user']['firstName']} ${student['user']['lastName']}</span>
 				</button>
 			`;
 		}

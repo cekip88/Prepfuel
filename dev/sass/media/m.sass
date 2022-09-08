@@ -3278,6 +3278,8 @@ div.tbl-head
 				margin-top: auto
 		input[type='file']
 			display: none
+		.profile-img
+			overflow: hidden
 	
 	&-text
 		margin: 16px 0
@@ -3566,6 +3568,10 @@ div.tbl-head
 				border-radius: 6px
 
 
+
+.user-photo
+	+wh(100%)
+	object-fit: cover
 .parent
 	.df
 		width: 100%
@@ -3576,6 +3582,7 @@ div.tbl-head
 			margin-right: 12px
 			border-radius: 18px
 			background-color: rgb($blue-light)
+			overflow: hidden
 			span
 				color: rgb($blue-text)
 				font: $fz16 $f_medium
@@ -3663,6 +3670,10 @@ div.tbl-head
 			&.active
 				span
 					color: rgb($blue)
+	&.subnavigate
+		padding: 8px
+		button
+			margin: 10px 0
 	&-student
 		&-avatar
 			+wh(80px)

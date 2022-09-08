@@ -77,7 +77,7 @@ export class UsersModule extends AdminPage {
 				'notificationNavigate','showAddCard','showAddBillingAddress','searchUsers','sortBy','filterUsersByDates','sortParentStudentsBy',
 				'checkEmail',
 				'paginate','paginateTo',
-				'uploadParentPhoto','sendResetPassword',
+				'uploadPhoto','sendResetPassword',
 			]);
 
 		_.initialState = {
@@ -100,8 +100,13 @@ export class UsersModule extends AdminPage {
 	async domReady(data){
 		const _ = this;
 		_.navigationInit();
+		if (_.usersAbortController) _.usersAbortController.abort();
+		_.usersAbortController = new AbortController();
+		let signal = _.usersAbortController.signal;
+
 		_.wizardData = Model.wizardData ?? await Model.getWizardData();
 		let tableData = {};
+
 		if (_.subSection === 'student' || _.subSection === 'parent' || _.subSection === 'admin') {
 			_.parentInfo = {};
 			_.studentInfo = {};
@@ -110,7 +115,8 @@ export class UsersModule extends AdminPage {
 			_.searchInfo[_.subSection] = {page:1};
 			tableData = await Model.getUsers({
 				role:_.subSection,
-				searchInfo:_.searchInfo[_.subSection]
+				searchInfo:_.searchInfo[_.subSection],
+				signal:signal
 			});
 		}
 		if (_.subSection === 'student'){
@@ -146,12 +152,20 @@ export class UsersModule extends AdminPage {
 		//_.ff('.block-header-itefm.button-blue').gappend(_.markup('<span>Hello</span>'))
 	}
 
+	getBackUrl(){
+		return `https://live-prepfuelbackend-mydevcube.apps.devinci.co`
+	}
+
 	// Create methods
 	async createNewParent({item}){
 		const _ = this;
 		let cont = item.closest('#add-parent');
 		let formValidation = await _.nextStepBtnValidation(cont);
 		if (!formValidation) return;
+
+		if (_.parentInfo.uploadData) {
+			_.parentInfo.photo = await Model.uploadPhoto(_.parentInfo.uploadData);
+		}
 
 		let response = await Model.createParent(_.parentInfo);
 		if(!response) return void 0;
@@ -271,13 +285,18 @@ export class UsersModule extends AdminPage {
 	async updateAdmin({item}){
 		const _ = this;
 		let me = JSON.parse(localStorage.getItem('me'));
-		let response = await Model.updateAdmin({
+		let updateData = {
 			'_id': _.adminInfo['_id'],
 			'firstName': _.adminInfo['firstName'],
 			"lastName": _.adminInfo['lastName'],
 			"email": _.adminInfo['email'],
 			"role": _.adminInfo['role'][0],
-		});
+		};
+		if (_.adminInfo.uploadData) {
+			updateData.photo = await Model.uploadPhoto(_.adminInfo.uploadData);
+		}
+		console.log(updateData)
+		let response = await Model.updateAdmin(updateData);
 		if(!response) return void 0;
 
 		if (me['admin']['_id'] == _.adminInfo['_id']) {
@@ -302,15 +321,20 @@ export class UsersModule extends AdminPage {
 		let form = item.closest('.parent-profile-inner');
 		let validate = await _.nextStepBtnValidation(form);
 		if (!validate) return void 0;
-
-		let response = await Model.updateParent({
+		let updateData = {
 			'_id': _.parentInfo['_id'],
 			'firstName': _.parentInfo['firstName'],
 			"lastName": _.parentInfo['lastName'],
 			"email": _.parentInfo['email'],
 			"phone": _.parentInfo['phone'],
 			"role": _.parentInfo['role'][0],
-		});
+		};
+
+		if (_.parentInfo.uploadData) {
+			updateData.photo = await Model.uploadPhoto(_.parentInfo.uploadData);
+		}
+
+		let response = await Model.updateParent(updateData);
 		if(!response) return void 0;
 
 		item.setAttribute('rerender',true);
@@ -508,12 +532,12 @@ export class UsersModule extends AdminPage {
 		} else {
 			adminId = profileData['_id'];
 		}
-		let currentAdmin = Model.adminsData.response.filter( admin => admin['_id'] == adminId )[0];
+		let currentAdmin = await Model.getAdmin(adminId);
 		_.adminInfo = Object.assign({},currentAdmin['user']);
 		_.adminInfo['userId'] = _.adminInfo['_id'];
 		_.adminInfo['_id'] = currentAdmin['_id'];
 
-		_.f('.admin-profile-inner').innerHTML = _.adminProfileInner();
+		_.f('.admin-profile-inner').append(_.markup(_.adminProfileInner()));
 		_.f('.breadcrumbs').innerHTML = _.breadCrumbsTpl([{title:'Users'},{title:'Admins'},{title:`${_.adminInfo['firstName']} ${_.adminInfo['lastName']} Profile`}]);
 	}
 	async fillParentProfile(profileData) {
@@ -1079,6 +1103,7 @@ export class UsersModule extends AdminPage {
 		_.parentInfo['phone'] = parentInfo['phone'];
 		_.parentInfo['_id'] = parentInfo['_id'];
 		_.parentInfo['userId'] = parentInfo.user['_id'];
+		_.parentInfo['photo'] = parentInfo.user.photo;
 
 		G_Bus.trigger('modaler','closeModal');
 		_.f('.parent-popup-profile-body').innerHTML = _.parentPersonalInfoTpl();
@@ -1726,11 +1751,38 @@ export class UsersModule extends AdminPage {
 		return true;
 	}
 
-	uploadParentPhoto({item}){
+	async uploadPhoto({item}){
 		const _ = this;
-		let file = item.files[0];
-		console.log(file)
+		let
+			cont = item.parentElement,
+			role = item.getAttribute('role'),
+			file = item.files[0],
+			img = cont.querySelector('IMG');
+
+		if (!file) {
+			cont.querySelector('.profile-img-letter').removeAttribute('style');
+			_[`${role}Info`].uploadData = null;
+			if (img) img.remove();
+			return;
+		}
+		let
+			fileName = file.name,
+			splitArray = fileName.split('.'),
+			extension = splitArray[splitArray.length - 1],
+			title = fileName.substr(0,fileName.length - extension.length - 1);
+		if (file) {
+			if (!img) {
+				img = document.createElement('IMG');
+				img.className = 'user-photo';
+				cont.querySelector('.profile-img').prepend(img);
+				cont.querySelector('.profile-img-letter').setAttribute('style','display:none;');
+			}
+			_[`${role}Info`].uploadData = new FormData();
+			_[`${role}Info`].uploadData.append('img',file,title + '.'  + extension);
+			img.setAttribute('src',`${URL.createObjectURL(file)}`);
+		}
 	}
+
 	async sendResetPassword({item}){
 		const _ = this;
 		let role = item.getAttribute('role');

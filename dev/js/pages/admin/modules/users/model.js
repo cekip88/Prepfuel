@@ -14,6 +14,7 @@ class _Model {
 			wizardData: `/user/wizard-data`,
 			getStudent: `/user/student`,
 			getParent: `/admin/parents`,
+			getAdmin: `/admin/admins`,
 			studentParents: `/admin/student`,
 			parentStudents: `/admin/parent`,
 			assignCourse: `/user/assign-plan`,
@@ -28,7 +29,8 @@ class _Model {
 			removeCourse: `/user/remove-plan`,
 			removeStudent: `/user/delete-student`,
 			removeAdmin: `/admin/admins`,
-			sendResetPassword: `/auth/forgot-password/`
+			sendResetPassword: `/auth/forgot-password/`,
+			photo: `/user/upload-image`,
 		};
 	}
 	
@@ -80,6 +82,26 @@ class _Model {
 		const _ = this;
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.getEndpoint('getParent')}/${parentId}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('getParentStudents', response);
+				}
+			} else {
+				_.wrongRequest('getParentStudents', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+	getAdmin(adminId){
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('getAdmin')}/${adminId}`, {
 				method: 'GET',
 				headers: _.baseHeaders,
 			});
@@ -156,7 +178,7 @@ class _Model {
 			'data': request
 		});
 	}
-	getUsers({role,searchInfo= {page: 1}}) {
+	getUsers({role,searchInfo= {page: 1},signal}) {
 		const _ = this;
 		/*if(!update){
 			if(_[`${role}sData`]) return Promise.resolve(_[`${role}sData`]);
@@ -173,23 +195,31 @@ class _Model {
 			}
 		}
 		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.getEndpoint('usersList')}/${request}`, {
-				method: 'GET',
-				headers: _.baseHeaders,
-			});
-			if(rawResponse.status < 210) {
-				let response = await rawResponse.json();
-				if(response['status'] == 'success') {
-					_[`${role}sData`] = response;
-					resolve(response);
+			try{
+				let rawResponse = await fetch(`${_.getEndpoint('usersList')}/${request}`, {
+					method: 'GET',
+					headers: _.baseHeaders,
+					signal:signal
+				});
+				if(rawResponse.status < 210) {
+					let response = await rawResponse.json();
+					if(response['status'] == 'success') {
+						_[`${role}sData`] = response;
+						resolve(response);
+					} else {
+						_.wrongResponse('getUsers', response);
+					}
 				} else {
-					_.wrongResponse('getUsers', response);
+					_.wrongRequest('getUsers', rawResponse)
 				}
-			} else {
-				_.wrongRequest('getUsers', rawResponse)
+				resolve(null);
+			}catch(e){
+				if (e.name == 'AbortError'){
+					console.log(e.message,role)
+				}
 			}
-			resolve(null);
-		});
+			});
+
 	}
 	assignCourse(assignData) {
 		const _ = this;
@@ -662,6 +692,40 @@ class _Model {
 			}
 			resolve(null);
 		});
+	}
+
+	uploadPhoto(uploadData){
+		const _ = this;
+		let contentLength = _.getContentLength(uploadData);
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('photo')}`, {
+				method: 'POST',
+				body: uploadData
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('assignCourse', response);
+				}
+			} else {
+				_.wrongRequest('assignCourse', rawResponse)
+			}
+			resolve(null);
+		});
+	}
+	getContentLength(formData) {
+		const formDataEntries = [...formData.entries()]
+
+		const contentLength = formDataEntries.reduce((acc, [key, value]) => {
+			if (typeof value === 'string') return acc + value.length
+			if (typeof value === 'object') return acc + value.size
+
+			return acc
+		}, 0)
+
+		return contentLength
 	}
 
 	sendResetPassword(userId,userEmail) {
