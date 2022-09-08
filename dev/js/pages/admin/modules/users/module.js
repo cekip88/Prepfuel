@@ -99,6 +99,7 @@ export class UsersModule extends AdminPage {
 
 	async domReady(data){
 		const _ = this;
+		console.log(_.abortControllers)
 		_.navigationInit();
 		if (_.usersAbortController) _.usersAbortController.abort();
 		_.usersAbortController = new AbortController();
@@ -1879,7 +1880,7 @@ export class UsersModule extends AdminPage {
 	}
 	// End paginate
 	
-	async init(){
+	async init(params){
 		const _ = this;
 		_._( _.handleAddingSteps.bind(_),[ 'addingStep' ] );
 		_._( _.handleAssignSteps.bind(_),[ 'assignStep' ] );
