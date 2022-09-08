@@ -10,7 +10,21 @@ export class G extends G_G{
 	constructor() {
 		super();
 		const _ = this;
+		_.abortControllers = [];
 	}
+	addAbortController(ctrl){
+		const _ = this;
+		_.abortControllers.push(ctrl);
+	}
+	
+	triggerAbortController(){
+		const _ = this;
+		_.abortControllers.forEach(function (item,index){
+			item.abort();
+			_.abortControllers.splice(index,1);
+		})
+	}
+	
 	el(tag,params = {}){
 		const _ = this;
 		if (!tag) return null;

@@ -74,8 +74,6 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		_.navigationInit();
 		if(_.subSection == 'tests-list'){
-		
-		
 			//console.log('Current Question: ',_.currentQuestion);
 			_.fillTestsList();
 		}

@@ -351,22 +351,27 @@ export class _Model {
 		_.testStatus = _.test['status'];
 		return Promise.resolve(_.test);
 	}
-	async getSectionCategories(subject='math'){
+	async getSectionCategories(subject='math',signal={}){
 		const _ = this;
 		// get all tests from Database
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.endpoints['sectionCategories']}/${subject}`,{
-				method: 'GET',
-				headers:_.baseHeaders,
-			});
-			if(rawResponse.status < 210){
-				let response = await rawResponse.json();
-				if(response['status'] == 'success'){
-					_.categories = response['response'];
-					resolve(_.categories);
+			try{
+				let rawResponse = await fetch(`${_.endpoints['sectionCategories']}/${subject}`,{
+					method: 'GET',
+					headers:_.baseHeaders,
+					signal
+				});
+				if(rawResponse.status < 210){
+					let response = await rawResponse.json();
+					if(response['status'] == 'success'){
+						_.categories = response['response'];
+						resolve(_.categories);
+					}
+				}else{
+					G_Bus.trigger('TestPage','showResults',rawResponse);
 				}
-			}else{
-				G_Bus.trigger('TestPage','showResults',rawResponse);
+			}catch(e){
+				console.log(e,subject)
 			}
 		});
 	}

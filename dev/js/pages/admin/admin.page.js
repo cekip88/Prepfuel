@@ -36,7 +36,7 @@ export class AdminPage extends G {
 			lastName: localStorage.getItem('lastName'),
 			role: localStorage.getItem('role'),
 		});
-		_.abortControllers = [];
+		
 		G_Bus
 			.on(_,['showUserList','changeSection','navigate'])
 	}
@@ -59,10 +59,7 @@ export class AdminPage extends G {
 
 	changeSection({item,event}){
 		const _ = this;
-		_.abortControllers.forEach(function (item,index){
-			item.abort();
-			_.abortControllers.splice(index,1);
-		})
+		_.triggerAbortController()
 		let
 			section = item.getAttribute('section'),
 			tpl = section.split('/')[2];
