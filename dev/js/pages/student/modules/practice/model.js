@@ -371,7 +371,9 @@ export class _Model {
 					G_Bus.trigger('TestPage','showResults',rawResponse);
 				}
 			}catch(e){
-				console.log(e,subject)
+				if (e.name != 'AbortError'){
+					throw  new Error(e);
+				}
 			}
 		});
 	}
@@ -427,19 +429,28 @@ export class _Model {
 		_.currentConcept = currentConcept;
 		return { currentCategory, currentConcept};
 	}
-	getQuizess(subject='math'){
+	getQuizess(subject='math',signal){
 		const _ = this;
-		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.endpoints['quizess']}/${subject}`,{
-				method: 'GET',
-				headers: _.baseHeaders,
+	
+			return new Promise(async resolve =>{
+				try{
+					let rawResponse = await fetch(`${_.endpoints['quizess']}/${subject}`,{
+						method: 'GET',
+						headers: _.baseHeaders,
+						signal
+					});
+					if(rawResponse.status == 200){
+						let response = await rawResponse.json();
+						_.skillTest = response['response']['tests'];
+						resolve(response['response']);
+					}
+				}catch(e){
+					if (e.name != 'AbortError'){
+						throw  new Error(e)
+					}
+				}
 			});
-			if(rawResponse.status == 200){
-				let response = await rawResponse.json();
-				_.skillTest = response['response']['tests'];
-				resolve(response['response']);
-			}
-		});
+	
 	}
 	getCurrentQuiz(subject,num){
 		const _ = this;

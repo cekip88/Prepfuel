@@ -101,6 +101,14 @@ export class PracticeModule extends StudentPage{
 	async domReady(data){
 		const _ = this;
 		_.navigationInit();
+		if(_.abortGetSectionCategories)	{
+			_.abortGetSectionCategories.abort();
+		}
+		if(_.abortGetQuizess){
+			_.abortGetQuizess.abort();
+		}
+		_.abortGetSectionCategories = new AbortController();
+		_.abortGetQuizess = new AbortController();
 		if( _.subSection == 'mathematics' ){
 			_.fillMathematicsSection();
 			_.clearData();
@@ -124,21 +132,23 @@ export class PracticeModule extends StudentPage{
 		if( _.subSection == 'summary' ){
 			_.fillSummary();
 		}
+		_.abortGetSectionCategories.name = 'getSectionCategories';
+		_.abortGetQuizess.name = 'getQuizess';
+		_.addAbortController(_.abortGetSectionCategories);
+		_.addAbortController(_.abortGetQuizess);
 }
-
 
 // Fill methods
 	async fillMathematicsSection(){
 		const _ = this;
+	
 		let inner = _.f('#bodyInner');
 		_.clear(inner)
 		inner.append(_.markup(_.practiceTasksTpl()));
 		let cont = _.f('.practices-task-list');
 		_.clear(cont);
-		_.abortGetSectionCategories = new AbortController();
 		await _.rcQuizFill();
-		let skills = await Model.getSectionCategories('math',_.abortGetSectionCategories.signal);
-		_.rcAchievementFill(skills);
+		_.rcAchievementFill('math');
 	}
 	async fillEnglishSection(){
 		const _ = this;
@@ -148,9 +158,8 @@ export class PracticeModule extends StudentPage{
 		let cont = _.f('.practices-task-list');
 		_.clear(cont);
 		await _.rcQuizFill('english');
-		_.abortGetSectionCategories = new AbortController();
-		let skills = await Model.getSectionCategories('english',_.abortGetSectionCategories.signal);
-		_.rcAchievementFill(skills);
+		
+		_.rcAchievementFill('english');
 	}
 	async fillWelcomeSection({item}){
 		const _ = this;
@@ -295,10 +304,11 @@ export class PracticeModule extends StudentPage{
 		}
 		inner.prepend(_.markup(_.quizessTasksTpl(headerData)));
 		let
-			quizData = await Model.getQuizess(subject),
+			quizData = await Model.getQuizess(subject,_.abortGetQuizess.signal),
 			cont = _.f('.quizess-task-list'),
 			itemsTpl = _.taskItemsTpl(quizData);
 		_.clear(cont);
+	
 		if (!itemsTpl.length) return;
 		cont.append(...itemsTpl);
 	}
@@ -311,8 +321,10 @@ export class PracticeModule extends StudentPage{
 		if (!itemsTpl.length) return;
 		cont.append(...itemsTpl);
 	}
-	async rcAchievementFill(achieveData){
+	async rcAchievementFill(subject){
 		const _ = this;
+		let achieveData = await Model.getSectionCategories(subject,_.abortGetSectionCategories.signal);
+
 		//let achieveData = await Model.getAchievementInfo();
 		let cont = _.f('.practices-task-list');
 	//	_.clear(cont)
@@ -527,11 +539,7 @@ export class PracticeModule extends StudentPage{
 		}
 		item.classList.add('active');
 		_.clearData();
-		if(_.abortGetSectionCategories)	{
-			_.addAbortController(_.abortGetSectionCategories);
-			_.abortGetSectionCategories.abort();
-		}
-		
+
 		if(pos == 0){
 			_.fillMathematicsSection();
 		}

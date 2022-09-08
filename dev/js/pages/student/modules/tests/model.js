@@ -77,27 +77,34 @@ class _Model{
 	//	return _.currentSection['subSections']['questionsData'][_.currentSubSectionPos];
 	}
 	
-	async getStudentTests(type='practice'){
+	async getStudentTests(type='practice',signal={}){
 		const _ = this;
 		// get all tests from Database
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.endpoints['studentTests']}/${type}`,{
-				method: 'GET',
-				headers:_.baseHeaders,
-			});
-			if(rawResponse.status < 210){
-				let response = await rawResponse.json();
-				if(response['status'] == 'success'){
-					_.tests = response['response']['tests'];
-					_.tests.sort( (a,b)=>{
-						return a['testNumber'] - b['testNumber'];
-					});
-					console.log(_.tests);
-					await Model.getTest();
-					resolve(_.tests);
+			try{
+				let rawResponse = await fetch(`${_.endpoints['studentTests']}/${type}`,{
+					method: 'GET',
+					headers:_.baseHeaders,
+					signal
+				});
+				if(rawResponse.status < 210){
+					let response = await rawResponse.json();
+					if(response['status'] == 'success'){
+						_.tests = response['response']['tests'];
+						_.tests.sort( (a,b)=>{
+							return a['testNumber'] - b['testNumber'];
+						});
+						console.log(_.tests);
+						await Model.getTest();
+						resolve(_.tests);
+					}
+				}else{
+					G_Bus.trigger('TestPage','showResults',rawResponse);
 				}
-			}else{
-				G_Bus.trigger('TestPage','showResults',rawResponse);
+			}catch(e){
+				if (e.name != 'AbortError'){
+					throw  new Error(e)
+				}
 			}
 		});
 	}

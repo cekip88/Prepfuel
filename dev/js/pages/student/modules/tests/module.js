@@ -75,6 +75,9 @@ export class TestsModule extends StudentPage{
 		_.navigationInit();
 		if(_.subSection == 'tests-list'){
 			//console.log('Current Question: ',_.currentQuestion);
+			if(_.abortGetStudentTests){
+				_.abortGetStudentTests.abort();
+			}
 			_.fillTestsList();
 		}
 	}
@@ -119,12 +122,15 @@ export class TestsModule extends StudentPage{
 	}
 	async fillTestsList(){
 		const _ = this;
-		await Model.getStudentTests(); // requests all user tests
+		_.abortGetStudentTests = new AbortController();
+		_.abortGetStudentTests.name = 'getStudentTests';
+		_.addAbortController(_.abortGetStudentTests);
+		await Model.getStudentTests('practice',_.abortGetStudentTests.signal); // requests all user tests
 		_.set({
 			currentQuestion: Model.firstQuestion,
 		});
 		_.currentQuestion = Model.firstQuestion;
-		
+		console.log(_.abortGetStudentTests.signal.aborted);
 		let
 			container = _.f('#testAsideList');
 		container.innerHTML = '<img src="/img/loader.gif" alt="Loading...">';

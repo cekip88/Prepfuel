@@ -161,3 +161,39 @@ script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
 script.setAttribute('id', 'MathJax-script');
 document.head.appendChild(script);
 
+
+
+/*let ctrl = new AbortController(),
+signal = ctrl.signal;
+let test =   () =>{ return new Promise( (resolve,reject)=>{
+	let  isBreak = false;
+		for(let i=0,j=0; i  < 1000;i++){
+			j+=500;
+			if(isBreak){
+				console.log("BREAK");
+				break;
+			}
+			let int = setTimeout( function(){
+				console.log(i)
+			},j);
+			signal.addEventListener('abort',()=>{
+				isBreak = true;
+				clearInterval(int)
+				reject(int)
+			});
+			resolve(int);
+		}
+	})
+}
+test();
+setTimeout( ()=>{
+
+	let btn = document.querySelector('.head-button');
+	btn.addEventListener('click', (e)=>{
+		e.preventDefault();
+		ctrl.abort();
+		console.log(e);
+	})
+},2000)*/
+
+

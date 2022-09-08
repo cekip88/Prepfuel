@@ -6,22 +6,24 @@ export class G extends G_G{
 	static parts = {};
 	static modules = new Map();
 	static blocks = new Map();
-	
+	static abortControllers = new Map();
 	constructor() {
 		super();
 		const _ = this;
-		_.abortControllers = [];
+		
 	}
 	addAbortController(ctrl){
-		const _ = this;
-		_.abortControllers.push(ctrl);
+		const _ = this;;
+		if(G.abortControllers.has(ctrl.name)) return void 0;
+		G.abortControllers.set(ctrl['name'],ctrl);
 	}
 	
 	triggerAbortController(){
 		const _ = this;
-		_.abortControllers.forEach(function (item,index){
+		console.log(G.abortControllers);
+		G.abortControllers.forEach(function (item,index){
 			item.abort();
-			_.abortControllers.splice(index,1);
+			G.abortControllers.delete(index);
 		})
 	}
 	

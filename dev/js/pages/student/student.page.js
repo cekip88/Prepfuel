@@ -54,6 +54,7 @@ class StudentPage extends G{
 	}
 	changeSection({item,event}){
 		const _ = this;
+		_.triggerAbortController()
 		let
 			section = item.getAttribute('section'),
 			tpl = section.split('/')[2];
@@ -71,6 +72,7 @@ class StudentPage extends G{
 
 	async moduleRender(params){
 		const _ = this;
+		
 		let module = await _.getModule({
 			'pageName':'student',
 			'name': params['module'],
