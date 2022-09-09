@@ -746,6 +746,19 @@
 
 
 .schedule
+	&.calendar
+		padding-right: 24px
+		&.active
+			max-height: 860px
 	.calendar
 		&-day,&-btn
-			+wh(70px)
+			height: 70px
+			span
+				font-size: $fz20
+				line-height: 1em
+				bottom: 2px
+			svg
+				&.blue,&.green
+					+wh(33px,28px)
+				&.gold
+					+wh(33px,45px)

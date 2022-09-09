@@ -72,9 +72,8 @@ export const view = {
 			</li>
 		`
 	},
-	calendarTpl(curDate){
+	calendarTpl(){
 		const _ = this;
-		let months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 		let tpl = `
 			<div class="calendar schedule">
 				<div class="calendar-row">
@@ -86,48 +85,56 @@ export const view = {
 					<div class="calendar-day">Fri</div>
 					<div class="calendar-day">Sa</div>
 				</div>`;
-		for (let month = curDate.getMonth(); month < 10; month++){
-
+		return tpl;
+	},
+	calendarMonthTpl(dateInfo,schedule,dates){
+		const _ = this;
+		let days = ['s','m','t','w','th','f','sa'];
+		let month = dateInfo.date.getMonth() + 1;
+		let year = dateInfo.date.getFullYear();
+		let dateStr = year.toString() + '-' + (month < 10 ? '0' + month : month) + '-';
+		let curMonth = dates.currentDate.date.getMonth() + 1;
+		let curYear = dates.currentDate.date.getFullYear();
+		let curDate = dates.currentDate.date.getDate();
+		let toShow = true;
+		let pastDayFlag = dates.currentDate.timeStamp >= dateInfo.timeStamp;
+		let currentDateStr = curYear.toString() + '-' + (curMonth < 10 ? '0' + curMonth : curMonth) + '-' + (curDate < 10 ? '0' + curDate : curDate);
+		let tpl = `
+			<div class="calendar-title">
+				<span>${dates.monthsTitles[dateInfo.date.getMonth()]}</span>
+			</div>
+			<div class="calendar-inner">
+		`;
+		let firstDay = dateInfo.date.getDay();
+		for (let i = 0; i < firstDay; i++) {
+			tpl += '<div class="calendar-btn"></div>';
+		}
+		for(let i = 1; i <= dateInfo.length; i++) {
+			let dateString = dateStr + (i < 10 ? '0' + i : i);
+			let weekDay = days[(i - 1 + firstDay) % 7];
+			if (dateString == currentDateStr) {
+				pastDayFlag = false;
+			}
+			tpl += `<div class="calendar-btn${pastDayFlag ? ' fill' : ''}${dateString == currentDateStr ? ' current' : ''}"><span>${i}</span>`;
+			if (dateString == dates.endDate.dateStr) {
+				if (dates.endDate.type == 'practice') tpl += `<svg class="calendar-svg blue"><use xlink:href='#badge'></use></svg>`;
+				else tpl += `<svg class="calendar-svg green"><use xlink:href='#badge'></use></svg>`;
+				toShow = false;
+			}
+			if (toShow) {
+				if (dates.practiceTests.indexOf(dateString) >= 0) tpl += `<svg class="calendar-svg blue"><use xlink:href='#badge'></use></svg>`;
+				else if (schedule.practiceDays.indexOf(weekDay) >= 0) tpl += `<svg class="calendar-svg gold"><use xlink:href='#tablet'></use></svg>`;
+			}
+			tpl += `</div>`;
 		}
 		tpl += `</div>`;
 		return tpl;
-	},
-	calendarMonthTpl(months,date,curDate){
-		let tpl = `
-			<div class="calendar-title"><span>${months[date.getMonth()]}</span></div>
-			<div class="calendar-inner">
-				<div class="calendar-row">
-					<div class="calendar-btn"></div>
-					<div class="calendar-btn"></div>
-					<div class="calendar-btn fill">
-						<span>1</span> 
-						<svg class="calendar-svg"><use xlink:href='#tablet'></use></svg>
-					</div>
-					<div class="calendar-btn fill">
-						<span>2</span>
-						<svg class="calendar-svg"><use xlink:href='#tablet'></use></svg>
-					 </div>
-					<div class="calendar-btn fill">
-						<span>3</span>
-						<svg class="calendar-svg"><use xlink:href='#tablet'></use></svg>
-					 </div>
-					<div class="calendar-btn fill">
-						<span>4</span>
-						<svg class="calendar-svg"><use xlink:href='#tablet'></use></svg>
-					 </div>
-					<div class="calendar-btn fill">
-						<span>5</span>
-						<svg class="calendar-svg"><use xlink:href='#tablet'></use></svg>
-					</div>
-				</div>
-			</div>
-		`
 	},
 	scheduleFooterTpl(){
 		const _ = this;
 		return `
 			<div class="schedule-footer">
-				<button class="schedule-footer-button active">
+				<button class="schedule-footer-button" data-click="${_.componentName}:showCalendar">
 					<span class="icon"><svg><use xlink:href="#calendar-transparent"></use></svg></span>
 					<span class="text">Calendar</span>
 					<span class="arrow"></span>

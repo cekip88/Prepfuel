@@ -1760,6 +1760,7 @@ export class UsersModule extends AdminPage {
 			cont = item.parentElement,
 			role = item.getAttribute('role'),
 			file = item.files[0],
+			validate = true,
 			img = cont.querySelector('IMG');
 
 		if (!file) {
@@ -1768,11 +1769,18 @@ export class UsersModule extends AdminPage {
 			if (img) img.remove();
 			return;
 		}
+		let formats = ['gif','png','jpg','jpeg'];
+		if (file.size > 3100000) validate = false;
 		let
 			fileName = file.name,
 			splitArray = fileName.split('.'),
 			extension = splitArray[splitArray.length - 1],
 			title = fileName.substr(0,fileName.length - extension.length - 1);
+		if (formats.indexOf(extension) < 0) validate = false;
+		if (!validate) {
+			cont.querySelector('.profile-img-desc').style = 'color: red;';
+			return;
+		} else cont.querySelector('.profile-img-desc').removeAttribute('style');
 		if (file) {
 			if (!img) {
 				img = document.createElement('IMG');

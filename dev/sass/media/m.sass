@@ -890,9 +890,18 @@ button.student-profile-plan-edit
 			&.last
 				display: flex
 				margin-left: 0
-	.calendar
-		max-height: 860px
+	&.calendar
+		max-height: 0
+		padding-right: 10px
 		overflow: auto
+		transition: .35s ease
+		&.active
+			max-height: 400px
+			margin-top: 32px
+	.calendar
+		&-inner
+			@extend %df
+			flex-wrap: wrap
 		&-title
 			margin-top: 16px
 			margin-bottom: 8px
@@ -902,14 +911,24 @@ button.student-profile-plan-edit
 			border-top: 1px solid rgb($neutral-200)
 			border-bottom: 1px solid rgb($neutral-200)
 		&-day,&-btn
-			+wh(50px)
+			+wh(calc(100% / 7),35px)
 			span
-				height: 20px
-				font-size: $fz20
+				+wh(28px)
 				line-height: 1em
-				bottom: 2px
+				font-family: $f_medium
 			svg
-				+wh(24px,30px)
+				+wh(12px,15px)
+				&.blue
+					fill: rgb($blue)
+				&.green
+					fill: rgb($green)
+				&.gold
+					fill: rgb($gold)
+			&.current
+				span
+					border-radius: 100%
+					background-color: rgb($blue)
+					color: rgb($white)
 
 
 .calendar

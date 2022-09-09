@@ -1545,7 +1545,7 @@ export const view = {
 							class="file" 
 							data-change="${_.componentName}:uploadPhoto;${_.componentName}:fillParentInfo"
 							role="parent"
-							accept="image/png, image/gif, image/jpeg"
+							accept="image/png, image/gif, image/jpeg, image/jpg"
 						>
 						<div class="profile-img">
 							<div class="profile-img-letter">
@@ -2832,7 +2832,7 @@ export const view = {
 								class="file" 
 								data-change="${_.componentName}:uploadPhoto"
 								role="parent"
-								accept="image/png, image/gif, image/jpeg"
+								accept="image/png, image/gif, image/jpeg, image/jpg"
 							>
 							<div class="profile-img">`;
 		if (!_.parentInfo.photo) {
@@ -3427,7 +3427,7 @@ export const view = {
 								class="file" 
 								data-change="${_.componentName}:uploadPhoto"
 								role="admin"
-								accept="image/png, image/gif, image/jpeg"
+								accept="image/png, image/gif, image/jpeg, image/jpg"
 							>
 							<div class="profile-img">`;
 		if (!_.adminInfo.photo) {

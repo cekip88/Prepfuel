@@ -29,7 +29,7 @@ export class _Model{
 	getSchedule(){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.endpoints['dashSchedule']}`,{
+			let rawResponse = await fetch(`${_.endpoints['schedule']}`,{
 				method: 'GET',
 				headers:_.baseHeaders
 			});
@@ -44,12 +44,8 @@ export class _Model{
 				method: 'GET',
 				headers:_.baseHeaders
 			});
-			if(rawResponse.status <= 210){
-				let response = await rawResponse.json();
-				resolve(response['response']);
-			}else{
-				resolve(null);
-			}
+			let response = await rawResponse.json();
+			resolve(response['response']);
 		});
 	}
 	deleteSchedule(){
