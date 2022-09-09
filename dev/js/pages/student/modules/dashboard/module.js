@@ -54,16 +54,6 @@ export class DashboardModule extends StudentPage{
 	
 
 	// Show methods
-	/*async fillScheduleBlock(){
-		const _ = this;
-		let
-			schedule = await Model.getDashSchedule(),
-			scheduleList = document.querySelector('#scheduleList');
-		_.clear(scheduleList)
-
-		let scheduleTpl = _.scheduleBlock(schedule);
-		scheduleList.append(_.markup(scheduleTpl))
-	}*/
 	async fillScheduleBlock(){
 		const _ = this;
 		let scheduleList = document.querySelector('#scheduleList');
@@ -71,6 +61,7 @@ export class DashboardModule extends StudentPage{
 		scheduleList.classList.add('loader-parent');
 		scheduleList.append(_.markup(`<img src="/img/loader.gif">`))
 		let schedule = await Model.getSchedule();
+		console.log(schedule)
 		let scheduleButtons = _.f('.block-title-control button');
 		let scheduleFooter = scheduleList.nextElementSibling;
 		_.clear(scheduleList);
@@ -86,6 +77,9 @@ export class DashboardModule extends StudentPage{
 			scheduleList.append(_.markup(scheduleTpl));
 		}
 		scheduleList.classList.remove('loader-parent');
+
+		let scheduleCont = scheduleList.closest('#scheduleCont');
+		_.practiceCalendar(scheduleCont);
 	}
 	drawCircleGraphic(item,color){
 		const _ = this;
@@ -112,6 +106,7 @@ export class DashboardModule extends StudentPage{
 		let data = [];
 		for (let item of schData) {
 			if (!item) continue;
+			console.log(item)
 			let title = `Next ${item.title}`;
 			let info = '', count = '';
 
@@ -134,6 +129,7 @@ export class DashboardModule extends StudentPage{
 				}
 			} else {
 				count = item['daysLeft'];
+				info = `<div class="info">Day${item['daysLeft'] == 1 ? '' : 's'} until ${item.title}</div>`
 				if (item['title'] === 'isee') {
 					info = `
 						<div class="info">
@@ -158,7 +154,15 @@ export class DashboardModule extends StudentPage{
 		return data;
 	}
 	// end show methods
-	
+
+
+	practiceCalendar(cont){
+		const _ = this;
+		let date = new Date();
+
+		let tpl = _.calendarTpl(date);
+		cont.append(_.markup(tpl));
+	}
 
 	async init() {
 		const _ = this;

@@ -538,7 +538,9 @@ export class UsersModule extends AdminPage {
 		_.adminInfo['userId'] = _.adminInfo['_id'];
 		_.adminInfo['_id'] = currentAdmin['_id'];
 
-		_.f('.admin-profile-inner').append(_.markup(_.adminProfileInner()));
+		let adminInner = _.f('.admin-profile-inner');
+		_.clear(adminInner);
+		adminInner.append(_.markup(_.adminProfileInner()));
 		_.f('.breadcrumbs').innerHTML = _.breadCrumbsTpl([{title:'Users'},{title:'Admins'},{title:`${_.adminInfo['firstName']} ${_.adminInfo['lastName']} Profile`}]);
 	}
 	async fillParentProfile(profileData) {

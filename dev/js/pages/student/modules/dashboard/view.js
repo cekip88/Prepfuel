@@ -52,9 +52,9 @@ export const view = {
 			testDate = dashSchedule['test'] ? new Date(dashSchedule['test']['date']) : undefined;
 		let tpl = ``;
 		let itemsData = _.fillScheduleItemsTpl(dashSchedule);
-		console.log(dashSchedule,itemsData)
 		if (!itemsData || !itemsData.length) return;
 		for (let item of itemsData) {
+			//console.log(item)
 			tpl += _.scheduleItemTpl(item);
 		}
 		return tpl;
@@ -70,6 +70,57 @@ export const view = {
 					${_.drawCircleGraphic(item, _.scheduleColors[item.title])}
 				</div>
 			</li>
+		`
+	},
+	calendarTpl(curDate){
+		const _ = this;
+		let months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+		let tpl = `
+			<div class="calendar schedule">
+				<div class="calendar-row">
+					<div class="calendar-day">Su</div>
+					<div class="calendar-day">Mo</div>
+					<div class="calendar-day">Tu</div>
+					<div class="calendar-day">We</div>
+					<div class="calendar-day">Th</div>
+					<div class="calendar-day">Fri</div>
+					<div class="calendar-day">Sa</div>
+				</div>`;
+		for (let month = curDate.getMonth(); month < 10; month++){
+
+		}
+		tpl += `</div>`;
+		return tpl;
+	},
+	calendarMonthTpl(months,date,curDate){
+		let tpl = `
+			<div class="calendar-title"><span>${months[date.getMonth()]}</span></div>
+			<div class="calendar-inner">
+				<div class="calendar-row">
+					<div class="calendar-btn"></div>
+					<div class="calendar-btn"></div>
+					<div class="calendar-btn fill">
+						<span>1</span> 
+						<svg class="calendar-svg"><use xlink:href='#tablet'></use></svg>
+					</div>
+					<div class="calendar-btn fill">
+						<span>2</span>
+						<svg class="calendar-svg"><use xlink:href='#tablet'></use></svg>
+					 </div>
+					<div class="calendar-btn fill">
+						<span>3</span>
+						<svg class="calendar-svg"><use xlink:href='#tablet'></use></svg>
+					 </div>
+					<div class="calendar-btn fill">
+						<span>4</span>
+						<svg class="calendar-svg"><use xlink:href='#tablet'></use></svg>
+					 </div>
+					<div class="calendar-btn fill">
+						<span>5</span>
+						<svg class="calendar-svg"><use xlink:href='#tablet'></use></svg>
+					</div>
+				</div>
+			</div>
 		`
 	},
 	scheduleFooterTpl(){

@@ -1718,7 +1718,7 @@ export const view = {
 				<svg class="button-icon">
 					<use xlink:href="#plus"></use>
 				</svg>
-				<span>Assign SHSAT Course</span>
+				<span>Assign ${_.courseData.currentPlan} Course</span>
 			</button>
 		`;
 	},

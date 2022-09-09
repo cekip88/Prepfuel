@@ -353,6 +353,13 @@ export class DashboardModule extends ParentPage{
 			else item.src = `/img/${value[item.getAttribute('data-title')]}.svg`
 		}
 	}
+	async deleteSchedule({item}){
+		const _ = this;
+		let response = await Model.deleteSchedule();
+		if (response.status == 'success') {
+			await _.fillScheduleBlock()
+		}
+	}
 	async fillScheduleBlock(id){
 		const _ = this;
 		let scheduleList = document.querySelector('#scheduleList');
@@ -382,28 +389,61 @@ export class DashboardModule extends ParentPage{
 			scheduleList.append(_.markup(scheduleTpl));
 		}
 	}
-	async deleteSchedule({item}){
+	fillScheduleItemsTpl(dashSchedule){
 		const _ = this;
-		let response = await Model.deleteSchedule();
-		if (response.status == 'success') {
-			await _.fillScheduleBlock()
+		let schData = [
+			dashSchedule['skillTest'],
+			dashSchedule['practiceTest'],
+			dashSchedule['test'],
+		];
+		let data = [];
+		for (let item of schData) {
+			if (!item) continue;
+			let title = `Next ${item.title}`;
+			let info = '', count = '';
+
+
+			if (item['title'] === 'isee') {
+				title = 'Your ISEE Date';
+			}
+			if (item['title'] === 'skill test') {
+				title = 'Next practice';
+			}
+			if (item['title'] === "practice test") {
+				title = 'Next Practice Test';
+			}
+
+
+			if (item['daysLeft'] <= 0) {
+				count = 'Today';
+				if (item['title'] === 'isee') {
+					info = '<div class="info">Good luck</div>';
+				}
+			} else {
+				count = item['daysLeft'];
+				info = `<div class="info">Day${item['daysLeft'] == 1 ? '' : 's'} until ${item.title}</div>`
+				if (item['title'] === 'isee') {
+					info = `
+						<div class="info">
+							Day${item['daysLeft'] == 1 ? '' : 's'} until ISEE test
+						</div>`
+				}
+				if (item['title'] === 'skill test') {
+					info = `
+						<div class="info">
+							Day${item['daysLeft'] == 1 ? '' : 's'} until next practice
+						</div>`
+				}
+				if (item['title'] === "practice test") {
+					info = `
+						<div class="info">
+							Day${item['daysLeft'] == 1 ? '' : 's'} until next practice test
+						</div>`
+				}
+			}
+			data.push({info,count,item,title});
 		}
-	}
-	async fillStarsBlock(){
-		const _ = this;
-		let starsCont = _.f('#starsBlock');
-		let starsInfo = {
-			items: [
-				{title:'Skills Practice',count:1500,color:'246,155,17'},
-				{title:'Tests',count:1500,color:'0,149,232'},
-				{title:'Videos Watched',count:2500,color:'80,20,208'},
-				{title:'Reviewed Questions',count:345,color:'0,175,175'},
-			],
-			total: 5845
-		};
-		_.clear( starsCont );
-		starsCont.append( _.markup( _.starsBlockTpl(starsInfo)));
-		_.showCircleGraphic(starsInfo,starsCont)
+		return data;
 	}
 	showCircleGraphic(data,cont){
 		const _ = this;
@@ -442,62 +482,6 @@ export class DashboardModule extends ParentPage{
 
 		starsCont.prepend(svg);
 	}
-
-	fillScheduleItemsTpl(dashSchedule){
-		const _ = this;
-		let schData = [
-			dashSchedule['skillTest'],
-			dashSchedule['practiceTest'],
-			dashSchedule['test'],
-		];
-		let data = [];
-		for (let item of schData) {
-			if (!item) return void 0;
-			let title = `Next ${item.title}`;
-			let info = '', count = '';
-
-
-			if (item['title'] === 'isee'){
-				title = 'Your ISEE Date';
-			}
-			if (item['title'] === 'skill test'){
-				title = 'Next practice';
-			}
-			if (item['title'] === "practice test"){
-				title = 'Next Practice Test';
-			}
-
-
-			if (item['daysLeft'] <= 0) {
-				count = 'Today';
-				if (item['title'] === 'isee') {
-					info = '<div class="info">Good luck</div>';
-				}
-			} else {
-				count = item['daysLeft'];
-				if (item['title'] === 'isee') {
-					info = `
-						<div class="info">
-							Day${item['daysLeft'] == 1 ? '' : 's'} until ISEE test
-						</div>`
-				}
-				if (item['title'] === 'skill test') {
-					info = `
-						<div class="info">
-							Day${item['daysLeft'] == 1 ? '' : 's'} until next practice
-						</div>`
-				}
-				if (item['title'] === "practice test") {
-					info = `
-						<div class="info">
-							Day${item['daysLeft'] == 1 ? '' : 's'} until next practice test
-						</div>`
-				}
-			}
-			data.push({info,count,item,title});
-		}
-		return data;
-	}
 	drawCircleGraphic(item,color){
 		const _ = this;
 		let
@@ -513,6 +497,23 @@ export class DashboardModule extends ParentPage{
 		svg = '<svg xmlns="http://www.w3.org/2000/svg">' + svg;
 		return svg;
 	}
+	async fillStarsBlock(){
+		const _ = this;
+		let starsCont = _.f('#starsBlock');
+		let starsInfo = {
+			items: [
+				{title:'Skills Practice',count:1500,color:'246,155,17'},
+				{title:'Tests',count:1500,color:'0,149,232'},
+				{title:'Videos Watched',count:2500,color:'80,20,208'},
+				{title:'Reviewed Questions',count:345,color:'0,175,175'},
+			],
+			total: 5845
+		};
+		_.clear( starsCont );
+		starsCont.append( _.markup( _.starsBlockTpl(starsInfo)));
+		_.showCircleGraphic(starsInfo,starsCont)
+	}
+
 
 	// add student methods
 	async fillStudentInfo({item}){
