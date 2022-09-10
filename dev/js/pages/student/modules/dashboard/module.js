@@ -59,6 +59,7 @@ export class DashboardModule extends StudentPage{
 		_.clear(scheduleList);
 		scheduleList.classList.add('loader-parent');
 		scheduleList.append(_.markup(`<img src="/img/loader.gif">`))
+
 		let scheduleCont = scheduleList.closest('#scheduleCont');
 		let schedule = await Model.getDashSchedule();
 		let scheduleButtons = _.f('.block-title-control button');

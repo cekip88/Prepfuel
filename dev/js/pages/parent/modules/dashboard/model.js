@@ -105,7 +105,7 @@ export class _Model{
 		});
 	}
 
-	getSchedule(id){
+	getDashSchedule(id){
 		const _ = this;
 		return new Promise(async resolve =>{
 			let rawResponse = await fetch(`${_.endpoints['dashSchedule']}${id}`,{
@@ -116,6 +116,17 @@ export class _Model{
 				let response = await rawResponse.json();
 				resolve(response['response']);
 			}
+		});
+	}
+	getSchedule(){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['schedule']}`,{
+				method: 'GET',
+				headers:_.baseHeaders
+			});
+			let response = await rawResponse.json();
+			resolve(response['response']);
 		});
 	}
 	getActivities(id){

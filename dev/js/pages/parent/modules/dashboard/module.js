@@ -58,7 +58,7 @@ export class DashboardModule extends ParentPage{
 			'showAddCard','showAddBillingAddress',
 			'hideProfile','showHiddenScores',
 			'fillProfile','assignCourse','changeCurrentCourse',
-			'showCancelMembership','deleteSchedule',
+			'showCancelMembership','showCalendar',
 		]);
 	}
 	async domReady() {
@@ -353,41 +353,113 @@ export class DashboardModule extends ParentPage{
 			else item.src = `/img/${value[item.getAttribute('data-title')]}.svg`
 		}
 	}
-	async deleteSchedule({item}){
-		const _ = this;
-		let response = await Model.deleteSchedule();
-		if (response.status == 'success') {
-			await _.fillScheduleBlock()
-		}
-	}
 	async fillScheduleBlock(id){
 		const _ = this;
 		let scheduleList = document.querySelector('#scheduleList');
-		scheduleList.classList.add('loader-parent');
 		_.clear(scheduleList);
+		scheduleList.classList.add('loader-parent');
 		scheduleList.append(_.markup(`<img src="/img/loader.gif">`))
 
-		let schedule = await Model.getSchedule(id);
-		if (!scheduleList) return;
-
-		_.clear(scheduleList);
-		scheduleList.classList.remove('loader-parent');
-
+		let scheduleCont = scheduleList.closest('#scheduleCont');
+		let schedule = await Model.getDashSchedule(id);
 		let scheduleFooter = scheduleList.nextElementSibling;
+		_.clear(scheduleList);
+		let calendar = scheduleCont.querySelector('.calendar');
+		if (calendar) calendar.remove();
+
 		if (_.isEmpty(schedule)) {
 			scheduleFooter.classList.add('schedule-hidden');
 			scheduleList.append(_.markup(`<li class="block-empty-text">Student has not created the practice schedule yet.</li>`))
-			let titleBtns = _.f('.block-title-control BUTTON');
-			if (titleBtns.length) {
-				titleBtns.forEach(function (btn){
-					btn.style = 'display:none;'
-				})
-			}
 		} else {
 			scheduleFooter.classList.remove('schedule-hidden');
 			let scheduleTpl = _.scheduleBlock(schedule);
 			scheduleList.append(_.markup(scheduleTpl));
+			_.practiceCalendar(scheduleCont);
 		}
+		scheduleList.classList.remove('loader-parent');
+	}
+	async practiceCalendar(cont){
+		const _ = this;
+		let schedule = await Model.getSchedule();
+		console.log(schedule)
+		let dates = _.calendarDatesPrepare(schedule);
+		console.log(dates)
+
+
+		let tpl = _.calendarTpl();
+		for (let date of dates.months) {
+			tpl += _.calendarMonthTpl(date,schedule,dates);
+		}
+		tpl += `
+			</div>`;
+		cont.append(_.markup(tpl))
+	}
+	calendarDatesPrepare(schedule){
+		const _ = this;
+		let curDate = new Date();
+		let dates = {
+			currentDate: {
+				date: curDate,
+				timeStamp: curDate.getTime(),
+			},
+			monthsTitles: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+			months: [],
+			practiceTests: [],
+		};
+
+		let curMonth = dates.currentDate.date.getMonth() + 1;
+		let curDateDay = dates.currentDate.date.getDate();
+		let startDateStr = dates.currentDate.date.getFullYear().toString() + '-' + (curMonth < 10 ? '0' + curMonth : curMonth) + '-' + (curDateDay < 10 ? '0' + curDateDay : curDateDay);
+		dates.startDate = {date: new Date(startDateStr)};
+		dates.startDate.timeStamp = dates.startDate.date.getTime();
+
+		let endDate,endDateType;
+		if (schedule.testDate) {
+			endDate = new Date(schedule.testDate);
+			endDateType = 'final';
+		} else {
+			endDate = new Date(schedule.practiceTests[schedule.practiceTests.length - 1].date);
+			endDateType = 'practice'
+		}
+		dates.endDate = {date: endDate,type: endDateType};
+		dates.endDate.timeStamp = dates.endDate.date.getTime();
+		dates.endDate.dateStr = endDate.getFullYear().toString() + '-' + (endDate.getMonth() + 1 < 10 ? '0' + (endDate.getMonth() + 1) : endDate.getMonth() + 1) + '-' + (endDate.getDate() + 1 < 10 ? '0' + endDate.getDate() : endDate.getDate())
+
+		let timeStamp = dates.startDate.timeStamp;
+		let itemMonth = dates.startDate.date.getMonth() + 1;
+		let itemYear = dates.startDate.date.getFullYear();
+		while(timeStamp < dates.endDate.timeStamp) {
+			let itemDate = new Date(itemYear + '-' + itemMonth + '-' + '01');
+			timeStamp = itemDate.getTime();
+			let dateData = {
+				date: itemDate,
+				timeStamp: itemDate.getTime(),
+				length: _.getMonthLength(itemMonth,itemYear)
+			};
+			itemMonth++;
+			if (itemMonth == 13) {
+				itemMonth = 1;
+				itemYear++;
+			}
+			if (itemMonth < 10) itemMonth = '0' + itemMonth;
+			dates.months.push(dateData);
+		}
+		dates.months.splice(dates.months.length - 1);
+
+		for (let key in schedule.practiceTests) {
+			let practiceTestDate = schedule.practiceTests[key].date.split('T')[0];
+			dates.practiceTests.push(practiceTestDate);
+		}
+		return dates;
+	}
+	getMonthLength(month,year){
+		let long = [1,3,5,7,8,10,12];
+		if (long.indexOf(parseInt(month)) >= 0) {
+			return 31;
+		} else if (parseInt(month) === 2) {
+			return year % 4 ? 28 : 29;
+		}
+		return 30;
 	}
 	fillScheduleItemsTpl(dashSchedule){
 		const _ = this;
@@ -444,6 +516,17 @@ export class DashboardModule extends ParentPage{
 			data.push({info,count,item,title});
 		}
 		return data;
+	}
+	showCalendar({item}){
+		const _ = this;
+		let calendar = item.closest('#scheduleCont').querySelector('.calendar');
+		if (item.classList.contains('active')) {
+			item.classList.remove('active');
+			calendar.classList.remove('active');
+		} else {
+			item.classList.add('active');
+			calendar.classList.add('active');
+		}
 	}
 	showCircleGraphic(data,cont){
 		const _ = this;

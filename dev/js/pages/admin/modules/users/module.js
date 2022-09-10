@@ -193,6 +193,9 @@ export class UsersModule extends AdminPage {
 	async createStudent(){
 		const _ = this;
 		if(!_.studentInfo['parentId']){
+			if (_.parentInfo.uploadData) {
+				_.parentInfo.photo = await Model.uploadPhoto(_.parentInfo.uploadData);
+			}
 			let parent = await Model.createParent(_.parentInfo);
 			_.studentInfo['parentId'] = parent['_id'];
 		}
@@ -1489,13 +1492,16 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		let response = await Model.removeParent(_.parentInfo['_id']);
 		if (!response) return;
-		if (_.subSection == 'parentProfile') {
+		item.setAttribute('rerender',true);
+		item.setAttribute('section','parent');
+		G_Bus.trigger(_.componentName,'changeSection',{item})
+		/*if (_.subSection == 'parentProfile') {
 			item.setAttribute('rerender',true);
 			item.setAttribute('section','student');
 			G_Bus.trigger(_.componentName,'changeSection',{item})
 		} else {
 			_.f(`TR[user-id="${_.parentInfo['_id']}"]`).remove();
-		}
+		}*/
 		G_Bus.trigger('modaler','closeModal')
 		_.showSuccessPopup('Parent profile deleted');
 	}
@@ -1801,6 +1807,7 @@ export class UsersModule extends AdminPage {
 		let email = info.email;
 		if (role == 'student') {
 			let parentInfo = await Model.getStudentParents(info._id);
+			console.log(parentInfo)
 			if (parentInfo.status == 'success') email = parentInfo.response[0].user.email;
 		}
 		let response = await Model.sendResetPassword(info._id,email);
