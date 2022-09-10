@@ -431,7 +431,6 @@ export class _Model {
 	}
 	getQuizess(subject='math',signal){
 		const _ = this;
-	
 			return new Promise(async resolve =>{
 				try{
 					let rawResponse = await fetch(`${_.endpoints['quizess']}/${subject}`,{
