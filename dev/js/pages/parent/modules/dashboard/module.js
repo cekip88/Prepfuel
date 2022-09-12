@@ -374,17 +374,14 @@ export class DashboardModule extends ParentPage{
 			scheduleFooter.classList.remove('schedule-hidden');
 			let scheduleTpl = _.scheduleBlock(schedule);
 			scheduleList.append(_.markup(scheduleTpl));
-			_.practiceCalendar(scheduleCont);
+			_.practiceCalendar(scheduleCont,_.currentStudent._id);
 		}
 		scheduleList.classList.remove('loader-parent');
 	}
-	async practiceCalendar(cont){
+	async practiceCalendar(cont,studentId){
 		const _ = this;
-		let schedule = await Model.getSchedule();
-		console.log(schedule)
+		let schedule = await Model.getSchedule(studentId);
 		let dates = _.calendarDatesPrepare(schedule);
-		console.log(dates)
-
 
 		let tpl = _.calendarTpl();
 		for (let date of dates.months) {

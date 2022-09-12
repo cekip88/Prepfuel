@@ -57,7 +57,7 @@ export class AdminPage extends G {
 		item.classList.toggle('show');
 	}
 
-	changeSection({item,event}){
+	async changeSection({item,event}){
 		const _ = this;
 		_.triggerAbortController()
 		let
@@ -65,8 +65,9 @@ export class AdminPage extends G {
 			tpl = section.split('/')[2];
 		if(_.currentSection == section) return void 0;
 		if(section) history.pushState(null, null, section);
-		_.moduleRender({module:tpl});
+		await _.moduleRender({module:tpl});
 		_.currentSection = section;
+		return true;
 	}
 	async moduleRender(params){
 		const _ = this;
