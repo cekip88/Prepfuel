@@ -6,7 +6,7 @@ export class _Model{
 			"Content-Type": "application/json"
 		}
 		_.endpoints = {
-			schedule: `${env.backendUrl}/student/schedule`,
+			schedule: `${env.backendUrl}/parent/schedule`,
 			dashSchedule: `${env.backendUrl}/parent/schedule/dashboard/`,
 			me: `${env.backendUrl}/user/me`,
 			wizardData: `/user/wizard-data`,
@@ -118,10 +118,10 @@ export class _Model{
 			}
 		});
 	}
-	getSchedule(){
+	getSchedule(id){
 		const _ = this;
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.endpoints['schedule']}`,{
+			let rawResponse = await fetch(`${_.endpoints['schedule']}/${id}`,{
 				method: 'GET',
 				headers:_.baseHeaders
 			});
