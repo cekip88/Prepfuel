@@ -82,9 +82,15 @@ class HeaderBlock extends G{
 				`;
 			}
 		}
-		let profileTitle = 'Profile';
-		if (this._$.role == 'student') profileTitle = 'My Profile';
-		else if (this._$.role == 'parent') profileTitle = 'Account Settings';
+		let id,profileButton;
+		if (this._$.role == 'admin'){
+			id = _.me.admin._id;
+			profileButton = `<strong data-click="UsersModule:toProfile" data-id="${id}">Profile</strong>`;
+		} if (this._$.role == 'student') {
+			profileButton = `<strong>My Profile</strong>`;
+		} else if (this._$.role == 'parent') {
+			profileButton = `<strong>Account Settings</strong>`;
+		}
 		tpl += `
 						<div class="head-info">
 							<span class="head-name">${this._$.firstName}</span>
@@ -93,7 +99,7 @@ class HeaderBlock extends G{
 						<button class="head-user" data-click="${_.componentName}:showUserList">
 							<span>${this._$.firstName[0].toUpperCase()}</span>
 							<span class="head-user-list">
-								<strong data-click="StudentPage:changeSection" section="/student/profile">${profileTitle}</strong>
+								${profileButton}
 								${this._$.role == 'parent' ? '<strong data-click="Dashboard:changeSection" section="/parent/billing_history">Billing History</strong>' : ''}
 								<strong data-click="router:logout">Log Out</strong>
 							</span>

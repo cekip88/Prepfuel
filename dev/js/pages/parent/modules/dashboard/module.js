@@ -381,9 +381,7 @@ export class DashboardModule extends ParentPage{
 	async practiceCalendar(cont,studentId){
 		const _ = this;
 		let schedule = await Model.getSchedule(studentId);
-		console.log(schedule)
 		let dates = _.calendarDatesPrepare(schedule);
-		console.log(dates)
 
 		let tpl = _.calendarTpl();
 		for (let date of dates.months) {
