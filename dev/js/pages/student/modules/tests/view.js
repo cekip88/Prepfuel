@@ -208,49 +208,54 @@ export const view = {
 			</div>
 		`;
 	},
+	async questionInnerTpl(){
+		const _ = this;
+		return `
+			<div class="col wide">
+				<div class="block test-block tt-ii">
+					${await _.getQuestionTpl()}
+					${_.questionFooter()}
+				</div>
+		</div>`
+	},
 	async questionsCarcass(){
 		const _ = this;
+		console.log('s');
 		return	`
-		 ${await _.questionHeader()}
-		 <div class="section row">
-				<div class="col wide">
-					<div class="block test-block tt-ii">
-						${await _.getQuestionTpl()}
-						${_.questionFooter()}
-					</div>
-				</div>
-					${_.questionsListCont()}
-				</div>
+			 ${await _.questionHeader()}
+			 <div class="section row">
+				${await _.questionInnerTpl()}
+				${_.questionsListCont()}
 			</div>
-		 <div hidden>
-				<form class="modal report" slot="modal-item" id="report" data-submit="${_.componentName}:saveReport">
-					<h6 class="modal-title"><span>Report a mistake in this question</span></h6>
-					<p class="modal-text">Remember to read through the explanations and double check your answer. Thanks for your help!</p>
-					<p class="modal-text">What’s wrong</p>
-					<div class="check-list">
-						<g-input type='radio' class="g-form-item" name="answer" items='[
-						{"value":"wrong","text":"The answer is wrong"},
-						{"value":"typo","text":"I caught a typo."},
-						{"value":"confus","text":"The question or explanations are confusing or unclear."},
-						{"value":"broken","text":"Something isn’t working / something seems broken."}]'></g-input>
-					</div>
-					<h6 class="modal-title"><span>Description of issue</span></h6>
-					<textarea class="modal-area g-form-item" name="description"></textarea>
-					<div class="modal-row end">
-						<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
-						<button class="button-blue"><span>Submit Issue</span></button>
-					</div>
-				</form>
-				<form class="modal note"	slot="modal-item" id="note" data-submit="${this.componentName}:saveNote">
-					<h6 class="modal-title"><span>Note</span></h6>
-					<textarea class="modal-area" name="text"></textarea>
-					<div class="modal-row end">
-						<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
-						<button class="button-blue"><span>Save</span></button>
-					</div>
-				</form>
-				${_.confirmFinishTpl()}
-			</div>
+			 <div hidden>
+					<form class="modal report" slot="modal-item" id="report" data-submit="${_.componentName}:saveReport">
+						<h6 class="modal-title"><span>Report a mistake in this question</span></h6>
+						<p class="modal-text">Remember to read through the explanations and double check your answer. Thanks for your help!</p>
+						<p class="modal-text">What’s wrong</p>
+						<div class="check-list">
+							<g-input type='radio' class="g-form-item" name="answer" items='[
+							{"value":"wrong","text":"The answer is wrong"},
+							{"value":"typo","text":"I caught a typo."},
+							{"value":"confus","text":"The question or explanations are confusing or unclear."},
+							{"value":"broken","text":"Something isn’t working / something seems broken."}]'></g-input>
+						</div>
+						<h6 class="modal-title"><span>Description of issue</span></h6>
+						<textarea class="modal-area g-form-item" name="description"></textarea>
+						<div class="modal-row end">
+							<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
+							<button class="button-blue"><span>Submit Issue</span></button>
+						</div>
+					</form>
+					<form class="modal note"	slot="modal-item" id="note" data-submit="${this.componentName}:saveNote">
+						<h6 class="modal-title"><span>Note</span></h6>
+						<textarea class="modal-area" name="text"></textarea>
+						<div class="modal-row end">
+							<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
+							<button class="button-blue"><span>Save</span></button>
+						</div>
+					</form>
+					${_.confirmFinishTpl()}
+				</div>
 		`;
 	},
 
@@ -676,9 +681,11 @@ export const view = {
 			`
 		}
 		tpl += `
-					</div>
-				</div>
-			</div>`;
+			</div>
+			</div>
+			</div>
+		</div>
+		`;
 		return tpl;
 	},
 	async compareQuestion(){
@@ -765,7 +772,6 @@ export const view = {
 					answeredQuestion = Model.allquestions[_.questionPos],//Model.questions[question['id']],
 				correctVariant = question['correctAnswer'];//answeredQuestion['correctAnswer'];
 	//			correctVariant = 'A'; // stub, delete in future
-				console.log(question,answeredQuestion);
 				handle(question['_id'],correctVariant.toLowerCase());
 			}
 		}else{
@@ -1216,7 +1222,7 @@ export const view = {
               </p>
               <div class="modal-row">
 	              <button class="button" data-click="${_.componentName}:changeSection" section="score">Yes, I’m done with this test</button>
-	              <button class="button-blue" data-click="modaler:closeModal;${_.componentName}:jumpToQuestion">
+	              <button class="button-blue" data-click="modaler:closeModal;">
 	               No, take me to my first skipped question
 	              </button>
 		

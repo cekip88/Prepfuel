@@ -775,7 +775,8 @@ export const view = {
 			</p>
 			<div class="answer-list"></div>
 			<div id="note-field-${currentQuestion['_id']}"></div>
-			<div id="explanation-field-${currentQuestion['_id']}"></div>
+			${await _.explanationAnswer(currentQuestion)}
+	
 			</div>
 				<div class="test-col narrow grid empty" data-click="${_.componentName}:enterGridAnswer">
 					<div class="grid-row">

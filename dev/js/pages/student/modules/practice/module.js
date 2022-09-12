@@ -256,7 +256,6 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		currentQuestion['questions'].forEach(  async (question) => {
 			if(_.f(`#explanation-field-${question['_id']}`)){
-				//_.f(`#explanation-field-${question['_id']}`).append(_.markup(await _.explanationAnswer(question)));
 				_.f(`#explanation-field-${question['_id']}`).removeAttribute('hidden');
 			}
 			return 0;
@@ -307,8 +306,9 @@ export class PracticeModule extends StudentPage{
 			quizData = await Model.getQuizess(subject,_.abortGetQuizess.signal),
 			cont = _.f('.quizess-task-list'),
 			itemsTpl = _.taskItemsTpl(quizData);
+		if(!cont) return void 0;
 		_.clear(cont);
-	
+		
 		if (!itemsTpl.length) return;
 		cont.append(...itemsTpl);
 	}
@@ -490,7 +490,11 @@ export class PracticeModule extends StudentPage{
 				_.changeNextButtonToAnswer()
 			}
 		}else{
-			_.setAvailableCheckBtn();
+			if(_.answerVariant[questionId]['answer']){
+				_.changeNextButtonToAnswer()
+			}else{
+				if(!_.isLastQuestion) _.changeAnswerButtonToNext();
+			}
 		}
 	}
 	async saveNote({item:form,event}){
@@ -514,7 +518,11 @@ export class PracticeModule extends StudentPage{
 				_.changeNextButtonToAnswer()
 			}
 		}else{
-			_.setAvailableCheckBtn();
+			if(_.answerVariant[_.innerQuestionId]['answer']){
+				_.changeNextButtonToAnswer()
+			}else{
+				if(!_.isLastQuestion) _.changeAnswerButtonToNext();
+			}
 		}
 	}
 
@@ -562,18 +570,28 @@ export class PracticeModule extends StudentPage{
 		
 		return tempBtn ?? btn ?? _.f('.section-button')[0];
 	}
-	jumpToQuestion({item}){
+	async jumpToQuestion({item}){
 		const _ = this;
+		_.isPracticeJump = true;
+		
+		if(!_.testFinished){
+			if(_.answerVariant && _.answerVariant[_.innerQuestionId]){
+				await _.checkAnswer({item});
+			}
+		}
 		let questionPos = item.getAttribute('data-pos');
 		_.questionPos = questionPos;
 		_._$.currentQuestion =  Model.skillTest[questionPos];
+		if(!_.isLastQuestion){
+			_.f('#check-answer-btn').removeAttribute('is-finished');
+		}
 		_.f('.pagination-link.active').classList.remove('active');
 		item.classList.add('active');
 	}
 	async jumpToQuizQuestion({item}){
 		const _ = this;
 		_.isQuizJump = true;
-		await _.checkQuizAnswer({item});
+		if(!_.testFinished) await _.checkQuizAnswer({item});
 		let questionPos = item.getAttribute('data-pos');
 		_.questionPos = questionPos;
 		_._$.currentQuizQuestion =  Model.skillTest[questionPos];
@@ -607,6 +625,7 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		let btn = _.f('#check-answer-btn');
 		btn.textContent = 'Next to question '+step;
+		btn.removeAttribute('disabled');
 		btn.className= 'skip-to-question-button button-blue';
 		btn.setAttribute('data-click',`${this.componentName}:changeQuestion`);
 	}
@@ -622,12 +641,21 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		let btn = _.f('#check-answer-btn');
 		btn.textContent = 'Check answer';
+		btn.removeAttribute('disabled');
 		btn.className= 'skip-to-question-button button-blue';
 		if(_.currentTestType == 'quiz'){
 			btn.textContent = 'Next to question '+(_.getQuizStep()+1);
 			btn.setAttribute('data-click',`${_.componentName}:checkQuizAnswer`);
 		}else{
-			btn.setAttribute('data-click',`${this.componentName}:checkAnswer`);
+			if(_.testFinished){
+				_.setSummaryBtn();
+			}else{
+				if(_.isLastQuestion){
+					btn.setAttribute('is-finished',true);
+				}
+				btn.setAttribute('data-click',`${this.componentName}:checkAnswer`);
+			}
+			
 		}
 	}
 	
@@ -645,8 +673,15 @@ export class PracticeModule extends StudentPage{
 			_.f('#directionsQuestion').textContent = parseInt(_.questionPos)+1;
 		}
 	}
-	changeQuestion({item,event}){
+	async changeQuestion({item,event}){
 		const _ = this;
+		if(!_.testFinished){
+			if(_.answerVariant && _.answerVariant[_.innerQuestionId]){
+				await _.checkAnswer({item});
+			}
+		}
+		
+		
 		let
 			innerItem = _.f('.pagination-link.active'),
 			pos = parseInt(innerItem.nextElementSibling.getAttribute('data-pos'));
@@ -657,7 +692,6 @@ export class PracticeModule extends StudentPage{
 	}
 	async changeQuizQuestion({item,event}){
 		const _ = this;
-		//await _.checkQuizAnswer({item});
 		let
 			innerItem = _.f('.pagination-link.active');
 		if(!innerItem.nextElementSibling) return 0;
@@ -856,7 +890,12 @@ export class PracticeModule extends StudentPage{
 				_.changeNextButtonToAnswer()
 			}
 		}else{
-			_.setAvailableCheckBtn();
+			if(_.answerVariant[questionId ]['answer']){
+				_.changeNextButtonToAnswer()
+			}else{
+				_.changeAnswerButtonToNext();
+			}
+//			_.setAvailableCheckBtn();
 		}
 	}
 	setActions(types = ['bookmark']){
@@ -1033,7 +1072,6 @@ export class PracticeModule extends StudentPage{
 					if(_.currentQuizStatus != 'finished'){
 						let response = await Model.saveQuizAnswer(fullAnswer);
 						if(_.isLastQuestion){
-							
 							if(item.hasAttribute('is-finished')){
 								_.currentQuizStatus = 'finished';
 								_.testFinished = true;
@@ -1049,76 +1087,91 @@ export class PracticeModule extends StudentPage{
 			if( (!_.isLastQuestion)  && (!_.isQuizJump)){
 				_.changeQuizQuestion({item});
 			}
-			
 			resolve(true);
 		});
 	}
 	async checkAnswer({item}){
 		const _ = this;
-		for(let id in _.answerVariant){
-			let
-				answerObj = {
-				"questionId": id,
-				"questionDatasId": _._$.currentQuestion['_id'],
-				"answer": _.answerVariant[id]['answer'],
-			},
-				fullAnswer = {
-					"answer": answerObj,
-					"category": Model.currentCategory,
-					"concept": Model.currentConcept['concept']
+		return new Promise( async (resolve)=> {
+			let handle = async(answerEntries) => {
+				for(let entry of answerEntries) {
+					let
+						 id = entry[0],
+						ansObj = entry[1],
+						answerObj = {
+							"questionId": id,
+							"questionDatasId": _._$.currentQuestion['_id'],
+							"answer": ansObj['answer'],
+						},
+					fullAnswer = {
+						"answer": answerObj,
+						"category": Model.currentCategory,
+						"concept": Model.currentConcept['concept']
+					}
+					if(item.hasAttribute('is-finished')){
+						fullAnswer['status'] = 'finished';
+					}
+					if(ansObj['note']){
+						answerObj['note'] =ansObj['note'];
+					}
+					if(ansObj['bookmark']){
+						answerObj['bookmark'] = ansObj['bookmark'];
+					}
+					if(ansObj['disabledAnswers']){
+						answerObj['disabledAnswers'] = ansObj['disabledAnswers'];
+					}
+					let response = await Model.saveAnswer(fullAnswer);
+					if(!ansObj['answer']) return void 0;
+					if(ansObj['answer']) {
+						_._$.currentQuestion['questions'].forEach(question => {
+							let ans = _.answerVariant[id]['answer'];
+							if(_.isGrid()) {
+								ans = _.answerVariant[id]['answer'].join('');
+								ans = ans.replaceAll('_', '');
+							}
+							let answerItems = _.f(`.answer-item[data-question-id="${question['_id']}"]`);
+							if(answerItems) {
+								answerItems.forEach((ans) => {
+									if(ans.querySelector('.answer-wrong')) ans.querySelector('.answer-wrong').remove();
+									ans.classList.add('wrong');
+								});
+							}
+							if(question['correctAnswer'] == ans) {
+								_.f('#question-pagination .active').classList.add('done');
+								if(_.isGrid()) {
+									_.f('.grid.empty').setAttribute('hidden', 'hidden');
+									_.f('.grid.correct').removeAttribute('hidden');
+								}
+							} else {
+								_.f('#question-pagination .active').classList.add('error');
+								if(_.isGrid()) {
+									_.f('.grid.empty').setAttribute('hidden', 'hidden');
+									_.f('.grid.incorrect').removeAttribute('hidden');
+								}
+							}
+						});
+					}
+					let currentAnswers = await _.getAnswerSkill(_._$.currentQuestion);
+
+					_.fillExplanation(_._$.currentQuestion);
+					if(_.isGrid()) {
+						_.setGridAnswer(currentAnswers);
+					} else {
+						_.setLetterAnswer(currentAnswers);
+					}
+					if(_.isLastQuestion) {
+						_.setSummarySkillBtn();
+						_.testFinished = true;
+					}
 				}
-			if(_.isLastQuestion){
-				fullAnswer['status'] = 'finished';
-			}else{
+			}
+			let answerEntries = Object.entries(_.answerVariant);
+			await handle(answerEntries);
+			if((!_.isLastQuestion) && (!_.isJump)) {
 				_.changeAnswerButtonToNext();
 			}
-			if(_.answerVariant[id]['note']){
-				answerObj['note'] = _.answerVariant[id]['note'];
-			}
-			if(_.answerVariant[id]['bookmark']){
-				answerObj['bookmark'] = _.answerVariant[id]['bookmark'];
-			}
-			if(_.answerVariant[id]['disabledAnswers']){
-				answerObj['disabledAnswers'] = _.answerVariant[id]['disabledAnswers'];
-			}
-			let response = await Model.saveAnswer(fullAnswer);
-			_._$.currentQuestion['questions'].forEach( question => {
-				let ans =   _.answerVariant[id]['answer'];
-				if(_.isGrid()){
-					ans =   _.answerVariant[id]['answer'].join('');
-					ans = ans.replaceAll('_','');
-				}
-				_.f(`.answer-item[data-question-id="${question['_id']}"]`).forEach(  (ans)=>{
-					if(ans.querySelector('.answer-wrong'))ans.querySelector('.answer-wrong').remove();
-					ans.classList.add('wrong');
-				});
-				
-				if(question['correctAnswer'] == ans){
-					_.f('#question-pagination .active').classList.add('done');
-					if( _.isGrid()){
-						_.f('.grid.empty').setAttribute('hidden','hidden');
-						_.f('.grid.correct').removeAttribute('hidden');
-					}
-				}else{
-					_.f('#question-pagination .active').classList.add('error');
-					if( _.isGrid()){
-						_.f('.grid.empty').setAttribute('hidden','hidden');
-						_.f('.grid.incorrect').removeAttribute('hidden');
-					}
-				}
-			});
-			let currentAnswers = await _.getAnswerSkill(_._$.currentQuestion);
-			_.fillExplanation(_._$.currentQuestion);
-			if(_.isGrid()){
-				_.setGridAnswer(currentAnswers);
-			}else{
-				_.setLetterAnswer(currentAnswers);
-			}
-			if(_.isLastQuestion){
-				_.setSummarySkillBtn();
-				_.testFinished = true;
-			}
-		}
+			resolve(true);
+		});
 	}
 	async startTest({item}){
 		const _ = this;
@@ -1163,11 +1216,16 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		console.log(currentAnswers);
 		let handle = (answer)=>{
+			let answerItem = _.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`);
 			if( answer['answer'] == answer['correctAnswer'] ){
-			_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
+				if(answerItem) {
+					answerItem.classList.add('correct');
+				}
 			}else{
-				_.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`).classList.add('incorrect');
-				_.f(`.answer-item[data-variant="${answer['correctAnswer']}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
+				if(answerItem){
+					answerItem.classList.add('incorrect');
+					answerItem.classList.add('correct');
+				}
 			}
 		}
 		_._$.currentQuestion['questions'].forEach( question =>{
@@ -1401,6 +1459,8 @@ export class PracticeModule extends StudentPage{
 			_.answerVariant = {};
 			if(_.questionPos == _.questionsLength-1){
 				_.isLastQuestion = true;
+			}else{
+				_.isLastQuestion = false;
 			}
 			let questionBody = _.f('#question-inner-body');
 			questionBody.innerHTML = await _.getQuestionTpl();
@@ -1409,28 +1469,40 @@ export class PracticeModule extends StudentPage{
 			}else{
 				//_.setNextButton();
 			}
-
+			
 			let currentAnswers =  await _.getAnswerSkill(currentQuestion);
 		
 			if(!currentAnswers)  return void  'answers not found';
 			
+			currentAnswers.forEach( answer =>{
+				if(answer['questionId'] != currentQuestion['_id']) return void 0;
+				if(!_.answerVariant[answer.questionId]) _.answerVariant[answer.questionId] = {};
+				_.answerVariant[answer.questionId] = answer;
+			});
+			_.fillNote(currentAnswers);
+			_.setBookmark(currentAnswers);
+			_.changeAnswerButtonToNext();
+			let answersExists = false;
+			if(_.answerVariant[currentQuestion['_id']]  && !_.answerVariant[currentQuestion['_id']]['answer']) return void 0;
 			currentQuestion['questions'].forEach( (question)=>{
-				_.f(`.answer-item[data-question-id="${question['_id']}"]`).forEach(  (ans)=>{
+				if(_.answerVariant[question['_id']]['answer']) answersExists = true;
+				let answerItems = _.f(`.answer-item[data-question-id="${question['_id']}"]`);
+				if(!answerItems) return void 0;
+				answerItems.forEach(  (ans)=>{
 					ans.querySelector('.answer-wrong').remove();
 					ans.classList.add('wrong');
 				});
 			});
-			
+			if(!answersExists) return void 0;
 			if( _.isGrid() ){
 				_.setGridAnswer(currentAnswers);
 			} else{
 				_.setLetterAnswer(currentAnswers);
 			}
 			_.fillExplanation(currentQuestion);
-			_.fillNote(currentAnswers);
-			_.setBookmark(currentAnswers);
+		
 			_.setAvailableCheckBtn();
-			_.changeAnswerButtonToNext();
+		
 			if( currentAnswers ){
 				for(let currentAnswer of currentAnswers){
 					if(currentAnswer['disabledAnswers']){

@@ -281,7 +281,6 @@ export class TestsModule extends StudentPage{
 			_._$.currentQuestion=  Model.questions[index+1];
 		}
 		_.isJump = false;
-		
 	}
 	async jumpToQuestion({item,event}){
 		const _ = this;
@@ -342,21 +341,9 @@ export class TestsModule extends StudentPage{
 			_._$.currentQuestion = Model.questionsDatas[0];
 		}
 		_.changedType = changedType;
-
 		_.isJump = false;
 		_.f('#test-section-name').textContent = Model.currentSection.sectionName;
-	/*	if(pos == '0') {
-			setTimeout(  ()=>{
-				if(_.f('.back-to-question-button')){
-					_.f('.back-to-question-button').remove();
-				}
-			},50);
-		}*/
 		_.fillCheckedAnswers();
-	/*	if(Model.isFinished()){
-			_.markAnswers();
-			_.markCorrectAnswer();
-		}*/
 	}
 	async changePracticeTest({item}){
 		const _ = this;
@@ -513,7 +500,6 @@ export class TestsModule extends StudentPage{
 					let
 						answer = Model.testServerAnswers[id]['answer'].toUpperCase(),
 						serverAnswer = serverQuestion['correctAnswer'].toUpperCase();
-					console.log(answer.trim(), serverAnswer.trim());
 					if(answer.trim() === serverAnswer.trim()){
 						item.classList.add('correct')
 					}else{
