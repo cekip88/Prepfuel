@@ -85,7 +85,7 @@ class HeaderBlock extends G{
 		let id,profileButton;
 		if (this._$.role == 'admin'){
 			id = _.me.admin._id;
-			profileButton = `<strong data-click="UsersModule:toProfile" data-id="${id}">Profile</strong>`;
+			profileButton = `<strong data-click="AdminPage:toProfile" data-id="${id}">Profile</strong>`;
 		} if (this._$.role == 'student') {
 			profileButton = `<strong>My Profile</strong>`;
 		} else if (this._$.role == 'parent') {

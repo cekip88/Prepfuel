@@ -38,7 +38,7 @@ export class AdminPage extends G {
 		});
 		
 		G_Bus
-			.on(_,['showUserList','changeSection','navigate'])
+			.on(_,['showUserList','changeSection','navigate','toProfile'])
 	}
 	asyncDefine(){
 		const _ = this;
@@ -139,5 +139,24 @@ export class AdminPage extends G {
 		if (clickData && clickData.item) label = clickData.item.closest('.label');
 		else label = _.f('.label');
 		if (label) label.remove();
+	}
+
+	async toProfile({item}){
+		const _ = this;
+		let btn = document.querySelector('.navigate-list [section="/admin/users"]');
+		let methods = btn.getAttribute('data-click').split(';');
+		for (let method of methods) {
+			await G_Bus.trigger(_.componentName, method.split(':')[1], {item: btn});
+		}
+
+		let navBtn = document.querySelector('.subnavigate [section="admin"]');
+		navBtn.parentElement.querySelector('.active').classList.remove('active');
+		navBtn.classList.add('active');
+
+		btn = document.createElement('BUTTON');
+		btn.setAttribute('section','adminProfile');
+		btn.setAttribute('data-id',item.getAttribute('data-id'));
+		G_Bus.trigger('UsersModule','changeSection',{item:btn})
+		item.closest('.head-user').classList.remove('show');
 	}
 }

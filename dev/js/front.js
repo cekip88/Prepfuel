@@ -97,6 +97,7 @@ new router().init({
 				'/login/': 'login',
 				'/login/forgot': 'login',
 				'/login/reset/{token}': 'login',
+				'/login/confirm/{token}': 'login',
 			}
 		},
 		'admin':{

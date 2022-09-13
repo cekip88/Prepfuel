@@ -64,7 +64,7 @@ export class UsersModule extends AdminPage {
 				'showRemovePopup','removeCourse',
 				'domReady',
 				'assignParent','addNewParent','assignCourse','skipParent','updateParent',
-				'changeTestType','changeStudentLevel','changeSection','toProfile',
+				'changeTestType','changeStudentLevel','changeSection',
 				'fillAdminInfo',
 				'fillStudentInfo','createStudent','skipTestDate','changeCurrentCourse',
 				'fillParentInfo','assignStudentToParent','removeAssignedParent',
@@ -530,6 +530,7 @@ export class UsersModule extends AdminPage {
 	async fillAdminProfile(profileData) {
 		const _ = this;
 		let adminId;
+		if(!profileData) return;
 		if(profileData['item']){
 			adminId = profileData['item'].getAttribute('data-id');
 			_.subSection = profileData['item'].getAttribute('section');
@@ -842,19 +843,7 @@ export class UsersModule extends AdminPage {
 		await _.render( struct,{item} );
 		_.switchSubNavigate();
 	}
-	async toProfile({item}){
-		const _ = this;
-		let btn = document.querySelector('.navigate-list [section="/admin/users"]');
-		await G_Bus.trigger('AdminPage','changeSection',{item:btn});
-		G_Bus.trigger('AdminPage','navigate',{item:btn});
-		btn = document.createElement('BUTTON');
-		btn.setAttribute('section','adminProfile');
-		btn.setAttribute('data-id',item.getAttribute('data-id'));
-		let navBtn = document.querySelector('.subnavigate [section="admin"]');
-		navBtn.parentElement.querySelector('.active').classList.remove('active');
-		navBtn.classList.add('active');
-		G_Bus.trigger('UsersModule','changeSection',{item:btn})
-	}
+
 	async changeProfileTab({item}) {
 		const _ = this;
 		let pos = item.getAttribute('data-pos');

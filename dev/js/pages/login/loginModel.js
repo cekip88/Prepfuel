@@ -82,7 +82,7 @@ class _loginModel{
 		let response = await rawResponse.json();
 		return response;
 	}
-	async doForgot(formData){
+	async doForgot(formData,form){
 		const _ = this;
 		let rawResponse = await fetch(_.endpoints['forgot'],{
 			method: 'POST',
@@ -92,7 +92,8 @@ class _loginModel{
 		if( _.isSuccessStatus(rawResponse.status) ){
 			let response = await rawResponse.json();
 			if( _.isSuccessResponse(response) ){
-				await G_Bus.trigger(_.componentName,'forgotSuccess',response['token']);
+				await G_Bus.trigger(_.componentName,'forgotSuccess',/*response['token']*/{item:form});
+				console.log(response)
 			}else{
 				G_Bus.trigger(_.componentName,'forgotFail',{
 					"response": response,

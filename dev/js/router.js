@@ -1,6 +1,7 @@
 import { mixins } from "./mixins.js";
 import { G_Bus } from "../libs/G_Bus.js";
 import { env } from "/env.js"
+
 export class router {
 	constructor() {
 		const _ = this;
@@ -48,6 +49,7 @@ export class router {
 		await _.getMe();
 		
 		_.currentPageRoute = await _.definePageRoute(route);
+		console.log(_.currentPageRoute)
 		
 		_.clearComponents();
 	
@@ -58,7 +60,7 @@ export class router {
 		if(route) history.pushState(null, null, route);
 		let
 			params = {},
-			pathName = location.pathname+location.search,
+			pathName = location.pathname + location.search,
 			rawParams = location.search.split('&'),
 			pathParts = pathName.split('/').splice(1),
 			module = pathParts.splice(0,1)[0];
@@ -70,9 +72,11 @@ export class router {
 				params['module'] = pathParts[0];
 			}
 		}
-		for(let i =0; i <pathParts.length; i++){
-			pathParts[i] = pathParts[i].substr(0,pathParts[i].indexOf('?'));
+		//params.action = module;
+		for(let i = 0; i < pathParts.length; i++){
+			pathParts[i] = pathParts[i].indexOf('?') > 0 ? pathParts[i].substr(0,pathParts[i].indexOf('?')) : pathParts[i];
 		}
+		let token = pathParts[pathParts.length - 1];
 
 		rawParams.forEach( param =>{
 			let rawParam = param.split('=');
@@ -110,27 +114,38 @@ export class router {
 				}
 			}
 			if(!outRoute){
-				if(!location.pathname != '/login'){
-					
-					//location.href='/login';
-				}
+				if(!location.pathname != '/login'){}
 				history.pushState(null, null, '/login');
+				if (difRoute) {
+					return {
+						'module': _.routes[`${difRoute}`],
+						'params': params,
+						'pathParts': pathParts,
+						'token': token
+					}
+				}
 				return {
 					'module': 'login',
-					'params': params
+					'params': params,
+					'pathParts': pathParts,
+					'token': token
 				}
 			}else{
 				pathName = difRoute;
 				return {
 					'module': _.routes[`${pathName}`],
-					'params': params
+					'params': params,
+					'pathParts': pathParts,
+					'token': token
 				}
 			}
 		}
 	
 		return {
 			'module': _.routes[`${pathName}`],
-			'params': params
+			'params': params,
+			'pathParts': pathParts,
+			'token': token
 		}
 	}
 	async includePage(blockData){
@@ -142,7 +157,7 @@ export class router {
 					fileType = 'page',
 					name = blockData['module'],
 					params = blockData['params'] ? blockData['params'] : {},
-					moduleStr = name.charAt(0).toUpperCase() + name.substr(1)+ moduleInc,
+					moduleStr = name.charAt(0).toUpperCase() + name.substr(1) + moduleInc,
 					path = `/pages/${name}/${name}.${fileType}.js`,
 					pathView = `/pages/${name}/${name}View.js`;
 				if (_.pages.has(name)) {
@@ -159,7 +174,7 @@ export class router {
 				if (!_.pages.has(name)) {
 					_.pages.set(name, moduleName);
 				}
-				if('asyncDefine' in moduleName)	moduleName.asyncDefine();
+				if('asyncDefine' in moduleName) moduleName.asyncDefine();
 				moduleName.createPageStructure(moduleName.pageStructure);
 				moduleName.init(blockData);
 				resolve(moduleName);

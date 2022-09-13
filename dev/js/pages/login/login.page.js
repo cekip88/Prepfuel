@@ -116,7 +116,7 @@ class LoginPage extends G{
 			}
 			else localStorage.removeItem('loginData');
 		}
-		let resp = await loginModel[handle](formData);
+		let resp = await loginModel[handle](formData,form);
 		if (handle == 'doRegister') {
 			if (resp.status == 'success') {
 				let btn = document.createElement('BUTTON');
@@ -236,9 +236,13 @@ class LoginPage extends G{
 		_.f('g-input[name="email"]').doValidate(msg);
 		_.f('g-input[name="password"]').doValidate(msg);
 	}
-	forgotSuccess(){
+	forgotSuccess({item:form}){
 		const _ = this;
-		_.renderPart({part:'row',content: _.markup(_[`forgotDoneTpl`](),false)});
+		//let renderData = {part:'row',content: _.markup(_[`forgotDoneTpl`](),false)};
+		//_.renderPart(renderData);
+		let cont = form.parentElement;
+		form.remove();
+		cont.append(_.markup(_.forgotDoneTpl()));
 	}
 	forgotFail(){
 		const _ = this;
@@ -254,6 +258,7 @@ class LoginPage extends G{
 		this.handleErrors({response});
 	}
 	async init(blockData){
+		console.log(blockData)
 		const _ = this;
 /*		let initTpl = _.loginTpl();
 		let params = blockData['params'];
