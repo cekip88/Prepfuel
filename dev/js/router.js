@@ -49,8 +49,6 @@ export class router {
 		await _.getMe();
 		
 		_.currentPageRoute = await _.definePageRoute(route);
-		console.log(_.currentPageRoute)
-		
 		_.clearComponents();
 	
 		await _.includePage(_.currentPageRoute);
@@ -68,11 +66,10 @@ export class router {
 		if(pathParts && pathParts.length){
 			if(pathParts[0].indexOf('?') > -1){
 				params['module'] = pathParts[0].substr(0,pathParts[0].indexOf('?'));
-			}else{
+			} else {
 				params['module'] = pathParts[0];
 			}
 		}
-		//params.action = module;
 		for(let i = 0; i < pathParts.length; i++){
 			pathParts[i] = pathParts[i].indexOf('?') > 0 ? pathParts[i].substr(0,pathParts[i].indexOf('?')) : pathParts[i];
 		}

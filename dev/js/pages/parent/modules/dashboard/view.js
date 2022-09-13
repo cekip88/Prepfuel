@@ -1647,7 +1647,7 @@ export const view = {
 		let currentDateStr = curYear.toString() + '-' + (curMonth < 10 ? '0' + curMonth : curMonth) + '-' + (curDate < 10 ? '0' + curDate : curDate);
 		let tpl = `
 			<div class="calendar-title">
-				<span>${dates.monthsTitles[dateInfo.date.getMonth()]}</span>
+				<span>${dates.monthsTitles[dateInfo.date.getMonth()]} ${year}</span>
 			</div>
 			<div class="calendar-inner">
 		`;
