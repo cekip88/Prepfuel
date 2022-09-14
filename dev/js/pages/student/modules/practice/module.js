@@ -1092,6 +1092,7 @@ export class PracticeModule extends StudentPage{
 	}
 	async checkAnswer({item}){
 		const _ = this;
+		console.log('Here');
 		return new Promise( async (resolve)=> {
 			let handle = async(answerEntries) => {
 				for(let entry of answerEntries) {
