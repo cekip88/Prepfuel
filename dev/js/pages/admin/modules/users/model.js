@@ -730,7 +730,6 @@ class _Model {
 
 	sendResetPassword(userId,formData) {
 		const _ = this;
-		console.log(formData)
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.getEndpoint('sendResetPassword')}`, {
 				method: 'POST',
