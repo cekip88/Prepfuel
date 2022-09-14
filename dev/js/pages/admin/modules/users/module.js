@@ -188,6 +188,7 @@ export class UsersModule extends AdminPage {
 			_.f('g-body .button-link.blue').textContent = 'Change parent';
 		} else {
 			_.fillParentsTable({usersData:users});
+			_.rebuildPagination({cont:_.f('#bodyParents .pagination'),page:1,limit:users.limit,total:users.total})
 		}
 	}
 	async createStudent(){
@@ -1807,13 +1808,21 @@ export class UsersModule extends AdminPage {
 		let role = item.getAttribute('role');
 		let info = _[`${role}Info`];
 		let email = info.email;
+		let form = item.closest('.adding-section');
 		if (role == 'student') {
 			let parentInfo = await Model.getStudentParents(info._id);
-			console.log(parentInfo)
 			if (parentInfo.status == 'success') email = parentInfo.response[0].user.email;
+			//form = _.markupElement(`<form><input type="text" class="g-form-item" value="${email}" name="email"></form>`);
+			form = _.el('FORM',{
+				childes:[
+					_.el('INPUT',{type:'text',class:'g-form-item',value:email,name:'email'})
+				]
+			});
 		}
-		let response = await Model.sendResetPassword(info._id,email);
-		console.log(response);
+
+		let formData = _.gFormDataCapture(form);
+		let response = await Model.sendResetPassword(info._id,formData);
+		if (response.status == 'success') _.showSuccessPopup(response.message);
 	}
 
 	// Paginate
@@ -1862,21 +1871,22 @@ export class UsersModule extends AdminPage {
 			} else {
 				i = (page - 2) + index;
 			}
+
+			if (!button/* && len > index*/) {
+				button = document.createElement('BUTTON');
+				button.setAttribute('data-click',`${_.componentName}:paginate`)
+				button.className = 'pagination-link';
+				inner.append(button);
+			}
+			button.textContent = i.toString();
+			button.value = i;
+			if (page == i) button.classList.add('active');
+			else button.classList.remove('active')
+
 			if (inner.children.length > len) {
 				let rawBtn = inner.children[inner.children.length - 1];
 				if (rawBtn.classList.contains('active')) rawBtn.previousElementSibling.classList.add('active')
 					rawBtn.remove();
-			} else {
-				if (!button && len > index) {
-					button = document.createElement('BUTTON');
-					button.setAttribute('data-click',`${_.componentName}:paginate`)
-					button.className = 'pagination-link';
-					inner.append(button);
-				}
-				button.textContent = i.toString();
-				button.value = i;
-				if (page == i) button.classList.add('active');
-				else button.classList.remove('active')
 			}
 		}
 

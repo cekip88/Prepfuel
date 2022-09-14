@@ -728,13 +728,14 @@ class _Model {
 		return contentLength
 	}
 
-	sendResetPassword(userId,userEmail) {
+	sendResetPassword(userId,formData) {
 		const _ = this;
+		console.log(formData)
 		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.getEndpoint('sendResetPassword')}${userId}`, {
+			let rawResponse = await fetch(`${_.getEndpoint('sendResetPassword')}`, {
 				method: 'POST',
 				headers: _.baseHeaders,
-				body: JSON.stringify({email:userEmail})
+				body: JSON.stringify(formData)
 			});
 			if(rawResponse.status < 210) {
 				let response = await rawResponse.json();

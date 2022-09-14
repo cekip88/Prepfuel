@@ -5,7 +5,7 @@ export const loginView = {
 				token = _.resetData.token,
 				email = _.resetData.params.email;
 		return `
-			<form class="login-form" data-submit="${_.componentName}:doFormAction" data-handle="doReset">
+			<form class="login-form passwords" data-submit="${_.componentName}:doFormAction" data-handle="doReset">
 				<h2 class="login-title"><span>Reset Password</span></h2>
 				<h5 class="login-subtitle"><span>Please enter your new password</span></h5>
 				<input type="hidden" class="g-form-item" name="token" value="${token}">
@@ -14,14 +14,14 @@ export const loginView = {
 					<div class="form-label-row">
 						<label class="form-label">Password</label>
 					</div>
-					<g-input type="password" name="password" required class="g-form-item pwd" classname="form-input"></g-input>
+					<g-input class="g-form-item pwd" type="password" data-outfocus="${_.componentName}:validatePassword" name="password" classname="form-input" required></g-input>
 					<span class="form-block-comment">8+ characters, with min. one number, one uppercase letter and one special character</span>
 				</div>
 				<div class="form-block">
 					<div class="form-label-row">
 						<label class="form-label">Confirm password</label>
 					</div>
-					<g-input type="password" name="confirmation" required class="g-form-item" classname="form-input" match=".pwd"></g-input>
+					<g-input class="g-form-item pwd" type="password" data-outfocus="${_.componentName}:validatePassword" name="confirmation" classname="form-input" required></g-input>
 				</div>
 				<div class="form-block row">
 				<button class="button-blue"><span>Reset Password</span></button></div>
