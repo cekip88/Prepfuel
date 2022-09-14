@@ -1,4 +1,7 @@
 import { router } from "./router.js";
+import GModaler from "./components/modaler/modaler.component.js";
+import GInput from "../../components/input/input.component.js";
+import GSelect from "../../components/select/select.component.js";
 
 ( async ()=>{
 	let worker = navigator.serviceWorker.register('/worker.js',{scope:'/'});
@@ -6,7 +9,6 @@ import { router } from "./router.js";
 		if(!navigator.serviceWorker.controller) location.reload();
 	}, 5000);
 })()
-
 
 new router().init({
   'middleware':{
