@@ -480,6 +480,7 @@ export class PracticeModule extends StudentPage{
 		let
 			questionId = item.getAttribute('data-question-id'),
 			bookmarked = item.classList.contains('active');
+		_.innerQuestionId = questionId;
 		if(!_.answerVariant[questionId]){
 			_.answerVariant[questionId] = {};
 		}
@@ -515,11 +516,11 @@ export class PracticeModule extends StudentPage{
 		_.f(`.note-button[data-question-id="${_.innerQuestionId}"]`).classList.add('active');
 		if(_.currentTestType == 'quiz'){
 			if(!_.isLastQuestion){
-				_.changeNextButtonToAnswer()
+				_.changeNextButtonToAnswer();
 			}
 		}else{
 			if(_.answerVariant[_.innerQuestionId]['answer']){
-				_.changeNextButtonToAnswer()
+				_.changeNextButtonToAnswer();
 			}else{
 				if(!_.isLastQuestion) _.changeAnswerButtonToNext();
 			}
@@ -573,9 +574,9 @@ export class PracticeModule extends StudentPage{
 	async jumpToQuestion({item}){
 		const _ = this;
 		_.isPracticeJump = true;
-		
 		if(!_.testFinished){
 			if(_.answerVariant && _.answerVariant[_.innerQuestionId]){
+				console.log(_.answerVariant);
 				await _.checkAnswer({item});
 			}
 		}
@@ -680,7 +681,6 @@ export class PracticeModule extends StudentPage{
 				await _.checkAnswer({item});
 			}
 		}
-		
 		
 		let
 			innerItem = _.f('.pagination-link.active'),
@@ -1092,6 +1092,7 @@ export class PracticeModule extends StudentPage{
 	}
 	async checkAnswer({item}){
 		const _ = this;
+		console.log('Here');
 		return new Promise( async (resolve)=> {
 			let handle = async(answerEntries) => {
 				for(let entry of answerEntries) {
@@ -1167,7 +1168,7 @@ export class PracticeModule extends StudentPage{
 			}
 			let answerEntries = Object.entries(_.answerVariant);
 			await handle(answerEntries);
-			if((!_.isLastQuestion) && (!_.isJump)) {
+			if((!_.isLastQuestion) && (!_.isJump) && (_.answerVariant[_.innerQuestionId])) {
 				_.changeAnswerButtonToNext();
 			}
 			resolve(true);
