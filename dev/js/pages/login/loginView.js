@@ -1,35 +1,33 @@
 export const loginView = {
-	resetTpl(params){
+	resetTpl(){
 		const _ = this;
 		let
-				rawParams = params[1].split('?'),
-				token = rawParams[0],
-				email = rawParams[1].split('=');
+				token = _.resetData.token,
+				email = _.resetData.params.email;
 		return `
-			<div class="login-right">
-				<form class="login-form" data-submit="${_.componentName}:doFormAction" data-handle="doReset">
-					<h2 class="login-title"><span>Reset Password</span></h2>
-					<h5 class="login-subtitle"><span>Please enter your new password</span></h5>
-					<input type="hidden" class="g-form-item" name="token" value="${token}">
-					<input type="hidden" class="g-form-item" name='email' value="${email[1]}">
-					<div class="form-block">
-						<div class="form-label-row">
-							<label class="form-label">Password</label>
-						</div>
-						<g-input type="password" name="password" required class="g-form-item pwd" classname="form-input"></g-input>
-						<span class="form-block-comment">8+ characters, with min. one number, one uppercase letter and one special character</span>
+			<form class="login-form" data-submit="${_.componentName}:doFormAction" data-handle="doReset">
+				<h2 class="login-title"><span>Reset Password</span></h2>
+				<h5 class="login-subtitle"><span>Please enter your new password</span></h5>
+				<input type="hidden" class="g-form-item" name="token" value="${token}">
+				<input type="hidden" class="g-form-item" name='email' value="${email}">
+				<div class="form-block">
+					<div class="form-label-row">
+						<label class="form-label">Password</label>
 					</div>
-					<div class="form-block">
-						<div class="form-label-row">
-							<label class="form-label">Confirm password</label>
-						</div>
-						<g-input type="password" name="confirmation" required class="g-form-item" classname="form-input" match=".pwd"></g-input>
+					<g-input type="password" name="password" required class="g-form-item pwd" classname="form-input"></g-input>
+					<span class="form-block-comment">8+ characters, with min. one number, one uppercase letter and one special character</span>
+				</div>
+				<div class="form-block">
+					<div class="form-label-row">
+						<label class="form-label">Confirm password</label>
 					</div>
-					<div class="form-block row">
-					<button class="button-blue"><span>Reset Password</span></button></div>
-				</form>
+					<g-input type="password" name="confirmation" required class="g-form-item" classname="form-input" match=".pwd"></g-input>
+				</div>
+				<div class="form-block row">
+				<button class="button-blue"><span>Reset Password</span></button></div>
+			</form>
 			<div class="login-bottom">
-				<a class="link" href="#"><span>Contact Us</span></a></div>
+				<a class="link" href="#"><span>Contact Us</span></a>
 			</div>
 		`;
 	},
@@ -42,7 +40,7 @@ export const loginView = {
 					<span>Your password is successfully changed.</span>
 					<span>Please Sign in to your account</span>
 				</div>
-				<a class="button-blue" data-click="${_.componentName}:changeSection" section="welcome"><span>Sign In</span></a>
+				<a class="button-blue narrow" data-click="${_.componentName}:changeSection" section="login"><span>Sign In</span></a>
 				<img class="login-success-img" src="/img/S_multitasking.png" alt="">
 			</div>
 		`;
@@ -228,59 +226,59 @@ export const loginView = {
 		let loginData = localStorage.getItem('loginData');
 		if (loginData) loginData = JSON.parse(loginData);
 		return `
-				<form class="login-form" data-submit="${_.componentName}:doFormAction" data-handle="doLogin">
-					<h2 class="login-title">
-						<span>Sing In to Prepfuel</span>
-					</h2>
-					<h5 class="login-subtitle">
-						<span>New Here?</span>
-						<a class="link" data-click="${_.componentName}:changeSection" section="register">
-							<span>Create an Account</span>
-						</a>
-					</h5>
-					<div class="form-block">
-						<div class="form-label-row">
-							<label class="form-label">Email</label>
-						</div>
-						<g-input 
-							class="g-form-item" 
-							type="email" 
-							data-keydown="${_.componentName}:formInputHandle" 
-							value="${loginData ? loginData.email : 'admin@mail.ru'}" 
-							name="email" 
-							className="form-input" 
-							required></g-input>
+			<form class="login-form" data-submit="${_.componentName}:doFormAction" data-handle="doLogin">
+				<h2 class="login-title">
+					<span>Sing In to Prepfuel</span>
+				</h2>
+				<h5 class="login-subtitle">
+					<span>New Here?</span>
+					<a class="link" data-click="${_.componentName}:changeSection" section="register">
+						<span>Create an Account</span>
+					</a>
+				</h5>
+				<div class="form-block">
+					<div class="form-label-row">
+						<label class="form-label">Email</label>
 					</div>
-					<div class="form-block">
-						<div class="form-label-row">
-							<label class="form-label">Password</label>
-							<a class="link" data-click="${this.componentName}:changeSection" section="forgot">
-								<span>Forgot Password?</span>
-							</a>
-						</div>
-						<g-input class="g-form-item" type="password" data-keydown="${_.componentName}:formInputHandle" name="password"  className="form-input"  value="${loginData ? loginData.password : 'admin123'}" required></g-input>
-					</div>
-					<div class="form-block">
-						<g-input type="checkbox" class="g-form-item" items='[{"value":"1","text":"Remember me","checked":${loginData ? true : false}}]' name="remember"></g-input>
-					</label>
+					<g-input 
+						class="g-form-item" 
+						type="email" 
+						data-keydown="${_.componentName}:formInputHandle" 
+						value="${loginData ? loginData.email : 'admin@mail.ru'}" 
+						name="email" 
+						className="form-input" 
+						required></g-input>
 				</div>
-					<div class="form-block">
-						<button class="button-blue">
-							<span>Sign In</span>
-						</button>
-						<span class="login-span">or</span>
-						<a href="https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/auth/google" class="button-lightblue">
-							<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<path d="M19.9895 10.1871C19.9895 9.36767 19.9214 8.76973 19.7742 8.14966H10.1992V11.848H15.8195C15.7062 12.7671 15.0943 14.1512 13.7346 15.0813L13.7155 15.2051L16.7429 17.4969L16.9527 17.5174C18.879 15.7789 19.9895 13.221 19.9895 10.1871Z" fill="#4285F4"></path>
-								<path d="M10.2002 19.9314C12.9537 19.9314 15.2653 19.0456 16.9537 17.5175L13.7356 15.0814C12.8744 15.6683 11.7186 16.078 10.2002 16.078C7.5034 16.078 5.2145 14.3396 4.39857 11.9368L4.27897 11.9467L1.13101 14.3274L1.08984 14.4392C2.76686 17.6946 6.21158 19.9314 10.2002 19.9314Z" fill="#34A853"></path>
-								<path d="M4.3965 11.9366C4.18121 11.3165 4.05661 10.6521 4.05661 9.96559C4.05661 9.27902 4.18121 8.61467 4.38517 7.9946L4.37947 7.86254L1.19206 5.4436L1.08778 5.49208C0.3966 6.84299 0 8.36002 0 9.96559C0 11.5712 0.3966 13.0881 1.08778 14.439L4.3965 11.9366Z" fill="#FBBC05"></path>
-								<path d="M10.2002 3.85336C12.1152 3.85336 13.4069 4.66168 14.1435 5.33717L17.0216 2.59107C15.254 0.985496 12.9537 0 10.2002 0C6.21158 0 2.76686 2.23672 1.08984 5.49214L4.38724 7.99466C5.2145 5.59183 7.5034 3.85336 10.2002 3.85336Z" fill="#EB4335"></path>
-							</svg>
-							<span>Continue with Google</span>
+				<div class="form-block">
+					<div class="form-label-row">
+						<label class="form-label">Password</label>
+						<a class="link" data-click="${this.componentName}:changeSection" section="forgot">
+							<span>Forgot Password?</span>
 						</a>
 					</div>
-				</form>
-				<div class="login-bottom">
+					<g-input class="g-form-item" type="password" data-keydown="${_.componentName}:formInputHandle" name="password"  className="form-input"  value="${loginData ? loginData.password : 'admin123'}" required></g-input>
+				</div>
+				<div class="form-block">
+					<g-input type="checkbox" class="g-form-item" items='[{"value":"1","text":"Remember me","checked":${loginData ? true : false}}]' name="remember"></g-input>
+				</label>
+			</div>
+				<div class="form-block">
+					<button class="button-blue">
+						<span>Sign In</span>
+					</button>
+					<span class="login-span">or</span>
+					<a href="https://live-prepfuelbackend-mydevcube.apps.devinci.co/api/auth/google" class="button-lightblue">
+						<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M19.9895 10.1871C19.9895 9.36767 19.9214 8.76973 19.7742 8.14966H10.1992V11.848H15.8195C15.7062 12.7671 15.0943 14.1512 13.7346 15.0813L13.7155 15.2051L16.7429 17.4969L16.9527 17.5174C18.879 15.7789 19.9895 13.221 19.9895 10.1871Z" fill="#4285F4"></path>
+							<path d="M10.2002 19.9314C12.9537 19.9314 15.2653 19.0456 16.9537 17.5175L13.7356 15.0814C12.8744 15.6683 11.7186 16.078 10.2002 16.078C7.5034 16.078 5.2145 14.3396 4.39857 11.9368L4.27897 11.9467L1.13101 14.3274L1.08984 14.4392C2.76686 17.6946 6.21158 19.9314 10.2002 19.9314Z" fill="#34A853"></path>
+							<path d="M4.3965 11.9366C4.18121 11.3165 4.05661 10.6521 4.05661 9.96559C4.05661 9.27902 4.18121 8.61467 4.38517 7.9946L4.37947 7.86254L1.19206 5.4436L1.08778 5.49208C0.3966 6.84299 0 8.36002 0 9.96559C0 11.5712 0.3966 13.0881 1.08778 14.439L4.3965 11.9366Z" fill="#FBBC05"></path>
+							<path d="M10.2002 3.85336C12.1152 3.85336 13.4069 4.66168 14.1435 5.33717L17.0216 2.59107C15.254 0.985496 12.9537 0 10.2002 0C6.21158 0 2.76686 2.23672 1.08984 5.49214L4.38724 7.99466C5.2145 5.59183 7.5034 3.85336 10.2002 3.85336Z" fill="#EB4335"></path>
+						</svg>
+						<span>Continue with Google</span>
+					</a>
+				</div>
+			</form>
+			<div class="login-bottom">
 				<a class="link" href="#">
 					<span>Terms</span>
 				</a>

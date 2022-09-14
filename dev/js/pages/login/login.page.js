@@ -252,14 +252,27 @@ class LoginPage extends G{
 	}
 	resetSuccess(){
 		const _ = this;
-		_.renderPart({part:'row',content: _.markup(_[`passwordChangedTpl`](),false)});
+		_.pageStructure.left.container.style = 'display:none';
+		_.moduleStructure['right'] = `passwordChangedTpl`;
+		_.render();
 	}
 	resetFail({response}){
 		this.handleErrors({response});
 	}
+
 	async init(blockData){
-		console.log(blockData)
 		const _ = this;
+		if (blockData && blockData.params && blockData.params.module) {
+			if (blockData.params.module == 'confirm') {
+				let response = loginModel.confirmUser(blockData.token);
+				if (response) {
+					_.showSuccessPopup('User activated');
+				}
+			} else if (blockData.params.module == 'reset') {
+				_.resetData = blockData;
+				_.moduleStructure['right'] = `resetTpl`;
+			}
+		}
 /*		let initTpl = _.loginTpl();
 		let params = blockData['params'];
 		if(params){
@@ -268,7 +281,6 @@ class LoginPage extends G{
 			}
 		}
 		_.welcomeTpl(initTpl);*/
-		
 		_.render();
 	}
 }

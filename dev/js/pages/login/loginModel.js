@@ -16,6 +16,7 @@ class _loginModel{
 			'reset': `${env.backendUrl}/auth/reset-password`,
 			'wizardData': `${env.backendUrl}/user/wizard-data`,
 			'checkEmail': `${env.backendUrl}/auth/check-email/`,
+			'confirmEmail': `${env.backendUrl}/auth/confirm/`,
 		};
 		
 		this.dashboards = {
@@ -167,6 +168,23 @@ class _loginModel{
 				}
 			} else {
 				resolve(null);
+			}
+			resolve(null);
+		});
+	}
+
+	confirmUser(token){
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['confirmEmail']}?token=${token}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				if(response['status'] == 'success') {
+					resolve(response.message);
+				} else resolve(null)
 			}
 			resolve(null);
 		});
