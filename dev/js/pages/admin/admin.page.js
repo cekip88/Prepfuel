@@ -127,18 +127,18 @@ export class AdminPage extends G {
 		_.f('BODY').append(_.markup(_.successPopupTpl(text,'green')));
 		setTimeout(_.closePopup.bind(_),3000)
 	}
-	showErrorPopup(text) {
-		const _ =  this;
-		_.closePopup();
-		_.f('BODY').append(_.markup(_.successPopupTpl(text,'red')));
-		setTimeout(_.closePopup.bind(_),3000);
-	}
 	closePopup(clickData) {
 		const _ = this;
 		let label;
 		if (clickData && clickData.item) label = clickData.item.closest('.label');
 		else label = _.f('.label');
 		if (label) label.remove();
+	}
+	showErrorPopup(text) {
+		const _ =  this;
+		_.closePopup();
+		_.f('BODY').append(_.markup(_.successPopupTpl(text,'red')));
+		setTimeout(_.closePopup.bind(_),3000);
 	}
 
 	async toProfile({item}){

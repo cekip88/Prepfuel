@@ -2737,8 +2737,11 @@ button.student-profile-plan-edit
 	.link
 		color: rgb($blue-text)
 		font-family: $f_medium
-	&-left,&-right //,&-full
+	&-left,&-right,&-full
 		min-height: 100vh //calc(100vh - 24px)
+	&-right
+		.login-full
+			min-height: calc(100vh - 110px)
 	&-left,&-success
 		align-items: center
 		justify-content: flex-end
@@ -2776,6 +2779,8 @@ button.student-profile-plan-edit
 		.button
 			&-blue,&-lightblue
 				width: 100%
+				&.narrow
+					width: initial
 	&-form
 		@extend %df
 		@extend %fdc
