@@ -6,6 +6,7 @@ import { G }            from "../../libs/G.js";
 import { studentModel } from "./studentModel.js";
 import GInput           from "../../components/input/input.component.js";
 import GModaler         from "../../components/modaler/modaler.component.js";
+import { env } from "/env.js"
 
 class StudentPage extends G{
 	constructor() {
@@ -27,6 +28,9 @@ class StudentPage extends G{
 				id:'',
 				container: document.createElement('g-body')
 			},
+		};
+		this.endpoints = {
+			'me':`${env.backendUrl}/user/me`,
 		};
 	}
 	define(){
@@ -83,6 +87,21 @@ class StudentPage extends G{
 	}
 	fullHeader(){
 		return G_Bus.trigger('header','fullHeader');
+	}
+	async getMe(){
+		const _ = this;
+		let rawResponse = await fetch(_.endpoints['me'],{
+			..._.baseHeaders,
+			method: 'GET'
+		});
+		if(rawResponse.status < 206){
+			let response = await rawResponse.json();
+			let user = response['response'];
+			localStorage.setItem('me',JSON.stringify({
+				student: user
+			}));
+			return void 0;
+		}
 	}
 	async init(blockData){
 		const _ = this;
