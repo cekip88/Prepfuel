@@ -112,6 +112,7 @@ class StudentPage extends G{
 		if(params['redirect']){
 			await _.getMe();
 		}
+		debugger;
 		_.header = await _.getBlock({name:'header'},'blocks');
 		if(params){
 			await _.moduleRender(params);
