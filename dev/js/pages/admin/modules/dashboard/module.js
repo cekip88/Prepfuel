@@ -677,7 +677,6 @@ export class DashboardModule extends AdminPage{
 		}
 	}
 	domReady() {
-		console.log('domReady')
 		const _ = this;
 		_.navigationInit();
 		if (_.subSection == 'students') {

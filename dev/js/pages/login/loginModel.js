@@ -48,6 +48,7 @@ class _loginModel{
 			let user = response['user'];
 			await G_Bus.trigger(_.componentName,'loginSuccess',response);
 			localStorage.setItem('me',JSON.stringify(user));
+			localStorage.removeItem('history');
 			await G_Bus.trigger('router','changePage',`/${user['role']}/dashboard`);
 
 			if (user.role !== 'student') {
@@ -94,12 +95,13 @@ class _loginModel{
 			let response = await rawResponse.json();
 			if( _.isSuccessResponse(response) ){
 				await G_Bus.trigger(_.componentName,'forgotSuccess',/*response['token']*/{item:form});
-				console.log(response)
+				return response;
 			}else{
 				G_Bus.trigger(_.componentName,'forgotFail',{
 					"response": response,
 					"formData": formData
 				});
+				return response;
 			}
 		}
 	}
@@ -115,12 +117,14 @@ class _loginModel{
 			if( _.isSuccessResponse(response) ){
 				await G_Bus.trigger(_.componentName,'resetSuccess',response['token']);
 			}
+			return response;
 		}else{
 			let response = await rawResponse.json();
 			G_Bus.trigger(_.componentName,'resetFail',{
 				"response": response,
 				"formData": formData
 			});
+			return response;
 		}
 	}
 	async isLogin(){

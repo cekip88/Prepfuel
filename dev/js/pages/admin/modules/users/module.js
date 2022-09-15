@@ -512,7 +512,6 @@ export class UsersModule extends AdminPage {
 		_.studentInfo['userId'] = _.studentInfo['_id'];
 		_.studentInfo['_id'] = currentStudent['_id'];
 		_.studentInfo['plans'] = currentStudent['plans'];
-		console.log(_.studentInfo)
 
 		_.courseData = {};
 		for (let item of _.studentInfo['plans']) {

@@ -71,6 +71,9 @@ export class AdminPage extends G {
 		if(section) history.pushState(null, null, section);
 		await _.moduleRender({module:tpl});
 		_.currentSection = section;
+
+		G_Bus.trigger('router','changeHistory');
+		G_Bus.trigger('header','changeTitle',location.pathname);
 		return true;
 	}
 	async moduleRender(params){

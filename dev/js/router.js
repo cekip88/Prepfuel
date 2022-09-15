@@ -19,7 +19,7 @@ export class router {
 			'logout': `${env.backendUrl}/auth/logout`,
 		};
 		G_Bus
-			.on(_,['changePage','logout'])
+			.on(_,['changePage','logout','changeHistory'])
 		_.user = {};
 	}
 	get role(){
@@ -50,7 +50,6 @@ export class router {
 		
 		_.currentPageRoute = await _.definePageRoute(route);
 		_.clearComponents();
-	
 		await _.includePage(_.currentPageRoute);
 	}
 	async definePageRoute(route){
@@ -216,12 +215,35 @@ export class router {
 		}
 		return false;
 	}
+
+	changeHistory(){
+		const _ = this;
+		if (!_.locations) {
+			let locations = localStorage.getItem('history');
+			if (locations) _.locations = JSON.parse(locations);
+			else _.locations = [];
+		}
+
+		_.locations.push(location.pathname);
+		localStorage.setItem('history',JSON.stringify(_.locations));
+	}
+
 	async init(params){
 		const _ = this;
 		_.middleware = params['middleware'];
 		//await _.getMe();
 		await _.changePage();
+		window.addEventListener('popstate',function (e){
+			_.locations.pop();
+			localStorage.setItem('history',JSON.stringify(_.locations));
+			_.changePage(_.locations[_.locations.length - 1]);
+		});
+		/*document.addEventListener('mouseleave',function (e){
+			console.log('test',e);
+		})
+		document.addEventListener('mouseenter',function (e){
+			console.log('test',e);
+		})*/
 	}
-
 }
 
