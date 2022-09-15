@@ -95,11 +95,16 @@ class StudentPage extends G{
 			method: 'GET'
 		});
 		if(rawResponse.status < 206){
-			let response = await rawResponse.json();
-			let user = response['response'];
-			localStorage.setItem('me',JSON.stringify({
-				student: user
-			}));
+			let
+				response = await rawResponse.json(),
+				user = response['response'];
+			localStorage.setItem('me',JSON.stringify(user));
+			localStorage.setItem('student',JSON.stringify(user['user']));
+			_.storageSave('authorization','true');
+			for(let prop in user){
+				_.storageSave(prop,user[prop]);
+			}
+			localStorage.setItem('courses',JSON.stringify(user['plans']));
 			return void 0;
 		}
 	}
@@ -112,7 +117,6 @@ class StudentPage extends G{
 		if(params['redirect']){
 			await _.getMe();
 		}
-		debugger;
 		_.header = await _.getBlock({name:'header'},'blocks');
 		if(params){
 			await _.moduleRender(params);

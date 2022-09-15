@@ -47,7 +47,7 @@ export const view = {
 						<use xlink:href="#three-dots"></use>
 					</svg>
 				</button>
-				<div class="test-label-modal">
+				<div class="test-label-modal" id="note-actions">
 					<button class="test-label-modal-button" data-click="${this.componentName}:editNote;${this.componentName}:changeInnerQuestionId" data-question-id="${question['questionId']}"><span>Edit</span></button>
 					<button class="test-label-modal-button" data-click="${this.componentName}:deleteNote;${this.componentName}:changeInnerQuestionId" data-question-id="${question['questionId']}"><span>Delete</span></button>
 				</div>
@@ -730,7 +730,7 @@ export const view = {
 					<div class="pagination-info" id="pagination-title"><span>Do <strong class="questions-length"></strong> questions</span></div>
 					<div class="pagination-links" id="question-pagination"></div>
 				</div>
-			<a class="button-blue" disabled="" id="check-answer-btn" data-click="${_.componentName}:checkAnswer"><span>Check answer</span></a>
+				<a class="button-blue" disabled="" id="check-answer-btn" data-click="${_.componentName}:checkAnswer"><span>Check answer</span></a>
 			</div>`;
 	},
 	

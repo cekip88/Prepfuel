@@ -28,6 +28,7 @@ new router().init({
 				'/admin/profile': 'admin',
 				'/admin/users': 'admin',
 				'/admin/courses': 'admin',
+				'/admin/dashboard?redirect=google': 'admin',
 			}
 		},
 		'parent':{
@@ -43,7 +44,8 @@ new router().init({
 				'/student/dashboard': 'student',
 				'/student/tests': 'student',
 				'/student/practice': 'student',
-				'/student/schedule': 'student'
+				'/student/schedule': 'student',
+				'/student/dashboard?redirect=google': 'student',
 			}
 		},
 		'student|admin':{

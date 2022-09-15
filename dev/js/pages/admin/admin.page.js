@@ -133,9 +133,8 @@ export class AdminPage extends G {
 		if(rawResponse.status < 206){
 			let response = await rawResponse.json();
 			let user = response['response'];
-			localStorage.setItem('me',JSON.stringify({
-				admin: user
-			}));
+			localStorage.setItem('me',JSON.stringify(user));
+			localStorage.setItem('admin',JSON.stringify(user['user']));
 			return void 0;
 		}
 	}

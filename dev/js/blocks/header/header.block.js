@@ -6,10 +6,11 @@ class HeaderBlock extends G{
 		const _ = this;
 		_.componentName = 'header';
 		_.me = JSON.parse(localStorage.getItem('me'));
+		let userType= 'parent';
 		_.set({
-			firstName: _.me['parent'] ? _.me['parent']['user']['firstName'] : _.me['firstName'],
-			lastName: _.me['parent'] ? _.me['parent']['user']['lastName'] : _.me['lastName'],
-			role: _.me['parent'] ? _.me['parent']['user']['role'] : _.me['role'],
+			firstName: _.me[userType] ? _.me[userType]['user']['firstName'] : _.me['firstName'],
+			lastName: _.me[userType] ? _.me[userType]['user']['lastName'] : _.me['lastName'],
+			role: _.me[userType] ? _.me[userType]['user']['role'] : _.me['role'],
 		});
 		G_Bus
 			.on(_,['showUserList','rerender','fullHeader'])
@@ -25,9 +26,10 @@ class HeaderBlock extends G{
 		const _ = this;
 		let header = _.f('G-HEADER');
 		_.me = JSON.parse(localStorage.getItem('me'));
-		_._$.firstName = _.me['parent'] ? _.me['parent']['user']['firstName'] : _.me['firstName'];
-		_._$.lastName = _.me['parent'] ? _.me['parent']['user']['lastName'] : _.me['lastName'];
-		_._$.role = _.me['parent'] ? _.me['parent']['user']['role'] : _.me['role'];
+		let userType= 'parent';
+		_._$.firstName = _.me[userType] ? _.me[userType]['user']['firstName'] : _.me['firstName'];
+		_._$.lastName = _.me[userType] ? _.me[userType]['user']['lastName'] : _.me['lastName'];
+		_._$.role = _.me[userType] ? _.me[userType]['user']['role'] : _.me['role'];
 		let tpl = _.fullHeader();
 		header.innerHTML = tpl;
 	}
@@ -43,16 +45,16 @@ class HeaderBlock extends G{
 					`;
 		if (_._$.role === 'student') {
 			tpl += `
-						<a class="head-button" href="./studentDashboard.html">
-							<svg>
-								<use xlink:href="/img/sprite.svg#bell"></use>
-							</svg>
-						</a>
-						<button class="head-button">
-							<svg>
-								<use xlink:href="#chat"></use>
-							</svg>
-						</button>`;
+				<a class="head-button" href="./studentDashboard.html">
+					<svg>
+						<use xlink:href="/img/sprite.svg#bell"></use>
+					</svg>
+				</a>
+				<button class="head-button">
+					<svg>
+						<use xlink:href="#chat"></use>
+					</svg>
+				</button>`;
 		}
 		let courses = localStorage.getItem('courses');
 		if (courses) {

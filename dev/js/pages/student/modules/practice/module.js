@@ -923,7 +923,6 @@ export class PracticeModule extends StudentPage{
 	showForm(clickData){
 		let btn = clickData.item,
 		id = btn.getAttribute('data-id');
-		console.log(id);
 		this.f(`#${id}`).reset();
 		G_Bus.trigger('modaler','showModal',{
 			type: 'html',
@@ -1094,6 +1093,7 @@ export class PracticeModule extends StudentPage{
 	}
 	async checkAnswer({item}){
 		const _ = this;
+		if(item.hasAttribute('disabled')) return void 0;
 		return new Promise( async (resolve)=> {
 			let handle = async(answerEntries) => {
 				for(let entry of answerEntries) {
@@ -1124,6 +1124,8 @@ export class PracticeModule extends StudentPage{
 					}
 					let response = await Model.saveAnswer(fullAnswer);
 					if(!ansObj['answer']) return void 0;
+					let noteActions = _.f(`#note-field-${id} .test-label-button`);
+					if(noteActions) noteActions.remove();
 					if(ansObj['answer']) {
 						_._$.currentQuestion['questions'].forEach(question => {
 							let ans = _.answerVariant[id]['answer'];
@@ -1169,7 +1171,7 @@ export class PracticeModule extends StudentPage{
 			}
 			let answerEntries = Object.entries(_.answerVariant);
 			await handle(answerEntries);
-			if((!_.isLastQuestion) && (!_.isJump) && (_.answerVariant[_.innerQuestionId])) {
+			if((!_.isLastQuestion)) {
 				_.changeAnswerButtonToNext();
 			}
 			resolve(true);
@@ -1372,11 +1374,11 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		let questionId = item.getAttribute('data-question-id');
 		if(_.answerVariant[questionId]){
-			delete _.answerVariant[questionId]['note'];
+			_.answerVariant[questionId]['note'] = "";
 		}
 		item.parentNode.parentNode.remove();
 		_.f(`.note-button[data-question-id="${questionId}"]`).classList.remove('active');
-		_.setAvailableCheckBtn();
+		//_.setAvailableCheckBtn();
 	}
 	/* Work with note end */
 	
@@ -1484,7 +1486,12 @@ export class PracticeModule extends StudentPage{
 			});
 			_.fillNote(currentAnswers);
 			_.setBookmark(currentAnswers);
-			_.changeAnswerButtonToNext();
+			if(_.isLastQuestion && _.testFinished){
+				_.setSummaryBtn()
+			}else{
+				_.changeAnswerButtonToNext();
+			}
+			
 			let answersExists = false;
 			if(_.answerVariant[currentQuestion['_id']]  && !_.answerVariant[currentQuestion['_id']]['answer']) return void 0;
 			currentQuestion['questions'].forEach( (question)=>{
