@@ -20,7 +20,7 @@ export class G extends G_G{
 	
 	triggerAbortController(){
 		const _ = this;
-		console.log(G.abortControllers);
+		//console.log(G.abortControllers);
 		G.abortControllers.forEach(function (item,index){
 			item.abort();
 			G.abortControllers.delete(index);
@@ -228,7 +228,6 @@ export class G extends G_G{
 	}
 
 
-
 	navigationInit() {
 		const _ = this;
 		let list = _.f('.navigate-list');
@@ -309,7 +308,6 @@ export class G extends G_G{
 			if (list[i] === btn && tabsContainer.children[i]) tabsContainer.children[i].classList.add('active');
 		}
 	}
-
 
 
 	sectionHeaderTpl({title,subtitle,titlesData = {},buttonsData = null,icon= null,gap = true}){

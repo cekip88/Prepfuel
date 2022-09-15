@@ -61,6 +61,8 @@ class StudentPage extends G{
 		if(section) history.pushState(null, null, section);
 		_.moduleRender({module:tpl});
 		_.currentSection = section;
+		G_Bus.trigger('router','changeHistory');
+		G_Bus.trigger('header','changeTitle',location.pathname);
 	}
 	showForm(id){
 		G_Bus.trigger('modaler','showModal',{

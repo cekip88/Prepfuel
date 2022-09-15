@@ -100,7 +100,6 @@ export default class G_G{
 		})
 	}*/
 
-
 	set(state){
 		const _ = this;
 		for(let prop in state){

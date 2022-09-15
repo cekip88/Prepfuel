@@ -159,7 +159,7 @@ export const loginView = {
 				<h2 class="login-main-title"><span>We sent password reset link to your email</span></h2>
 				<div class="login-main-subtitle"><span>Please check your inbox messages</span></div>
 				<div class="form-checkbox-row login-checkbox"><span>Did’t receive an email?</span>
-				<a class="link" href='/login/forgot'>Resend</a></div><img class="login-success-img" src="/img/S_email.png" alt="">
+				<button class="link" data-click="${_.componentName}:resend">Resend</button></div><img class="login-success-img" src="/img/S_email.png" alt="">
 			</div>
 		`;
 	},
@@ -247,7 +247,8 @@ export const loginView = {
 						value="${loginData ? loginData.email : 'admin@mail.ru'}" 
 						name="email" 
 						className="form-input" 
-						required></g-input>
+						required
+					></g-input>
 				</div>
 				<div class="form-block">
 					<div class="form-label-row">
@@ -256,7 +257,15 @@ export const loginView = {
 							<span>Forgot Password?</span>
 						</a>
 					</div>
-					<g-input class="g-form-item" type="password" data-keydown="${_.componentName}:formInputHandle" name="password"  className="form-input"  value="${loginData ? loginData.password : 'admin123'}" required></g-input>
+					<g-input 
+						class="g-form-item" 
+						type="password" 
+						data-keydown="${_.componentName}:formInputHandle" 
+						name="password"  
+						className="form-input"  
+						value="${loginData ? loginData.password : 'admin123'}" 
+						required
+					></g-input>
 				</div>
 				<div class="form-block">
 					<g-input type="checkbox" class="g-form-item" items='[{"value":"1","text":"Remember me","checked":${loginData ? true : false}}]' name="remember"></g-input>

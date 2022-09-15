@@ -51,7 +51,7 @@ class LoginPage extends G{
 				'changeSection',
 				'changeAgree',
 				'formInputHandle',
-				'checkEmail','validatePassword',
+				'checkEmail','validatePassword','resend',
 		]);
 	}
 
@@ -117,6 +117,7 @@ class LoginPage extends G{
 			else localStorage.removeItem('loginData');
 		}
 		let resp = await loginModel[handle](formData,form);
+		_.lastSend = {handle:handle,form:form,formData:formData};
 		if (handle == 'doRegister') {
 			if (resp.status == 'success') {
 				let btn = document.createElement('BUTTON');
@@ -210,6 +211,14 @@ class LoginPage extends G{
 		}
 		_.render();
 	}
+	async resend(){
+		const _ = this;
+		let resp = await loginModel[_.lastSend.handle](_.lastSend.formData,_.lastSend.form);
+		console.log(resp)
+		if (resp.status == 'success') {
+			_.showSuccessPopup('We send email again.')
+		}
+	}
 
 	changeAgree({item}){
 		const _ = this;
@@ -242,7 +251,7 @@ class LoginPage extends G{
 		//_.renderPart(renderData);
 		let cont = form.parentElement;
 		form.remove();
-		cont.append(_.markup(_.forgotDoneTpl()));
+		if (cont) cont.append(_.markup(_.forgotDoneTpl()));
 	}
 	forgotFail(){
 		const _ = this;
