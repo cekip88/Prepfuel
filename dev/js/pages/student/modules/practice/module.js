@@ -491,11 +491,11 @@ export class PracticeModule extends StudentPage{
 				_.changeNextButtonToAnswer()
 			}
 		}else{
-			if(_.answerVariant[questionId]['answer']){
+			/*if(_.answerVariant[questionId]['answer']){
 				_.changeNextButtonToAnswer()
 			}else{
 				if(!_.isLastQuestion) _.changeAnswerButtonToNext();
-			}
+			}*/
 		}
 	}
 	async saveNote({item:form,event}){
@@ -519,11 +519,11 @@ export class PracticeModule extends StudentPage{
 				_.changeNextButtonToAnswer();
 			}
 		}else{
-			if(_.answerVariant[_.innerQuestionId]['answer']){
+			/*if(_.answerVariant[_.innerQuestionId]['answer']){
 				_.changeNextButtonToAnswer();
 			}else{
 				if(!_.isLastQuestion) _.changeAnswerButtonToNext();
-			}
+			}*/
 		}
 	}
 
@@ -572,6 +572,7 @@ export class PracticeModule extends StudentPage{
 		return tempBtn ?? btn ?? _.f('.section-button')[0];
 	}
 	async jumpToQuestion({item}){
+		return void 0;
 		const _ = this;
 		_.isPracticeJump = true;
 		if(!_.testFinished){
@@ -922,6 +923,7 @@ export class PracticeModule extends StudentPage{
 	showForm(clickData){
 		let btn = clickData.item,
 		id = btn.getAttribute('data-id');
+		console.log(id);
 		this.f(`#${id}`).reset();
 		G_Bus.trigger('modaler','showModal',{
 			type: 'html',
@@ -1369,8 +1371,9 @@ export class PracticeModule extends StudentPage{
 	deleteNote({item}){
 		const _ = this;
 		let questionId = item.getAttribute('data-question-id');
-		_.answerVariant[questionId]['note'] = "";
-
+		if(_.answerVariant[questionId]){
+			delete _.answerVariant[questionId]['note'];
+		}
 		item.parentNode.parentNode.remove();
 		_.f(`.note-button[data-question-id="${questionId}"]`).classList.remove('active');
 		_.setAvailableCheckBtn();
@@ -1485,7 +1488,11 @@ export class PracticeModule extends StudentPage{
 			let answersExists = false;
 			if(_.answerVariant[currentQuestion['_id']]  && !_.answerVariant[currentQuestion['_id']]['answer']) return void 0;
 			currentQuestion['questions'].forEach( (question)=>{
-				if(_.answerVariant[question['_id']]['answer']) answersExists = true;
+				if(_.answerVariant[question['_id']]['answer']){
+					answersExists = true;
+				}else{
+					return void 0;
+				}
 				let answerItems = _.f(`.answer-item[data-question-id="${question['_id']}"]`);
 				if(!answerItems) return void 0;
 				answerItems.forEach(  (ans)=>{
@@ -1502,7 +1509,6 @@ export class PracticeModule extends StudentPage{
 			_.fillExplanation(currentQuestion);
 		
 			_.setAvailableCheckBtn();
-		
 			if( currentAnswers ){
 				for(let currentAnswer of currentAnswers){
 					if(currentAnswer['disabledAnswers']){
