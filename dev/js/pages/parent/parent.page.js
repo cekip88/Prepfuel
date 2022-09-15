@@ -6,6 +6,7 @@ import { G }            from "../../libs/G.js";
 import GInput           from "../../components/input/input.component.js";
 import GModaler         from "../../components/modaler/modaler.component.js";
 import { env } from "/env.js"
+
 class ParentPage extends G{
 	constructor() {
 		super();

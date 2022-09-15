@@ -1,6 +1,7 @@
 import  {G_Bus} from "../../../../libs/G_Control.js";
 import {G} from "../../../../libs/G.js";
 import { AdminModel } from "./adminModel.js";
+import { env } from "/env.js"
 
 export class AdminPage extends G {
 	constructor() {
@@ -26,6 +27,9 @@ export class AdminPage extends G {
 				id:'',
 				container: document.createElement('g-footer')
 			}
+		};
+		this.endpoints = {
+			'me':`${env.backendUrl}/user/me`,
 		};
 	}
 	define() {
@@ -123,7 +127,21 @@ export class AdminPage extends G {
 			_.currentSection = '/admin/' + params['module'];
 		}
 	}
-
+	async getMe(){
+		const _ = this;
+		let rawResponse = await fetch(_.endpoints['me'],{
+			..._.baseHeaders,
+			method: 'GET'
+		});
+		if(rawResponse.status < 206){
+			let response = await rawResponse.json();
+			let user = response['response'];
+			localStorage.setItem('me',JSON.stringify({
+				admin: user
+			}));
+			return void 0;
+		}
+	}
 	showSuccessPopup(text) {
 		const _ =  this;
 		_.closePopup();

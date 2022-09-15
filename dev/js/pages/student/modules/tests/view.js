@@ -267,7 +267,7 @@ export const view = {
 		let tpl = `
 				<div class="section">
 				<div class="section-header">
-					<h2 class="title">Practice Test Score - Section Name</h2>
+					<h2 class="title">Practice Test Score - <strong id="test-section-name">${Model.currentSection.sectionName}</strong></h2>
 					<button class="button-white" data-click="StudentPage:changeSection" section="/student/tests">
 						<span>Exit this test</span>
 					</button>
@@ -806,7 +806,6 @@ export const view = {
 					<div class="test-header">
 						<h5 class="block-title test-title">
 							<span>Question ${_.getStep()[0]-1} of ${_.questionsLength}</span>
-							<strong style="font-size:10px;margin-left: 15px">${_._$.currentQuestion['questionId']}</strong>
 						</h5>
 						${_.actionsTpl(currentQuestion)}
 					</div>
@@ -846,7 +845,6 @@ export const view = {
 				<div class="test-sec" id="${question['_id']}">
 				<div class="test-header">
 					<h5 class="block-title test-title"><span>Question ${cnt+1} of ${_._$.currentQuestion['questions'].length}</span>
-					<strong style="font-size:10px;margin-left: 15px">${question['questionId']}</strong>
 					</h5>
 					${_.actionsTpl(question)}
 				</div>
@@ -882,7 +880,6 @@ export const view = {
 			<div class="test-header">
 				<h5 class="block-title test-title ddss">
 					<span>Question ${_.getStep('arr')[0]-1} of ${Model.allQuestionsLength}</span>
-					<strong style="font-size:10px;margin-left: 15px">${_._$.currentQuestion['questionId']}</strong>
 				</h5>
 				${_.actionsTpl(currentQuestion)}
 			</div>
