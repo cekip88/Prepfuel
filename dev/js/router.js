@@ -235,9 +235,9 @@ export class router {
 		//await _.getMe();
 		await _.changePage();
 		window.addEventListener('popstate',function (e){
-			_.locations.pop();
+		/*	_.locations.pop();
 			localStorage.setItem('history',JSON.stringify(_.locations));
-			_.changePage(_.locations[_.locations.length - 1]);
+			_.changePage(_.locations[_.locations.length - 1]);*/
 		});
 		/*document.addEventListener('mouseleave',function (e){
 			console.log('test',e);

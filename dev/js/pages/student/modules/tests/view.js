@@ -220,7 +220,6 @@ export const view = {
 	},
 	async questionsCarcass(){
 		const _ = this;
-		console.log('s');
 		return	`
 			 ${await _.questionHeader()}
 			 <div class="section row">
@@ -326,7 +325,6 @@ export const view = {
 				`;
 			}
 		}
-		
 		tpl+=`</div>
 					<div class="test-footer">
 						<a class="test-footer-back" data-click="${_.componentName}:changeSection" section="questions">

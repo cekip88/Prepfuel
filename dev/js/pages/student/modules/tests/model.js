@@ -118,6 +118,7 @@ class _Model{
 		* */
 		let testId = _.tests[_.currentTestPos]['_id'];
 		_.test = _.tests[_.currentTestPos];
+		console.log(_.test);
 		_.testStatus = _.test['status'];
 		return Promise.resolve(_.test);
 	}

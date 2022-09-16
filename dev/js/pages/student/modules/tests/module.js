@@ -130,7 +130,6 @@ export class TestsModule extends StudentPage{
 			currentQuestion: Model.firstQuestion,
 		});
 		_.currentQuestion = Model.firstQuestion;
-		console.log(_.abortGetStudentTests.signal.aborted);
 		let
 			container = _.f('#testAsideList');
 		container.innerHTML = '<img src="/img/loader.gif" alt="Loading...">';
@@ -146,6 +145,7 @@ export class TestsModule extends StudentPage{
 	
 	get timerTime(){
 		const _ = this;
+		if(!_.resultObj) return void 0;
 		let createdAt = _.resultObj['testStartedAt'],
 		startTime = new Date(createdAt).getTime(),
 		nowTime =new Date().getTime(),
@@ -177,7 +177,7 @@ export class TestsModule extends StudentPage{
 					 console.log('Last answer saved',await _.saveAnswerToDB());
 				 }
 				console.log('Test finished',await Model.finishTest({}));
-				console.log('Test result data', await Model.getTestResultsByResultId());
+				//console.log('Test result data', await Model.getTestResultsByResultId());
 				//_._$.currentQuestion = Model.questions[0];
 				_.moduleStructure['body'] = _.flexible(section);
 				await _.render();
@@ -1083,7 +1083,11 @@ export class TestsModule extends StudentPage{
 			if( _.questionPos == _.questionsLength - 1 ){
 				_.isLastQuestion = true;
 				if(Model.currentSectionPos == 1){
-					_.changeSkipButtonToFinish();
+					if(!Model.isFinished()){
+					}else{
+						_.changeSkipButtonToFinish();
+					}
+					
 				}else{
 					_.removeBackToQuestionBtn();
 					_.addBackToQuestionBtn(_.getPrevStepCnt());
@@ -1095,10 +1099,6 @@ export class TestsModule extends StudentPage{
 			}else if( (Model.currentSectionPos == 1) && (_.questionPos == 0)){
 				_.addBackToQuestionBtn(-1);
 			}
-			
-/*			if(_.sectionChanged && (_.changedType == 'fromLastQuestion')){
-				_.changeSkipButtonToNextSection();
-			}*/
 			G_Bus.trigger(_.componentName,'updateStorageTest'); // update test info in storage
 			_.currentQuestion = _._$.currentQuestion;
 			if(_.sectionChanged) {
