@@ -1265,5 +1265,13 @@ export const view = {
 		return `
 			<button class="section-button"  id="exit-pagination-btn" data-click="${_.componentName}:changeSection" section="mathematics">Exit this Quiz</button>
 		`;
+	},
+	backToResultsBtn(){
+		const _ = this;
+		return `
+			<button class="test-footer-back back-to-question-button" id="back-results-btn" data-click="${_.componentName}:viewResult" section="score">
+				<span>Back to results</span>
+			</button>
+		`;
 	}
 }

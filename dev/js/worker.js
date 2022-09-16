@@ -77,7 +77,6 @@ self.addEventListener('fetch', event => {
 			return fetch(new Request('/', {method: 'GET'}));
 		}
 		if(response.status == 403){
-			console.log('ss');
 			if(response.url.indexOf('.jpg') > -1){
 				console.log(`%c%s`,styles,`Server forbidden this image: ${response.url.substr(response.url.lastIndexOf('/')+1)}` );
 			}

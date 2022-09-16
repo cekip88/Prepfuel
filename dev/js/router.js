@@ -44,6 +44,7 @@ export class router {
 	
 	async changePage(route){
 		const _ = this;
+		
 		//_.user['role'] = 'guest';
 		//if(_.user['role'] == 'guest')
 		await _.getMe();
@@ -223,9 +224,9 @@ export class router {
 			if (locations) _.locations = JSON.parse(locations);
 			else _.locations = [];
 		}
-
 		_.locations.push(location.pathname);
 		localStorage.setItem('history',JSON.stringify(_.locations));
+		
 	}
 
 	async init(params){

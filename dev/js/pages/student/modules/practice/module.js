@@ -79,9 +79,8 @@ export class PracticeModule extends StudentPage{
 			'showTestLabelModal','editNote','deleteNote','saveReport','changeQuestion','viewResult',
 			'startQuiz','checkQuizAnswer','setWrongAnswer','setQuizInfo','changeQuizQuestion',
 			'viewStartResult','setSkillInfo','reviewAnswers'
-		])
+		]);
 	}
-	
 	clearData(){
 		const _ = this;
 		_.questionPos = 0;
@@ -220,10 +219,10 @@ export class PracticeModule extends StudentPage{
 	async fillQuestionSection({item}){
 		const _ = this;
 		let
-			conceptName = item.getAttribute('data-id'),
-			{currentConcept,currentCategory} = Model.getCurrentConcept(conceptName);
+			conceptName = item.getAttribute('data-id');
 		
 		if(!_.testFinished){
+			let {currentConcept,currentCategory} = Model.getCurrentConcept(conceptName);
 			let response = await Model.start(_.currentConcept,_.currentCategory);
 			_.skillTests = await Model.getSkillPractice(_.currentConcept,_.currentCategory);
 		}
@@ -529,13 +528,6 @@ export class PracticeModule extends StudentPage{
 
 	
 	// navigate methods
-	switchSubNavigate(){
-		const _ = this;
-		let cont = _.f('.subnavigate');
-		if(!cont.querySelector(`[section="${_.subSection}"]`)) return 0;
-		if(cont.querySelector('.active'))	cont.querySelector('.active').classList.remove('active');
-		cont.querySelector(`[section="${_.subSection}"]`).classList.add('active')
-	}
 	async changePracticeTab({item}){
 		const _ = this;
 		_.quizTests = [];
@@ -557,29 +549,14 @@ export class PracticeModule extends StudentPage{
 		}
 		_.practiceTabPos = pos;
 	}
-	changeActiveTab(){
-		const _ = this;
-		let
-		btn = _.f('.section-button[data-pos="${_.activeTab}"]'),
-		tempBtn = undefined;
-		
-		if (_.activeTab == 3) {
-			tempBtn = _.f('.section-button[data-pos="7"]');
-		} else if (_.activeTab == 7) {
-			tempBtn = _.f('.section-button[data-pos="3"]');
-		}
-		
-		return tempBtn ?? btn ?? _.f('.section-button')[0];
-	}
 	async jumpToQuestion({item}){
-		return void 0;
 		const _ = this;
 		_.isPracticeJump = true;
 		if(!_.testFinished){
-			if(_.answerVariant && _.answerVariant[_.innerQuestionId]){
-				console.log(_.answerVariant);
+			return void 0;
+			/*if(_.answerVariant && _.answerVariant[_.innerQuestionId]){
 				await _.checkAnswer({item});
-			}
+			}*/
 		}
 		let questionPos = item.getAttribute('data-pos');
 		_.questionPos = questionPos;
@@ -722,7 +699,6 @@ export class PracticeModule extends StudentPage{
 	}
 	async viewResult({item}){
 		const _ = this;
-	
 		let
 			summary,questionBody = _.f('#question-inner-body');
 		let answerBtn = _.f('#check-answer-btn');
@@ -737,6 +713,10 @@ export class PracticeModule extends StudentPage{
 			let {currentAnswers, placedAnswers} = await _.getAnswer(_._$.currentQuizQuestion);
 			_.setPaginationAnswers(placedAnswers);
 		}else{
+			
+			let backBtn = _.f('#back-results-btn');
+			if(backBtn) backBtn.remove();
+			
 			summary = await Model.getSummary();
 			questionBody.innerHTML = await _.skillSummary(summary,	Model.currentCategory,Model.currentConcept['concept']);
 			_.f('#testType').textContent = 'Review';
@@ -1458,6 +1438,8 @@ export class PracticeModule extends StudentPage{
 			}
 			if( _.testFinished ){
 				_.changeAnswerButtonToNext();
+				let backResults = _.f("#back-results-btn");
+				if(!backResults) _.f('#check-answer-btn').before(_.markup(_.backToResultsBtn()))
 			}else{
 				_.changeNextButtonToAnswer();
 			}
