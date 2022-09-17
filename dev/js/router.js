@@ -52,12 +52,12 @@ export class router {
 		_.clearComponents();
 		await _.includePage(_.currentPageRoute);
 
-		/*if (!_.locations) {
+		if (!_.locations) {
 			let locations = localStorage.getItem('history');
 			if (locations) _.locations = JSON.parse(locations);
 			else _.locations = [];
 			localStorage.setItem('history',JSON.stringify(_.locations));
-		}*/
+		}
 	}
 	async definePageRoute(route,push = true){
 		const _ = this;
@@ -225,10 +225,10 @@ export class router {
 
 	changeHistory(){
 		const _ = this;
-		/*_.curPosIndex = _.locations.length - 1;
+		_.curPosIndex = _.locations.length - 1;
 		if (_.locations[_.curPosIndex] !== location.pathname) _.locations.push(location.pathname);
 		localStorage.setItem('history',JSON.stringify(_.locations));
-		console.log(_.locations)*/
+		console.log(_.locations)
 	}
 
 	async init(params){
@@ -236,19 +236,19 @@ export class router {
 		_.middleware = params['middleware'];
 		await _.changePage();
 
-		/*window.addEventListener('popstate',function (e){
+		window.addEventListener('popstate',function (e){
 			_.curPosIndex--;
 			console.log('popState')
 			_.changePage(_.locations[_.curPosIndex],false);
-			/!*let btn = document.querySelector(`.navigate-item[section="${_.locations[_.curPosIndex]}"]`);
+			/*let btn = document.querySelector(`.navigate-item[section="${_.locations[_.curPosIndex]}"]`);
 			console.log(btn)
 			if (btn) {
 				G_Bus.trigger('AdminPage','changeSection',{item:btn});
 				G_Bus.trigger('AdminPage','navigate',{item:btn});
 				history.pushState(null, null, location.pathname);
 				//_.changeHistory();
-			}*!/
-		});*/
+			}*/
+		});
 	}
 }
 
