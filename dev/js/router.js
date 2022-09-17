@@ -42,20 +42,26 @@ export class router {
 		}
 	}
 	
-	async changePage(route){
+	async changePage(route,push){
 		const _ = this;
-		
 		//_.user['role'] = 'guest';
 		//if(_.user['role'] == 'guest')
 		await _.getMe();
 		
-		_.currentPageRoute = await _.definePageRoute(route);
+		_.currentPageRoute = await _.definePageRoute(route,push);
 		_.clearComponents();
 		await _.includePage(_.currentPageRoute);
+
+		/*if (!_.locations) {
+			let locations = localStorage.getItem('history');
+			if (locations) _.locations = JSON.parse(locations);
+			else _.locations = [];
+			localStorage.setItem('history',JSON.stringify(_.locations));
+		}*/
 	}
-	async definePageRoute(route){
+	async definePageRoute(route,push = true){
 		const _ = this;
-		if(route) history.pushState(null, null, route);
+		if(push && route) history.pushState(null, null, route);
 		let
 			params = {},
 			pathName = location.pathname + location.search,
@@ -219,32 +225,30 @@ export class router {
 
 	changeHistory(){
 		const _ = this;
-		if (!_.locations) {
-			let locations = localStorage.getItem('history');
-			if (locations) _.locations = JSON.parse(locations);
-			else _.locations = [];
-		}
-		_.locations.push(location.pathname);
+		/*_.curPosIndex = _.locations.length - 1;
+		if (_.locations[_.curPosIndex] !== location.pathname) _.locations.push(location.pathname);
 		localStorage.setItem('history',JSON.stringify(_.locations));
-		
+		console.log(_.locations)*/
 	}
 
 	async init(params){
 		const _ = this;
 		_.middleware = params['middleware'];
-		//await _.getMe();
 		await _.changePage();
-		window.addEventListener('popstate',function (e){
-			_.locations.pop();
-			localStorage.setItem('history',JSON.stringify(_.locations));
-			_.changePage(_.locations[_.locations.length - 1]);
-		});
-		/*document.addEventListener('mouseleave',function (e){
-			console.log('test',e);
-		})
-		document.addEventListener('mouseenter',function (e){
-			console.log('test',e);
-		})*/
+
+		/*window.addEventListener('popstate',function (e){
+			_.curPosIndex--;
+			console.log('popState')
+			_.changePage(_.locations[_.curPosIndex],false);
+			/!*let btn = document.querySelector(`.navigate-item[section="${_.locations[_.curPosIndex]}"]`);
+			console.log(btn)
+			if (btn) {
+				G_Bus.trigger('AdminPage','changeSection',{item:btn});
+				G_Bus.trigger('AdminPage','navigate',{item:btn});
+				history.pushState(null, null, location.pathname);
+				//_.changeHistory();
+			}*!/
+		});*/
 	}
 }
 

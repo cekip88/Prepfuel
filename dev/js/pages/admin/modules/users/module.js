@@ -50,6 +50,7 @@ export class UsersModule extends AdminPage {
 		_.subSection = 'student';
 		_.parentSkipped =  false;
 		_.searchInfo = {};
+		_.inProcess = false;
 		_.set({
 			addingStep : 1,
 			assignStep : 1
@@ -1804,6 +1805,8 @@ export class UsersModule extends AdminPage {
 
 	async sendResetPassword({item}){
 		const _ = this;
+		if (_.inProcess) return;
+		_.inProcess = true;
 		let role = item.getAttribute('role');
 		let info = _[`${role}Info`];
 		let email = info.email;
@@ -1821,6 +1824,7 @@ export class UsersModule extends AdminPage {
 
 		let formData = _.gFormDataCapture(form);
 		let response = await Model.sendResetPassword(info._id,formData);
+		_.inProcess = false;
 		if (response.status == 'success') _.showSuccessPopup(response.message);
 	}
 

@@ -246,6 +246,7 @@ export class G extends G_G{
 			activeBtn = list.querySelector('.active');
 			if (activeBtn) _.showActiveNavItem(activeBtn,list);
 		})
+		G_Bus.trigger('router','changeHistory')
 	}
 	navigate({item}){
 		const _ = this;

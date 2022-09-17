@@ -6,8 +6,14 @@ import GSelect from "../../components/select/select.component.js";
 ( async ()=>{
 	let worker = navigator.serviceWorker.register('/worker.js',{scope:'/'});
 	setTimeout( ()=>{
-		if(!navigator.serviceWorker.controller) location.reload();
+
+		if(!navigator.serviceWorker.controller) {
+
+			console.log('test')
+			location.reload();
+		}
 	}, 5000);
+	//if(!navigator.serviceWorker.controller) location.reload();
 })()
 
 new router().init({
