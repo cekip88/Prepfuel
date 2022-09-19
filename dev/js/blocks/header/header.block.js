@@ -13,7 +13,7 @@ class HeaderBlock extends G{
 			role: _.me[userType] ? _.me[userType]['user']['role'] : _.me['role'],
 		});
 		G_Bus
-			.on(_,['showUserList','rerender','fullHeader','changeTitle'])
+			.on(_,['showUserList','rerender','fullHeader','changeTitle']);
 	}
 	showUserList({item}) {
 		const _ = this;
@@ -21,11 +21,15 @@ class HeaderBlock extends G{
 	}
 	init(){
 		const _ = this;
+		console.log('test')
+		_.changeTitle();
 	}
-	changeTitle(path){
+	changeTitle(){
 		const _ = this;
-		document.title = 'Prepfuel - ' + path;
-		console.log(path)
+		let
+			paths = location.pathname.split('/'),
+			last = paths[paths.length - 1];
+		document.title = 'Prepfuel - ' + last[0].toUpperCase() + last.substr(1);
 	}
 	rerender(){
 		const _ = this;

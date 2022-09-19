@@ -100,6 +100,7 @@ export class DashboardModule extends ParentPage{
 		_.previousSection = _.subSection;
 		let section = item.getAttribute('section');
 		_.subSection = section;
+		history.pushState(null,null,section);
 		if (item.getAttribute('data-clear')) {
 			_.studentInfo = {};
 			_.metaInfo = {};

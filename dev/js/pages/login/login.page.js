@@ -273,7 +273,7 @@ class LoginPage extends G{
 		const _ = this;
 		if (blockData && blockData.params && blockData.params.module) {
 			if (blockData.params.module == 'confirm') {
-				let response = loginModel.confirmUser(blockData.token);
+				let response = loginModel.confirmUser(blockData.pathParts[blockData.pathParts.length - 1]);
 				if (response) {
 					_.showSuccessPopup('User activated');
 				}

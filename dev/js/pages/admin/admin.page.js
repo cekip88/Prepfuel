@@ -42,7 +42,8 @@ export class AdminPage extends G {
 		});
 		
 		G_Bus
-			.on(_,['showUserList','changeSection','navigate','toProfile'])
+			.on(_,['showUserList','changeSection','navigate','toProfile']);
+		G_Bus.on('router','backNext',_.backNext.bind(_));
 	}
 	asyncDefine(){
 		const _ = this;
@@ -61,18 +62,22 @@ export class AdminPage extends G {
 		item.classList.toggle('show');
 	}
 
-	async changeSection({item,event}){
+	backNext({item}){
 		const _ = this;
-		_.triggerAbortController()
+		_.changeSection({item,toHistory:false});
+		_.navigate({item})
+	}
+	async changeSection({item,event,toHistory = true}){
+		const _ = this;
+		_.triggerAbortController();
 		let
 			section = item.getAttribute('section'),
 			tpl = section.split('/')[2];
-		if(_.currentSection == section) return void 0;
-		if(section) history.pushState(null, null, section);
-		await _.moduleRender({module:tpl});
-		_.currentSection = section;
+		if(_.currentSection == section || !section) return void 0;
 
-		G_Bus.trigger('router','changeHistory');
+		_.currentSection = section;
+		if (toHistory) history.pushState(null, null, section);
+		await _.moduleRender({module:tpl});
 		G_Bus.trigger('header','changeTitle',location.pathname);
 		return true;
 	}

@@ -2,7 +2,7 @@ export const loginView = {
 	resetTpl(){
 		const _ = this;
 		let
-				token = _.resetData.token,
+				token = _.resetData.pathParts[_.resetData.pathParts.length - 1],
 				email = _.resetData.params.email;
 		return `
 			<form class="login-form passwords" data-submit="${_.componentName}:doFormAction" data-handle="doReset">

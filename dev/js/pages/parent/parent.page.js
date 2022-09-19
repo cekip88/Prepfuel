@@ -44,6 +44,7 @@ class ParentPage extends G{
 			'changeSection','navigate',
 			'showSuccessPopup','showErrorPopup','closePopup',
 		]);
+		G_Bus.on('router','backNext',_.backNext.bind(_));
 	}
 	createdAtFormat(value,format = 'month DD, YYYY'){
 		if (!value) return 'No date'
@@ -61,17 +62,26 @@ class ParentPage extends G{
 			res = res.replace('month',months[parseInt(month) - 1]);
 		return res;
 	}
-	changeSection({item,event}){
+
+	backNext({item}){
 		const _ = this;
+		_.changeSection({item,toHistory:false});
+		_.navigate({item})
+	}
+	changeSection({item,event,toHistory = true}){
+		const _ = this;
+		_.triggerAbortController();
 		let
-		section = item.getAttribute('section'),
-		tpl = section.split('/')[2];
-		//	if(_.currentSection == section) return void 0;
-		if(section) history.pushState(null, null, section);
-		_.moduleRender({module:tpl});
+			section = item.getAttribute('section'),
+			tpl = section.split('/')[2];
+
+		if(_.currentSection == section || !section) return void 0;
+
 		_.currentSection = section;
-		G_Bus.trigger('router','changeHistory');
+		if(toHistory) history.pushState(null, null, section);
+		_.moduleRender({module:tpl});
 		G_Bus.trigger('header','changeTitle',location.pathname);
+		return true;
 	}
 	showForm(id){
 		G_Bus.trigger('modaler','showModal',{

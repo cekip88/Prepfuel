@@ -52,12 +52,13 @@ export class router {
 		_.clearComponents();
 		await _.includePage(_.currentPageRoute);
 
-		if (!_.locations) {
-			let locations = localStorage.getItem('history');
-			if (locations) _.locations = JSON.parse(locations);
-			else _.locations = [];
-			localStorage.setItem('history',JSON.stringify(_.locations));
+		/*let locations = localStorage.getItem('history');
+		if (!locations) {
+			_.locations = [];
+		} else {
+			_.locations = JSON.parse(locations);
 		}
+		localStorage.setItem('history',JSON.stringify(_.locations));*/
 	}
 	async definePageRoute(route,push = true){
 		const _ = this;
@@ -123,23 +124,20 @@ export class router {
 					return {
 						'module': _.routes[`${difRoute}`],
 						'params': params,
-						'pathParts': pathParts,
-						'token': token
+						'pathParts': pathParts
 					}
 				}
 				return {
 					'module': 'login',
 					'params': params,
-					'pathParts': pathParts,
-					'token': token
+					'pathParts': pathParts
 				}
 			}else{
 				pathName = difRoute;
 				return {
 					'module': _.routes[`${pathName}`],
 					'params': params,
-					'pathParts': pathParts,
-					'token': token
+					'pathParts': pathParts
 				}
 			}
 		}
@@ -147,8 +145,7 @@ export class router {
 		return {
 			'module': _.routes[`${pathName}`],
 			'params': params,
-			'pathParts': pathParts,
-			'token': token
+			'pathParts': pathParts
 		}
 	}
 	async includePage(blockData){
@@ -225,29 +222,45 @@ export class router {
 
 	changeHistory(){
 		const _ = this;
+		/*if (_.locations[_.curPosIndex] !== location.pathname) {
+			_.locations.push(location.pathname);
+		}
 		_.curPosIndex = _.locations.length - 1;
-		if (_.locations[_.curPosIndex] !== location.pathname) _.locations.push(location.pathname);
 		localStorage.setItem('history',JSON.stringify(_.locations));
-		console.log(_.locations)
+		console.log(_.locations)*/
+	}
+
+	backNextAction(){
+		const _ = this;
+		/*let locations = localStorage.getItem('history');
+		if (!locations) {
+			_.locations = [];
+		} else {
+			_.locations = JSON.parse(locations);
+		}
+		localStorage.setItem('history',JSON.stringify(_.locations));*/
+		let btn = document.querySelector(`.navigate-item[section="${location.pathname/*_.locations[_.curPosIndex]*/}"]`);
+		/*console.log(btn)*/
+		if ((btn && btn.classList.contains('active')) || !btn) {
+			_.changePage(location.pathname,false);
+		} else G_Bus.trigger(_.componentName,'backNext',{item:btn,toHistory: false});
 	}
 
 	async init(params){
 		const _ = this;
 		_.middleware = params['middleware'];
 		await _.changePage();
-
+		window.addEventListener('mouseleave',function (){
+			_.mouseOver = false;
+		})
+		window.addEventListener('mouseover',function (){
+			_.mouseOver = true;
+		})
 		window.addEventListener('popstate',function (e){
-			_.curPosIndex--;
-			console.log('popState')
-			_.changePage(_.locations[_.curPosIndex],false);
-			/*let btn = document.querySelector(`.navigate-item[section="${_.locations[_.curPosIndex]}"]`);
-			console.log(btn)
-			if (btn) {
-				G_Bus.trigger('AdminPage','changeSection',{item:btn});
-				G_Bus.trigger('AdminPage','navigate',{item:btn});
-				history.pushState(null, null, location.pathname);
-				//_.changeHistory();
-			}*/
+			//_.curPosIndex--;
+			//_.changePage(_.locations[_.curPosIndex],false);
+
+			if (!_.mouseOver) _.backNextAction();
 		});
 	}
 }

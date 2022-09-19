@@ -37,7 +37,9 @@ class StudentPage extends G{
 		const _ = this;
 		_.componentName = 'StudentPage';
 		G_Bus
-			.on(_,['changeSection','navigate'])
+			.on(_,['changeSection','navigate']);
+
+		G_Bus.on('router','backNext',_.backNext.bind(_));
 	}
 	
 	createdAtFormat(value,format = 'month DD, YYYY'){
@@ -56,17 +58,26 @@ class StudentPage extends G{
 		res = res.replace('month',months[parseInt(month) - 1]);
 		return res;
 	}
-	changeSection({item,event}){
+
+	backNext({item}){
 		const _ = this;
-		_.triggerAbortController()
+		_.changeSection({item,toHistory:false});
+		_.navigate({item})
+	}
+	changeSection({item,event,toHistory = true}){
+		const _ = this;
+		_.triggerAbortController();
 		let
 			section = item.getAttribute('section'),
 			tpl = section.split('/')[2];
-		if(section) history.pushState(null, null, section);
-		_.moduleRender({module:tpl});
+
+		if(_.currentSection == section || !section) return void 0;
+
 		_.currentSection = section;
-		G_Bus.trigger('router','changeHistory');
+		if(toHistory) history.pushState(null, null, section);
+		_.moduleRender({module:tpl});
 		G_Bus.trigger('header','changeTitle',location.pathname);
+		return true;
 	}
 	showForm(id){
 		G_Bus.trigger('modaler','showModal',{
