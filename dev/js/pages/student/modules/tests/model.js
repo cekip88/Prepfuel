@@ -46,6 +46,7 @@ class _Model{
 		let questions = [];
 		for(let subSection of _.currentSection['subSections']){
 			subSection['questionData'].forEach((page,i) => {
+				console.log(page['type']);
 				page['questions'].forEach(quest =>{
 						//questions[quest['_id']] = quest;
 						questions.push(quest);
@@ -105,6 +106,7 @@ class _Model{
 						schedule = await _.getSchedule();
 					if(response['status'] == 'success'){
 						_.tests = response['response']['tests'];
+						console.log(_.tests);
 						_.tests.sort( (a,b)=>{
 							return a['testNumber'] - b['testNumber'];
 						});

@@ -209,26 +209,31 @@ export class TestsModule extends StudentPage{
 		
 		await _.render();
 		if(section == 'directions') {
+			let isContinue = item.hasAttribute('data-dir');
+			let type = 'Continue to ';
+			if(isContinue){
+				type = 'Back to question';
+			}
 			let
 				pp = _.getStep(),
+				
 				questionData = Model.currentQuestionData(_.questionPos+1),
-				directionsBtn = _.f('#directionsQuestion');
+				directionsBtn = _.f('#directions-btn');
 			if(questionData){
 				if(questionData['type'] == 'passage'){
 					if(pp[0] > pp[1]){
 						pp[0] = pp[1];
 					}
-					directionsBtn.textContent = `${pp[0]}-${pp[1]}`;
+					directionsBtn.innerHTML = `${type}s <strong id="directionsQuestion" style="margin:0 5px"> ${pp[0]}-${pp[1]}</strong> ${!isContinue ? ' questions': ''}`;
 				}else{
-					directionsBtn.textContent = `${pp[0]-1}`;
+					directionsBtn.innerHTML = `${type} <strong id="directionsQuestion" style="margin:0 5px"> ${pp[0]-1}</strong> ${!isContinue ? ' question': ''}`;
 				}
 			}else{
 				if(pp[0] > pp[1]){
-					directionsBtn.textContent = `${pp[1]}`;
+					directionsBtn.innerHTML = `${type} <strong id="directionsQuestion" style="margin: 0 5px"> ${pp[1]}</strong> ${!isContinue ? ' question': ''}`;
 				}else{
-					directionsBtn.textContent = `${pp[0]}-${pp[1]}`;
+					directionsBtn.innerHTML = `${type} <strong id="directionsQuestion" style="margin:0 5px"> ${pp[0]}-${pp[1]}</strong> ${!isContinue ? ' question': ''}`;
 				}
-				
 			}
 		//	_.f('#directionsQuestion').textContent = _.getStep()[0]-1//_.questionPos+1;
 			_.tickTimer();
@@ -625,10 +630,10 @@ export class TestsModule extends StudentPage{
 			let outArr = [];
 			let questionPos = 0;
 			if(_.isJump){
-				if(_._$.currentQuestion['questions']){
-					questionPos = Model.currentQuestionDataPosById(_._$.currentQuestion['questions'][0]['_id'])
+				if( (_._$.currentQuestion['questions']) && (_._$.currentQuestion['questions'].length == 1) ){
+					_.questionPos = Model.currentQuestionDataPosById(_._$.currentQuestion['questions'][0]['_id'])
 				}else{
-					questionPos = Model.currentQuestionDataPosById(_._$.currentQuestion['_id'])
+					_.questionPos = Model.currentQuestionDataPosById(_._$.currentQuestion['_id'])
 				}
 			}
 			let questionData = Model.currentQuestionData(questionPos);
@@ -658,7 +663,6 @@ export class TestsModule extends StudentPage{
 			if(questionData['questions'].length > 1){
 				for(let quest of questionData['questions']){
 					let answer = _.storageTest[quest['_id']];
-			//		console.log(answer,quest);
 					if(!answer){
 						answer = {};
 						let
@@ -692,7 +696,7 @@ export class TestsModule extends StudentPage{
 				if(currentQuestion['questions']){
 					currentQuestion = _._$.currentQuestion['questions'][0];
 				}
-				let answer = Model.testServerAnswers[currentQuestion['_id']];
+				let answer = _.storageTest[currentQuestion['_id']];
 				if(answer && (answer['answer'] != 'O')){
 					// if user choosed answer save it to db
 					answer['bookmark'] = _.f(`.bookmarked-button[data-question-id="${answer['questionId']}"]`).classList.contains('active');
@@ -790,7 +794,6 @@ export class TestsModule extends StudentPage{
 			}else{
 				_.changeSkipButtonToNextSection();
 			}
-			
 		}
 		G_Bus.trigger(_.componentName,'updateStorageTest')
 	}
@@ -812,8 +815,9 @@ export class TestsModule extends StudentPage{
 
 	changeSkipButtonToFinish(pos){
 		const _ = this;
+		let skipBtn = _.f('.skip-to-question');
 		_.f('.skip-to-question-title').textContent = 'Finish test';
-		_.f('.skip-to-question').textContent = '';
+		if(skipBtn) skipBtn.textContent = '';
 		let btn = _.f('.skip-to-question-button');
 		btn.classList.add('button-blue');
 	//	btn.setAttribute('data-click',`${this.componentName}:changeSection`);
@@ -1088,7 +1092,6 @@ export class TestsModule extends StudentPage{
 			
 			if(!cont) return;
 			_.clear(cont);
-			
 			if( (currentQuestion['questions']) && (currentQuestion['questions'].length == 1) ){
 				_.questionPos = Model.currentQuestionDataPosById(currentQuestion['questions'][0]['_id'])
 			}else{
