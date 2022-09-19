@@ -354,7 +354,6 @@ export const view = {
 			pos,
 			pp = _.getNextStepCnt(),
 			questionData = Model.currentQuestionData(_.questionPos+1);
-
 		if(questionData){
 			if(questionData['type'] == 'passage'){
 				if(pp[0] > pp[1]){
@@ -364,6 +363,20 @@ export const view = {
 			}else{
 				pos = `${pp[0]-1}`;
 			}
+		}else{
+			if(pp[0] > pp[1]){
+				pos = `${pp[1]}`;
+			}else{
+				pos = `${pp[0]}-${pp[1]}`;
+			}
+			
+		}
+		let bottomBtn = _.skipBtnTpl(pos);
+		if(_.isLastQuestion && Model.currentSectionPos == 0){
+			bottomBtn = _.nextSectionBtnTpl();
+		}
+		if(_.isLastQuestion && Model.currentSectionPos == 1){
+			bottomBtn = _.finishBtnTpl();
 		}
 		return `
 			<div class="test-footer">
@@ -371,12 +384,39 @@ export const view = {
 					<span>Directions</span>
 				</button>
 				${ _.questionPos>0 ?_.addBackToQuestionBtnTpl(_.getPrevStepCnt()) : ''}
-				<button class="button skip-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="next">
-					<span><em class="skip-to-question-title">Skip to questions</em> <b class="skip-to-question">${pos}</b></span>
-				</button>
+				${bottomBtn}
 			</div>
-			`;
+		`;
 	},
+	finishBtnTpl(){
+		const _ = this;
+		return `
+			<button class="skip-to-question-button button-blue" data-click="${this.componentName}:showConfirmModal" data-dir="next">
+				<span><em class="skip-to-question-title">Finish test</em></span>
+			</button>
+		`;
+	},
+	nextSectionBtnTpl(){
+		const _ = this;
+		return `
+			<button
+				class="button skip-to-question-button button-blue"
+				data-click="${_.componentName}:changeTestSection"
+				data-dir="next" data-section-pos="1"
+				data-changed-type="fromLastQuestion">
+				<span><em class="skip-to-question-title">Next section</em> <b class="skip-to-question"></b></span>
+			</button>
+		`;
+	},
+	skipBtnTpl(pos){
+		const _ = this;
+		return `
+			<button class="button skip-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="next">
+				<span><em class="skip-to-question-title">Skip to questions</em> <b class="skip-to-question">${pos}</b></span>
+			</button>
+		`;
+	},
+	
 	addBackToQuestionBtnTpl(pos){
 		const _ = this;
 		let questionData = Model.currentQuestionData(_.questionPos-1);
@@ -408,7 +448,7 @@ export const view = {
 			sections = Model.test.sections;
 		for (let i = 0; i < sections.length; i++) {
 			let section = sections[i];
-			tpl += `<button class="questions-nav-btn${i === 0 ? ' active' : ''}"  data-section-pos="${i}"  data-click="${_.componentName}:changeTestSection"  data-changed-type="fromTab">${section.sectionName}</button>`
+			tpl += `<button class="questions-nav-btn ${i === Model.currentSectionPos ? 'active' : ''}"  data-section-pos="${i}"  data-click="${_.componentName}:changeTestSection"  data-changed-type="fromTab">${section.sectionName}</button>`
 		}
 		tpl += `
 				</div>
@@ -1172,7 +1212,9 @@ export const view = {
 			<li class="test-aside-item">
 				<button data-pos="${i-1}" class="test-aside-btn ${i-1 == Model.currentTestPos ? 'active' : ''}" data-id="${test['_id']}" data-click="${_.componentName}:changePracticeTest">
 					<h6 class="test-aside-btn-title">Practice test ${test['testNumber']}</h6><span class="test-aside-btn-desc">0 of ${test['sections'].length} sections complete</span>
-					
+					<span class="test-aside-btn-date">
+						<svg><use xlink:href="#calendar"></use></svg><span>${_.createdAtFormat(test['schedule'])}</span>
+					</span>
 				</button>
 			</li>
 		`;
@@ -1210,19 +1252,19 @@ export const view = {
 		* */
 		return `
 			 <div class="modal modal-block finish" id="finish" slot="modal-item">
-              <h6 class="modal-title"><span>Are you sure you want to finish this test</span></h6>
-              <p class="modal-text">
-                You have <span id="finish-minutes"></span> minutes left to work on the <span id="finish-questions-length"></span> questions you haven’t answered, and to double-check your other answers.
-                You will not able to return later to answer more questions if you finish this test.
-              </p>
-              <div class="modal-row">
-	              <button class="button" data-click="${_.componentName}:changeSection" section="score">Yes, I’m done with this test</button>
-	              <button class="button-blue" data-click="modaler:closeModal;">
-	               No, take me to my first skipped question
-	              </button>
-		
-              </div>
-            </div>
+          <h6 class="modal-title"><span>Are you sure you want to finish this test</span></h6>
+          <p class="modal-text">
+            You have <span id="finish-minutes"></span> minutes left to work on the <span id="finish-questions-length"></span> questions you haven’t answered, and to double-check your other answers.
+            You will not able to return later to answer more questions if you finish this test.
+          </p>
+          <div class="modal-row">
+            <button class="button" data-click="${_.componentName}:changeSection" section="score">Yes, I’m done with this test</button>
+            <button class="button-blue" data-click="modaler:closeModal;">
+             No, take me to my first skipped question
+            </button>
+
+          </div>
+        </div>
 		`;
 	}
 }

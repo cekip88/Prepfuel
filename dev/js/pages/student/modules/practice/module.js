@@ -1438,6 +1438,11 @@ export class PracticeModule extends StudentPage{
 			}
 			if( _.testFinished ){
 				_.changeAnswerButtonToNext();
+				let paginationTitle = _.f('#pagination-title');
+				_.clear(paginationTitle);
+				paginationTitle.append(_.markup(
+					`<span>Jump to a question: </span>`
+				));
 				let backResults = _.f("#back-results-btn");
 				if(!backResults) _.f('#check-answer-btn').before(_.markup(_.backToResultsBtn()))
 			}else{

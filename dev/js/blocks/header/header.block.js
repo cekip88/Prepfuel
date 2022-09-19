@@ -6,7 +6,11 @@ class HeaderBlock extends G{
 		const _ = this;
 		_.componentName = 'header';
 		_.me = JSON.parse(localStorage.getItem('me'));
+		_.role = localStorage.getItem('role');
 		let userType= 'parent';
+		if(_.role == 'student'){
+			userType = 'user';
+		}
 		_.set({
 			firstName: _.me[userType] ? _.me[userType]['user']['firstName'] : _.me['firstName'],
 			lastName: _.me[userType] ? _.me[userType]['user']['lastName'] : _.me['lastName'],
@@ -34,7 +38,8 @@ class HeaderBlock extends G{
 		const _ = this;
 		let header = _.f('G-HEADER');
 		_.me = JSON.parse(localStorage.getItem('me'));
-		let userType= 'parent';
+		_.role = localStorage.getItem('role');
+		let userType= !_.role ? 'parent' : _.role;
 		_._$.firstName = _.me[userType] ? _.me[userType]['user']['firstName'] : _.me['firstName'];
 		_._$.lastName = _.me[userType] ? _.me[userType]['user']['lastName'] : _.me['lastName'];
 		_._$.role = _.me[userType] ? _.me[userType]['user']['role'] : _.me['role'];

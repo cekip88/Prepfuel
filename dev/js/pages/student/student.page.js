@@ -119,7 +119,7 @@ class StudentPage extends G{
 				response = await rawResponse.json(),
 				user = response['response'];
 			localStorage.setItem('me',JSON.stringify(user));
-			localStorage.setItem('student',JSON.stringify(user['user']));
+			localStorage.setItem('student',JSON.stringify(user));
 			_.storageSave('authorization','true');
 			for(let prop in user){
 				_.storageSave(prop,user[prop]);
