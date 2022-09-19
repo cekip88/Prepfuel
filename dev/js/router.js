@@ -250,7 +250,7 @@ export class router {
 		const _ = this;
 		_.middleware = params['middleware'];
 		await _.changePage();
-		window.addEventListener('mouseleave',function (){
+		window.addEventListener('mouseout',function (){
 			_.mouseOver = false;
 		})
 		window.addEventListener('mouseover',function (){
@@ -260,7 +260,9 @@ export class router {
 			//_.curPosIndex--;
 			//_.changePage(_.locations[_.curPosIndex],false);
 
-			if (!_.mouseOver) _.backNextAction();
+			if (!_.mouseOver) {
+				_.backNextAction();
+			}
 		});
 	}
 }
