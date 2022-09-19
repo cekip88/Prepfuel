@@ -151,7 +151,7 @@ export class AdminPage extends G {
 			let response = await rawResponse.json();
 			let user = response['response'];
 			localStorage.setItem('me',JSON.stringify(user));
-			localStorage.setItem('admin',JSON.stringify(user['user']));
+			localStorage.setItem('admin',JSON.stringify(user));
 			return void 0;
 		}
 	}

@@ -43,6 +43,7 @@ export class TestsModule extends StudentPage{
 			'Grid-In':'grid',
 			'grid-in':'grid'
 		};
+		_.startedTest = false;
 		_.questionStep = 1;
 		_.testTime = 180;
 		_.rawQuestionPos = 0;
@@ -180,18 +181,20 @@ export class TestsModule extends StudentPage{
 				//console.log('Test result data', await Model.getTestResultsByResultId());
 				//_._$.currentQuestion = Model.questions[0];
 				_.moduleStructure['body'] = _.flexible(section);
+			//	_._$.currentQuestion = Model.firstQuestion;
 				await _.render();
 				return void 0;
 			}
 		}
 		if(section == 'directions') {
 			// start of test
-			let started = await Model.start();
-			if(!started) return void 0;
+			if(!_.startedTest) {
+				_.startedTest = await Model.start();
+			}
 			let results = await Model.getTestResults();
-			_.storageTest =results['testResults'];
+			_.storageTest = results['testResults'];
 			_.resultObj = results['resultObj'];
-			if(results['status'] === 'finished'){
+			if(results['status'] === 'finished') {
 				section = 'score';
 				_.moduleStructure['body'] = _.flexible(section);
 				Model.getTestResultsByResultId();
@@ -201,13 +204,33 @@ export class TestsModule extends StudentPage{
 		
 		if( (section == 'questions') && (Model.isFinished()) ){
 			let results = await Model.getTestResults();
-			_.storageTest =results['testResults'];
+			_.storageTest = results['testResults'];
 		}
 		
 		await _.render();
 		if(section == 'directions') {
-
-			_.f('#directionsQuestion').textContent = _.getStep()[0]-1//_.questionPos+1;
+			let
+				pp = _.getStep(),
+				questionData = Model.currentQuestionData(_.questionPos+1),
+				directionsBtn = _.f('#directionsQuestion');
+			if(questionData){
+				if(questionData['type'] == 'passage'){
+					if(pp[0] > pp[1]){
+						pp[0] = pp[1];
+					}
+					directionsBtn.textContent = `${pp[0]}-${pp[1]}`;
+				}else{
+					directionsBtn.textContent = `${pp[0]-1}`;
+				}
+			}else{
+				if(pp[0] > pp[1]){
+					directionsBtn.textContent = `${pp[1]}`;
+				}else{
+					directionsBtn.textContent = `${pp[0]}-${pp[1]}`;
+				}
+				
+			}
+		//	_.f('#directionsQuestion').textContent = _.getStep()[0]-1//_.questionPos+1;
 			_.tickTimer();
 		}
 		if(section == 'questions'){
@@ -218,7 +241,7 @@ export class TestsModule extends StudentPage{
 				headerBtn.textContent = 'Exit this review';
 				headerBtn.setAttribute('data-click',`${_.componentName}:changeSection`);
 				headerBtn.setAttribute('section',"score");
-				await Model.getTestResults();
+				//await Model.getTestResults();
 				_.markAnswers();
 				_.markCorrectAnswer();
 			}else{
@@ -300,7 +323,7 @@ export class TestsModule extends StudentPage{
 			_._$.currentQuestion = Model.allquestions[jumpQuestionPos];
 		}
 		_.questionPos = jumpQuestionPos;
-		location.hash= item.parentNode.getAttribute('data-question-id');
+		location.hash = item.parentNode.getAttribute('data-question-id');
 	
 	}
 	async changeTestSection({item}){
@@ -340,6 +363,7 @@ export class TestsModule extends StudentPage{
 		}else{
 			_._$.currentQuestion = Model.questionsDatas[0];
 		}
+		_.isLastQuestion = false;
 		_.changedType = changedType;
 		_.isJump = false;
 		_.f('#test-section-name').textContent = Model.currentSection.sectionName;
@@ -354,7 +378,7 @@ export class TestsModule extends StudentPage{
 		item.classList.add('active');
 		let pickList = _.f('#testPickList');
 		pickList.innerHTML = '<img src="/img/loader.gif" alt="Loading...">';
-		await Model.changeTest(pos);
+		_.startedTest = await Model.changeTest(pos);
 		_._$.currentQuestion = await Model.firstQuestion;
 		_.fillTestsBody();
 	}
@@ -599,10 +623,15 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		return new Promise(  async (resolve) => {
 			let outArr = [];
+			let questionPos = 0;
 			if(_.isJump){
-				_.questionPos = Model.currentQuestionDataPosById(_._$.currentQuestion['_id'])
+				if(_._$.currentQuestion['questions']){
+					questionPos = Model.currentQuestionDataPosById(_._$.currentQuestion['questions'][0]['_id'])
+				}else{
+					questionPos = Model.currentQuestionDataPosById(_._$.currentQuestion['_id'])
+				}
 			}
-			let questionData = Model.currentQuestionData(_.questionPos);
+			let questionData = Model.currentQuestionData(questionPos);
 			if(_._$.currentQuestion['questions']) questionData = _._$.currentQuestion;
 			
 			let handle = async (answer)=>{
@@ -1059,14 +1088,27 @@ export class TestsModule extends StudentPage{
 			
 			if(!cont) return;
 			_.clear(cont);
+			
+			if( (currentQuestion['questions']) && (currentQuestion['questions'].length == 1) ){
+				_.questionPos = Model.currentQuestionDataPosById(currentQuestion['questions'][0]['_id'])
+			}else{
+				_.questionPos = Model.currentQuestionDataPosById(currentQuestion['_id'])
+			}
+			//console.log(_.questionPos, _.questionsLength,currentQuestion);
+			
+			_.isLastQuestion = false;
+			if( _.questionPos == _.questionsLength - 1 ) {
+				_.isLastQuestion = true;
+			}
 			cont.append(
 				_.markup(await _.getQuestionTpl()),
 				_.markup(_.questionFooter())
 			);
-			_.isLastQuestion = false;
 			_.setActions(['bookmark','note']);
+			
 			if( _.questionPos < _.questionsLength ){
 				let
+					skipBtn = _.f('.skip-to-question'),
 					pp = _.getNextStepCnt(),
 					questionData = Model.currentQuestionData(_.questionPos+1);
 				if(questionData){
@@ -1074,17 +1116,17 @@ export class TestsModule extends StudentPage{
 						if(pp[0] > pp[1]){
 							pp[0] = pp[1];
 						}
-						_.f('.skip-to-question').textContent = `${pp[0]}-${pp[1]}`;
+						skipBtn.textContent = `${pp[0]}-${pp[1]}`;
 					}else{
-						_.f('.skip-to-question').textContent = `${pp[0]-1}`;
+						if(skipBtn) skipBtn.textContent = `${pp[0]-1}`;
 					}
 				}
 			}
 			if( _.questionPos == _.questionsLength - 1 ){
-				_.isLastQuestion = true;
 				if(Model.currentSectionPos == 1){
 					if(!Model.isFinished()){
 					}else{
+						console.log('Finish');
 						_.changeSkipButtonToFinish();
 					}
 					
@@ -1121,8 +1163,6 @@ export class TestsModule extends StudentPage{
 				//return void 0;
 			}
 			// work on marked answers
-		//	let test = await Model.getTestResults();
-		//	let currentStorageTest = test['testResults'][currentQuestion['_id']];//_.storageTest[ _.currentQuestion['_id'] ];
 			_.sectionChanged = false;
 			let storageTestHandle = (currentStorageTest)=>{
 			//	let currentStorageTest = Model.testServerAnswers[cc['_id']];
@@ -1156,7 +1196,9 @@ export class TestsModule extends StudentPage{
 		
 		_._( ({timerTime})=>{
 			if(!_.initedUpdate) return void 0;
-			_.f('.test-timer-value').textContent = timerTime;
+			let timerValue = _.f('.test-timer-value');
+			if(!timerValue) return void 0;
+			timerValue.textContent = timerTime;
 		},['timerTime'])
 	}
 	

@@ -13,7 +13,7 @@ class _Model{
 			results: `${env.backendUrl}/tests-results`,
 			resultsBy: `${env.backendUrl}/tests/test-by-result`,
 			reset: `${env.backendUrl}/tests-results/reset/`,
-	
+			schedule: `${env.backendUrl}/student/schedule`,
 		};
 		_.testStatus = 'in progress';
 		_.currentSectionPos = 0; // Section position in array section list
@@ -77,6 +77,18 @@ class _Model{
 	//	return _.currentSection['subSections']['questionsData'][_.currentSubSectionPos];
 	}
 	
+	getSchedule(){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['schedule']}`,{
+				method: 'GET',
+				headers:_.baseHeaders
+			});
+			let response = await rawResponse.json();
+			if(response['response'])		resolve(response['response']['practiceTests'])
+			else resolve(false);
+		});
+	}
 	async getStudentTests(type='practice',signal={}){
 		const _ = this;
 		// get all tests from Database
@@ -88,13 +100,17 @@ class _Model{
 					signal
 				});
 				if(rawResponse.status < 210){
-					let response = await rawResponse.json();
+					let
+						response = await rawResponse.json(),
+						schedule = await _.getSchedule();
 					if(response['status'] == 'success'){
 						_.tests = response['response']['tests'];
 						_.tests.sort( (a,b)=>{
 							return a['testNumber'] - b['testNumber'];
 						});
-						console.log(_.tests);
+						if(schedule) _.tests.forEach( (test,i) => {
+							if(schedule[i]) test['schedule']= schedule[i]['date'];
+						});
 						await Model.getTest();
 						resolve(_.tests);
 					}
@@ -118,7 +134,6 @@ class _Model{
 		* */
 		let testId = _.tests[_.currentTestPos]['_id'];
 		_.test = _.tests[_.currentTestPos];
-		console.log(_.test);
 		_.testStatus = _.test['status'];
 		return Promise.resolve(_.test);
 	}
@@ -153,7 +168,6 @@ class _Model{
 			if(rawResponse.status < 206){
 				let response = await rawResponse.json();
 				if(response['status'] == 'success'){
-					console.log(response);
 					let resultId = response['response']['resultId'];
 					_.test['resultId'] = resultId;
 					localStorage.setItem('resultId', resultId);
@@ -347,13 +361,11 @@ class _Model{
 		}
 	}
 
-	
-	
 	async changeTest(pos){
 		const _ = this;
 		_.currentTestPos = pos;
 		await _.getTest();
-		return Promise.resolve(true);
+		return Promise.resolve(_.testStatus);
 	}
 	
 	currentQuestionPosById(questionId){
@@ -435,7 +447,6 @@ class _Model{
 		localStorage.setItem('test',JSON.stringify(test));
 	}
 	
-
 	isFinished(){
 		return this.testStatus == 'finished';
 	}
