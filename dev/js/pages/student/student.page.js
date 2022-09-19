@@ -76,9 +76,10 @@ class StudentPage extends G{
 		_.triggerAbortController();
 		let
 			section = item.getAttribute('section'),
-			tpl = section.split('/')[2];
+			tpl = section.split('/')[2],
+			refresh = item.getAttribute('refresh') ?? null;
 
-		if(_.currentSection == section || !section) return void 0;
+		if(!refresh && (_.currentSection == section || !section)) return void 0;
 
 		_.currentSection = section;
 		if(toHistory) history.pushState(null, null, section);
