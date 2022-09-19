@@ -61,6 +61,13 @@ class StudentPage extends G{
 
 	backNext({item}){
 		const _ = this;
+		let click = item.getAttribute('data-click');
+		let moduleName = click.split(':')[0];
+		if (moduleName !== _.componentName) {
+			G_Bus.trigger(moduleName,click.split(':')[1],{item,toHistory: false});
+			return;
+		}
+
 		_.changeSection({item,toHistory:false});
 		_.navigate({item})
 	}

@@ -53,9 +53,11 @@ export class AdminPage extends G {
 		const _ = this;
 		let cont = _.f('.subnavigate');
 		if(!cont.querySelector(`[section="${_.subSection}"]`)) return 0;
+
 		let activeItem = cont.querySelector('.active');
-		if(activeItem) activeItem.classList.remove('active');
-		cont.querySelector(`[section="${_.subSection}"]`).classList.add('active')
+		if (activeItem) activeItem.classList.remove('active');
+
+		cont.querySelector(`[section="${_.subSection}"]`).classList.add('active');
 	}
 	showUserList({item}) {
 		const _ = this;
@@ -64,6 +66,13 @@ export class AdminPage extends G {
 
 	backNext({item}){
 		const _ = this;
+		let click = item.getAttribute('data-click');
+		let moduleName = click.split(':')[0];
+		if (moduleName !== _.componentName) {
+			G_Bus.trigger(moduleName,click.split(':')[1],{item});
+			return;
+		}
+
 		_.changeSection({item,toHistory:false});
 		_.navigate({item})
 	}

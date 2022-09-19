@@ -100,7 +100,6 @@ export class UsersModule extends AdminPage {
 
 	async domReady(data){
 		const _ = this;
-		console.log(_.abortControllers)
 		_.navigationInit();
 		if (_.usersAbortController) _.usersAbortController.abort();
 		_.usersAbortController = new AbortController();
@@ -840,6 +839,7 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		_.prevSubSection = _.subSection;
 		_.subSection = item.getAttribute('section');
+
 		let struct = _.flexible();
 		await _.render( struct,{item} );
 		_.switchSubNavigate();

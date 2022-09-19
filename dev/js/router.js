@@ -239,8 +239,7 @@ export class router {
 			_.locations = JSON.parse(locations);
 		}
 		localStorage.setItem('history',JSON.stringify(_.locations));*/
-		let btn = document.querySelector(`.navigate-item[section="${location.pathname/*_.locations[_.curPosIndex]*/}"]`);
-		/*console.log(btn)*/
+		let btn = document.querySelector(`[section="${location.pathname/*_.locations[_.curPosIndex]*/}"]`);
 		if ((btn && btn.classList.contains('active')) || !btn) {
 			_.changePage(location.pathname,false);
 		} else G_Bus.trigger(_.componentName,'backNext',{item:btn,toHistory: false});

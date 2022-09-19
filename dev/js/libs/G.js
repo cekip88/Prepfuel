@@ -129,8 +129,8 @@ export class G extends G_G{
 					module = await import(pathModule),
 					view = await import(pathView),
 					moduleName = new module[moduleStr](params);
-					Object.assign(module[moduleStr].prototype,mixins);
-					Object.assign(module[moduleStr].prototype,view['view']);
+				Object.assign(module[moduleStr].prototype,mixins);
+				Object.assign(module[moduleStr].prototype,view['view']);
 				if('asyncDefine' in moduleName)	moduleName.asyncDefine();
 			//	G.modules.set(name, moduleName);
 				moduleName['pageStructure'] = blockData['structure'];
@@ -250,7 +250,14 @@ export class G extends G_G{
 	}
 	navigate({item}){
 		const _ = this;
+
 		let list = item.closest('.navigate-list');
+		if (!list) {
+			list = document.querySelector('.navigate-list');
+			_.hideTab(list);
+			return;
+		}
+
 		_.showActiveNavItem(item,list);
 		_.changeActiveNavItem(item,list);
 	}
@@ -285,7 +292,7 @@ export class G extends G_G{
 			activeBtn = list.querySelector('.active');
 		if (btn == activeBtn) return;
 
-		if (label.parentElement == activeBtn) {
+		if (label.parentElement !== list) {
 			let
 				oldX = activeBtn.offsetLeft,
 				oldWidth = activeBtn.clientWidth;
@@ -308,6 +315,11 @@ export class G extends G_G{
 		for (let i = 0; i < list.length; i++) {
 			if (list[i] === btn && tabsContainer.children[i]) tabsContainer.children[i].classList.add('active');
 		}
+	}
+	hideTab(list){
+		list.querySelectorAll('.active').forEach(function (item){
+			item.classList.remove('active');
+		});
 	}
 
 

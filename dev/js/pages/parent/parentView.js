@@ -9,8 +9,8 @@ export const parentView = {
 			<section class="navigate" data-active=".navigate-item:nth-child(1)" data-tabs=".dashboard-tabs">
 				<div class="section">
 					<nav class="navigate-list">
-						<button class="navigate-item dashboard" data-click="StudentPage:changeSection;StudentPage:navigate" section="/parent/dashboard"><span>Student Academic Profile</span></button>
-						<button class="navigate-item practice" data-click="StudentPage:changeSection" section="/parent/students"><span>Students</span></button>
+						<button class="navigate-item dashboard" data-click="ParentPage:changeSection;ParentPage:navigate" section="/parent/dashboard"><span>Student Academic Profile</span></button>
+						<button class="navigate-item practice" data-click="ParentPage:changeSection" section="/parent/students"><span>Students</span></button>
 						<div class="navigate-label">
 							<div class="navigate-label-left"></div>
 							<div class="navigate-label-right"></div>

@@ -21,7 +21,6 @@ class HeaderBlock extends G{
 	}
 	init(){
 		const _ = this;
-		console.log('test')
 		_.changeTitle();
 	}
 	changeTitle(){
@@ -44,6 +43,9 @@ class HeaderBlock extends G{
 	}
 	fullHeader(){
 		const _ = this;
+		if (!this._$.firstName) this._$.firstName = _._$.me.firstName;
+		if (!this._$.role) this._$.role = _._$.me.role;
+
 		let tpl = `<header class="head">
 			<div class="section">
 				<div class="head-row">
@@ -83,10 +85,10 @@ class HeaderBlock extends G{
 			if (coursesArr.length) {
 				tpl += `
 					<div class="head-select-block"><span>Course</span>
-						<g-select 
+						<g-select
 							${coursesArr.length === 1 ? 'disabled' : ''}
-							class="g-select select head-select" 
-							classname="head-select" 
+							class="g-select select head-select"
+							classname="head-select"
 							items='${JSON.stringify(coursesArr)}'
 						></g-select>
 					</div>
@@ -102,6 +104,7 @@ class HeaderBlock extends G{
 		} else if (this._$.role == 'parent') {
 			profileButton = `<strong>Account Settings</strong>`;
 		}
+
 		tpl += `
 						<div class="head-info">
 							<span class="head-name">${this._$.firstName}</span>

@@ -95,19 +95,21 @@ export class DashboardModule extends ParentPage{
 			_.fillProfile();
 		}
 	}
-	async changeSection({item, event}) {
+	async changeSection({item, event,toHistory = true}) {
 		const _ = this;
 		_.previousSection = _.subSection;
 		let section = item.getAttribute('section');
+		let sectionParts = section.split('/');
+		if (sectionParts.length > 1) section = sectionParts[sectionParts.length - 1];
 		_.subSection = section;
-		history.pushState(null,null,section);
+		if (toHistory) history.pushState(null,null,section);
 		if (item.getAttribute('data-clear')) {
 			_.studentInfo = {};
 			_.metaInfo = {};
 			_.courseData = {};
 		}
 
-		if (section == 'welcome') {
+		if (section == 'welcome'){
 			_.moduleStructure = {
 				'header':'',
 				'header-tabs':'',

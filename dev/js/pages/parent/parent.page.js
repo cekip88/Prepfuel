@@ -65,6 +65,13 @@ class ParentPage extends G{
 
 	backNext({item}){
 		const _ = this;
+		let click = item.getAttribute('data-click');
+		let moduleName = click.split(':')[0];
+		if (moduleName !== 'ParentPage') {
+			G_Bus.trigger(moduleName,click.split(':')[1],{item,toHistory: false});
+			return
+		}
+
 		_.changeSection({item,toHistory:false});
 		_.navigate({item})
 	}
@@ -91,7 +98,6 @@ class ParentPage extends G{
 	}
 	async moduleRender(params){
 		const _ = this;
-	
 		let module = await _.getModule({
 			'pageName':'parent',
 			'name': params['module'],

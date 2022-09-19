@@ -87,27 +87,27 @@ export const view = {
 					</div>
 					<div class="parent-adding-inner">
 						<div class="block adding-list" id="assign-list">
-							<button class="adding-list-item active">
+							<div class="adding-list-item active">
 								<strong class="adding-list-digit">1</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">Course & Plan</h5>
 									<h6 class="adding-list-subtitle">Set Type of a Test & Membership </h6>
 								</div>
-							</button>
-							<button class="adding-list-item">
+							</div>
+							<div class="adding-list-item">
 								<strong class="adding-list-digit">2</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">School Information</h5>
 									<h6 class="adding-list-subtitle">Student’s School Related Info</h6>
 								</div>
-							</button>
-							<button class="adding-list-item">
+							</div>
+							<div class="adding-list-item">
 								<strong class="adding-list-digit">3</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">Test Information</h5>
 									<h6 class="adding-list-subtitle">Set Test Info</h6>
 								</div>
-							</button>
+							</div>
 						</div>
 						<div class="block parent-adding-body">
 							<div id="assign-body"><img src="/img/loader.gif"></div>
@@ -140,48 +140,48 @@ export const view = {
 					</div>
 					<div class="parent-adding-inner">
 						<div class="block adding-list">
-							<button class="adding-list-item active">
+							<div class="adding-list-item active">
 								<strong class="adding-list-digit">1</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">Course & Plan</h5>
 									<h6 class="adding-list-subtitle">Set Type of a Test & Membership </h6>
 								</div>
-							</button>
-							<button class="adding-list-item">
+							</div>
+							<div class="adding-list-item">
 								<strong class="adding-list-digit">2</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">Account Settings</h5>
 									<h6 class="adding-list-subtitle">Setup Student Account Settings</h6>
 								</div>
-							</button>
-							<button class="adding-list-item">
+							</div>
+							<div class="adding-list-item">
 								<strong class="adding-list-digit">3</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">School Information</h5>
 									<h6 class="adding-list-subtitle">Student’s School Related Info</h6>
 								</div>
-							</button>
-							<button class="adding-list-item">
+							</div>
+							<div class="adding-list-item">
 								<strong class="adding-list-digit">4</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">Test Information</h5>
 									<h6 class="adding-list-subtitle">Set Test Info</h6>
 								</div>
-							</button>
-							<button class="adding-list-item">
+							</div>
+							<div class="adding-list-item">
 								<strong class="adding-list-digit">5</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">Billing Details</h5>
 									<h6 class="adding-list-subtitle">Set Your Payment Methods</h6>
 								</div>
-							</button>
-							<button class="adding-list-item">
+							</div>
+							<div class="adding-list-item">
 								<strong class="adding-list-digit">6</strong>
 								<div class="adding-list-desc">
 									<h5 class="adding-list-title">Make Payment</h5>
 									<h6 class="adding-list-subtitle">Review and <Confirm></Confirm></h6>
 								</div>
-							</button>
+							</div>
 						</div>
 						<div class="block parent-adding-body">
 							<div id="parent-adding-body"><img src="/img/loader.gif"></div>
@@ -1001,7 +1001,11 @@ export const view = {
 			`;
 		}
 		tpl += `
-					<button class="button-blue" data-click="${_.componentName}:changeSection" section="addingStudent">
+					<button 
+						class="button-blue" 
+						section="/parent/addingStudent"
+						data-click="${_.componentName}:changeSection"
+					>
 						<span>Add student</span>
 						<svg class="button-icon"><use xlink:href="#plus"></use></svg>
 					</button>
