@@ -4,15 +4,16 @@ import GInput from "../../components/input/input.component.js";
 import GSelect from "../../components/select/select.component.js";
 
 ( async ()=>{
-	let worker = navigator.serviceWorker.register('/worker.js',{scope:'/'});
-	setTimeout( ()=>{
+	let worker = await navigator.serviceWorker.register('/worker.js',{scope:'/'});
+/*	setTimeout( ()=>{
 
 		if(!navigator.serviceWorker.controller) {
 
 			console.log('test')
 			location.reload();
 		}
-	}, 5000);
+	}, 5000);*/
+	await navigator.serviceWorker.ready
 	//if(!navigator.serviceWorker.controller) location.reload();
 })()
 
