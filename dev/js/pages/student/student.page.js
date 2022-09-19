@@ -77,7 +77,7 @@ class StudentPage extends G{
 		let
 			section = item.getAttribute('section'),
 			tpl = section.split('/')[2],
-			refresh = item.getAttribute('refresh') ?? null;
+			refresh = item.hasAttribute('refresh');
 
 		if(!refresh && (_.currentSection == section || !section)) return void 0;
 
