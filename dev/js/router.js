@@ -249,7 +249,6 @@ export class router {
 		const _ = this;
 		_.middleware = params['middleware'];
 		await _.changePage();
-		debugger;
 		window.addEventListener('mouseout',function (){
 			_.mouseOver = false;
 		})

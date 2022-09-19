@@ -43,8 +43,8 @@ class HeaderBlock extends G{
 	}
 	fullHeader(){
 		const _ = this;
-		if (!this._$.firstName) this._$.firstName = _._$.me.user.firstName;
-		if (!this._$.role) this._$.role = _._$.me.user.role;
+		if (!this._$.firstName) this._$.firstName = _.me.user.firstName;
+		if (!this._$.role) this._$.role = _.me.user.role;
 
 		let tpl = `<header class="head">
 			<div class="section">
