@@ -4,9 +4,9 @@ export const view = {
 		return `
 			<div class="subnavigate">
 				<div class="section">
-					<button class="subnavigate-button active" data-click="${_.componentName}:changeSection" section="/admin/student"><span>Students</span></button>
-					<button class="subnavigate-button" data-click="${_.componentName}:changeSection" section="/admin/parent"><span>Parents</span></button>
-					<button class="subnavigate-button" data-click="${_.componentName}:changeSection" section="/admin/admin"><span>Admins</span></button>
+					<button class="subnavigate-button active" data-click="${_.componentName}:changeSection" section="student"><span>Students</span></button>
+					<button class="subnavigate-button" data-click="${_.componentName}:changeSection" section="parent"><span>Parents</span></button>
+					<button class="subnavigate-button" data-click="${_.componentName}:changeSection" section="admin"><span>Admins</span></button>
 				</div>
 			</div>
 		`;
