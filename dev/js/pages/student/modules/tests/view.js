@@ -61,6 +61,9 @@ export const view = {
 		let output = document.createElement('div');
 		output.innerHTML = question['answers'][answer];
 		let text = await MathJax.typesetPromise([output]).then( () => output.innerHTML);
+		if(text.indexOf('https') > -1){
+			text = `<img src="${text}">`;
+		}
 		let
 			currentQuestionId = question['_id'],
 			tpl = `
@@ -164,7 +167,7 @@ export const view = {
 						</p>
 					</div>
 					<div class="test-footer">
-						<button class="button-blue"	data-click="${this.componentName}:changeSection" section="questions">
+						<button class="button-blue"	id='directions-btn' data-click="${this.componentName}:changeSection" section="questions">
 							<span>Continue to <strong id="directionsQuestion">1</strong> question</span>
 						</button>
 					</div>
@@ -266,8 +269,8 @@ export const view = {
 		let tpl = `
 				<div class="section">
 				<div class="section-header">
-					<h2 class="title">Practice Test Score - <strong id="test-section-name">${Model.currentSection.sectionName}</strong></h2>
-					<button class="button-white" data-click="StudentPage:changeSection" section="/student/tests">
+					<h2 class="title">Practice Test Score - <strong id="test-section-name">Practice test ${Model.test['testNumber']}</strong></h2>
+					<button class="button-white" data-click="StudentPage:changeSection" refresh section="/student/tests">
 						<span>Exit this test</span>
 					</button>
 				</div>
@@ -380,7 +383,7 @@ export const view = {
 		}
 		return `
 			<div class="test-footer">
-				<button class="test-footer-button dir-button" data-click="${this.componentName}:changeSection" section="directions">
+				<button class="test-footer-button dir-button" data-click="${this.componentName}:changeSection" section="directions" data-dir="fromQuestion">
 					<span>Directions</span>
 				</button>
 				${ _.questionPos>0 ?_.addBackToQuestionBtnTpl(_.getPrevStepCnt()) : ''}
@@ -831,22 +834,28 @@ export const view = {
 		}
 		let { text,intro,content } = await _.getQuestionFields(currentQuestion),
 		tpl= `
-				<div class="test-row test-inner">
-					<div class="test-col">
-						<div class="test-left">
+			<div class="test-header">
+				<h5 class="block-title test-title">
+					<span>Question ${_.getStep()[0]-1} of ${_.questionsLength}</span>
+				</h5>
+				${_.actionsTpl(currentQuestion)}
+			</div>
+			<div class="test-row test-inner">
+				<div class="test-col">
+					<div class="test-left">
 			`;
+		console.log(currentQuestion['questionImages']);
 		for(let fileLink of currentQuestion['questionImages']){
-			tpl+=`<img src="${fileLink}" alt="">`;
+			if(fileLink.indexOf('https' )> -1){
+				console.log(fileLink);
+				tpl+=`<img src="${fileLink}" alt="">`;
+			}else{
+				tpl+=fileLink;
+			}
 		}
 		tpl+=`</div>
 				</div>
 				<div class="test-col">
-					<div class="test-header">
-						<h5 class="block-title test-title">
-							<span>Question ${_.getStep()[0]-1} of ${_.questionsLength}</span>
-						</h5>
-						${_.actionsTpl(currentQuestion)}
-					</div>
 					<p class="test-text"><span>${intro}</span></p>
 					<p class="test-text"><span>${text}</span></p>
 					<ul class="answer-list" data-question-id="${currentQuestion['_id']}">

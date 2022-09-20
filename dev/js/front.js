@@ -13,7 +13,7 @@ import GSelect from "../../components/select/select.component.js";
 			location.reload();
 		}
 	}, 5000);*/
-	await navigator.serviceWorker.ready
+	await navigator.serviceWorker.ready;
 	//if(!navigator.serviceWorker.controller) location.reload();
 })()
 
