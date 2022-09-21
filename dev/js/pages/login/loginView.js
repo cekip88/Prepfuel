@@ -263,7 +263,7 @@ export const loginView = {
 						data-keydown="${_.componentName}:formInputHandle" 
 						name="password"  
 						className="form-input"  
-						value="${loginData ? loginData.password : 'admin123'}" 
+						value="${loginData ? loginData.password : 'Admin12345#'}" 
 						required
 					></g-input>
 				</div>

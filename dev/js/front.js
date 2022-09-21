@@ -1,7 +1,10 @@
 // Language: javascript
 // Path: dev\js\router.js
 // Compare this snippet from dev\js\router.js:
-import {router} from "./router.js";
+import { router } from "./router.js";
+import GModaler from "./components/modaler/modaler.component.js";
+import GInput from "../../components/input/input.component.js";
+import GSelect from "../../components/select/select.component.js";
 
 (async() => {
 	let worker = await navigator.serviceWorker.register("/worker.js", {scope: "/"});
