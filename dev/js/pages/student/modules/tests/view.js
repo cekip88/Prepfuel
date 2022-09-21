@@ -235,14 +235,14 @@ export const view = {
 						<p class="modal-text">Remember to read through the explanations and double check your answer. Thanks for your help!</p>
 						<p class="modal-text">What’s wrong</p>
 						<div class="check-list">
-							<g-input type='radio' class="g-form-item" name="answer" items='[
+							<g-input type='radio' class="g-form-item" name="issueName" items='[
 							{"value":"wrong","text":"The answer is wrong"},
 							{"value":"typo","text":"I caught a typo."},
 							{"value":"confus","text":"The question or explanations are confusing or unclear."},
 							{"value":"broken","text":"Something isn’t working / something seems broken."}]'></g-input>
 						</div>
 						<h6 class="modal-title"><span>Description of issue</span></h6>
-						<textarea class="modal-area g-form-item" name="description"></textarea>
+						<textarea class="modal-area g-form-item" name="issueDescription"></textarea>
 						<div class="modal-row end">
 							<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
 							<button class="button-blue"><span>Submit Issue</span></button>
@@ -844,10 +844,8 @@ export const view = {
 				<div class="test-col">
 					<div class="test-left">
 			`;
-		console.log(currentQuestion['questionImages']);
 		for(let fileLink of currentQuestion['questionImages']){
 			if(fileLink.indexOf('https' )> -1){
-				console.log(fileLink);
 				tpl+=`<img src="${fileLink}" alt="">`;
 			}else{
 				tpl+=fileLink;

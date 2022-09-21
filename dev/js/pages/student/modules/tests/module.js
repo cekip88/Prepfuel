@@ -246,7 +246,7 @@ export class TestsModule extends StudentPage{
 				headerBtn.textContent = 'Exit this review';
 				headerBtn.setAttribute('data-click',`${_.componentName}:changeSection`);
 				headerBtn.setAttribute('section',"score");
-				//await Model.getTestResults();
+				await Model.getTestResults();
 				_.markAnswers();
 				_.markCorrectAnswer();
 			}else{
@@ -546,11 +546,8 @@ export class TestsModule extends StudentPage{
 		event.preventDefault();
 		const _ = this;
 		let gformData = await _.gFormDataCapture(form);
-		Model.saveTestToStorage({
-			questionId: _._$.currentQuestion['_id'],
-			report: gformData
-		});
-		G_Bus.trigger(_.componentName,'updateStorageTest')
+		gformData['questionId'] = _._$.currentQuestion['_id'];
+		Model.sendReport(gformData);
 		G_Bus.trigger('modaler','closeModal');
 	}
 	saveBookmark({item}){

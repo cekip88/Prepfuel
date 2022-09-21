@@ -14,6 +14,7 @@ class _Model{
 			resultsBy: `${env.backendUrl}/tests/test-by-result`,
 			reset: `${env.backendUrl}/tests-results/reset/`,
 			schedule: `${env.backendUrl}/student/schedule`,
+			report: `${env.backendUrl}/tests-results/report-question-issue`
 		};
 		_.testStatus = 'in progress';
 		_.currentSectionPos = 0; // Section position in array section list
@@ -46,7 +47,6 @@ class _Model{
 		let questions = [];
 		for(let subSection of _.currentSection['subSections']){
 			subSection['questionData'].forEach((page,i) => {
-				console.log(page['type']);
 				page['questions'].forEach(quest =>{
 						//questions[quest['_id']] = quest;
 						questions.push(quest);
@@ -106,7 +106,6 @@ class _Model{
 						schedule = await _.getSchedule();
 					if(response['status'] == 'success'){
 						_.tests = response['response']['tests'];
-						console.log(_.tests);
 						_.tests.sort( (a,b)=>{
 							return a['testNumber'] - b['testNumber'];
 						});
@@ -447,6 +446,22 @@ class _Model{
 			}
 		}
 		localStorage.setItem('test',JSON.stringify(test));
+	}
+	
+	sendReport(reportData){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['report']}`,{
+				method: 'POST',
+				headers:_.baseHeaders,
+				body: JSON.stringify(reportData)
+			});
+			if(rawResponse.status < 206){
+				let response = await rawResponse.json();
+				console.log(response);
+				resolve(response['response'])
+			}
+		});
 	}
 	
 	isFinished(){
