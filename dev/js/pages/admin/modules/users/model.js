@@ -30,6 +30,7 @@ class _Model {
 			removeStudent: `/user/delete-student`,
 			removeAdmin: `/admin/admins`,
 			sendResetPassword: `/auth/forgot-password/`,
+			sendStudentResetPassword: `/auth/forgot-password-for-student/`,
 			photo: `/user/upload-image`,
 		};
 	}
@@ -728,10 +729,25 @@ class _Model {
 		return contentLength
 	}
 
-	sendResetPassword(userId,formData) {
+	sendResetPassword(formData) {
 		const _ = this;
 		return new Promise(async resolve => {
 			let rawResponse = await fetch(`${_.getEndpoint('sendResetPassword')}`, {
+				method: 'POST',
+				headers: _.baseHeaders,
+				body: JSON.stringify(formData)
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				resolve(response);
+			}
+			resolve(null);
+		});
+	}
+	sendStudentResetPassword(formData) {
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('sendStudentResetPassword')}`, {
 				method: 'POST',
 				headers: _.baseHeaders,
 				body: JSON.stringify(formData)

@@ -1817,13 +1817,20 @@ export class UsersModule extends AdminPage {
 			//form = _.markupElement(`<form><input type="text" class="g-form-item" value="${email}" name="email"></form>`);
 			form = _.el('FORM',{
 				childes:[
-					_.el('INPUT',{type:'text',class:'g-form-item',value:email,name:'email'})
+					_.el('INPUT',{type:'text',class:'g-form-item',value:email,name:'email'}),
+					_.el('INPUT',{type:'text',class:'g-form-item',value:email,_id:info._id}),
 				]
 			});
 		}
 
 		let formData = _.gFormDataCapture(form);
-		let response = await Model.sendResetPassword(info._id,formData);
+		let response;
+
+		if (role == 'student') {
+			response = await Model.sendStudentResetPassword(formData);
+		} else {
+			response = await Model.sendResetPassword(formData);
+		}
 		_.inProcess = false;
 		if (response.status == 'success') _.showSuccessPopup(response.message);
 	}
