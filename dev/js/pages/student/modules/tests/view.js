@@ -428,7 +428,12 @@ export const view = {
 			if(questionData['type'] != 'passage'){
 				questPos = pos[0]-1;
 			}else{
-				questPos = `${pos[0]}-${pos[1]}`
+				if(pos[0] == pos[1]){
+					questPos = `${pos[0]}-${pos[1]}`
+				}else{
+					questPos = `${pos[0]}`
+				}
+				
 			}
 		}
 		if(pos == -1){

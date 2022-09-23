@@ -724,7 +724,7 @@ export const view = {
 		return `
 			<div class="test-footer" style="padding-bottom: 0">
 				<a class="test-footer-button" id='directions-btn' data-click="${this.componentName}:changeSection" section="directions">
-					<span>Directions</span>
+				<!--	<span>Directions</span>-->
 				</a>
 				<div class="pagination pagination-top">
 					<div class="pagination-info" id="pagination-title"><span>Do <strong class="questions-length"></strong> questions</span></div>

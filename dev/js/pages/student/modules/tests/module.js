@@ -219,12 +219,17 @@ export class TestsModule extends StudentPage{
 				
 				questionData = Model.currentQuestionData(_.questionPos+1),
 				directionsBtn = _.f('#directions-btn');
+			
 			if(questionData){
 				if(questionData['type'] == 'passage'){
+					let pos = `${pp[0]}-${pp[1]}`;
 					if(pp[0] > pp[1]){
 						pp[0] = pp[1];
 					}
-					directionsBtn.innerHTML = `${type}s <strong id="directionsQuestion" style="margin:0 5px"> ${pp[0]}-${pp[1]}</strong> ${!isContinue ? ' questions': ''}`;
+					if(pp[0] == pp[1]){
+						pos = pp[0];
+					}
+					directionsBtn.innerHTML = `${type}s <strong id="directionsQuestion" style="margin:0 5px"> ${pos} </strong> ${!isContinue ? ' questions': ''}`;
 				}else{
 					directionsBtn.innerHTML = `${type} <strong id="directionsQuestion" style="margin:0 5px"> ${pp[0]-1}</strong> ${!isContinue ? ' question': ''}`;
 				}
@@ -837,6 +842,7 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		let questionData = Model.currentQuestionData(_.questionPos-1);
 		let questPos = `${pos[0]}-${pos[1]}`;
+		if(pos[0] == pos[1]) questPos = pos[0];
 		if(questionData){
 			if(questionData['type'] != 'passage'){
 				questPos = pos[0]-1;

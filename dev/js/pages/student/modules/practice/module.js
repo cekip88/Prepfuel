@@ -465,6 +465,8 @@ export class PracticeModule extends StudentPage{
 			_.answerVariant[questionId] = {};
 		}
 		_.answerVariant[questionId]['report'] = gformData;
+		gformData['questionId'] = questionId;
+		Model.saveReport(gformData);
 		G_Bus.trigger('modaler','closeModal');
 		if(_.currentTestType == 'quiz'){
 			if(!_.isLastQuestion){
@@ -1109,6 +1111,7 @@ export class PracticeModule extends StudentPage{
 					if(ansObj['answer']) {
 						_._$.currentQuestion['questions'].forEach(question => {
 							let ans = _.answerVariant[id]['answer'];
+							if(typeof ans == 'object') ans = ans.join();
 							if(_.isGrid()) {
 								ans = _.answerVariant[id]['answer'].join('');
 								ans = ans.replaceAll('_', '');
@@ -1321,6 +1324,10 @@ export class PracticeModule extends StudentPage{
 		});
 		for(let key in currentAnswers){
 			let answer = currentAnswers[key][0];
+			if(typeof answer['answer'] == 'object'){
+				answer['answer'] = answer['answer'].join('')
+				answer['answer'] = answer['answer'].replaceAll('_','');
+			}
 			if(answer['answer'] == answer['correctAnswer']){
 				_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('done');
 			}else{

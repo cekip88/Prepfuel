@@ -18,6 +18,7 @@ export class _Model {
 			quizResults: `${env.backendUrl}/quiz-results`,
 			startQuiz: `${env.backendUrl}/quiz-results/create`,
 			resetQuiz:`${env.backendUrl}/quiz-results/reset`,
+			report: `${env.backendUrl}/tests-results/report-question-issue`
 		};
 	}
 	
@@ -681,8 +682,22 @@ export class _Model {
 			}
 		});
 	}
-
 	
+	sendReport(reportData){
+		const _ = this;
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['report']}`,{
+				method: 'POST',
+				headers:_.baseHeaders,
+				body: JSON.stringify(reportData)
+			});
+			if(rawResponse.status < 206){
+				let response = await rawResponse.json();
+				console.log(response);
+				resolve(response['response'])
+			}
+		});
+	}
 }
 
 export const Model = new _Model();
