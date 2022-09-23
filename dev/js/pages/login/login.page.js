@@ -124,6 +124,9 @@ class LoginPage extends G{
 				btn.setAttribute('section','registerSuccess');
 				_.changeSection({item:btn});
 			}
+		} else if (handle == 'doForgot') {
+			//validation = await _.checkEmail({item:form.querySelector('g-input')});
+			if (resp.status == 'fail') form.querySelector('g-input').doValidate(resp.error)
 		}
 	}
 	showSuccessPopup(text) {
