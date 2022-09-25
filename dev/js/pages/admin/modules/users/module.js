@@ -1818,7 +1818,7 @@ export class UsersModule extends AdminPage {
 			form = _.el('FORM',{
 				childes:[
 					_.el('INPUT',{type:'text',class:'g-form-item',value:email,name:'email'}),
-					_.el('INPUT',{type:'text',class:'g-form-item',value:email,_id:info._id}),
+					_.el('INPUT',{type:'text',class:'g-form-item',value:info._id,name:'_id'}),
 				]
 			});
 		}

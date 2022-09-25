@@ -126,7 +126,7 @@ class LoginPage extends G{
 			}
 		} else if (handle == 'doForgot') {
 			//validation = await _.checkEmail({item:form.querySelector('g-input')});
-			if (resp.status == 'fail') form.querySelector('g-input').doValidate(resp.error)
+			if (resp.status == 'fail') form.querySelector('g-input').doValidate("Sorry, we can't find a user with that email. Try again.")
 		}
 	}
 	showSuccessPopup(text) {
