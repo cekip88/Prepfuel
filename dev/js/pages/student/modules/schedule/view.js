@@ -45,6 +45,11 @@ export const view = {
 	},
 	stepOneTpl(){
 		const _ = this;
+
+		let curPlanTitle = '';
+		if(_.me.student && _.me.student.currentPlan) curPlanTitle = _.me.student.currentPlan.course.title;
+		else if (_.me.currentPlan) curPlanTitle = _.me.currentPlan.course.title;
+
 		return `
 			<h4 class="test-subtitle"><span>Choose your test date</span></h4>
 			<div class="practice-schedule-text">
@@ -52,12 +57,8 @@ export const view = {
 			</div>
 			<div class="practice-schedule-row aifs">
 				<div class="practice-schedule-row">
-					<div class="blue-icon">
-						<svg>
-							<use xlink:href="#badge"></use>
-						</svg>
-					</div>
-					<h5 class="practice-schedule-title">Your ${_.me.student.currentPlan ? _.me.student.currentPlan.course.title : ''} Date</h5>
+					<div class="blue-icon"><svg><use xlink:href="#badge"></use></svg></div>
+					<h5 class="practice-schedule-title">Your ${curPlanTitle} Date</h5>
 				</div>
 				<div class="practice-schedule-date" style="padding-top: 3px;">
 					<div class="adding-inpt adding-radio-row">
@@ -81,7 +82,8 @@ export const view = {
 								class="adding-radio" 
 								name="registered" 
 								data-change="${_.componentName}:skipTestDate" 
-								${!_.datePicked ? 'checked' : ''}>
+								${!_.datePicked ? 'checked' : ''}
+							>
 							<label class="form-label adding-label-have adding-label-checkbox" for="have_yet">Skip date</label>
 						</div>
 					</div>

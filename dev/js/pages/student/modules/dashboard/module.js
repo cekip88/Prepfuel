@@ -21,6 +21,7 @@ export class DashboardModule extends StudentPage{
 	}
 	define() {
 		const _ = this;
+		_.me = JSON.parse(localStorage.getItem('me'));
 		_.componentName = 'Dashboard';
 		_.subSection = 'overview';
 		_.scheduleColors = {
@@ -31,8 +32,10 @@ export class DashboardModule extends StudentPage{
 			'ISEE':'#4AB58E',
 		};
 		_.months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-		G_Bus
-		.on(_,['domReady','deleteSchedule','showCalendar']);
+		G_Bus.on(_,[
+			'domReady','deleteSchedule','showCalendar'
+		]);
+		console.log(_.me)
 	}
 	async deleteSchedule({item}){
 		const _ = this;
@@ -47,10 +50,24 @@ export class DashboardModule extends StudentPage{
 		const _ = this;
 		_.navigationInit();
 		if( _.subSection === 'overview' ){
+			_.prepData();
 			_.fillScheduleBlock();
 		}
 	}
-	
+	prepData(){
+		const _ = this;
+		if (_.me.student) return;
+		let newMe = Object.assign({},_.me.user);
+		newMe.student = {};
+		for (let key in _.me) {
+			if (key !== 'user') {
+				newMe.student[key] = _.me[key]
+			}
+		}
+		newMe.student.user = newMe._id;
+		_.me = newMe;
+		localStorage.setItem('me',JSON.stringify(_.me))
+	}
 
 	// Show methods
 	async fillScheduleBlock(){
