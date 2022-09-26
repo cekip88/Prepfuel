@@ -12,6 +12,7 @@ export class DashboardModule extends ParentPage{
 		_.coursePos = 0;
 
 		_.me = JSON.parse(localStorage.getItem('me'));
+		_.prepMe();
 
 		if (_.me['parent']['students']['length']) {
 			_.moduleStructure = {
@@ -47,8 +48,7 @@ export class DashboardModule extends ParentPage{
 			addingStep : 1
 		})
 		_.months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec'];
-		G_Bus
-		.on(_,[
+		G_Bus.on(_,[
 			'domReady','changeSection','changeStudent',
 			'generatePassword','validatePassword','checkEmail','fillStudentInfo',
 			'addingStep','assignStep',
@@ -60,6 +60,7 @@ export class DashboardModule extends ParentPage{
 			'fillProfile','assignCourse','changeCurrentCourse',
 			'showCancelMembership','showCalendar',
 		]);
+
 	}
 	async domReady() {
 		const _ = this;
@@ -168,6 +169,15 @@ export class DashboardModule extends ParentPage{
 	fillWelcome(){
 		const _ = this;
 		_.body.append( _.markup( _.welcomeTpl()));
+	}
+
+	prepMe(){
+		const _ = this;
+		if (_.me.email) return;
+		let newMe = Object.assign({},_.me.parent.user);
+		newMe.parent = Object.assign({},_.me.parent);
+		_.me = newMe;
+		localStorage.setItem('me',JSON.stringify(_.me));
 	}
 
 	//profile
