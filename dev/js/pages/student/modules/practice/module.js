@@ -73,7 +73,7 @@ export class PracticeModule extends StudentPage{
 		})
 		
 		G_Bus.on(_,[
-			'domReady','changeSection','changePracticeTab','jumpToQuestion','jumpToQuizQuestion',
+			'domReady','changeSection','subnavigate','changePracticeTab','jumpToQuestion','jumpToQuizQuestion',
 			'startTest','enterGridAnswer','checkAnswer','setCorrectAnswer',
 			'showForm','saveBookmark','saveNote','saveBookmark','changeInnerQuestionId',
 			'showTestLabelModal','editNote','deleteNote','saveReport','changeQuestion','viewResult',
@@ -108,6 +108,7 @@ export class PracticeModule extends StudentPage{
 		}
 		_.abortGetSectionCategories = new AbortController();
 		_.abortGetQuizess = new AbortController();
+
 		if( _.subSection == 'mathematics' ){
 			_.fillMathematicsSection();
 			_.clearData();
@@ -131,11 +132,27 @@ export class PracticeModule extends StudentPage{
 		if( _.subSection == 'summary' ){
 			_.fillSummary();
 		}
+		if (_.subSection == 'practice') {
+			_.fillMathematicsSection()
+		}
+		if (_.subSection == 'reports') {
+			_.fillReports();
+		}
 		_.abortGetSectionCategories.name = 'getSectionCategories';
 		_.abortGetQuizess.name = 'getQuizess';
 		_.addAbortController(_.abortGetSectionCategories);
 		_.addAbortController(_.abortGetQuizess);
-}
+	}
+	subnavigate(clickData) {
+		const _ = this;
+		let item = clickData.item,
+			cont = item.parentElement,
+			active = cont.querySelector('.active');
+		if (active == item) return;
+
+		active.classList.remove('active');
+		item.classList.add('active');
+	}
 
 // Fill methods
 	async fillMathematicsSection(){
@@ -262,6 +279,138 @@ export class PracticeModule extends StudentPage{
 	}
 	fillSummary(){
 		const _ = this;
+	}
+	fillReports(){
+		const _ = this;
+		let cont = _.f('#bodyInner');
+		let tpl = _.reportsAchievemntTpl();
+		cont.append(_.markup(tpl));
+
+		let summaryData = [
+			{
+				color: '#3F4254',
+				title: 'Your Percent Correct',
+				value: '50%',
+			},{
+				color: '71,190,125',
+				title: 'Your Average Pace',
+				value: '40:00',
+			},{
+				color: '246,155,17',
+				title: 'Others Average Pace',
+				value: '39:00',
+			},
+		];
+		let tableInfo = [
+			{
+				title: 'Algebra, Equations, and Inequalities',
+				items: [
+					{
+						icon: 'graphic-1',
+						title: 'Algebraic Remainders',
+						'questions_answered': 200,
+						'total_time': '41:29',
+						'progress': 50,
+					},{
+						icon: 'graphic-2',
+						title: 'Backsolving Strategy',
+						'questions_answered': 200,
+						'total_time': '41:29',
+						'progress': 50,
+					},{
+						icon: 'graphic-3',
+						title: 'Evaluate algebraic expressions',
+						'questions_answered': 200,
+						'total_time': '41:29',
+						'progress': 50,
+					},{
+						icon: 'graphic-4',
+						title: 'Inequalities and ranges',
+						'questions_answered': 200,
+						'total_time': '41:29',
+						'progress': 50,
+					},
+				]
+			},{
+				title: 'Arithmetic and Fractions',
+				items: [
+					{
+						icon: 'graphic-1',
+						title: 'Consecutive numbers',
+						'questions_answered': 200,
+						'total_time': '41:29',
+						'progress': 50,
+					},{
+						icon: 'graphic-2',
+						title: 'Math basics: Absolute value',
+						'questions_answered': 200,
+						'total_time': '41:29',
+						'progress': 50,
+					},{
+						icon: 'graphic-3',
+						title: 'Math basics: Converting between decimals, fractions, and percents',
+						'questions_answered': 200,
+						'total_time': '41:29',
+						'progress': 50,
+					},{
+						icon: 'graphic-4',
+						title: 'Math basics: Decimals',
+						'questions_answered': 200,
+						'total_time': '41:29',
+						'progress': 50,
+					},
+				]
+			},{
+				title: 'Coordinate Geometry',
+				items: [
+					{
+						icon: 'graphic-1',
+						title: 'Coordinate plane',
+						'questions_answered': 200,
+						'total_time': '41:29',
+						'progress': 50,
+					},{
+						icon: 'graphic-2',
+						title: 'Number lines',
+						'questions_answered': 200,
+						'total_time': '41:29',
+						'progress': 50,
+					}
+				]
+			},{
+				title: 'Coordinate Geometry',
+				items: [
+					{
+						icon: 'graphic-1',
+						title: 'Sequences and series',
+						'questions_answered': 200,
+						'total_time': '41:29',
+						'progress': 50,
+					},{
+						icon: 'graphic-2',
+						title: 'Sets',
+						'questions_answered': 200,
+						'total_time': '41:29',
+						'progress': 50,
+					},{
+						icon: 'graphic-3',
+						title: 'Symbol functions',
+						'questions_answered': 200,
+						'total_time': '41:29',
+						'progress': 50,
+					},{
+						icon: 'graphic-4',
+						title: 'Translating symbol word problems',
+						'questions_answered': 200,
+						'total_time': '41:29',
+						'progress': 50,
+					}
+				]
+			}
+		];
+		cont.querySelector('#summaryList').innerHTML = _.summaryBlockFill(summaryData);
+		cont.querySelector('#reports-table').innerHTML = _.reportsTableFill(tableInfo);
+
 	}
 	async fillCheckedAnswers(){
 		const _ = this;
@@ -651,7 +800,7 @@ export class PracticeModule extends StudentPage{
 		let struct = _.flexible();
 		await _.render(struct,{item});
 		if(_.subSection === 'directions' ) { //|| ( _.subSection === 'quizDirections')
-			_.f('#directionsQuestion').textContent = parseInt(_.questionPos)+1;
+			_.f('#directionsQuestion').textContent = parseInt(_.questionPos) + 1;
 		}
 	}
 	async changeQuestion({item,event}){
@@ -1006,6 +1155,10 @@ export class PracticeModule extends StudentPage{
 				'body-tabs':null,
 				'body': 'questionsCarcass'
 			}
+		} else if (_.subSection === 'practice') {
+			return {
+				'body':'practiceBody'
+			}
 		}else if (_.subSection === 'reports') {
 			return {
 				'body': 'reportsBody'
@@ -1344,7 +1497,14 @@ export class PracticeModule extends StudentPage{
 			quizObj = await Model.startQuiz();
 		console.log(quizObj);
 	}
-	
+
+
+	fillTips(){
+		const _ = this;
+		let tpl = _.tipsAndStrategies();
+		console.log(tpl)
+	}
+
 	
 	/* Work with note */
 	editNote({item}){

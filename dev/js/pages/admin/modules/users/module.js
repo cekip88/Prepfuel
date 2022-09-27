@@ -1814,11 +1814,10 @@ export class UsersModule extends AdminPage {
 		if (role == 'student') {
 			let parentInfo = await Model.getStudentParents(info._id);
 			if (parentInfo.status == 'success') email = parentInfo.response[0].user.email;
-			//form = _.markupElement(`<form><input type="text" class="g-form-item" value="${email}" name="email"></form>`);
 			form = _.el('FORM',{
 				childes:[
 					_.el('INPUT',{type:'text',class:'g-form-item',value:email,name:'email'}),
-					_.el('INPUT',{type:'text',class:'g-form-item',value:info._id,name:'_id'}),
+					_.el('INPUT',{type:'text',class:'g-form-item',value:info._id,name:'studentId'}),
 				]
 			});
 		}

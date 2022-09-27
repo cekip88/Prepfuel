@@ -174,21 +174,12 @@ export const view = {
 		return `
 			<div class="subnavigate">
 				<div class="section">
-					<button class="subnavigate-button active" data-click="${_.componentName}:changeSection" section="practice"><span>Practice & Recommendations</span></button>
-					<button class="subnavigate-button" data-click="${_.componentName}:changeSection" section="reports"><span>Reports</span></button>
+					<button class="subnavigate-button active" data-click="${_.componentName}:changeSection;${_.componentName}:subnavigate" section="practice"><span>Practice & Recommendations</span></button>
+					<button class="subnavigate-button" data-click="${_.componentName}:changeSection;${_.componentName}:subnavigate" section="reports"><span>Reports</span></button>
 				</div>
 			</div>
 		`;
 	},
-	adminFooter(){
-		const _ = this;
-		return `
-			<div hidden>
-				
-			</div>
-		`
-	},
-
 	practiceBody(){
 		const _ = this;
 		return `
@@ -370,7 +361,6 @@ export const view = {
 		`;
 		return tpl;
 	},
-
 	reportsAchievemntTpl(){
 		const _ = this;
 		return `
@@ -1273,5 +1263,5 @@ export const view = {
 				<span>Back to results</span>
 			</button>
 		`;
-	}
+	},
 }
