@@ -36,8 +36,9 @@ class StudentPage extends G{
 	define(){
 		const _ = this;
 		_.componentName = 'StudentPage';
-		G_Bus
-			.on(_,['changeSection','navigate']);
+		G_Bus.on(_,[
+			'changeSection','navigate','removeNavigate'
+		]);
 
 		G_Bus.on('router','backNext',_.backNext.bind(_));
 	}
@@ -106,8 +107,10 @@ class StudentPage extends G{
 		module.headerBlock = _.header;
 		return Promise.resolve(module.render());
 	}
-	fullHeader(){
-		return G_Bus.trigger('header','fullHeader');
+	async fullHeader(){
+		const _ = this;
+		_.header = await _.getBlock({name:'header'},'blocks');
+		return this.header.fullHeader();
 	}
 	async getMe(){
 		const _ = this;
@@ -138,7 +141,7 @@ class StudentPage extends G{
 		if(params['redirect']){
 			await _.getMe();
 		}
-		_.header = await _.getBlock({name:'header'},'blocks');
+		//_.header = await _.getBlock({name:'header'},'blocks');
 		if(params){
 			await _.moduleRender(params);
 			_.currentSection = '/student/' + params['module'];

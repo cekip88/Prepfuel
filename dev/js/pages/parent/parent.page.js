@@ -41,7 +41,7 @@ class ParentPage extends G{
 		_.componentName = 'ParentPage';
 		G_Bus
 			.on(_,[
-			'changeSection','navigate',
+			'changeSection','navigate','removeNavigate',
 			'showSuccessPopup','showErrorPopup','closePopup',
 		]);
 		G_Bus.on('router','backNext',_.backNext.bind(_));
@@ -75,7 +75,7 @@ class ParentPage extends G{
 		_.changeSection({item,toHistory:false});
 		_.navigate({item})
 	}
-	changeSection({item,event,toHistory = true}){
+	changeSection({item,toHistory = true}){
 		const _ = this;
 		_.triggerAbortController();
 		let

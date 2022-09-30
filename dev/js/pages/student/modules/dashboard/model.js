@@ -8,6 +8,7 @@ export class _Model{
 		_.endpoints = {
 			schedule: `${env.backendUrl}/student/schedule`,
 			dashSchedule: `${env.backendUrl}/student/schedule/dashboard`,
+			wizardData: `${env.backendUrl}/user/wizard-data`,
 			me: `${env.backendUrl}/user/me`
 		};
 	}
@@ -61,6 +62,30 @@ export class _Model{
 			}else{
 				resolve(null);
 			}
+		});
+	}
+
+	getWizardData(){
+		const _ = this;
+		if(_.wizardData) return Promise.resolve(_.wizardData);
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.endpoints['wizardData']}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			if(rawResponse.status < 210) {
+				let response = await rawResponse.json();
+				console.log(response)
+				if(response['status'] == 'success') {
+					_.wizardData = response['response'];
+					resolve(response['response']);
+				} else {
+					_.wrongResponse('getWizardData', response);
+				}
+			} else {
+				_.wrongRequest('getWizardData', rawResponse)
+			}
+			resolve(null);
 		});
 	}
 }

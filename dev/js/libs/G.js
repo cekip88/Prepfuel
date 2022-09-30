@@ -246,7 +246,7 @@ export class G extends G_G{
 			activeBtn = list.querySelector('.active');
 			if (activeBtn) _.showActiveNavItem(activeBtn,list);
 		})
-		G_Bus.trigger('router','changeHistory')
+		G_Bus.trigger('router','changeHistory');
 	}
 	navigate({item}){
 		const _ = this;
@@ -260,6 +260,13 @@ export class G extends G_G{
 
 		_.showActiveNavItem(item,list);
 		_.changeActiveNavItem(item,list);
+	}
+	removeNavigate(){
+		const _ = this;
+		_.f('.navigate-item.active').classList.remove('active');
+		let label = _.f('.navigate-label.active');
+		label.classList.remove('active');
+		label.removeAttribute('style')
 	}
 	subnavigate(clickData){
 		const _ = this;

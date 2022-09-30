@@ -21,7 +21,8 @@ class HeaderBlock extends G{
 	}
 	showUserList({item}) {
 		const _ = this;
-		item.classList.toggle('show');
+		if (item.classList.contains('head-user')) item.classList.toggle('show');
+		else item.closest('.head-user').classList.toggle('show');
 	}
 	init(){
 		const _ = this;
@@ -106,9 +107,9 @@ class HeaderBlock extends G{
 			id = _.me.admin._id;
 			profileButton = `<strong data-click="AdminPage:toProfile" data-id="${id}">Profile</strong>`;
 		} if (this._$.role == 'student') {
-			profileButton = `<strong>My Profile</strong>`;
+			profileButton = `<strong data-click="StudentPage:changeSection;header:showUserList;StudentPage:removeNavigate" section="/student/profile">My Profile</strong>`;
 		} else if (this._$.role == 'parent') {
-			profileButton = `<strong>Account Settings</strong>`;
+			profileButton = `<strong data-click="ParentPage:changeSection;header:showUserList;ParentPage:removeNavigate" section="/parent/profile">Account Settings</strong>`;
 		}
 
 		tpl += `

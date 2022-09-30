@@ -43,6 +43,8 @@ export class DashboardModule extends ParentPage{
 			'SSAT':'#4AB58E',
 			'ISEE':'#4AB58E',
 		};
+		_.backUrl = `https://live-prepfuelbackend-mydevcube.apps.devinci.co`;
+
 
 		_.set({
 			addingStep : 1
@@ -281,6 +283,7 @@ export class DashboardModule extends ParentPage{
 		_.currentStudent.currentPlan = _.find(plans,_.currentStudent.currentPlan._id);
 		return true;
 	}
+
 
 	//dashboard
 	async fillDashboardTabs(){
@@ -878,7 +881,6 @@ export class DashboardModule extends ParentPage{
 	}
 	//end change methods
 
-
 	//auxiliary methods
 	hideProfile({item}){
 		const _ = this;
@@ -951,7 +953,7 @@ export class DashboardModule extends ParentPage{
 		let
 			cont = item.closest('.passwords'),
 			inputs = cont.querySelectorAll('G-INPUT[type="password"]'),
-			text = item.nextElementSibling,
+			text = item.nextElementSibling ?? item.parentElement.nextElementSibling,
 			validate = true;
 
 		if (item == inputs[0]) {

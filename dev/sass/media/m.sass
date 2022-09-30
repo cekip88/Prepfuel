@@ -409,6 +409,8 @@ g-select
 		&.active
 			background-color: rgb($white)
 			color: rgb($neutral-800)
+		.navigate-label
+			left: 0!important
 
 
 .note,.report
@@ -3772,6 +3774,76 @@ div.tbl-head
 				&.active
 					svg
 						transform: rotate(0)
+	&-my
+		&-profile
+			&-line
+				width: calc(100% + 32px)
+				transform: translateX(-16px)
+			&-notifications
+				@extend %df
+				flex-direction: column
+				.button-blue
+					min-width: 120px
+					margin-top: auto
+					margin-left: auto
+			&-footer
+				margin-top: 0
+				padding-top: 0
+				border-top: none
+			&-popup
+				button
+					min-width: 120px
+				.modal-row
+					margin-top: 32px
+					justify-content: space-between
+	&-checkbox
+		@extend %df
+		margin-bottom: 24px
+		padding-left: 33px
+		flex-direction: column
+		position: relative
+		&-label
+			@extend %dfa
+			margin-bottom: 2px
+		&-icon
+			@extend %dfc
+			+wh(24px)
+			border-radius: 6px
+			background-color: rgb($neutral-200)
+			position: absolute
+			left: 0
+			svg
+				+wh(24px,20px)
+				fill: transparent
+		&-title
+			font-family: $f_bold
+			font-size: $fz16
+			line-height: $fz24
+		&-info
+			color: rgb($neutral-400)
+			line-height: $fz20
+		input:checked ~
+			.parent-checkbox-icon
+				background-color: rgb($blue)
+				svg
+					fill: #fff
+		&-phone
+			margin-top: 2px
+			display: none
+			align-items: flex-start
+			flex-direction: column
+			color: rgb($neutral-700)
+			line-height: $fz20
+			button
+				display: block
+				margin-top: 2px
+				font-family: $f_medium
+				font-size: $fz12
+				color: rgb($blue-text)
+				line-height: $fz18
+			&.active
+				@extend %df
+
 
 
 .newUsers

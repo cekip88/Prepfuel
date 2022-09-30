@@ -362,7 +362,6 @@ export class _Model{
 	updateCourse(updateData) {
 		const _ = this;
 		return new Promise(async resolve => {
-			console.log(updateData)
 			let rawResponse = await fetch(`${_.getEndpoint('updateCourse')}/${updateData._id}`, {
 				method: 'PUT',
 				headers: _.baseHeaders,

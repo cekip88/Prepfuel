@@ -5,6 +5,7 @@ import {StudentPage} from "../../student.page.js";
 export class DashboardModule extends StudentPage{
 	constructor(props) {
 		super(props);
+		const _ = this;
 		this.moduleStructure = {
 			'header':'fullHeader',
 			'header-tabs':'studentTabs',
@@ -15,9 +16,8 @@ export class DashboardModule extends StudentPage{
 
 	async asyncDefine(){
 		const _ = this;
-	/*	_.set({
-			dashSchedule: await Model.getDashSchedule()
-		});*/
+		_.wizardData = await Model.getWizardData();
+		console.log(_.wizardData)
 	}
 	define() {
 		const _ = this;
@@ -33,7 +33,7 @@ export class DashboardModule extends StudentPage{
 		};
 		_.months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 		G_Bus.on(_,[
-			'domReady','deleteSchedule','showCalendar'
+			'domReady','deleteSchedule','showCalendar','changeSection',
 		]);
 		console.log(_.me)
 	}
@@ -44,7 +44,18 @@ export class DashboardModule extends StudentPage{
 			await _.fillScheduleBlock()
 		}
 	}
-	
+	async changeSection({item}){
+		const _ = this;
+		_.previousSection = _.subSection;
+		let section = item.getAttribute('section');
+		let sectionParts = section.split('/');
+		if (sectionParts.length > 1) section = sectionParts[sectionParts.length - 1];
+		_.subSection = section;
+		if (item.getAttribute('data-clear')) {
+			_.studentInfo = {};
+		}
+		await _.render();
+	}
 	
 	async domReady() {
 		const _ = this;
@@ -265,6 +276,14 @@ export class DashboardModule extends StudentPage{
 			return year % 4 ? 28 : 29;
 		}
 		return 30;
+	}
+
+	isEmpty(obj){
+		const _ = this;
+		for (let key in obj) {
+			return false;
+		}
+		return true;
 	}
 
 	async init() {
