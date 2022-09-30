@@ -46,7 +46,6 @@ export class ProfileModule extends StudentPage {
 	async fillProfile(){
 		const _ = this;
 		_.wizardData = await Model.getWizardData();
-		console.log(_.wizardData)
 		let avatarSrc = _.find(_.me['avatar'],_.wizardData.avatars);
 		let avatarImg = _.f(`#avatar`);
 		avatarImg.setAttribute('src',`/img/${avatarSrc.avatar}.svg`);
