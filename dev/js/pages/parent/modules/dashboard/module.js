@@ -296,7 +296,7 @@ export class DashboardModule extends ParentPage{
 			_.wizardData['avatars'].find((elem)=>{
 				if ( imgId == elem['_id'] ) imgTitle = elem['avatar'];
 			})
-			let img = `<img src="/img/${imgTitle}.svg">`;
+			let img = `<img src="/img/${imgTitle}.png">`;
 			item.removeAttribute('data-id')
 			item.append( _.markup( img ));
 		}
@@ -366,7 +366,7 @@ export class DashboardModule extends ParentPage{
 			if( type != 'avatars' ){
 				item.textContent = value[item.getAttribute('data-title')];
 			}
-			else item.src = `/img/${value[item.getAttribute('data-title')]}.svg`
+			else item.src = `/img/${value[item.getAttribute('data-title')]}.png`
 		}
 	}
 	async fillScheduleBlock(id){
@@ -797,7 +797,7 @@ export class DashboardModule extends ParentPage{
 		_['studentInfo'].avatar = _['metaInfo'].avatar;
 		_['studentInfo'].avatarName = _['metaInfo'].avatarName;
 
-		let img = _.markup(`<img src="/img/${_['studentInfo'].avatarName}.svg">`)
+		let img = _.markup(`<img src="/img/${_['studentInfo'].avatarName}.png">`)
 		let avatarCont = _.f('.adding-avatar-letter');
 		_.clear(avatarCont);
 		avatarCont.append(img);

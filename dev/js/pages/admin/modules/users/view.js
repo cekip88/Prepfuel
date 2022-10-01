@@ -53,12 +53,12 @@ export const view = {
 	usersBodyRowTpl(plans,rowData,user){
 		const _ = this;
 		let coursesData = _.usersPlansTpl(plans);
-		let avatar = rowData.avatar.avatar;
+		let avatar = rowData.avatar ? rowData.avatar.avatar : '';
 		let tpl = `
 			<td>
 				<div class="tbl-item">
 					<div class="users-photo-icon">
-						${avatar ? '<img src="/img/' + avatar + '.svg" alt="' + avatar + '">' : ''}
+						${avatar ? '<img src="/img/' + avatar + '.png" alt="' + avatar + '">' : ''}
 					</div>
 					<div class="users-info">
 						<h6 class="users-info-name">${rowData.firstName} ${rowData.lastName}</h6>
@@ -100,12 +100,12 @@ export const view = {
 	studentsBodyRowTpl(plans,rowData,user){
 		const _ = this;
 		let coursesData = _.usersPlansTpl(plans);
-		let avatar = rowData.avatar.avatar;
+		let avatar = rowData.avatar ? rowData.avatar.avatar : '';
 		let tpl = `
 			<td>
 				<div class="tbl-item">
 					<div class="users-photo-icon">
-						${avatar ? '<img src="/img/' + avatar + '.svg" alt="' + avatar + '">' : ''}
+						${avatar ? '<img src="/img/' + avatar + '.png" alt="' + avatar + '">' : ''}
 					</div>
 					<div class="users-info">
 						<h6 class="users-info-name">${rowData.firstName} ${rowData.lastName}</h6>
@@ -581,7 +581,7 @@ export const view = {
 		return `
 				<li class="avatars-item">
 					<button data-click="${_.componentName}:pickAvatar" title="${imgTitle}" value="${item['_id']}">
-						<img src="/img/${imgTitle}.svg" alt="${imgTitle}">
+						<img src="/img/${imgTitle}.png" alt="${imgTitle}">
 					</button>
 				</li>`
 	},
@@ -947,7 +947,7 @@ export const view = {
 					<div class="adding-avatar">
 						<button data-click="${_.componentName}:selectAvatar" data-callback="addStudent">
 							<strong class="adding-avatar-letter">
-								${_.studentInfo.avatarName ? '<img src="/img/' + _.studentInfo.avatarName + '.svg">' : 'K'}
+								${_.studentInfo.avatarName ? '<img src="/img/' + _.studentInfo.avatarName + '.png">' : 'K'}
 							</strong>
 							<span class="adding-avatar-link">Select Avatar</span>
 						</button>
@@ -1437,7 +1437,7 @@ export const view = {
 				if(rowData.students.length) {
 					let avatar = item.user && item.user.avatar ? item.user.avatar.avatar : '';
 					tpl += `<div class="parent-table-student">
-						${avatar ? '<img src="/img/' + avatar + '.svg">' : ''}
+						${avatar ? '<img src="/img/' + avatar + '.png">' : ''}
 					</div>`
 				}
 			}
@@ -1497,7 +1497,7 @@ export const view = {
 							if(rowData.students.length) {
 								let avatar = item.user && item.user.avatar ? item.user.avatar.avatar : '';
 								tpl += `<div class="parent-table-student">
-									${avatar ? '<img src="/img/' + avatar + '.svg">' : ''}
+									${avatar ? '<img src="/img/' + avatar + '.png">' : ''}
 								</div>`
 							}
 						}
@@ -2126,7 +2126,7 @@ export const view = {
 				if(students.length) {
 					let avatar = item.user.avatar ? item.user.avatar.avatar : '';
 					studentsTpl += `<div class="parent-table-student">
-						${avatar ? '<img src="/img/' + avatar + '.svg">' : ''}
+						${avatar ? '<img src="/img/' + avatar + '.png">' : ''}
 					</div>`
 				}
 			}
@@ -2322,7 +2322,7 @@ export const view = {
 					<div class="adding-avatar">
 						<button data-click="${_.componentName}:selectAvatar">
 							<strong class="adding-avatar-letter">
-								${_.studentInfo.avatar ? '<img src="/img/' + _.studentInfo.avatar.avatar + '.svg">' : _.studentInfo.firstName.substr(0,1)}
+								${_.studentInfo.avatar ? '<img src="/img/' + _.studentInfo.avatar.avatar + '.png">' : _.studentInfo.firstName.substr(0,1)}
 							</strong>
 							<span class="adding-avatar-link">${_.studentInfo.avatar ? 'Change' : 'Select'} Avatar</span>
 						</button>
@@ -3247,7 +3247,7 @@ export const view = {
 					<td>
 						<div class="tbl-item">
 							<div class="users-photo-icon">
-								<img src="${item.user.avatar ? '/img/' + item.user.avatar.avatar + '.svg' : ''}">
+								<img src="${item.user.avatar ? '/img/' + item.user.avatar.avatar + '.png' : ''}">
 							</div>
 							<div class="users-info">
 								<h6 class="users-info-name">${item.user.firstName} ${item.user.lastName}</h6>

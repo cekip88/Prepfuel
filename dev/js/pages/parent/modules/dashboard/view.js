@@ -299,7 +299,7 @@ export const view = {
 					<h4 class="adding-subtitle">Student Personal Info</h4>
 					<div class="adding-avatar">
 						<button data-click="${_.componentName}:selectAvatar">
-							<strong class="adding-avatar-letter">${_.studentInfo.avatarName ? '<img src="/img/' + _.studentInfo.avatarName + '.svg">' : 'K'}</strong>
+							<strong class="adding-avatar-letter">${_.studentInfo.avatarName ? '<img src="/img/' + _.studentInfo.avatarName + '.png">' : 'K'}</strong>
 							<span class="adding-avatar-link">Select Avatar</span>
 						</button>
 					</div>
@@ -661,7 +661,7 @@ export const view = {
 		return `
 				<li class="avatars-item">
 					<button data-click="${_.componentName}:pickAvatar" title="${imgTitle}" value="${item['_id']}">
-						<img src="/img/${imgTitle}.svg" alt="${imgTitle}">
+						<img src="/img/${imgTitle}.png" alt="${imgTitle}">
 					</button>
 				</li>`
 	},
@@ -1748,7 +1748,7 @@ export const view = {
 							<h4 class="admin-block-graytitle">Student Personal Info</h4>
 							<div class="adding-avatar">
 								<button data-click="${_.componentName}:selectAvatar">
-									<strong class="adding-avatar-letter">${_.studentInfo.avatar ? '<img src="/img/' + _.studentInfo.avatar.avatar + '.svg">' : _.studentInfo.firstName.substr(0,1)}</strong>
+									<strong class="adding-avatar-letter">${_.studentInfo.avatar ? '<img src="/img/' + _.studentInfo.avatar.avatar + '.png">' : _.studentInfo.firstName.substr(0,1)}</strong>
 									<span class="adding-avatar-link">${_.studentInfo.avatar ? 'Change' : 'Select'} Avatar</span>
 								</button>
 							</div>
