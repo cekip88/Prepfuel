@@ -218,7 +218,8 @@ export const view = {
 					<a href="#">Contact Our Support</a>
 				</h5>
 				<div class="adding-section">
-					<div class="adding-label">What test is the student purchasing?</div>
+					<!--<div class="adding-label">What test is the student purchasing?</div>-->
+					<div class="adding-label">What test is the student registering for?</div>
 					<div class="adding-buttons">
 		`;
 		_.coursePos = 2;
@@ -246,7 +247,8 @@ export const view = {
 				</div>
 			</div>
 			<div class="adding-section">
-				<div class="adding-label">What level of the test student plan to take?</div>
+				<!--<div class="adding-label">What level of the test student plan to take?</div>-->
+				<div class="adding-label">What level of the test does your student plan to take?</div>
 				<div class="adding-buttons level-buttons loader-parent">
 					${_.levelButtons(courses[_.coursePos])}
 				</div>

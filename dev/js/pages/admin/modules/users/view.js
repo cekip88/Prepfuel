@@ -53,13 +53,12 @@ export const view = {
 	usersBodyRowTpl(plans,rowData,user){
 		const _ = this;
 		let coursesData = _.usersPlansTpl(plans);
-		console.log(rowData.avatar)
-		let avatar = rowData.avatar ? rowData.avatar.avatar.split('.')[0] : '';
+		let avatar = rowData.avatar.avatar;
 		let tpl = `
 			<td>
 				<div class="tbl-item">
 					<div class="users-photo-icon">
-						${avatar ? '<img src="/img/' + avatar + '.' + (rowData.avatar.type ?? 'svg') + '" type="' + (rowData.avatar.type ?? 'svg') + '" alt="' + avatar + '">' : ''}
+						${avatar ? '<img src="/img/' + avatar + '.svg" alt="' + avatar + '">' : ''}
 					</div>
 					<div class="users-info">
 						<h6 class="users-info-name">${rowData.firstName} ${rowData.lastName}</h6>
@@ -101,7 +100,7 @@ export const view = {
 	studentsBodyRowTpl(plans,rowData,user){
 		const _ = this;
 		let coursesData = _.usersPlansTpl(plans);
-		let avatar = rowData.avatar ? rowData.avatar.avatar.split('.')[0] : '';
+		let avatar = rowData.avatar.avatar;
 		let tpl = `
 			<td>
 				<div class="tbl-item">
@@ -947,7 +946,9 @@ export const view = {
 					<h4 class="adding-subtitle">Student Personal Info</h4>
 					<div class="adding-avatar">
 						<button data-click="${_.componentName}:selectAvatar" data-callback="addStudent">
-							<strong class="adding-avatar-letter">${_.studentInfo.avatarName ? '<img src="/img/' + _.studentInfo.avatarName + '.svg">' : 'K'}</strong>
+							<strong class="adding-avatar-letter">
+								${_.studentInfo.avatarName ? '<img src="/img/' + _.studentInfo.avatarName + '.svg">' : 'K'}
+							</strong>
 							<span class="adding-avatar-link">Select Avatar</span>
 						</button>
 					</div>
@@ -1435,7 +1436,9 @@ export const view = {
 			for (let item of rowData.students) {
 				if(rowData.students.length) {
 					let avatar = item.user && item.user.avatar ? item.user.avatar.avatar : '';
-					tpl += `<div class="parent-table-student">${avatar ? '<img src="/img/' + avatar + '.svg">' : ''}</div>`
+					tpl += `<div class="parent-table-student">
+						${avatar ? '<img src="/img/' + avatar + '.svg">' : ''}
+					</div>`
 				}
 			}
 			tpl += `
@@ -1493,7 +1496,9 @@ export const view = {
 						for (let item of rowData.students) {
 							if(rowData.students.length) {
 								let avatar = item.user && item.user.avatar ? item.user.avatar.avatar : '';
-								tpl += `<div class="parent-table-student">${avatar ? '<img src="/img/' + avatar + '.svg">' : ''}</div>`
+								tpl += `<div class="parent-table-student">
+									${avatar ? '<img src="/img/' + avatar + '.svg">' : ''}
+								</div>`
 							}
 						}
 			tpl += `
@@ -2120,7 +2125,9 @@ export const view = {
 			for (let item of students) {
 				if(students.length) {
 					let avatar = item.user.avatar ? item.user.avatar.avatar : '';
-					studentsTpl += `<div class="parent-table-student">${avatar ? '<img src="/img/' + avatar + '.svg">' : ''}</div>`
+					studentsTpl += `<div class="parent-table-student">
+						${avatar ? '<img src="/img/' + avatar + '.svg">' : ''}
+					</div>`
 				}
 			}
 			studentsTpl += `
@@ -2314,7 +2321,9 @@ export const view = {
 					<h4 class="admin-block-graytitle">Student Personal Info</h4>
 					<div class="adding-avatar">
 						<button data-click="${_.componentName}:selectAvatar">
-							<strong class="adding-avatar-letter">${_.studentInfo.avatar ? '<img src="/img/' + _.studentInfo.avatar.avatar + '.svg">' : _.studentInfo.firstName.substr(0,1)}</strong>
+							<strong class="adding-avatar-letter">
+								${_.studentInfo.avatar ? '<img src="/img/' + _.studentInfo.avatar.avatar + '.svg">' : _.studentInfo.firstName.substr(0,1)}
+							</strong>
 							<span class="adding-avatar-link">${_.studentInfo.avatar ? 'Change' : 'Select'} Avatar</span>
 						</button>
 					</div>
