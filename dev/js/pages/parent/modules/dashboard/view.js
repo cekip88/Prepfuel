@@ -221,15 +221,17 @@ export const view = {
 					<div class="adding-label">What test is the student purchasing?</div>
 					<div class="adding-buttons">
 		`;
+		_.coursePos = 2;
 		courses.forEach( (item,cnt) => {
 			let activeClass = '';
+			if (item.title !== 'SHSAT') return;
 			if(item.title === _.courseData.currentPlan){
 				_.coursePos = cnt;
 				activeClass = 'active';
 			}
 			tpl += `
 				<button 
-					class="adding-button ${ activeClass }" 
+					class="adding-button ${ activeClass } active" 
 					pos="${cnt}" 
 					data-click="${_.componentName}:changeTestType" 
 					data-id="${item._id}"
@@ -249,7 +251,7 @@ export const view = {
 					${_.levelButtons(courses[_.coursePos])}
 				</div>
 			</div>
-			<div class="adding-section">
+			<!--<div class="adding-section">
 				<div class="adding-label">Type of membership?</div>
 				<div class="adding-buttons">
 					<button 
@@ -263,8 +265,8 @@ export const view = {
 						data-click="${_.componentName}:changePayMethod"
 					>Pay Yearly</button>
 				</div>
-			</div>
-			<div class="adding-section parent-adding-section">
+			</div>-->
+			<!--<div class="adding-section parent-adding-section">
 				<div class="adding-label">Which plan do you prefer?</div>
 				<div class="parent-adding-plan">
 					<span class="adding-plan active">
@@ -282,7 +284,7 @@ export const view = {
 						</ul>
 					</span>
 				</div>
-			</div>
+			</div>-->
 		`;
 		return tpl;
 	},
@@ -613,7 +615,8 @@ export const view = {
 				if(item._id == curPlan['level']._id){
 					activeClass = 'active';
 				}
-			} else if (!count) {
+			}
+			if (!count && !activeClass) {
 				activeClass = 'active';
 			}
 			tpl += `

@@ -53,12 +53,13 @@ export const view = {
 	usersBodyRowTpl(plans,rowData,user){
 		const _ = this;
 		let coursesData = _.usersPlansTpl(plans);
+		console.log(rowData.avatar)
 		let avatar = rowData.avatar ? rowData.avatar.avatar.split('.')[0] : '';
 		let tpl = `
 			<td>
 				<div class="tbl-item">
 					<div class="users-photo-icon">
-						${avatar ? '<img src="/img/' + avatar + '.svg" alt="' + avatar + '">' : ''}
+						${avatar ? '<img src="/img/' + avatar + '.' + (rowData.avatar.type ?? 'svg') + '" type="' + (rowData.avatar.type ?? 'svg') + '" alt="' + avatar + '">' : ''}
 					</div>
 					<div class="users-info">
 						<h6 class="users-info-name">${rowData.firstName} ${rowData.lastName}</h6>

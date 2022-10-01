@@ -2990,8 +2990,9 @@ div.tbl-head
 		border-radius: 12px
 		background-color: rgb($neutral-200)
 		img
-			height: 30px
-			margin-top: auto
+			&[type="svg"]
+				height: 30px
+				margin-top: auto
 	&-info
 		@extend %df
 		@extend %fdc
