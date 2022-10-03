@@ -767,7 +767,7 @@ export class UsersModule extends AdminPage {
 		_['studentInfo'].avatar = _['metaInfo'].avatar;
 		_['studentInfo'].avatarName = _['metaInfo'].avatarName;
 
-		let img = _.markup(`<img src="/img/${_['studentInfo'].avatarName}.svg">`)
+		let img = _.markup(`<img src="/img/${_['studentInfo'].avatarName}.png">`)
 		let avatarCont = _.f('.adding-avatar-letter');
 		_.clear(avatarCont);
 		avatarCont.append(img);

@@ -157,6 +157,8 @@ export class ProfileModule extends ParentPage {
 				phoneBlock.closest('.parent-checkbox').querySelector('input').checked = false;
 			}
 			_.parentInfo.phone = resp.response.phone;
+			_.me.parent.phone = _.parentInfo.phone;
+			localStorage.setItem('me',JSON.stringify(_.me));
 		}
 	}
 	addPhone({item}){
