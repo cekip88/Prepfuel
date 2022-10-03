@@ -109,8 +109,7 @@ class StudentPage extends G{
 	}
 	async fullHeader(){
 		const _ = this;
-		_.header = await _.getBlock({name:'header'},'blocks');
-		return this.header.fullHeader();
+		return G_Bus.trigger('header','fullHeader');
 	}
 	async getMe(){
 		const _ = this;
@@ -141,7 +140,7 @@ class StudentPage extends G{
 		if(params['redirect']){
 			await _.getMe();
 		}
-		//_.header = await _.getBlock({name:'header'},'blocks');
+		_.header = await _.getBlock({name:'header'},'blocks');
 		if(params){
 			await _.moduleRender(params);
 			_.currentSection = '/student/' + params['module'];

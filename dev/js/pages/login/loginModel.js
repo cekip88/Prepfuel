@@ -47,14 +47,14 @@ class _loginModel{
 		if( _.isSuccessResponse(response) ){
 			let user = response['user'];
 			await G_Bus.trigger(_.componentName,'loginSuccess',response);
+
 			localStorage.setItem('me',JSON.stringify(user));
 			localStorage.removeItem('history');
-			await G_Bus.trigger('router','changePage',`/${user['role']}/dashboard`);
 
-			if (user.role !== 'student') {
-				let wizardData = await _.getWizardData();
-				localStorage.setItem('wizardData',JSON.stringify(wizardData));
-			}
+			let wizardData = await _.getWizardData();
+			localStorage.setItem('wizardData',JSON.stringify(wizardData));
+
+			await G_Bus.trigger('router','changePage',`/${user['role']}/dashboard`);
 		}else{
 			G_Bus.trigger(_.componentName,'loginFail',{
 				"response": response,

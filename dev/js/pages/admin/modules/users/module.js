@@ -300,7 +300,6 @@ export class UsersModule extends AdminPage {
 		if (_.adminInfo.uploadData) {
 			updateData.photo = await Model.uploadPhoto(_.adminInfo.uploadData);
 		}
-		console.log(updateData)
 		let response = await Model.updateAdmin(updateData);
 		if(!response) return void 0;
 

@@ -122,8 +122,7 @@ export class AdminPage extends G {
 	}
 	fullHeader(){
 		const _ = this;
-		let tpl = G_Bus.trigger('header','fullHeader');
-		return tpl;
+		return G_Bus.trigger('header','fullHeader');
 	}
 	async init(blockData) {
 		const _ = this;
