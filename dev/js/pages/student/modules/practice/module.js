@@ -230,8 +230,8 @@ export class PracticeModule extends StudentPage{
 			{currentConcept} = Model.getCurrentConcept(conceptName);
 		_.currentTestType = 'practice';
 		_.f('#directions-header-title').textContent = currentConcept['concept'];
-		_.f('#directions-btn').setAttribute('data-id',currentConcept['concept']);
-		_.f('#directions-btn').setAttribute('data-category',currentConcept['concept']);
+		/*_.f('#directions-btn').setAttribute('data-id',currentConcept['concept']);
+		_.f('#directions-btn').setAttribute('data-category',currentConcept['concept']);*/
 	}
 	async fillQuestionSection({item}){
 		const _ = this;
@@ -239,7 +239,7 @@ export class PracticeModule extends StudentPage{
 			conceptName = item.getAttribute('data-id');
 		
 		if(!_.testFinished){
-			let {currentConcept,currentCategory} = Model.getCurrentConcept(conceptName);
+			//let {currentConcept,currentCategory} = Model.getCurrentConcept(conceptName);
 			let response = await Model.start(_.currentConcept,_.currentCategory);
 			_.skillTests = await Model.getSkillPractice(_.currentConcept,_.currentCategory);
 		}
@@ -253,7 +253,7 @@ export class PracticeModule extends StudentPage{
 			_.setSkillPaginationAnswers(_.currentAnswers);
 		}
 		
-		_.f('#directions-btn').setAttribute('data-id',_.currentConcept);
+//		_.f('#directions-btn').setAttribute('data-id',_.currentConcept);
 		
 		_._$.currentQuestion = _.skillTests[_.questionPos];
 		
@@ -615,14 +615,12 @@ export class PracticeModule extends StudentPage{
 		}
 		_.answerVariant[questionId]['report'] = gformData;
 		gformData['questionId'] = questionId;
-		Model.saveReport(gformData);
+		Model.sendReport(gformData);
 		G_Bus.trigger('modaler','closeModal');
 		if(_.currentTestType == 'quiz'){
 			if(!_.isLastQuestion){
 				_.changeNextButtonToAnswer()
 			}
-		}else{
-			_.setAvailableCheckBtn();
 		}
 	}
 	saveBookmark({item}){

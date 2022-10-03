@@ -89,14 +89,16 @@ export const view = {
 			if(currentQuestion['type'] == 'passage'){
 				currentQuestion = currentQuestion.questions.find( question => question['_id'] == currentQuestionId )
 			}
-			if(!currentQuestion['correctAnswer'])  currentQuestion['correctAnswer'] = 'B'; // stub and delete in future
+			//if(!currentQuestion['correctAnswer'])  currentQuestion['correctAnswer'] = 'B'; // stub and delete in future
 			if( (currentQuestion['correctAnswer'].toUpperCase() !== answeredQuestion['answer'].toUpperCase())  && (answeredQuestion['answer'].toUpperCase() == answer.toUpperCase()) ) {
 				status = 'incorrect';
 			}
 			output.innerHTML = question['answers'][answer];
-			
 			let
 				text = await MathJax.typesetPromise([output]).then( () => output.innerHTML);
+				if(text.indexOf('https') > -1){
+					text = `<img src="${text}">`;
+				}
 				tpl = `
 					<li class="answer-item ${status}" data-question-id="${question['_id']}" data-variant="${answer}">
 						<button class="answer-button">

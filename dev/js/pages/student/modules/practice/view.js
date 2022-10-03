@@ -580,14 +580,14 @@ export const view = {
 					<p class="modal-text">Remember to read through the explanations and double check your answer. Thanks for your help!</p>
 					<p class="modal-text">What’s wrong</p>
 					<div class="check-list">
-						<g-input type='radio' class="g-form-item" name="answer" items='[
+						<g-input type='radio' class="g-form-item" name="issueName" items='[
 						{"value":"wrong","text":"The answer is wrong"},
 						{"value":"typo","text":"I caught a typo."},
 						{"value":"confus","text":"The question or explanations are confusing or unclear."},
 						{"value":"broken","text":"Something isn’t working / something seems broken."}]'></g-input>
 					</div>
 					<h6 class="modal-title"><span>Description of issue</span></h6>
-					<textarea class="modal-area g-form-item" name="description"></textarea>
+					<textarea class="modal-area g-form-item" name="issueDescription"></textarea>
 					<div class="modal-row end">
 						<button class="button" type="button" data-click="modaler:closeModal"><span>Cancel</span></button>
 						<button class="button-blue"><span>Submit Issue</span></button>
@@ -713,9 +713,9 @@ export const view = {
 		const _ = this;
 		return `
 			<div class="test-footer" style="padding-bottom: 0">
-				<a class="test-footer-button" id='directions-btn' data-click="${this.componentName}:changeSection" section="directions">
-				<!--	<span>Directions</span>-->
-				</a>
+				<!--a class="test-footer-button" id='directions-btn' data-click="${this.componentName}:changeSection" section="directions">
+				<span>Directions</span>
+				</a -->
 				<div class="pagination pagination-top">
 					<div class="pagination-info" id="pagination-title"><span>Do <strong class="questions-length"></strong> questions</span></div>
 					<div class="pagination-links" id="question-pagination"></div>

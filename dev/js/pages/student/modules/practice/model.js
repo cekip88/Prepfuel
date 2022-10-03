@@ -413,6 +413,7 @@ export class _Model {
 		const _ = this;
 		let
 			currentCategory,	currentConcept,exit= false;
+		console.log(_.categories);
 		_.categories.forEach( category => {
 			if(exit) return void 'exited';
 			if(category['concepts']){
@@ -428,6 +429,7 @@ export class _Model {
 		});
 		_.currentCategory = currentCategory;
 		_.currentConcept = currentConcept;
+		console.log(_.currentConcept);
 		return { currentCategory, currentConcept};
 	}
 	getQuizess(subject='math',signal){
