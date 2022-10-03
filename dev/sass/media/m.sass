@@ -3714,8 +3714,9 @@ div.tbl-head
 				overflow: hidden
 				img
 					+wh(100%)
-					max-height: 32px
-					max-width: 28px
+					&[type='svg']
+						max-height: 32px
+						max-width: 28px
 			&.active
 				span
 					color: rgb($blue)
@@ -3728,7 +3729,7 @@ div.tbl-head
 			+wh(80px)
 			flex: 0 0 80px
 			margin-right: 32px
-			padding: 9px 10px 0
+			//padding: 9px 10px 0
 			border-radius: 12px
 			background-color: #EFF2F5
 			img
@@ -4126,6 +4127,8 @@ div.tbl-head
 		margin-bottom: 24px
 	&-list
 		@extend %df
+		max-height: 310px
+		overflow: auto
 		column-gap: 10px
 		flex-wrap: wrap
 	&-item
@@ -4144,11 +4147,13 @@ div.tbl-head
 			&:hover,&.active
 				border-color: rgb($blue)
 		img
-			+wh(100%,70px)
-			margin-top: auto
+			+w(100%)
+			&[type='svg']
+				height: 70px
+				margin-top: auto
 	&-buttons
 		@extend %dfa
-		padding-top: 10px
+		padding: 10px 0
 		justify-content: flex-end
 		border-top: 1px solid rgb($neutral-200)
 		button
