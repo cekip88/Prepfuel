@@ -48,7 +48,7 @@ export class ProfileModule extends StudentPage {
 		_.wizardData = await Model.getWizardData();
 		let avatarSrc = _.find(_.me['avatar'],_.wizardData.avatars);
 		let avatarImg = _.f(`#avatar`);
-		if (avatarSrc) avatarImg.setAttribute('src',`/img/${avatarSrc.avatar}.svg`);
+		if (avatarSrc) avatarImg.setAttribute('src',`/img/${avatarSrc.avatar}.png`);
 		else avatarImg.remove()
 
 		let schools = _.f('.school');

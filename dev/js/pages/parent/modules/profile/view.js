@@ -187,7 +187,7 @@ export const view = {
 							Consistent practice will help students improve.
 						</span>
 						<span class="parent-checkbox-phone ${_.parentInfo.phone ? 'active' : ''}">
-							<span>${_.parentInfo.phone.trim()}</span>
+							<span>${_.parentInfo.phone ? _.parentInfo.phone.trim() : ''}</span>
 							<button data-click="${_.componentName}:showEditPopup">Edit Phone Number</button>
 						</span>
 					</div>
