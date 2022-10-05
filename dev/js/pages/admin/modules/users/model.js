@@ -32,6 +32,7 @@ class _Model {
 			sendResetPassword: `/auth/forgot-password/`,
 			sendStudentResetPassword: `/auth/forgot-password-for-student/`,
 			photo: `/user/upload-image`,
+			getSchools: ``,
 		};
 	}
 	
@@ -137,6 +138,26 @@ class _Model {
 				_.wrongRequest('getParentStudents', rawResponse)
 			}
 			resolve(null);
+		});
+	}
+	getSchools(){
+		const _ = this;
+		return [
+			{title:'1',_id:'1'},
+			{title:'2',_id:'2'},
+			{title:'3',_id:'3'},
+			{title:'4',_id:'4'},
+			{title:'5',_id:'5'},
+			{title:'6',_id:'6'},
+			{title:'Other',_id:'7'},
+		]
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('getSchools')}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+			});
+			let response = await rawResponse.json();
+			resolve(response['response']);
 		});
 	}
 	getStudentParents(studentId){

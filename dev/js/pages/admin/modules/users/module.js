@@ -79,6 +79,7 @@ export class UsersModule extends AdminPage {
 				'checkEmail',
 				'paginate','paginateTo',
 				'uploadPhoto','sendResetPassword',
+				'showSelect','liveSearch','liveSearchInsert',
 			]);
 
 		_.initialState = {
@@ -1151,7 +1152,6 @@ export class UsersModule extends AdminPage {
 			types:_.notifSubsections[index].types
 		});
 	}
-
 	cancelParentProfile({item}){
 		const _ = this;
 		G_Bus.trigger('modaler','closeModal');
@@ -1162,6 +1162,61 @@ export class UsersModule extends AdminPage {
 		}
 	}
 	// Show methods end
+
+	//live search select
+	showSelect({item}){
+		item.nextElementSibling.classList.add('active');
+		this.liveSearch({item})
+	}
+	liveSearch({item}){
+		const _ = this;
+		item.nextElementSibling.classList.add('active');
+		let options = item.nextElementSibling.childNodes;
+		options.forEach(function (opt){
+			opt.classList.remove('active');
+			if (opt.textContent.indexOf(item.value) < 0) {
+				opt.style = 'display:none';
+			} else {
+				opt.removeAttribute('style');
+			}
+		})
+	}
+	liveSearchInsert({item}){
+		const _ = this;
+		let cont = item.closest('.search-select'),
+			input = cont.firstElementChild,
+			options = item.closest('.search-select-options');
+		options.classList.remove('active');
+		input.value = item.textContent;
+		_.studentInfo['currentSchool'] = item.getAttribute('id');
+		let nextElem = cont.nextElementSibling;
+
+		if (item.textContent == 'Other') {
+			nextElem.removeAttribute('style');
+			nextElem.setAttribute('data-required','');
+		} else {
+			nextElem.style = 'display:none';
+			nextElem.removeAttribute('data-required');
+			nextElem.textContent = '';
+			_.studentInfo['newCurrentSchool'] = '';
+		}
+
+		let activeItem = options.querySelector('.active');
+		if (activeItem) activeItem.classList.remove('active');
+		item.classList.add('active')
+	}
+	liveSearchValidation(validate = true){
+		const _ = this;
+		let curSchoolSelect = _.f('.search-select-options');
+		if (curSchoolSelect) {
+			let curSchoolOption = curSchoolSelect.querySelector('.search-select-option.active');
+			if (curSchoolSelect && !curSchoolOption) {
+				curSchoolSelect.previousElementSibling.doValidate("You must choose one from dropdown");
+				validate = false;
+			}
+		}
+		return validate;
+	}
 	
 	// Validation methods
 	validatePassword({item}){
@@ -1652,6 +1707,8 @@ export class UsersModule extends AdminPage {
 				_._$.addingStep = 1;
 			}
 		}
+
+		validate = _.liveSearchValidation(validate);
 		return validate;
 	}
 	jumpToStep({item}) {
@@ -1711,6 +1768,8 @@ export class UsersModule extends AdminPage {
 		} else if (addingStep == 3) {
 			_.searchInfo['addingParent'] = {page:1};
 			_.parents = await Model.getUsers({role:'parent',searchInfo:_.searchInfo['addingParent']})
+		} else if (addingStep == 4) {
+			_.schools = await Model.getSchools();
 		}
 		addingBody.append( _.markup( _.stepsObj[ addingStep ]() ) );
 		

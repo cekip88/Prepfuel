@@ -1081,7 +1081,10 @@ export const view = {
 		let gradeActive;
 		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade._id}`;
 		let gradeItems = _.createSelectItems(stepData.grades, 'value:_id;text:grade', gradeActive);
-		return `
+		let curSchoolValue = _.studentInfo.currentSchool ? _.schools.find(function (item){
+			if (item._id == _.studentInfo.currentSchool) return item;
+		}).title : '';
+		let tpl = `
 			<div class="adding-center">
 				<h3 class="adding-title">School Information</h3>
 				<div class="adding-section">
@@ -1090,14 +1093,39 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">Current school</label>
 						</div>
-						<g-input
-							type="text" 
-							value="${_.studentInfo.currentSchool ?? ''}" 
-							name="currentSchool"
-							data-required 
-							data-input="${_.componentName}:fillStudentInfo" 
-							class="g-form-item" 
-							classname="form-input adding-inpt"></g-input>
+						<div class="search-select">
+							<g-input
+								type="text" 
+								value="${curSchoolValue}"
+								data-required
+								name="currentSchool"
+								data-input="${_.componentName}:liveSearch"
+								data-click="${_.componentName}:showSelect"
+								class="g-form-item" 
+								classname="form-input adding-inpt"
+							></g-input>
+							<div class="search-select-options">`;
+		for (let item of _.schools) {
+			tpl += `
+				<button 
+					class="search-select-option${_.studentInfo.currentSchool == item._id ? ' active' : ''}" 
+					id="${item._id}" 
+					data-click="${_.componentName}:liveSearchInsert"
+				>${item.title}</button>
+			`
+		}
+		tpl += `</div>
+						</div>
+						<g-input 
+							type="text"
+							${curSchoolValue == 'Other' ? '' : 'style="display:none;"'}
+							name="newCurrentSchool" 
+							class="g-form-item search-select-next" 
+							classname="form-input adding-inpt"
+							data-input="${_.componentName}:fillStudentInfo"
+							value="${_.studentInfo.newCurrentSchool ?? ''}"
+							placeholder="Type the title of your school"
+						>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
@@ -1117,6 +1145,7 @@ export const view = {
 				${_.choiceSelectStudent(stepData)}
 			</div>
 		`;
+		return tpl;
 	},
 	addingStepFive(){
 		const _ = this;
