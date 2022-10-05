@@ -26,6 +26,7 @@ export default class GModaler extends GComponent {
 		targetContent.classList.remove('modaler-content');
 		_.targetContentParent.append(targetContent);
 		_.modalCont.classList.remove('active');
+		G_Bus.trigger(_.componentName,'closeModal',modalData);
 	}
 	hideShadow(){
 		const _ = this;

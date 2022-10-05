@@ -1274,7 +1274,7 @@ export const view = {
           <div class="modal-row">
             <button class="button" data-click="${_.componentName}:changeSection" section="score">Yes, I’m done with this test</button>
             <button class="button-blue" data-click="modaler:closeModal;">
-             No, take me to my first skipped question
+             No, take me back to the test
             </button>
 
           </div>
