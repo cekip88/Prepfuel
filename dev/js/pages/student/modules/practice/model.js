@@ -366,6 +366,7 @@ export class _Model {
 					let response = await rawResponse.json();
 					if(response['status'] == 'success'){
 						_.categories = response['response'];
+						console.log(_.categories);
 						resolve(_.categories);
 					}
 				}else{
@@ -413,7 +414,6 @@ export class _Model {
 		const _ = this;
 		let
 			currentCategory,	currentConcept,exit= false;
-		console.log(_.categories);
 		_.categories.forEach( category => {
 			if(exit) return void 'exited';
 			if(category['concepts']){

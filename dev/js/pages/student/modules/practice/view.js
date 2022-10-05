@@ -197,8 +197,13 @@ export const view = {
 						]
 					}
 				})}
-				<div class="practice-inner" id="bodyInner">
-				
+				<div class="practice-inner" id="bodyInner"></div>
+				<div hidden>
+					<div id="jwplayer-content" class="modal narrow note" slot="modal-item">
+				        <h5 class="modal-title" id="jwplayer-title"></h5>
+	              <div class="modal-text"></div>
+								<div id="jwplayer" ></div>
+						</div>
 				</div>
 			</div>
 		`
@@ -324,7 +329,7 @@ export const view = {
 						<h5 class="practice-table-row-title">${item.concept}</h5>
 					</div>
 					<button class="button" data-click="${_.componentName}:changeSection;${_.componentName}:setSkillInfo" section="welcome" data-id="${item.concept}" data-category="${itemsInfo['category']}"><span>Practice</span></button>
-					<button class="video">
+					<button class="video" data-click="${_.componentName}:showVideo" data-src="${item['video']}" data-title="${item.concept}">
 						<svg><use xlink:href="#play"></use></svg>
 						<span>Video example</span>
 					</button>
@@ -820,7 +825,6 @@ export const view = {
 						<svg><use xlink:href="#correct"></use></svg>
 					</div>
 					<div class="grid-row">
-						<input id="grid-value" type="hidden" data-question-id="${currentQuestion['_id']}">
 						<div class="grid-input">
 							<span> </span>
 							<span> </span>
@@ -870,7 +874,6 @@ export const view = {
 						<svg><use xlink:href="#incorrect"></use></svg>
 					</div>
 					<div class="grid-row">
-						<input id="grid-value" type="hidden" data-question-id="${currentQuestion['_id']}">
 						<div class="grid-input">
 							<span> </span>
 							<span> </span>

@@ -78,7 +78,7 @@ export class PracticeModule extends StudentPage{
 			'showForm','saveBookmark','saveNote','saveBookmark','changeInnerQuestionId',
 			'showTestLabelModal','editNote','deleteNote','saveReport','changeQuestion','viewResult',
 			'startQuiz','checkQuizAnswer','setWrongAnswer','setQuizInfo','changeQuizQuestion',
-			'viewStartResult','setSkillInfo','reviewAnswers'
+			'viewStartResult','setSkillInfo','reviewAnswers','showVideo'
 		]);
 	}
 	clearData(){
@@ -219,7 +219,7 @@ export class PracticeModule extends StudentPage{
 		
 		
 		let directionsBtn = _.f('#directions-btn');
-		directionsBtn.remove();
+		if(directionsBtn)		directionsBtn.remove();
 		
 		_._$.currentQuizQuestion =_.quizTests[_.questionPos];
 	}
@@ -918,23 +918,23 @@ export class PracticeModule extends StudentPage{
 			let
 				input = grid.querySelector('#grid-value'),
 				shower = grid.querySelector('.grid-input');
+			if(!input) return;
 			if(input.value) gridValue =  input.value.split('');
 			shower.children[index].textContent = btn.textContent;
 		})
 		let activeBtn = item.querySelector(`.grid-col:nth-child(${index + 1}) .active`);
-		
 		if (activeBtn) {
 			activeBtn.classList.remove('active');
 			shower.children[index].textContent = '';
 			gridValue[pos] =  '_';
 			input.value = gridValue.join('');
+			_.setCorrectAnswer({item:item,type:'grid'})
 		}else{
 			btn.classList.add('active');
 			gridValue[pos] =  btn.textContent;
 			input.value = gridValue.join('');
 			_.setCorrectAnswer({item:item,type:'grid'})
 		}
-		
 	}
 	setWrongAnswer({item,event}){
 		const _ = this;
@@ -1014,7 +1014,6 @@ export class PracticeModule extends StudentPage{
 			_.answerVariant[questionId] = {};
 		}
 		_.answerVariant[questionId]['answer'] = answerVariant;
-		
 		if(_.currentTestType == 'quiz'){
 			if(!_.isLastQuestion){
 				_.changeNextButtonToAnswer()
@@ -1495,7 +1494,26 @@ export class PracticeModule extends StudentPage{
 			quizObj = await Model.startQuiz();
 		console.log(quizObj);
 	}
-
+	showVideo({item}){
+		const _ = this;
+		let
+			title = item.getAttribute('data-title'),
+			src = item.getAttribute('data-src'),
+			playerInstance = jwplayer('jwplayer');
+		playerInstance.setup({
+			file: src,
+			width:  '100%',
+			height:  310
+		});
+		_.f('#jwplayer-title').textContent = title;
+		G_Bus.trigger('modaler','showModal',{
+			type:'html',
+			target:'#jwplayer-content'
+		});
+		G_Bus.on('modaler','closeModal',()=>{
+			playerInstance.stop();
+		});
+	}
 
 	fillTips(){
 		const _ = this;
