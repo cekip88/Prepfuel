@@ -14,8 +14,8 @@ import GSelect from "../../components/select/select.component.js";
 			location.reload();
 		}
 	}, 5000);*/
-	await navigator.serviceWorker.ready;
-	//if(!navigator.serviceWorker.controller) location.reload();
+	navigator.serviceWorker.ready;
+	if(!navigator.serviceWorker.controller) location.reload();
 })();
 
 new router().init({

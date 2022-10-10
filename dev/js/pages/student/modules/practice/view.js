@@ -309,9 +309,10 @@ export const view = {
 	},
 	achievementItemsTpl(itemsInfo){
 		const _ = this;
+		//console.log(_.categories);
 		let tpl = `
 			<li class="practice-achievement-item">
-				<h3 class="practice-achievement-title">${itemsInfo.title}</h3>
+				<h3 class="practice-achievement-title">${_.categoriesNames[itemsInfo.category] ? _.categoriesNames[itemsInfo.category] : itemsInfo.title}</h3>
 				<div class="practice-table-head">
 					<span class="info">
 						<span class="level">Level</span>

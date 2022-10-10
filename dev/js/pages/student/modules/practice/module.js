@@ -66,8 +66,19 @@ export class PracticeModule extends StudentPage{
 			'english':'English Languages Parts',
 			'rc': 'Reading Comprehension',
 			're-a':'Revising Editing Part A',
+			'grammar':'Revising Editing Part A',
 			're-b':'Revising Editing Part B',
 		};
+		
+		_.categoriesNames = {
+			'Nonfiction':'Reading Comprehension (Nonfiction)',
+			'Prose':  'Reading Comprehension (Prose)',
+			'Poetry': 'Reading Comprehension (Poetry)',
+			'Grammar': 'Revising Editing Part A',
+			'RE-A': 'Revising Editing Part A',
+			'RE-B': 'Revising Editing Part B',
+		};
+		
 		_.set({
 			currentQuestion: null
 		})
@@ -1499,12 +1510,18 @@ export class PracticeModule extends StudentPage{
 		let
 			title = item.getAttribute('data-title'),
 			src = item.getAttribute('data-src'),
+			splittedSrc = src.split('/'),
 			playerInstance = jwplayer('jwplayer');
+		/*if(splittedSrc[0]== 'null') return void 0;
+		else src = splittedSrc[splittedSrc.length-1];*/
+		src = 'TJWwHqCs';
 		playerInstance.setup({
-			file: src,
+			playlist: `https://cdn.jwplayer.com/v2/media/${src}`,
 			width:  '100%',
 			height:  310
 		});
+		
+		
 		_.f('#jwplayer-title').textContent = title;
 		G_Bus.trigger('modaler','showModal',{
 			type:'html',
