@@ -44,6 +44,7 @@ export class UsersModule extends AdminPage {
 		_.coursePos = 0;
 		_.parentInfo = {};
 		_.studentInfo = {};
+		_.schoolsPreparing = false;
 		_.courseData = {};
 		_.metaInfo = {};
 		_.adminInfo = {};
@@ -1164,58 +1165,117 @@ export class UsersModule extends AdminPage {
 	// Show methods end
 
 	//live search select
-	showSelect({item}){
-		item.nextElementSibling.classList.add('active');
-		this.liveSearch({item})
-	}
-	liveSearch({item}){
+	async showSelect({item}){
 		const _ = this;
-		item.nextElementSibling.classList.add('active');
-		let options = item.nextElementSibling.childNodes;
-		options.forEach(function (opt){
-			opt.classList.remove('active');
-			if (opt.textContent.indexOf(item.value) < 0) {
-				opt.style = 'display:none';
-			} else {
-				opt.removeAttribute('style');
+		let options = item.nextElementSibling;
+		if (!options.classList.contains('active')) {
+			_.schoolsSearchData = {
+				page:1,
+				search:item.value,
+				scroll: 0,
+				direction:'bottom',
+			};
+
+			_.schoolsSearchData.prevPage = _.schoolsSearchData.page;
+			_.schoolsSearchData.scroll = 0;
+			_.schools = await Model.getSchools(_.schoolsSearchData);
+			options.innerHTML = _.liveSelectOptions(_.schools);
+		}
+
+		options.classList.toggle('active');
+
+
+		if (options.classList.contains('active')) {
+			let active = options.querySelector('.active');
+			if (active) {
+				let top = active.getBoundingClientRect().top;
+				_.schoolsSearchData.scroll = top;
+				options.scrollTo(0,top)
 			}
-		})
+		}
 	}
-	liveSearchInsert({item}){
+	async liveSearch({item}){
+		const _ = this;
+		let options = item.nextElementSibling;
+		options.classList.add('active');
+		_.schoolsSearchData.search = item.value;
+		_.schoolsSearchData.page = 1;
+		_.schoolsSearchData.prevPage = 1;
+
+		_.schools = await Model.getSchools(_.schoolsSearchData);
+		options.innerHTML = _.liveSelectOptions(_.schools);
+		_.studentInfo['currentSchool'] = item.value;
+	}
+	async liveSearchScroll({item}){
+		const _ = this;
+		if (_.schoolsPreparing) return;
+		let scrollTop = item.scrollTop;
+		let toBottom = (scrollTop > _.schoolsSearchData.scroll);
+
+		if (!toBottom) {
+			if (item.scrollTop < 500) {
+				_.schoolsPreparing = true;
+				if (_.schoolsSearchData.prevPage < _.schoolsSearchData.page) {
+					_.schoolsSearchData.page = _.schoolsSearchData.prevPage;
+				}
+				_.schoolsSearchData.prevPage = _.schoolsSearchData.page;
+				_.schoolsSearchData.page--;
+				if (_.schoolsSearchData.page == 0){
+					_.schoolsSearchData.page++;
+					_.schoolsSearchData.prevPage++;
+					_.schoolsPreparing = false;
+					return;
+				}
+				_.schools = await Model.getSchools(_.schoolsSearchData);
+				if (item.children.length >= 60) {
+					for (let i = 0; i < 30; i++) {
+						item.children[item.children.length - 1].remove();
+					}
+				}
+				item.prepend(_.markup(_.liveSelectOptions(_.schools)))
+				item.scrollTo(0,scrollTop + 1230)
+				_.schoolsPreparing = false;
+			}
+		} else {
+			if ((item.scrollHeight - item.scrollTop) < 500) {
+				_.schoolsPreparing = true;
+				if (_.schoolsSearchData.prevPage > _.schoolsSearchData.page) {
+					_.schoolsSearchData.page = _.schoolsSearchData.prevPage;
+				}
+				_.schoolsSearchData.prevPage = _.schoolsSearchData.page;
+				_.schoolsSearchData.page++;
+				_.schools = await Model.getSchools(_.schoolsSearchData);
+				if (!_.schools || !_.schools.length){
+					_.schoolsSearchData.page--;
+					_.schoolsSearchData.prevPage--;
+					_.schoolsPreparing = false;
+					return;
+				}
+				if (item.children.length >= 60) {
+					for (let i = 0; i < 30; i++) {
+						item.children[0].remove();
+					}
+				}
+				item.append(_.markup(_.liveSelectOptions(_.schools)))
+				_.schoolsPreparing = false;
+			}
+		}
+		_.schoolsSearchData.scroll = item.scrollTop;
+	}
+	liveSearchInsert({item,event}){
 		const _ = this;
 		let cont = item.closest('.search-select'),
 			input = cont.firstElementChild,
-			options = item.closest('.search-select-options');
-		options.classList.remove('active');
-		input.value = item.textContent;
-		_.studentInfo['currentSchool'] = item.getAttribute('id');
-		let nextElem = cont.nextElementSibling;
+			options = item.closest('.search-select-options'),
+			option = event.target;
 
-		if (item.textContent == 'Other') {
-			nextElem.removeAttribute('style');
-			nextElem.setAttribute('data-required','');
-		} else {
-			nextElem.style = 'display:none';
-			nextElem.removeAttribute('data-required');
-			nextElem.textContent = '';
-			_.studentInfo['newCurrentSchool'] = '';
-		}
+		input.value = option.textContent;
+		_.studentInfo['currentSchool'] = option.textContent;
 
 		let activeItem = options.querySelector('.active');
 		if (activeItem) activeItem.classList.remove('active');
-		item.classList.add('active')
-	}
-	liveSearchValidation(validate = true){
-		const _ = this;
-		let curSchoolSelect = _.f('.search-select-options');
-		if (curSchoolSelect) {
-			let curSchoolOption = curSchoolSelect.querySelector('.search-select-option.active');
-			if (curSchoolSelect && !curSchoolOption) {
-				curSchoolSelect.previousElementSibling.doValidate("You must choose one from dropdown");
-				validate = false;
-			}
-		}
-		return validate;
+		item.classList.add('active');
+		options.classList.remove('active');
 	}
 	
 	// Validation methods
@@ -1707,8 +1767,6 @@ export class UsersModule extends AdminPage {
 				_._$.addingStep = 1;
 			}
 		}
-
-		validate = _.liveSearchValidation(validate);
 		return validate;
 	}
 	jumpToStep({item}) {
@@ -1768,8 +1826,6 @@ export class UsersModule extends AdminPage {
 		} else if (addingStep == 3) {
 			_.searchInfo['addingParent'] = {page:1};
 			_.parents = await Model.getUsers({role:'parent',searchInfo:_.searchInfo['addingParent']})
-		} else if (addingStep == 4) {
-			_.schools = await Model.getSchools();
 		}
 		addingBody.append( _.markup( _.stepsObj[ addingStep ]() ) );
 		
@@ -1778,6 +1834,8 @@ export class UsersModule extends AdminPage {
 		if (addingStep == 3 && _.parents) {
 			_.paginationFill({limit:_.parents.limit,total:_.parents.total,selector:'#assignParent'})
 			_.connectTableHead('#addingForm')
+		} else if (addingStep == 4) {
+			_.f('.search-select-options').addEventListener('scroll',function (e) {_.liveSearchScroll({item:e.target,event:e})});
 		}
 	}
 	async handleAssignSteps({assignStep}) {

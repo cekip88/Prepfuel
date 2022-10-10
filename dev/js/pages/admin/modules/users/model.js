@@ -32,7 +32,7 @@ class _Model {
 			sendResetPassword: `/auth/forgot-password/`,
 			sendStudentResetPassword: `/auth/forgot-password-for-student/`,
 			photo: `/user/upload-image`,
-			getSchools: ``,
+			getSchools: `/user/current-schools`,
 		};
 	}
 	
@@ -140,23 +140,21 @@ class _Model {
 			resolve(null);
 		});
 	}
-	getSchools(){
+	getSchools(searchData){
 		const _ = this;
-		return [
-			{title:'1',_id:'1'},
-			{title:'2',_id:'2'},
-			{title:'3',_id:'3'},
-			{title:'4',_id:'4'},
-			{title:'5',_id:'5'},
-			{title:'6',_id:'6'},
-			{title:'Other',_id:'7'},
-		]
+		/*let schools = [];
+		if (searchData.page < 1) return schools;
+		if (searchData.page > 5) return schools;
+		for (let i = 0; i < 30; i++) schools.push({school:((searchData.page - 1) * 30) + i});
+		return schools;*/
 		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.getEndpoint('getSchools')}`, {
+			let rawResponse = await fetch(`${_.getEndpoint('getSchools')}/?page=${searchData.page}${searchData.search ? '&search=' + searchData.search : ''}`, {
 				method: 'GET',
 				headers: _.baseHeaders,
+				//body: JSON.stringify(searchData)
 			});
 			let response = await rawResponse.json();
+			console.log(response)
 			resolve(response['response']);
 		});
 	}

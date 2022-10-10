@@ -1081,9 +1081,7 @@ export const view = {
 		let gradeActive;
 		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade._id}`;
 		let gradeItems = _.createSelectItems(stepData.grades, 'value:_id;text:grade', gradeActive);
-		let curSchoolValue = _.studentInfo.currentSchool ? _.schools.find(function (item){
-			if (item._id == _.studentInfo.currentSchool) return item;
-		}).title : '';
+		let curSchoolValue = _.studentInfo.currentSchool ?? '';
 		let tpl = `
 			<div class="adding-center">
 				<h3 class="adding-title">School Information</h3>
@@ -1104,28 +1102,8 @@ export const view = {
 								class="g-form-item" 
 								classname="form-input adding-inpt"
 							></g-input>
-							<div class="search-select-options">`;
-		for (let item of _.schools) {
-			tpl += `
-				<button 
-					class="search-select-option${_.studentInfo.currentSchool == item._id ? ' active' : ''}" 
-					id="${item._id}" 
-					data-click="${_.componentName}:liveSearchInsert"
-				>${item.title}</button>
-			`
-		}
-		tpl += `</div>
+							<div class="search-select-options" data-click="${_.componentName}:liveSearchInsert"></div>
 						</div>
-						<g-input 
-							type="text"
-							${curSchoolValue == 'Other' ? '' : 'style="display:none;"'}
-							name="newCurrentSchool" 
-							class="g-form-item search-select-next" 
-							classname="form-input adding-inpt"
-							data-input="${_.componentName}:fillStudentInfo"
-							value="${_.studentInfo.newCurrentSchool ?? ''}"
-							placeholder="Type the title of your school"
-						>
 					</div>
 					<div class="adding-inpt">
 						<div class="form-label-row">
@@ -1145,6 +1123,14 @@ export const view = {
 				${_.choiceSelectStudent(stepData)}
 			</div>
 		`;
+		return tpl;
+	},
+	liveSelectOptions(schools){
+		const _ = this;
+		let tpl = '';
+		for (let item of schools) {
+			tpl += `<button class="search-select-option${_.studentInfo.currentSchool == item.school ? ' active' : ''}">${item.school}</button>`;
+		}
 		return tpl;
 	},
 	addingStepFive(){

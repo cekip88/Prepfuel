@@ -61,6 +61,7 @@ export class DashboardModule extends ParentPage{
 			'hideProfile','showHiddenScores',
 			'fillProfile','assignCourse','changeCurrentCourse',
 			'showCancelMembership','showCalendar',
+			'showSelect','liveSearch','liveSearchInsert',
 		]);
 
 	}
@@ -1200,6 +1201,8 @@ export class DashboardModule extends ParentPage{
 				addresses = await Model.getBillingAddressInfo();
 			_.fillParentCardsInfo(cards);
 			_.fillParentAddressesInfo(addresses);
+		} else if (addingStep == 3) {
+			_.f('.search-select-options').addEventListener('scroll',function (e) {_.liveSearchScroll({item:e.target,event:e})});
 		}
 		let button = _.f('#parent .test-footer .button-blue');
 		if (addingStep === 6) {
@@ -1310,6 +1313,119 @@ export class DashboardModule extends ParentPage{
 			}
 		}
 		return validate;
+	}
+
+	//live search select
+	async showSelect({item}){
+		const _ = this;
+		let options = item.nextElementSibling;
+		if (!options.classList.contains('active')) {
+			_.schoolsSearchData = {
+				page:1,
+				search:item.value,
+				scroll: 0,
+				direction:'bottom',
+			};
+			_.schoolsSearchData.prevPage = _.schoolsSearchData.page;
+			_.schoolsSearchData.scroll = 0;
+			_.schools = await Model.getSchools(_.schoolsSearchData);
+			options.innerHTML = _.liveSelectOptions(_.schools);
+		}
+
+		options.classList.toggle('active');
+
+
+		if (options.classList.contains('active')) {
+			let active = options.querySelector('.active');
+			if (active) {
+				let top = active.getBoundingClientRect().top;
+				_.schoolsSearchData.scroll = top;
+				options.scrollTo(0,top)
+			}
+		}
+	}
+	async liveSearch({item}){
+		const _ = this;
+		let options = item.nextElementSibling;
+		options.classList.add('active');
+		_.schoolsSearchData.search = item.value;
+		_.schoolsSearchData.page = 1;
+		_.schoolsSearchData.prevPage = 1;
+
+		_.schools = await Model.getSchools(_.schoolsSearchData);
+		options.innerHTML = _.liveSelectOptions(_.schools);
+		_.studentInfo['currentSchool'] = item.value;
+	}
+	async liveSearchScroll({item}){
+		const _ = this;
+		if (_.schoolsPreparing) return;
+		let scrollTop = item.scrollTop;
+		let toBottom = (scrollTop > _.schoolsSearchData.scroll);
+
+		if (!toBottom) {
+			if (item.scrollTop < 500) {
+				_.schoolsPreparing = true;
+				if (_.schoolsSearchData.prevPage < _.schoolsSearchData.page) {
+					_.schoolsSearchData.page = _.schoolsSearchData.prevPage;
+				}
+				_.schoolsSearchData.prevPage = _.schoolsSearchData.page;
+				_.schoolsSearchData.page--;
+				if (_.schoolsSearchData.page == 0){
+					_.schoolsSearchData.page++;
+					_.schoolsSearchData.prevPage++;
+					_.schoolsPreparing = false;
+					return;
+				}
+				_.schools = await Model.getSchools(_.schoolsSearchData);
+				if (item.children.length >= 60) {
+					for (let i = 0; i < 30; i++) {
+						item.children[item.children.length - 1].remove();
+					}
+				}
+				item.prepend(_.markup(_.liveSelectOptions(_.schools)))
+				item.scrollTo(0,scrollTop + 1230)
+				_.schoolsPreparing = false;
+			}
+		} else {
+			if ((item.scrollHeight - item.scrollTop) < 500) {
+				_.schoolsPreparing = true;
+				if (_.schoolsSearchData.prevPage > _.schoolsSearchData.page) {
+					_.schoolsSearchData.page = _.schoolsSearchData.prevPage;
+				}
+				_.schoolsSearchData.prevPage = _.schoolsSearchData.page;
+				_.schoolsSearchData.page++;
+				_.schools = await Model.getSchools(_.schoolsSearchData);
+				if (!_.schools || !_.schools.length){
+					_.schoolsSearchData.page--;
+					_.schoolsSearchData.prevPage--;
+					_.schoolsPreparing = false;
+					return;
+				}
+				if (item.children.length >= 60) {
+					for (let i = 0; i < 30; i++) {
+						item.children[0].remove();
+					}
+				}
+				item.append(_.markup(_.liveSelectOptions(_.schools)))
+				_.schoolsPreparing = false;
+			}
+		}
+		_.schoolsSearchData.scroll = item.scrollTop;
+	}
+	liveSearchInsert({item,event}){
+		const _ = this;
+		let cont = item.closest('.search-select'),
+			input = cont.firstElementChild,
+			options = item.closest('.search-select-options'),
+			option = event.target;
+
+		input.value = option.textContent;
+		_.studentInfo['currentSchool'] = option.textContent;
+
+		let activeItem = options.querySelector('.active');
+		if (activeItem) activeItem.classList.remove('active');
+		item.classList.add('active');
+		options.classList.remove('active');
 	}
 
 	async init() {

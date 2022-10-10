@@ -16,6 +16,7 @@ export class _Model{
 			assignCourse: `/user/assign-plan`,
 			updateCourse: `/user/update-plan`,
 			changePassword: `/user/change-password`,
+			getSchools: `/user/current-schools`,
 		};
 	}
 	getEndpoint(endpoint) {
@@ -102,6 +103,20 @@ export class _Model{
 				_.wrongRequest('updateStudentPassword', rawResponse)
 			}
 			resolve(null);
+		});
+	}
+
+	getSchools(searchData){
+		const _ = this;
+		return new Promise(async resolve => {
+			let rawResponse = await fetch(`${_.getEndpoint('getSchools')}/?page=${searchData.page}${searchData.search ? '&search=' + searchData.search : ''}`, {
+				method: 'GET',
+				headers: _.baseHeaders,
+				//body: JSON.stringify(searchData)
+			});
+			let response = await rawResponse.json();
+			console.log(response)
+			resolve(response['response']);
 		});
 	}
 
