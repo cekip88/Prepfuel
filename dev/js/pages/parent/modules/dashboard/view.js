@@ -1849,15 +1849,19 @@ export const view = {
 									<div class="form-label-row">
 										<label class="form-label">Current school</label>
 									</div>
-									<g-input 
-										type="text" 
-										name="currentSchool"  
-										data-required
-										data-input="${_.componentName}:fillStudentInfo" 
-										value='${_.studentInfo["currentSchool"]}' 
-										class="g-form-item" 
-										classname="form-input adding-inpt"
-									></g-input>
+									<div class="search-select">
+										<g-input
+											type="text" 
+											value="${_.studentInfo.currentSchool ?? ''}"
+											data-required
+											name="currentSchool"
+											data-input="${_.componentName}:liveSearch"
+											data-click="${_.componentName}:showSelect"
+											class="g-form-item" 
+											classname="form-input adding-inpt"
+										></g-input>
+										<div class="search-select-options" data-click="${_.componentName}:liveSearchInsert"></div>
+									</div>
 								</div>
 								<div class="adding-inpt">
 									<div class="form-label-row">

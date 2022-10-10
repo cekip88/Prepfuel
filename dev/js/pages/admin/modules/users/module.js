@@ -521,6 +521,8 @@ export class UsersModule extends AdminPage {
 		_.courseData.currentPlan = _.studentInfo.currentPlan.course.title;
 		
 		_.f('.student-profile-inner').innerHTML = _.personalInfo();
+		_.f('.search-select-options').addEventListener('scroll',function (e) {_.liveSearchScroll({item:e.target,event:e})});
+
 
 		let courseInfoCont = _.f('.student-profile-course-info');
 		if (currentStudent['currentPlan']) courseInfoCont.innerHTML = _.courseInfo(_.wizardData ?? await Model.getWizardData());
@@ -1266,7 +1268,7 @@ export class UsersModule extends AdminPage {
 		const _ = this;
 		let cont = item.closest('.search-select'),
 			input = cont.firstElementChild,
-			options = item.closest('.search-select-options'),
+			options = item,
 			option = event.target;
 
 		input.value = option.textContent;
@@ -1274,7 +1276,7 @@ export class UsersModule extends AdminPage {
 
 		let activeItem = options.querySelector('.active');
 		if (activeItem) activeItem.classList.remove('active');
-		item.classList.add('active');
+		option.classList.add('active');
 		options.classList.remove('active');
 	}
 	

@@ -203,6 +203,7 @@ export class DashboardModule extends ParentPage{
 			_.courseData.currentPlan = _.studentInfo.currentPlan.course.title;
 		}
 		_.body.innerHTML = _.personalInfo();
+		_.f('.search-select-options').addEventListener('scroll',function (e) {_.liveSearchScroll({item:e.target,event:e})});
 
 		let courseInfoCont = _.f('.student-profile-course-info');
 		if (_.courseData[_.courseData.currentPlan].firstSchool) courseInfoCont.innerHTML = _.courseInfo(_.wizardData ?? await Model.getWizardData());
