@@ -366,7 +366,7 @@ export class _Model {
 					let response = await rawResponse.json();
 					if(response['status'] == 'success'){
 						_.categories = response['response'];
-						console.log(_.categories);
+//						console.log(response);
 						resolve(_.categories);
 					}
 				}else{
@@ -429,7 +429,7 @@ export class _Model {
 		});
 		_.currentCategory = currentCategory;
 		_.currentConcept = currentConcept;
-		console.log(_.currentConcept);
+	//	console.log(_.currentConcept);
 		return { currentCategory, currentConcept};
 	}
 	getQuizess(subject='math',signal){
@@ -443,7 +443,7 @@ export class _Model {
 					});
 					if(rawResponse.status == 200){
 						let response = await rawResponse.json();
-						_.skillTest = response['response']['tests'];
+						_.skillTest = response['response'];
 						resolve(response['response']);
 					}
 				}catch(e){
@@ -452,7 +452,6 @@ export class _Model {
 					}
 				}
 			});
-	
 	}
 	getCurrentQuiz(subject,num){
 		const _ = this;
@@ -491,7 +490,6 @@ export class _Model {
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
-				console.log(response);
 				resolve(response['response']);
 			}
 		});
