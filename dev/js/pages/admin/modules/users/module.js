@@ -505,6 +505,7 @@ export class UsersModule extends AdminPage {
 			studentId = profileData['_id'];
 		}
 		let currentStudent = await Model.getStudent(studentId);
+		console.log(currentStudent)
 		_.studentInfo = Object.assign({},currentStudent['user']);
 		_.metaInfo = {};
 		_.studentInfo['currentSchool'] = currentStudent['currentSchool'];

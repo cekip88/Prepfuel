@@ -598,7 +598,6 @@ export const view = {
 	assignStepFour(){
 		const _ = this;
 		let testDate = 'Have not registered yet';
-		console.log(_.courseData[_.courseData.currentPlan])
 		if (_.courseData[_.courseData.currentPlan].testDatePicked) testDate = _.createdAtFormat(_.courseData[_.courseData.currentPlan].testDate);
 		let schoolTitles = [
 			_.courseData[_.courseData.currentPlan].firstSchool.school,
@@ -2329,7 +2328,6 @@ export const view = {
 			}
 		}
 		if (!currentCourse) currentCourse = 'ISEE';
-
 		return `
 			<div class="student-profile-row student-profile-body">
 				<div class="student-profile-left">
@@ -2395,7 +2393,7 @@ export const view = {
 							<div class="search-select">
 							<g-input
 								type="text" 
-								value="${_.studentInfo.currentSchool ?? ''}"
+								value="${_.studentInfo.currentSchool ? _.studentInfo.currentSchool.school : ''}"
 								data-required
 								name="currentSchool"
 								data-input="${_.componentName}:liveSearch"
@@ -3287,7 +3285,7 @@ export const view = {
 						<div class="tbl-item">`;
 			if (item.plans && item.plans.length){
 				for (let unit of item.plans) {
-					tpl += `<div class="users-course ${unit.course ? unit.course.title + '-' + unit.level.title.split(' ')[0] : ''}">${unit.course.title} ${unit.level.title.split(' ')[0]}</div>`;
+					tpl += `<div class="users-course ${unit.level.levelTag.replace(' ','-')}">${unit.level.levelTag}</div>`;
 				}
 			}
 			tpl += `

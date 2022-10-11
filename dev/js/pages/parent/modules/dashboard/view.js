@@ -418,7 +418,7 @@ export const view = {
 						<div class="search-select">
 							<g-input
 								type="text" 
-								value="${_.studentInfo.currentSchool ?? ''}"
+								value="${_.studentInfo.currentSchool ? _.studentInfo.currentSchool.school : ''}"
 								data-required
 								name="currentSchool"
 								data-input="${_.componentName}:liveSearch"
@@ -1185,7 +1185,7 @@ export const view = {
 		if (studentInfo['currentSchool']) {
 			tpl += `
 			<div class="item">
-				<span class="strong">${studentInfo['currentSchool']}</span>
+				<span class="strong">${studentInfo['currentSchool'].school}</span>
 				<span class="text">School</span>
 			</div>`;
 		}
@@ -1760,6 +1760,7 @@ export const view = {
 			}
 		}
 		if (!currentCourse) currentCourse = 'ISEE';
+		console.log(_.studentInfo)
 
 		return `
 			<div class="section parent">
@@ -1852,7 +1853,7 @@ export const view = {
 									<div class="search-select">
 										<g-input
 											type="text" 
-											value="${_.studentInfo.currentSchool ?? ''}"
+											value="${_.studentInfo.currentSchool ? _.studentInfo.currentSchool.school : ''}"
 											data-required
 											name="currentSchool"
 											data-input="${_.componentName}:liveSearch"
