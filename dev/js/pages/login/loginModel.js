@@ -48,7 +48,7 @@ class _loginModel{
 			let user = response['user'];
 			await G_Bus.trigger(_.componentName,'loginSuccess',response);
 
-			console.log(user)
+			user.fromLogin = true;
 			localStorage.setItem('me',JSON.stringify(user));
 			localStorage.removeItem('history');
 
