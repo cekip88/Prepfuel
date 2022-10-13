@@ -34,7 +34,7 @@ export const view = {
 		if (studentInfo.student['currentSchool']) {
 			tpl += `
 			<div class="item">
-				<span class="strong">${studentInfo.student['currentSchool']}</span>
+				<span class="strong">${studentInfo.student['currentSchool'].school}</span>
 				<span class="text">School</span>
 			</div>`;
 		}
