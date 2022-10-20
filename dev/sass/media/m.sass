@@ -1169,9 +1169,28 @@ button.student-profile-plan-edit
 		&:not(:last-child)
 			margin-bottom: 12px
 	&-timer
+		display: flex
+		align-items: center
+		padding: 7px 4px 7px 16px
+		border-radius: 8px
+		background-color: #fff
 		margin: 0 10px 10px 0
 		white-space: nowrap
-		font: $fz16 $f_reg
+		font: $fz16 $p_reg
+		&-btn
+			margin-left: 16px
+			border-radius: 6px
+			padding: 7px 16px 7px 8px
+			column-gap: 8px
+			display: inline-flex
+			align-items: center
+			color: #7E8299
+			background-color: #F5F8FA
+			font: 12px $f_bold
+			&:before
+				+af
+				+wh(12px)
+				background-image: url(../img/pause.svg)
 	&-block
 		display: flex
 		flex-direction: column

@@ -39,6 +39,15 @@ export class _Model {
 		return questions;
 	}
 	
+	isOdd(question){
+		const _ = this;
+		let _isOdd = false;
+		_.allquestions.forEach( (quest,i)=>{
+			if(quest._id === question._id) _isOdd =  i%2;
+		});
+		return _isOdd;
+	}
+	
 	
 	
 	getQuizInfo() {
@@ -365,8 +374,27 @@ export class _Model {
 				if(rawResponse.status < 210){
 					let response = await rawResponse.json();
 					if(response['status'] == 'success'){
+						let r  = response['response'];
+					/*	for(let r of response['response']){
+				//			console.log(r);
+							if(r['category'] == 'Grammar'){
+								response['response'].forEach( x => {
+									if(x['category'] == 'RE-A'){
+										x['concepts'] = x['concepts'].concat(r['concepts']);
+									}
+								});
+								response['response'].splice(response['response'].indexOf(r),1);
+							}
+						}*/
+			//			console.log(response['response']);
 						_.categories = response['response'];
-//						console.log(response);
+			/*
+						for(let c of _.categories){
+							for(let con of c['concepts']){
+								console.log(con['howto']);
+							}
+						}*/
+						
 						resolve(_.categories);
 					}
 				}else{
@@ -476,7 +504,7 @@ export class _Model {
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
-				console.log(response);
+//				console.log(response);
 				resolve(response['response']);
 			}
 		});

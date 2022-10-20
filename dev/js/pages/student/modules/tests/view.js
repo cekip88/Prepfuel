@@ -151,7 +151,7 @@ export const view = {
 			<div class="section">
 				<div class="section-header">
 					<h1 class="title">${Model.currentSection['directions'].headerTitle}</h1>
-					<div class="test-timer"><span class="test-timer-value">${Model.test.testTime}</span> minutes left</div>
+				 ${_.timerTpl()}
 					<button class="button-white"	data-click="${this.componentName}:showConfirmModal" section="score"><span>Finish this test</span></button>
 				</div>
 			</div>
@@ -264,6 +264,18 @@ export const view = {
 	},
 
 	/* Cacrass templates*/
+	timerTpl(){
+		const _ = this;
+		//${Model.test.testTime}
+		return `
+			<div class="test-timer">
+				<div class="test-timer-left">
+					<span class="test-timer-value"></span> minutes left
+				</div>
+				<button class="test-timer-btn" data-click="${_.componentName}:pauseTest">Pause</button>
+			</div>
+		`;
+	},
 	async scoreCarcass(){
 		const _ = this;
 		let summaries = await Model.getTestSummary();
@@ -347,7 +359,7 @@ export const view = {
 			<div class="section">
 				<div class="section-header">
 					<h1 class="title">Practice test ${Model.test['testNumber']} &mdash; <strong id="test-section-name">${Model.currentSection.sectionName}</strong></h1>
-					<div class="test-timer"><span class="test-timer-value">${Model.test.testTime}</span> minutes left</div>
+					${_.timerTpl()}
 					<button class="button-white header-question-btn" data-click="${this.componentName}:showConfirmModal" section="score"><span>Finish this test</span></button>
 				</div>
 			</div>
@@ -1070,8 +1082,9 @@ export const view = {
 	
 	testPickTpl(test){
 		const _ = this;
-		let status = "Start", section = 'welcome';
-		if(Model.test['status'] == 'in progress'){
+		let status = "Start", section = 'welcome',isPaused =   (Model.test['status'] == 'paused');
+		
+		if( (Model.test['status'] == 'in progress') || isPaused){
 			status = "Continue";
 			section = "directions";
 		}
@@ -1093,11 +1106,12 @@ export const view = {
 				<ul class="test-pick-desc">
 				`;
 			for(let section of Model.test.sections){
-				let questionCnt = 0;
-				for(let sectionData of section['subSections'][0]['questionData']){
+		//		let questionCnt = 0;
+				let questionCnt = section.totalQuestions;
+		/*		for(let sectionData of section['subSections'][0]['questionData']){
 					if(!sectionData['questions']) continue;
 					questionCnt+=sectionData['questions'].length;
-				}
+				}*/
 				tpl+=`
 					<li class="test-pick-desc-item">
 						<h6 class="test-pick-title">${section['sectionName']}</h6>
@@ -1107,7 +1121,7 @@ export const view = {
 			}
 		tpl+= `
 				</ul>
-				<button class="button" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="${section}"><span>${status} this test</span></button>
+				<button class="button" data-test-id="${Model.test['_id']}" ${isPaused ? 'data-is-paused="isPaused"' : ''}  data-result-id="${Model.test['resultId']}"  data-click="${_.componentName}:startTest;${_.componentName}:changeSection" section="${section}"><span>${status} this test</span></button>
 			</li>
 			</ul>
 		`;

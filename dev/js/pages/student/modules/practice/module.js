@@ -57,6 +57,12 @@ export class PracticeModule extends StudentPage{
 		_.tempDisabledAnswerObj = {};
 		_.practiceTabPos = 0
 		
+		_.replacedLetters = {
+			'A':'E',
+			'B':'F',
+			'C':'G',
+			'D':'H'
+		}
 		
 		
 		_.skillTests  = [];
@@ -195,6 +201,12 @@ export class PracticeModule extends StudentPage{
 			{ currentConcept } = Model.getCurrentConcept(conceptName);
 		_.f('#welcome-header-title').textContent = currentConcept['concept'];
 		_.f('#welcome-btn').setAttribute('data-id',currentConcept['concept']);
+		let howToList = _.f('#how-to-list');
+		for(let prop in currentConcept['howto']){
+			console.log(currentConcept['howto']);
+			let src = currentConcept['howto'][prop]
+			howToList.append(_.markup(_.howToListItem(src,currentConcept['concept'])));
+		}
 	}
 	async fillQuizDirectionsSection({item}){
 		const _ = this;
@@ -260,7 +272,6 @@ export class PracticeModule extends StudentPage{
 		_.f('#question-pagination').append(_.markup(_.questionNavigation()));
 		_.f("#testType").textContent = _.currentTestType;
 		if(_.testFinished){
-			console.log(_.currentAnswers);
 			_.setSkillPaginationAnswers(_.currentAnswers);
 		}
 		
@@ -428,8 +439,8 @@ export class PracticeModule extends StudentPage{
 		let test = await Model.getTestResults();
 		for(let t in test){
 			let
-			currentTestObj = test[t],
-			questionId= currentTestObj['questionId']; // if request was not in local storage, try another prop for questionId
+				currentTestObj = test[t],
+				questionId= currentTestObj['questionId']; // if request was not in local storage, try another prop for questionId
 			if(currentTestObj['bookmark']) {
 				let listAnswerItem = _.f(`.questions-list .questions-item[data-question-id="${questionId}"]`);
 				if(listAnswerItem) listAnswerItem.classList.add('checked');
@@ -489,9 +500,14 @@ export class PracticeModule extends StudentPage{
 	//	_.clear(cont)
 		if(!cont ) return void 'Container not found';
 		for (let item of achieveData) {
-			let listTpl = _.achievementItemsTpl(item);
-			if (!listTpl) continue;
-			cont.append(_.markup(listTpl));
+			if( item.category == 'Grammar' ){
+				let raCont = _.f('.practice-achievement-item[data-category="RE-A"] ul');
+				raCont.append(_.markup(_.conceptItems(item['category'],item['concepts'])));
+			}else{
+				let listTpl = _.achievementItemsTpl(item);
+				if (!listTpl) continue;
+				cont.append(_.markup(listTpl));
+			}
 		}
 	}
 	reviewAnswers({item}){
@@ -1267,6 +1283,7 @@ export class PracticeModule extends StudentPage{
 					}
 					let response = await Model.saveAnswer(fullAnswer);
 					if(!ansObj['answer']) return void 0;
+					let currentAnswers = await _.getAnswerSkill(_._$.currentQuestion);
 					let noteActions = _.f(`#note-field-${id} .test-label-button`);
 					if(noteActions) noteActions.remove();
 					if(ansObj['answer']) {
@@ -1299,8 +1316,7 @@ export class PracticeModule extends StudentPage{
 							}
 						});
 					}
-					let currentAnswers = await _.getAnswerSkill(_._$.currentQuestion);
-
+				
 					_.fillExplanation(_._$.currentQuestion);
 					if(_.isGrid()) {
 						_.setGridAnswer(currentAnswers);
@@ -1362,7 +1378,6 @@ export class PracticeModule extends StudentPage{
 	}
 	setLetterAnswer(currentAnswers){
 		const _ = this;
-		console.log(currentAnswers);
 		let handle = (answer)=>{
 			let answerItem = _.f(`.answer-item[data-variant="${answer['answer']}"][data-question-id="${answer['questionId']}"]`);
 			if( answer['answer'] == answer['correctAnswer'] ){
@@ -1372,7 +1387,8 @@ export class PracticeModule extends StudentPage{
 			}else{
 				if(answerItem){
 					answerItem.classList.add('incorrect');
-					answerItem.classList.add('correct');
+					_.f(`.answer-item[data-variant="${answer['correctAnswer']}"][data-question-id="${answer['questionId']}"]`).classList.add('correct');
+					//answerItem.classList.add('correct');
 				}
 			}
 		}
@@ -1451,8 +1467,7 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		_.quizTests.forEach( (skill,index) => {
 			if(currentAnswers[skill['_id']]){
-				
-				skill['questions'].forEach( (question,i)=>{
+				skill['questions'].forEach( (question,i) => {
 					currentAnswers[skill['_id']][i]['pos'] = index;
 					currentAnswers[skill['_id']][0]['correctAnswer'] = question['correctAnswer'];
 				});
@@ -1464,36 +1479,45 @@ export class PracticeModule extends StudentPage{
 				pos = answers['pos'];
 			answers.forEach(  answer=>{
 				if(answer['answer'] == answer['correctAnswer']){
-					_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('done');
+					_.f(`.pagination-link[data-pos="${answer[pos]}"]`).classList.add('done');
 				}else{
-					_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('error');
+					_.f(`.pagination-link[data-pos="${answer[pos]}"]`).classList.add('error');
 				}
 			});
-			
-			
 		}
 	}
 	setSkillPaginationAnswers(currentAnswers){
 		const _ = this;
+		console.log(currentAnswers);
 		_.skillTests.forEach( (skill,index) => {
 			if(currentAnswers[skill['_id']]){
-				currentAnswers[skill['_id']][0]['pos'] = index;
-				skill['questions'].forEach(question=>{
-					currentAnswers[skill['_id']][0]['correctAnswer'] = question['correctAnswer'];
-				});
+				for(let i=0; i < currentAnswers[skill['_id']].length;i++ ){
+					let ans = currentAnswers[skill['_id']][i];
+					ans['pos'] = index;
+					skill['questions'].forEach( (question,index)=>{
+						if(!currentAnswers[skill['_id']][index]) return void 0;
+ 						currentAnswers[skill['_id']][index]['correctAnswer'] = question['correctAnswer'];
+					});
+				}
+				
 			}
 		});
 		for(let key in currentAnswers){
-			let answer = currentAnswers[key][0];
-			if(typeof answer['answer'] == 'object'){
-				answer['answer'] = answer['answer'].join('')
-				answer['answer'] = answer['answer'].replaceAll('_','');
-			}
-			if(answer['answer'] == answer['correctAnswer']){
-				_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('done');
-			}else{
-				_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('error');
-			}
+				for(let answer of currentAnswers[key]){
+				//	let answer = currentAnswers[key][0];
+					if(typeof answer['answer'] == 'object'){
+						answer['answer'] = answer['answer'].join('')
+						answer['answer'] = answer['answer'].replaceAll('_','');
+					}
+					if(answer['answer'] == answer['correctAnswer']){
+						_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('done');
+					}else{
+						_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('error');
+					}
+				}
+				
+			
+		
 			
 		}
 	}
@@ -1510,26 +1534,15 @@ export class PracticeModule extends StudentPage{
 		let
 			title = item.getAttribute('data-title'),
 			src = item.getAttribute('data-src'),
-			splittedSrc = src.split('/'),
-			playerInstance = jwplayer('jwplayer');
-		/*if(splittedSrc[0]== 'null') return void 0;
-		else src = splittedSrc[splittedSrc.length-1];*/
-		src = 'TJWwHqCs';
-		playerInstance.setup({
-			playlist: `https://cdn.jwplayer.com/v2/media/${src}`,
-			width:  '100%',
-			height:  310
-		});
-		
-		
+			splittedSrc = src.split('/');
 		_.f('#jwplayer-title').textContent = title;
+		_.f('#jwp-iframe').src = `https://cdn.jwplayer.com/players/${src}-bjG6Ic3P.html`;
+		
 		G_Bus.trigger('modaler','showModal',{
 			type:'html',
 			target:'#jwplayer-content'
 		});
-		G_Bus.on('modaler','closeModal',()=>{
-			playerInstance.stop();
-		});
+
 	}
 
 	fillTips(){
@@ -1682,9 +1695,14 @@ export class PracticeModule extends StudentPage{
 			let answersExists = false;
 			if(_.answerVariant[currentQuestion['_id']]  && !_.answerVariant[currentQuestion['_id']]['answer']) return void 0;
 			currentQuestion['questions'].forEach( (question)=>{
-				if(_.answerVariant[question['_id']]['answer']){
+				if(_.answerVariant[question['_id']] && _.answerVariant[question['_id']]['answer']){
 					answersExists = true;
 				}else{
+					let answerItems = _.f(`.answer-item[data-question-id="${question['_id']}"]`);
+					answerItems.forEach(  (ans)=>{
+						ans.querySelector('.answer-wrong').remove();
+						ans.classList.add('wrong');
+					});
 					return void 0;
 				}
 				let answerItems = _.f(`.answer-item[data-question-id="${question['_id']}"]`);
@@ -1704,6 +1722,7 @@ export class PracticeModule extends StudentPage{
 		
 			_.setAvailableCheckBtn();
 			if( currentAnswers ){
+				_.setSkillPaginationAnswers(_.currentAnswers);
 				for(let currentAnswer of currentAnswers){
 					if(currentAnswer['disabledAnswers']){
 						for(let disabledAnswers of currentAnswer['disabledAnswers']){
