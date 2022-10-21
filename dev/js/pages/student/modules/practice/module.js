@@ -61,7 +61,11 @@ export class PracticeModule extends StudentPage{
 			'A':'E',
 			'B':'F',
 			'C':'G',
-			'D':'H'
+			'D':'H',
+			'e':'E',
+			'f':'F',
+			'g':'G',
+			'h':'H'
 		}
 		
 		

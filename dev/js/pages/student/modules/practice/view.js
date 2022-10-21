@@ -1061,8 +1061,10 @@ export const view = {
 		for(let answer in	currentQuestion['answers']){
 			let ans = currentQuestion['answers'][answer];
 			let changedAnswer = answer;
-			if(Model.isOdd(currentQuestion)){
-				changedAnswer = _.replacedLetters[answer.toUpperCase()];
+			if(_.currentTestType != 'quiz') {
+				if(Model.isOdd(currentQuestion)) {
+					changedAnswer = _.replacedLetters[answer.toUpperCase()];
+				}
 			}
 			tpl+=await _.answerTpl(currentQuestion,changedAnswer,answer);
 		}
@@ -1104,8 +1106,10 @@ export const view = {
 			for(let answer in question['answers']){
 				let ans = question['answers'][answer];
 				let changedAnswer = answer;
-				if(Model.isOdd(question)){
-					changedAnswer = _.replacedLetters[answer.toUpperCase()];
+				if(_.currentTestType != 'quiz') {
+					if(Model.isOdd(question)) {
+						changedAnswer = _.replacedLetters[answer.toUpperCase()];
+					}
 				}
 				tpl+= await _.answerTpl(question,changedAnswer,answer);
 			}
@@ -1146,8 +1150,10 @@ export const view = {
 	`;
 		for(let answer in	currentQuestion['answers']){
 			let changedAnswer = answer;
-			if(Model.isOdd(currentQuestion)){
-				changedAnswer = _.replacedLetters[answer.toUpperCase()];
+			if(_.currentTestType != 'quiz'){
+				if(Model.isOdd(currentQuestion)){
+					changedAnswer = _.replacedLetters[answer.toUpperCase()];
+				}
 			}
 			tpl+=await _.answerTpl(currentQuestion,changedAnswer,answer);
 		}
