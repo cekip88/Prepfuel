@@ -1629,7 +1629,7 @@ export const view = {
 					<g-input 
 						type="phone" 
 						name="phone" 
-						value="${parentInfo.phone ?? ''}" 
+						value="${parentInfo.phone ?? '+1'}" 
 						data-input="${_.componentName}:fillParentInfo" 
 						class="g-form-item" 
 						classname="form-input profile-form-input"></g-input>
@@ -2561,7 +2561,7 @@ export const view = {
 					<div class="form-label-row">
 						<label class="form-label">Phone Number</label>
 					</div>
-					<g-input type="phone" name="phone" value="${_.parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+					<g-input type="phone" name="phone" value="${_.parentInfo.phone ?? '+1'}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 				</div>
 			</div>
 		`;
@@ -2924,7 +2924,7 @@ export const view = {
 						<div class="form-label-row">
 							<label class="form-label">Phone</label>
 						</div>
-						<g-input type="phone" name="phone" value="${_.parentInfo.phone ?? ''}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
+						<g-input type="phone" name="phone" value="${_.parentInfo.phone ?? '+1'}" data-input="${_.componentName}:fillParentInfo" class="g-form-item" classname="form-input profile-form-input"></g-input>
 					</div>
 					<div class="admin-profile-line"></div>
 					<div class="admin-profile-password">

@@ -805,6 +805,10 @@ export default class GInput extends GComponent {
 		value = value.replace(')','');
 		value = value.replace(' ','');
 		value = value.replaceAll('-','');
+		if (value.substr(0,2) !== '+1') {
+			value = '+1' + value;
+			if (value[2] === '+') value = value.substr(0,2) + value.substr(3)
+		}
 		return value;
 	}
 	isNumeric(){

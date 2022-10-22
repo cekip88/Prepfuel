@@ -218,8 +218,9 @@ export const view = {
 						<label class="addCard-label">Phone Number</label>
 					</div>
 					<g-input 
-						type="text" 
+						type="phone" 
 						name="phone" 
+						value="+1"
 						id="editPhoneInput"
 						class="g-form-item"
 						className="form-input adding-inpt"
