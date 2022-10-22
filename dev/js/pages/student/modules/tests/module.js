@@ -25,7 +25,8 @@ export class TestsModule extends StudentPage{
 			'isGrid','showResults','showSummary','changeSection','setWrongAnswer','setCorrectAnswer','changeQuestion',
 			'jumpToQuestion','jumpToQuestion','saveBookmark','saveNote','changeInnerQuestionId','showForm','deleteNote',
 			'editNote','showTestLabelModal','updateStorageTest','saveReport','changeTestSection','enterGridAnswer',
-			'resetTest','domReady','changePracticeTest','changeTestResultsTab','showConfirmModal'
+			'resetTest','domReady','changePracticeTest','changeTestResultsTab','showConfirmModal','pauseTest',
+		"startTest"
 		]);
 		//TestModel = new TestModel();
 		_.isLastQuestion = false;
@@ -127,10 +128,10 @@ export class TestsModule extends StudentPage{
 		_.abortGetStudentTests.name = 'getStudentTests';
 		_.addAbortController(_.abortGetStudentTests);
 		await Model.getStudentTests('practice',_.abortGetStudentTests.signal); // requests all user tests
-		_.set({
+/*		_.set({
 			currentQuestion: Model.firstQuestion,
 		});
-		_.currentQuestion = Model.firstQuestion;
+		_.currentQuestion = Model.firstQuestion;*/
 		let
 			container = _.f('#testAsideList');
 		container.innerHTML = '<img src="/img/loader.gif" alt="Loading...">';
@@ -147,10 +148,12 @@ export class TestsModule extends StudentPage{
 	get timerTime(){
 		const _ = this;
 		if(!_.resultObj) return void 0;
-		let createdAt = _.resultObj['testStartedAt'],
-		startTime = new Date(createdAt).getTime(),
-		nowTime =new Date().getTime(),
-		currentTime = nowTime - startTime;
+		let
+			createdAt = _.resultObj['testStartedAt'],
+			startTime = new Date(createdAt).getTime(),
+			nowTime =new Date().getTime(),
+			currentTime = nowTime - startTime;
+		//return  Math.round(_.resultObj['timeLeft'] / 60000);
 		return  _.testTime - Math.round(currentTime/ 60000);
 	}
 	get questionsPages(){return Model.currentSection['subSections'][Model.currentSubSectionPos]['questionData']}
@@ -164,13 +167,16 @@ export class TestsModule extends StudentPage{
 	// Change section welcome->directions->questions etc
 	async changeSection({item,event}){
 		const _ = this;
+		let isPaused = item.hasAttribute('data-is-paused')
+		if(item.hasAttribute('data-result-id')) {
+			_.resultId = item.getAttribute('data-result-id');
+		}
 		let section = item.getAttribute('section');
 		_.moduleStructure = {
 			'header':'simpleHeader',
 			'body': _.flexible(section),
 		};
 		_.subSection = section;
-	
 		if(section == 'score') {
 			G_Bus.trigger('modaler','closeModal');
 			if(!Model.isFinished()){
@@ -189,9 +195,30 @@ export class TestsModule extends StudentPage{
 		if(section == 'directions') {
 			// start of test
 			if(!_.startedTest) {
-				_.startedTest = await Model.start();
+				if(_.resultId == 'null'){
+					let startObj = await Model.start();
+					_.resultId = startObj['resultId'];
+				}
 			}
-			let results = await Model.getTestResults();
+			if(isPaused){
+				await Model.setContinue();
+			}
+			await Model.getTest();
+			Model.test['resultId'] = _.resultId;
+			let results = await Model.getTestResults(_.resultId);
+			if(isPaused){
+				let
+					questionDataId = results['resultObj']['questionsState']['sectionId'],
+					sectionPos = results['resultObj']['questionsState']['sectionPos'];
+				Model.changeSectionPos(parseInt(sectionPos));
+			let		questionData = Model.currentQuestionDataByQuestionDataId(questionDataId);
+				_._$.currentQuestion = questionData;
+			}else{
+				_._$.currentQuestion = await Model.firstQuestion;
+			}
+			
+			
+			
 			_.storageTest = results['testResults'];
 			_.resultObj = results['resultObj'];
 			if(results['status'] === 'finished') {
@@ -203,7 +230,7 @@ export class TestsModule extends StudentPage{
 	//	_._$.currentSection = section;
 		
 		if( (section == 'questions') && (Model.isFinished()) ){
-			let results = await Model.getTestResults();
+			let results = await Model.getTestResults(_.resultId);
 			_.storageTest = results['testResults'];
 		}
 		
@@ -246,12 +273,12 @@ export class TestsModule extends StudentPage{
 		if(section == 'questions'){
 			_.fillCheckedAnswers();
 			if(Model.isFinished()){
-				_.f('.test-timer').textContent ='';
+			//	_.f('.test-timer').textContent ='';
 				let headerBtn = _.f('.header-question-btn');
 				headerBtn.textContent = 'Exit this review';
 				headerBtn.setAttribute('data-click',`${_.componentName}:changeSection`);
 				headerBtn.setAttribute('section',"score");
-				await Model.getTestResults();
+				await Model.getTestResults(_.resultId);
 				_.markAnswers();
 				_.markCorrectAnswer();
 			}else{
@@ -264,6 +291,11 @@ export class TestsModule extends StudentPage{
 	}
 	
 	//
+	async startTest({item}){
+		const _ = this;
+		console.log('test started');
+	
+	}
 	async resetTest({item}){
 		const _ = this;
 		localStorage.removeItem('resultId');
@@ -389,7 +421,7 @@ export class TestsModule extends StudentPage{
 		let pickList = _.f('#testPickList');
 		pickList.innerHTML = '<img src="/img/loader.gif" alt="Loading...">';
 		_.startedTest = await Model.changeTest(pos);
-		_._$.currentQuestion = await Model.firstQuestion;
+		//_._$.currentQuestion = await Model.firstQuestion;
 		_.fillTestsBody();
 	}
 	
@@ -448,6 +480,11 @@ export class TestsModule extends StudentPage{
 		});
 	}
 	
+	pauseTest({item}){
+		const _ = this;
+		Model.setPause(_._$.currentQuestion);
+		location.reload();
+	}
 	tickTimer(){
 		const _ = this;
 		_.set({
@@ -490,7 +527,7 @@ export class TestsModule extends StudentPage{
 	/* Work with note end */
 	async fillCheckedAnswers(){
 		const _ = this;
-		let test = await Model.getTestResults();//Model.getTestFromStorage();
+		let test = await Model.getTestResults(_.resultId);//Model.getTestFromStorage();
 		test = test['testResults'];
 		for(let t in test){
 			//if(( test[t]['answer'] == 'O') && (!test[t]['bookmark']) && (!test[t]['note'])  && (!test[t]['disabledAnswers']) ) continue;
@@ -597,7 +634,7 @@ export class TestsModule extends StudentPage{
 	async setActions(types = ['bookmark']){
 		//='bookmark'
 		const _ = this;
-		let test = await Model.getTestResults();
+		let test = await Model.getTestResults(_.resultId);
 		test = test['testResults'];
 		let handle = (currentTest)=>{
 			if(currentTest) {
@@ -1091,9 +1128,10 @@ export class TestsModule extends StudentPage{
 	async init(){
 		const _ = this;
 		_._( async ({currentQuestion})=>{
+
 			let cont = _.f('.tt-ii');
-			
 			if(!cont) return;
+			
 			_.clear(cont);
 			if( (currentQuestion['questions']) && (currentQuestion['questions'].length == 1) ){
 				_.questionPos = Model.currentQuestionDataPosById(currentQuestion['questions'][0]['_id'])

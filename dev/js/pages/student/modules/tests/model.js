@@ -14,7 +14,8 @@ class _Model{
 			resultsBy: `${env.backendUrl}/tests/test-by-result`,
 			reset: `${env.backendUrl}/tests-results/reset/`,
 			schedule: `${env.backendUrl}/student/schedule`,
-			report: `${env.backendUrl}/tests-results/report-question-issue`
+			report: `${env.backendUrl}/tests-results/report-question-issue`,
+			currentTest: `${env.backendUrl}/student/practice-test/`
 		};
 		_.testStatus = 'in progress';
 		_.currentSectionPos = 0; // Section position in array section list
@@ -59,6 +60,7 @@ class _Model{
 		const _ = this;
 		let questions = [];
 		for(let subSection of _.currentSection['subSections']){
+			
 			subSection['questionData'].forEach((page,i) => {
 				if(page['type'] == 'passage'){
 					questions.push(page);
@@ -112,7 +114,7 @@ class _Model{
 						if(schedule) _.tests.forEach( (test,i) => {
 							if(schedule[i]) test['schedule']= schedule[i]['date'];
 						});
-						await Model.getTest();
+						await Model.getLiteTest();
 						resolve(_.tests);
 					}
 				}else{
@@ -125,6 +127,13 @@ class _Model{
 			}
 		});
 	}
+	
+	async getLiteTest(){
+		const _ = this;
+		let testId = _.tests[_.currentTestPos]['_id'];
+		_.test = _.tests[_.currentTestPos];
+		_.testStatus = _.test['status'];
+	}
 	async getTest(){
 		const _ = this;
 		/*
@@ -133,11 +142,35 @@ class _Model{
 		*     _id title description testTime testType testStandard sections number
 		*   }
 		* */
-		let testId = _.tests[_.currentTestPos]['_id'];
+		// get all tests from Database
+		return new Promise(async resolve =>{
+			try{
+				let rawResponse = await fetch(`${_.endpoints['currentTest']}/${_.tests[_.currentTestPos]['_id']}`,{
+					method: 'GET',
+					headers:_.baseHeaders
+				});
+				if(rawResponse.status < 210){
+					let
+						response = await rawResponse.json();
+					console.log(response);
+					_.test = response['response'];
+					_.testStatus = _.test['status'];
+					resolve(_.test)
+				}else{
+					//G_Bus.trigger('TestPage','showResults',rawResponse);
+				}
+			}catch(e){
+				if (e.name != 'AbortError'){
+					throw  new Error(e)
+				}
+			}
+		});
+/*		let testId = _.tests[_.currentTestPos]['_id'];
 		_.test = _.tests[_.currentTestPos];
-		_.testStatus = _.test['status'];
-		return Promise.resolve(_.test);
+		_.testStatus = _.test['status'];*/
 	}
+	
+	
 	changeSectionPos(pos=0){
 		this.currentSectionPos = pos;
 	}
@@ -183,6 +216,51 @@ class _Model{
 		});
 	}
 	
+	async setContinue(){
+		const _ = this;
+		let answer = {
+			'status': 'continue'
+		};
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['results']}/${_.test['resultId']}`,{
+				method: 'PUT',
+				headers:_.baseHeaders,
+				body: JSON.stringify(answer)
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				
+				if(response['status'] == 'success'){
+					resolve(response);
+				}
+			}
+		});
+	}
+	async setPause(currentQuestion){
+		const _ = this;
+		let currentQuestionData = _.currentQuestionDataByQuestionId(currentQuestion['_id']);
+		console.log(_.currentSectionPos);
+		let answer = {
+			'questionsState':{
+				sectionPos: _.currentSectionPos,
+				sectionId: currentQuestionData['_id'],
+			},
+			'status': 'pause'
+		};
+		return new Promise(async resolve =>{
+			let rawResponse = await fetch(`${_.endpoints['results']}/${_.test['resultId']}`,{
+				method: 'PUT',
+				headers:_.baseHeaders,
+				body: JSON.stringify(answer)
+			});
+			if(rawResponse.status == 200){
+				let response = await rawResponse.json();
+				if(response['status'] == 'success'){
+					resolve(response);
+				}
+			}
+		});
+	}
 	async saveAnswer(answer){
 		// Save choosed answer in server
 		const _ = this;
@@ -219,10 +297,11 @@ class _Model{
 			}
 		});
 	}
-	async getTestResults(){
+	async getTestResults(resultId){
 		const _ = this;
+		//${_.test['resultId']}
 		return new Promise(async resolve =>{
-			let rawResponse = await fetch(`${_.endpoints['results']}/${_.test['resultId']}`,{
+			let rawResponse = await fetch(`${_.endpoints['results']}/${resultId}`,{
 				method: 'GET',
 				headers: _.baseHeaders,
 			});
@@ -365,7 +444,8 @@ class _Model{
 	async changeTest(pos){
 		const _ = this;
 		_.currentTestPos = pos;
-		await _.getTest();
+		//await _.getTest();
+		await _.getLiteTest();
 		return Promise.resolve(_.testStatus);
 	}
 	
@@ -374,7 +454,6 @@ class _Model{
 		let pos = _.allquestions.findIndex( question => {
 			return question['_id'] == questionId
 		} );
-		
 		if(pos >= 0)	return pos;
 		return null;
 	}
@@ -389,6 +468,18 @@ class _Model{
 	currentQuestionData(pos){
 		const _ = this;
 		return _.currentSection['subSections'][_.currentSubSectionPos]['questionData'][pos];
+	}
+	currentQuestionDataByQuestionId(questionId){
+		const _ = this;
+		let pos = _.currentQuestionDataPosById(questionId);
+		return _.currentSection['subSections'][_.currentSubSectionPos]['questionData'][pos];
+	}
+	currentQuestionDataByQuestionDataId(questionDataId){
+		const _ = this;
+		return _.questionsDatas.find( question => {
+			if(question['_id'] == questionDataId)
+				return question;
+		});
 	}
 	innerQuestion(pos){
 		const _ = this;

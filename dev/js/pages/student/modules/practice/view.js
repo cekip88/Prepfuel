@@ -55,16 +55,17 @@ export const view = {
 	//	}
 		return tpl;
 	},
-	async answerTpl(question,answer){
+	async answerTpl(question,answer,rawAnswer=answer){
 		const _ = this;
-		let output = document.createElement('div');
-		output.innerHTML = question['answers'][answer];
-		let text = await MathJax.typesetPromise([output]).then( () => output.innerHTML);
 		let
-		currentQuestionId = question['_id'],
+			output = document.createElement('div');
+		output.innerHTML = question['answers'][rawAnswer];
+		let
+			text = await MathJax.typesetPromise([output]).then( () => output.innerHTML),
+			currentQuestionId = question['_id'],
 		tpl = `
-				<li class="answer-item" data-question-id="${currentQuestionId}" data-variant="${answer}">
-					<button class="answer-button" data-click="${this.componentName}:setCorrectAnswer" data-variant="${answer}">
+				<li class="answer-item" data-question-id="${currentQuestionId}" data-variant="${rawAnswer}">
+					<button class="answer-button" data-click="${this.componentName}:setCorrectAnswer" data-variant="${rawAnswer}">
 						<span class="answer-variant">${answer}</span>
 						<span class="answer-value">${text}</span>
 					</button>
@@ -92,7 +93,7 @@ export const view = {
 					}
 				}
 			}
-			output.innerHTML = question['answers'][answer];
+			output.innerHTML = question['answers'][rawAnswer];
 			let text = await MathJax.typesetPromise([output]).then( () => output.innerHTML);
 			tpl = `
 					<li class="answer-item ${status}" data-question-id="${question['_id']}" data-variant="${answer}">
@@ -200,9 +201,13 @@ export const view = {
 				<div class="practice-inner" id="bodyInner"></div>
 				<div hidden>
 					<div id="jwplayer-content" class="modal narrow note" slot="modal-item">
-				        <h5 class="modal-title" id="jwplayer-title"></h5>
+					 <h5 class="modal-title" id="jwplayer-title"></h5>
+				 <div style="position:relative; overflow:hidden; padding-bottom:56.25%">
+				  <iframe src="" id="jwp-iframe" width="100%" height="100%" frameborder="0" scrolling="auto" title="Reading Comprehension Poetry (Context)" style="position:absolute;" allowfullscreen></iframe>
+				 </div>
+				  <!--      <h5 class="modal-title" id="jwplayer-title"></h5>
 	              <div class="modal-text"></div>
-								<div id="jwplayer" ></div>
+								<div id="jwplayer" ></div>-->
 						</div>
 				</div>
 			</div>
@@ -307,11 +312,32 @@ export const view = {
 		`;
 		return tpl;
 	},
+	
+	conceptItems(category,concepts){
+		const _ = this;
+		let tpl = ``;
+		for (let item of concepts) {
+			tpl += `
+				<li class="practice-table-row">
+					<div class="info">
+						<div class="icon"><svg><use xlink:href="#graphic-1"></use></svg></div>
+						<h5 class="practice-table-row-title">${item.concept}</h5>
+					</div>
+					<button class="button" data-click="${_.componentName}:changeSection;${_.componentName}:setSkillInfo" section="welcome" data-id="${item.concept}" data-category="${category}"><span>Practice</span></button>
+					<button class="video" data-click="${_.componentName}:showVideo" data-src="${item['video']}" data-title="${item.concept}">
+						<svg><use xlink:href="#play"></use></svg>
+						<span>Video example</span>
+					</button>
+				</li>
+			`;
+		}
+		return tpl;
+	},
 	achievementItemsTpl(itemsInfo){
 		const _ = this;
-		//console.log(_.categories);
+
 		let tpl = `
-			<li class="practice-achievement-item">
+			<li class="practice-achievement-item" data-category="${itemsInfo.category}">
 				<h3 class="practice-achievement-title">${_.categoriesNames[itemsInfo.category] ? _.categoriesNames[itemsInfo.category] : itemsInfo.title}</h3>
 				<div class="practice-table-head">
 					<span class="info">
@@ -320,23 +346,9 @@ export const view = {
 					</span>
 					<span class="videoTd">How-to examples</span>
 				</div>
-				<ul>
+					<ul id="concept-${itemsInfo.category}">
 		`;
-		for (let item of itemsInfo.concepts) {
-			tpl += `
-				<li class="practice-table-row">
-					<div class="info">
-						<div class="icon"><svg><use xlink:href="#graphic-1"></use></svg></div>
-						<h5 class="practice-table-row-title">${item.concept}</h5>
-					</div>
-					<button class="button" data-click="${_.componentName}:changeSection;${_.componentName}:setSkillInfo" section="welcome" data-id="${item.concept}" data-category="${itemsInfo['category']}"><span>Practice</span></button>
-					<button class="video" data-click="${_.componentName}:showVideo" data-src="${item['video']}" data-title="${item.concept}">
-						<svg><use xlink:href="#play"></use></svg>
-						<span>Video example</span>
-					</button>
-				</li>
-			`;
-		}
+		tpl+=_.conceptItems(itemsInfo.category,itemsInfo.concepts);
 		tpl += `</ul></li>`;
 		return tpl;
 	},
@@ -456,44 +468,28 @@ export const view = {
 	
 	
 	/* Cacrass templates*/
-
+	howToListItem(src,title){
+		const _ = this;
+		return `
+			<li class="practice-desc-item">
+					<button class="practice-desc-item-button" data-id="video" data-click="${_.componentName}:showVideo" data-src="${src}" data-title="${title}">
+						<div class="img">
+							<svg>
+								<use xlink:href="#video-clip"></use>
+							</svg>
+						</div>
+						<div class="desc">
+							<h6 class="desc-title">Section, concept</h6>
+							<span class="desc-text">Video</span>
+						</div>
+					</button>
+				</li>
+		`;
+	},
 	welcomeCarcass(){
 		const _ = this;
-		return	`
-			<div class="section">
-				<div class="section-header">
-					<h1 class="title" id="welcome-header-title"></h1>
-					<button class="button-white" data-click="${this.componentName}:changeSection" section="mathematics">
-						<span>Exit this Practice</span>
-					</button>
-				</div>
-			</div>
-			<div class="section row">
-				<div class="block test-block">
-					<div class="test-header">
-						<h5 class="block-title test-title" id="welcome-title">How-to examples</h5>
-					</div>
-					<div class="test-inner narrow">
-						<h6 class="test-subtitle">
-							<span id="welcome-subtitle">Brush up on your foundations!</span>
-						</h6>
-						<p class="test-text" id="welcome-text">
-							Check out these resources before diving into practice to help reinforce the concepts, level up in this skill, and ultimately boost your scores!
-						</p>
-						<ul class="practice-desc-list">
-							<li class="practice-desc-item">
-								<button class="practice-desc-item-button" data-id="video" data-click="showModal">
-									<div class="img">
-										<svg>
-											<use xlink:href="#video-clip"></use>
-										</svg>
-									</div>
-									<div class="desc">
-										<h6 class="desc-title">Section, concept</h6><span class="desc-text">Video</span>
-									</div>
-								</button>
-							</li>
-							<li class="practice-desc-item">
+		/*
+		* <li class="practice-desc-item">
 								<button class="practice-desc-item-button" data-id="video" data-click="showModal">
 									<div class="img">
 										<svg>
@@ -529,6 +525,31 @@ export const view = {
 									</div>
 								</button>
 							</li>
+		* */
+		return	`
+			<div class="section">
+				<div class="section-header">
+					<h1 class="title" id="welcome-header-title"></h1>
+					<button class="button-white" data-click="${this.componentName}:changeSection" section="mathematics">
+						<span>Exit this Practice</span>
+					</button>
+				</div>
+			</div>
+			<div class="section row">
+				<div class="block test-block">
+					<div class="test-header">
+						<h5 class="block-title test-title" id="welcome-title">How-to examples</h5>
+					</div>
+					<div class="test-inner narrow">
+						<h6 class="test-subtitle">
+							<span id="welcome-subtitle">Brush up on your foundations!</span>
+						</h6>
+						<p class="test-text" id="welcome-text">
+							Check out these resources before diving into practice to help reinforce the concepts, level up in this skill, and ultimately boost your scores!
+						</p>
+						<ul class="practice-desc-list" id="how-to-list">
+							
+						
 						</ul>
 					</div>
 					<div class="test-footer">
@@ -537,6 +558,13 @@ export const view = {
 						</button>
 					</div>
 				</div>
+			</div>
+			<div hidden>
+				<div id="jwplayer-content" class="modal narrow note" slot="modal-item">
+					<h5 class="modal-title" id="jwplayer-title"></h5>
+				  <div style="position:relative; overflow:hidden; padding-bottom:56.25%">
+				  <iframe src="" id="jwp-iframe" width="100%" height="100%" frameborder="0" scrolling="auto" title="Reading Comprehension Poetry (Context)" style="position:absolute;" allowfullscreen></iframe>
+				 </div>
 			</div>
 		`;
 	},
@@ -1031,7 +1059,14 @@ export const view = {
 					<ul class="answer-list" data-question-id="${currentQuestion['_id']}">
 				`;
 		for(let answer in	currentQuestion['answers']){
-			tpl+=await _.answerTpl(currentQuestion,answer);
+			let ans = currentQuestion['answers'][answer];
+			let changedAnswer = answer;
+			if(_.currentTestType != 'quiz') {
+				if(Model.isOdd(currentQuestion)) {
+					changedAnswer = _.replacedLetters[answer.toUpperCase()];
+				}
+			}
+			tpl+=await _.answerTpl(currentQuestion,changedAnswer,answer);
 		}
 		tpl+=`
 				</ul>
@@ -1070,7 +1105,13 @@ export const view = {
 					<ul class="answer-list" data-question-id="${question['_id']}" >`;
 			for(let answer in question['answers']){
 				let ans = question['answers'][answer];
-				tpl+= await _.answerTpl(question,answer);
+				let changedAnswer = answer;
+				if(_.currentTestType != 'quiz') {
+					if(Model.isOdd(question)) {
+						changedAnswer = _.replacedLetters[answer.toUpperCase()];
+					}
+				}
+				tpl+= await _.answerTpl(question,changedAnswer,answer);
 			}
 			tpl+=`</ul>
 				<div id="note-field-${question['_id']}"></div>
@@ -1108,7 +1149,13 @@ export const view = {
 			<ul class="answer-list" data-question-id="${currentQuestion['_id']}">
 	`;
 		for(let answer in	currentQuestion['answers']){
-			tpl+=await _.answerTpl(currentQuestion,answer);
+			let changedAnswer = answer;
+			if(_.currentTestType != 'quiz'){
+				if(Model.isOdd(currentQuestion)){
+					changedAnswer = _.replacedLetters[answer.toUpperCase()];
+				}
+			}
+			tpl+=await _.answerTpl(currentQuestion,changedAnswer,answer);
 		}
 		tpl+=`
 			</ul>
