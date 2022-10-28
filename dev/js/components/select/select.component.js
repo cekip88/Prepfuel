@@ -470,6 +470,9 @@ export default class GSelect extends GComponent {
 			  transition: 0.35s ease;
 			  padding: 5px 10px;
 			}
+			.g-select-head.with-arrow {
+				padding-right: 30px!important;
+			}
 			.g-select-title {
 				//margin-right: 23px;
 				font: 14px "Roboto-Medium";
@@ -556,7 +559,8 @@ export default class GSelect extends GComponent {
 			  flex-direction: column;
 			  align-items: flex-start;
 			  background-color: #fff;
-			  overflow: hidden;
+			  overflow-y: scroll;
+			  overflow-x: hidden;
 			  border-radius: 8px;
 			  position: absolute;
 			  left: 0;
@@ -565,7 +569,6 @@ export default class GSelect extends GComponent {
 			  transition: 0.2s ease;
 			}
 			.g-select.active .g-select-body {
-			  overflow: auto;
 			  box-shadow: 0 0 1px rgba(15,23,42,.06), 0 10px 15px -3px rgba(15,23,42,.1), 0 4px 6px -2px rgba(15,23,42,.05);
 			}
 			.g-select.active .g-select-head:after {
@@ -746,6 +749,8 @@ export default class GSelect extends GComponent {
 			  border-top: 2px solid #000;
 			  border-right: 2px solid #000;
 			  transform: rotate(135deg) translate(-2px,0);
+			  position: absolute;
+			  right: 20px;
 			  transition: 0.35s ease;
 			}
 			

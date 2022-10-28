@@ -1721,6 +1721,7 @@ export class UsersModule extends AdminPage {
 	async changeNextStep({item}) {
 		const _ = this;
 		let type = item.getAttribute('type');
+		console.log(_.studentInfo)
 		if( type == 'adding' ) {
 			let validation = await _.nextStepBtnValidation(_.f('#addingForm'));
 			if (!validation) return;

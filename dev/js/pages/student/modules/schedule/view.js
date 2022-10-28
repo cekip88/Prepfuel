@@ -249,6 +249,32 @@ export const view = {
 	},
 	practiceTestRow(){
 		const _ = this;
+		let options = [
+			{"text":"01:00 PM","value":"01:00 PM"},
+			{"text":"02:00 PM","value":"02:00 PM"},
+			{"text":"03:00 PM","value":"03:00 PM"},
+			{"text":"04:00 PM","value":"04:00 PM"},
+			{"text":"05:00 PM","value":"05:00 PM"},
+			{"text":"06:00 PM","value":"06:00 PM"},
+			{"text":"07:00 PM","value":"07:00 PM"},
+			{"text":"08:00 PM","value":"08:00 PM","active":true},
+			{"text":"09:00 PM","value":"09:00 PM"},
+			{"text":"10:00 PM","value":"10:00 PM"},
+			{"text":"11:00 PM","value":"11:00 PM"},
+			{"text":"12:00 AM","value":"12:00 AM"},
+			{"text":"01:00 AM","value":"01:00 AM"},
+			{"text":"02:00 AM","value":"02:00 AM"},
+			{"text":"03:00 AM","value":"03:00 AM"},
+			{"text":"04:00 AM","value":"04:00 AM"},
+			{"text":"05:00 AM","value":"05:00 AM"},
+			{"text":"06:00 AM","value":"06:00 AM"},
+			{"text":"07:00 AM","value":"07:00 AM"},
+			{"text":"08:00 AM","value":"08:00 AM"},
+			{"text":"09:00 AM","value":"09:00 AM"},
+			{"text":"10:00 AM","value":"10:00 AM"},
+			{"text":"11:00 AM","value":"11:00 AM"},
+			{"text":"12:00 PM","value":"12:00 PM"},
+		]
 		return `
 			<div class="practice-schedule-row">
 				<div class="blue-icon reverse">
@@ -261,7 +287,7 @@ export const view = {
 					<g-input type="date" class="input-date schedule-date" icon='false' format="month DD, YYYY" value="${new Date()}"></g-input>
 				</div>
 				<div class="practice-schedule-date">
-					<g-select class="select  schedule-time" title="Select time" items='[{"text":"4:00 PM","value":"04:00","active":true},{"text":"5:00 PM","value":"05:00"},{"text":"6:00 PM","value":"06:00"},{"text":"7:00 PM","value":"07:00"},{"text":"8:00 PM","value":"08:00"}]' classname="g-select-gray">
+					<g-select class="select  schedule-time" title="Select time" items='${JSON.stringify(options)}' classname="g-select-gray">
 					<input type="hidden" name="null" slot="value" value="4:00"></g-select>
 				</div>
 				<button class="remove-btn" data-click="${_.componentName}:removePracticeRow">
