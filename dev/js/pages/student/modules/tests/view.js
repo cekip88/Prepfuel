@@ -482,6 +482,10 @@ export const view = {
 		let
 			tpl = ``,
 			cnt = 1;
+		if(_.sectionPos == '1'){
+			cnt = 58;
+		}
+	
 		for(let questionPage of _.questionsPages){
 			for(let question of questionPage['questions']){
 				tpl+=`
@@ -504,13 +508,14 @@ export const view = {
 	},
 	questionsListCont(){
 		const _ = this;
+		let cnt =1;
 		let tpl =	`
 			<div class="col narrow">
 				<div class="block questions">
 				<h5 class="block-title small"><span>Questions</span></h5>
 				${Model.test.testStandard == "SHSAT" ? _.questionsListNavTabs() : ''}
 				<div class="questions-cont">
-					<h6 class="questions-list-title"><span>Question 1 - <i class="questions-length" id="questions-length">${Model.allQuestionsLength}</i></span></h6>
+					<h6 class="questions-list-title"><span>Question <b id="question-cnt-start">${cnt}</b> - <i class="questions-length" id="questions-length">${Model.allQuestionsLength}</i></span></h6>
 					<ul class="questions-list">
 						${_.questionsList()}
 					</ul>

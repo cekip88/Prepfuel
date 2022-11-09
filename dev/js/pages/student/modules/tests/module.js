@@ -394,7 +394,12 @@ export class TestsModule extends StudentPage{
 		}
 			//	_._$.currentQuestion = Model.currentQuestionData(_.datasPos);
 		
+		_.sectionPos = pos;
+		let cnt = 1;
+		
 		if(pos == '0'){
+			_.f('#question-cnt-start').textContent = cnt;
+			_.f('#questions-length').textContent = cnt+Model.allQuestionsLength-1;
 			if(_.changeSectionFromLastQuestion){
 			//	let currentQuestion = Model.allquestions[Model.allquestions.length-1];
 			_._$.currentQuestion = Model.questionsDatas[Model.questionsDatas.length-1];
@@ -404,11 +409,17 @@ export class TestsModule extends StudentPage{
 			}
 		}else{
 			_._$.currentQuestion = Model.questionsDatas[0];
+			 cnt = 58;
+			_.f('#question-cnt-start').textContent = cnt;
+			_.f('#questions-length').textContent = cnt+Model.allQuestionsLength-1;
 		}
 		_.isLastQuestion = false;
 		_.changedType = changedType;
 		_.isJump = false;
 		_.f('#test-section-name').textContent = Model.currentSection.sectionName;
+		
+		
+		
 		_.fillCheckedAnswers();
 	}
 	async changePracticeTest({item}){
@@ -1166,7 +1177,7 @@ export class TestsModule extends StudentPage{
 
 			let cont = _.f('.tt-ii');
 			if(!cont) return;
-			
+			let questionCntPos = 1;
 			_.clear(cont);
 			if( (currentQuestion['questions']) && (currentQuestion['questions'].length == 1) ){
 				_.questionPos = Model.currentQuestionDataPosById(currentQuestion['questions'][0]['_id'])
@@ -1225,7 +1236,7 @@ export class TestsModule extends StudentPage{
 			if(_.sectionChanged) {
 				let questionCont = _.f('.questions-list');
 				_.clear(questionCont);
-				_.f('#questions-length').textContent = Model.allQuestionsLength;
+			//	_.f('#questions-length').textContent = questionCntPos+Model.allQuestionsLength;
 				questionCont.append(_.markup(_.questionsList()));
 				if(!_.f('.back-to-question-button')) {
 					_.addBackToQuestionBtn(-1);

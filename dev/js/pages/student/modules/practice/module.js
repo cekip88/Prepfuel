@@ -295,7 +295,6 @@ export class PracticeModule extends StudentPage{
 	}
 	fillExplanation(currentQuestion) {
 		const _ = this;
-		console.log(currentQuestion);
 		currentQuestion['questions'].forEach(  async (question) => {
 			if(_.f(`#explanation-field-${question['_id']}`)){
 				_.f(`#explanation-field-${question['_id']}`).removeAttribute('hidden');
