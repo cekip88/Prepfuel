@@ -121,21 +121,22 @@ export default {
 			<span>Sa</span>
 		</div>
 	`},
-	'datePickerBody': (date,)=>{
-		let lens = 31,
+	'datePickerBody': (date)=>{
+		let
+			lens = 31,
 			month = date.getMonth() + 1,
-			year = date.getFullYear();
-		let shortMonths = [4,6,9,11];
+			year = date.getFullYear(),
+			shortMonths = [4,6,9,11],
+			firstDay = new Date(`${year} ${month} 01`).getDay(),
+			count = firstDay + lens,
+			tpl = `<div class="date-picker-body" data-month="${month < 10 ? '0' + month : month}" data-year="${year}">`;
+
 		if (shortMonths.indexOf(month) >= 0) lens = 30;
 		else if (month === 2) {
 			if (year % 4 === 0) lens = 29;
 			else lens = 28;
 		}
-		let
-			curDate = new Date(`${year} ${month} 01`),
-			firstDay = curDate.getDay(),
-			count = firstDay + lens,
-			tpl = `<div class="date-picker-body" data-month="${month < 10 ? '0' + month : month}" data-year="${year}">`;
+
 		count += 7 - (count % 7);
 		for (let i = 0; i < count; i++) {
 			if ((i < firstDay) || (i >= firstDay + lens)) {

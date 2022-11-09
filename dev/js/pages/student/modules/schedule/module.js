@@ -25,7 +25,9 @@ export class ScheduleModule extends StudentPage{
 		});
 		_.minStep = 1;
 		_.maxStep = 3;
-		_.testDate = new Date();
+
+		let date = new Date();
+		_.testDate = `${date.getFullYear()}-${(date.getMonth() + 1 < 10) ? '0' + date.getMonth() + 1 : date.getMonth() + 1}-${(date.getDate() < 10) ? '0' + date.getDate() : date.getDate()}`;
 		
 		_.practiceTests = [];
 		_.practiceAt = '4:00 PM';

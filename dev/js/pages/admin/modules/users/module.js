@@ -505,7 +505,6 @@ export class UsersModule extends AdminPage {
 			studentId = profileData['_id'];
 		}
 		let currentStudent = await Model.getStudent(studentId);
-		console.log(currentStudent)
 		_.studentInfo = Object.assign({},currentStudent['user']);
 		_.metaInfo = {};
 		_.studentInfo['currentSchool'] = currentStudent['currentSchool'];
@@ -1721,7 +1720,6 @@ export class UsersModule extends AdminPage {
 	async changeNextStep({item}) {
 		const _ = this;
 		let type = item.getAttribute('type');
-		console.log(_.studentInfo)
 		if( type == 'adding' ) {
 			let validation = await _.nextStepBtnValidation(_.f('#addingForm'));
 			if (!validation) return;
