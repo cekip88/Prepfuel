@@ -386,15 +386,16 @@ export default class GInput extends GComponent {
 	getDate(value){
 		const _ = this;
 		if (value) {
+			let valueItems = value.split('-');
+			let newValue = valueItems.length < 3 ? valueItems[1] + '-' + '01' + '-' + valueItems[0] : valueItems[1] + '-' + valueItems[2] + '-' + valueItems[0];
 			if (!_.isPrevious()) {
 				let date = new Date();
-				let valueItems = value.split('-');
-				if (parseInt(valueItems[0]) > date.getFullYear()) return new Date(value);
+				if (parseInt(valueItems[0]) > date.getFullYear()) return new Date(newValue);
 				else if (parseInt(valueItems[0]) === date.getFullYear()) {
-					if (parseInt(valueItems[1]) >= date.getMonth()) return new Date(value);
+					if (parseInt(valueItems[1]) >= date.getMonth()) return new Date(newValue);
 				}
 			} else {
-				return new Date(value);
+				return new Date(newValue);
 			}
 		} else {
 			return new Date();
@@ -550,8 +551,10 @@ export default class GInput extends GComponent {
 	}
 	fillDate(dateValue,type = 'value'){
 		const _ = this;
+		let valueItems = dateValue.split('-');
+		let newValue = valueItems.length < 3 ? valueItems[1] + '-' + '01' + '-' + valueItems[0] : valueItems[1] + '-' + valueItems[2] + '-' + valueItems[0];
 		let
-			date = type === 'value' ? (dateValue ? new Date(dateValue) : new Date()) : dateValue,
+			date = type === 'value' ? (newValue ? new Date(newValue) : new Date()) : newValue,
 			format = _.attr('format') ?? 'MM-DD-YYYY',
 			outValue = format,
 			days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Sunday'],
