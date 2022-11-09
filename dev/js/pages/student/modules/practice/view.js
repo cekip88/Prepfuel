@@ -291,8 +291,6 @@ export const view = {
 				</div>
 			</li>
 		`;
-		//	data-click="${_.componentName}:${task['status'] == 'completed' ? 'reviewTask' : 'startQuiz'}"
-		//
 	},
 
 	practiceAchievementTpl(){
@@ -995,7 +993,8 @@ export const view = {
 		}
 		tpl+=`</ul>
 			<div id="note-field-${currentQuestion['_id']}"></div>
-			<div id="explanation-field-${currentQuestion['_id']}"></div>
+			${await _.explanationAnswer(currentQuestion)}
+			
 			</div>
 		`;
 		return tpl;
@@ -1071,7 +1070,7 @@ export const view = {
 		tpl+=`
 				</ul>
 				<div id="note-field-${currentQuestion['_id']}"></div>
-				<div id="explanation-field-${currentQuestion['_id']}"></div>
+				${await _.explanationAnswer(currentQuestion)}
 			</div>
 		</div>`;
 		return tpl;
@@ -1160,7 +1159,7 @@ export const view = {
 		tpl+=`
 			</ul>
 			<div id="note-field-${currentQuestion['_id']}"></div>
-			<div id="explanation-field-${currentQuestion['_id']}"></div>
+			${await _.explanationAnswer(currentQuestion)}
 		</div>`;
 		return tpl;
 	},

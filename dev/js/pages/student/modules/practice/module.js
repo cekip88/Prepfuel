@@ -207,7 +207,6 @@ export class PracticeModule extends StudentPage{
 		_.f('#welcome-btn').setAttribute('data-id',currentConcept['concept']);
 		let howToList = _.f('#how-to-list');
 		for(let prop in currentConcept['howto']){
-			console.log(currentConcept['howto']);
 			let src = currentConcept['howto'][prop]
 			howToList.append(_.markup(_.howToListItem(src,currentConcept['concept'])));
 		}
@@ -296,6 +295,7 @@ export class PracticeModule extends StudentPage{
 	}
 	fillExplanation(currentQuestion) {
 		const _ = this;
+		console.log(currentQuestion);
 		currentQuestion['questions'].forEach(  async (question) => {
 			if(_.f(`#explanation-field-${question['_id']}`)){
 				_.f(`#explanation-field-${question['_id']}`).removeAttribute('hidden');
@@ -1695,7 +1695,6 @@ export class PracticeModule extends StudentPage{
 			}else{
 				_.changeAnswerButtonToNext();
 			}
-			
 			let answersExists = false;
 			if(_.answerVariant[currentQuestion['_id']]  && !_.answerVariant[currentQuestion['_id']]['answer']) return void 0;
 			currentQuestion['questions'].forEach( (question)=>{
