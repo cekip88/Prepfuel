@@ -93,11 +93,9 @@ export const view = {
 	},
 	stepTwoTpl(){
 		const _ = this;
-		console.log(_)
-		let rows = ``;
-		
-		for(let row of _.practiceRows){
-			rows += row.outerHTML;
+		let rows = '';
+		for (let item of _.practiceTests) {
+			rows += _.practiceTestRow(item)
 		}
 		return `
 			<h4 class="test-subtitle"><span>Practice test days</span></h4>
@@ -108,7 +106,7 @@ export const view = {
 				<p class="test-subtitle small">For more information on planning your practice, you can checkout our Tips and Strategies section.</p>
 			</div>
 			<div class="practice-schedule-rows">
-				<div id="shedule-rows">
+				<div id="schedule-rows">
 					${rows}
 				</div>
 				<div class="practice-schedule-row">
@@ -247,8 +245,9 @@ export const view = {
 			</div>
 		`;
 	},
-	practiceTestRow(){
+	practiceTestRow(item = null){
 		const _ = this;
+		let dateStr = _.startDate;
 		let options = [
 			{"text":"01:00 PM","value":"01:00 PM"},
 			{"text":"02:00 PM","value":"02:00 PM"},
@@ -257,7 +256,7 @@ export const view = {
 			{"text":"05:00 PM","value":"05:00 PM"},
 			{"text":"06:00 PM","value":"06:00 PM"},
 			{"text":"07:00 PM","value":"07:00 PM"},
-			{"text":"08:00 PM","value":"08:00 PM","active":true},
+			{"text":"08:00 PM","value":"08:00 PM"},
 			{"text":"09:00 PM","value":"09:00 PM"},
 			{"text":"10:00 PM","value":"10:00 PM"},
 			{"text":"11:00 PM","value":"11:00 PM"},
@@ -274,7 +273,22 @@ export const view = {
 			{"text":"10:00 AM","value":"10:00 AM"},
 			{"text":"11:00 AM","value":"11:00 AM"},
 			{"text":"12:00 PM","value":"12:00 PM"},
-		]
+		];
+
+		if (item) {
+			let
+				dateData = item.date.split('T')[0],
+				timeData = item.date.split('T')[1].substr(0,8),
+				date = new Date(dateData);
+			dateStr = `${date.getFullYear()}-${(date.getMonth() + 1 < 10) ? '0' + date.getMonth() + 1 : date.getMonth() + 1}-${(date.getDate() < 10) ? '0' + date.getDate() : date.getDate()}`
+			for (let unit of options) {
+				if (unit.value == timeData) {
+					unit.active = true;
+					break;
+				}
+			}
+		}
+
 		return `
 			<div class="practice-schedule-row">
 				<div class="blue-icon reverse">
@@ -284,11 +298,10 @@ export const view = {
 				</div>
 				<h5 class="practice-schedule-title">Practice test ${_.practiceRowsCnt}</h5>
 				<div class="practice-schedule-date">
-					<g-input type="date" class="input-date schedule-date" icon='false' format="month DD, YYYY" value="${new Date()}"></g-input>
+					<g-input type="date" class="input-date schedule-date" icon='false' format="month DD, YYYY" value="${dateStr}"></g-input>
 				</div>
 				<div class="practice-schedule-date">
-					<g-select class="select  schedule-time" title="Select time" items='${JSON.stringify(options)}' classname="g-select-gray">
-					<input type="hidden" name="null" slot="value" value="4:00"></g-select>
+					<g-select class="select schedule-time" title="Select time" items='${JSON.stringify(options)}' classname="g-select-gray">
 				</div>
 				<button class="remove-btn" data-click="${_.componentName}:removePracticeRow">
 					<span>Remove</span>
