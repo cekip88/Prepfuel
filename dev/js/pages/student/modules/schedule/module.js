@@ -27,7 +27,7 @@ export class ScheduleModule extends StudentPage{
 		_.maxStep = 3;
 
 		let date = new Date();
-		_.testDate = `${date.getFullYear()}-${(date.getMonth() + 1 < 10) ? '0' + date.getMonth() + 1 : date.getMonth() + 1}-${(date.getDate() < 10) ? '0' + date.getDate() : date.getDate()}`;
+		_.testDate = _.startDate = `${date.getFullYear()}-${(date.getMonth() + 1 < 10) ? '0' + date.getMonth() + 1 : date.getMonth() + 1}-${(date.getDate() < 10) ? '0' + date.getDate() : date.getDate()}`;
 		
 		_.practiceTests = [];
 		_.practiceAt = '4:00 PM';
@@ -39,7 +39,6 @@ export class ScheduleModule extends StudentPage{
 		
 		
 		_.practiceRowsCnt = 0;
-		_.practiceRows = [];
 		G_Bus.on(_, [
 			'changeSchedulePage',
 			'changeScheduleDate',
@@ -86,7 +85,7 @@ export class ScheduleModule extends StudentPage{
 		if(_.practiceRowsCnt === 4){
 			item.setAttribute('style','display:none;')
 		}
-		let rowsCont = _.f('#shedule-rows');
+		let rowsCont = _.f('#schedule-rows');
 		rowsCont.append(_.markup(_.practiceTestRow()));
 	}
 	removePracticeRow({item}){
@@ -110,6 +109,7 @@ export class ScheduleModule extends StudentPage{
 				_._$.currentStep--;
 			}
 		}
+		console.log(_)
 	}
 	changeScheduleDate({item}){
 		this.testDate = item.value;
@@ -152,11 +152,9 @@ export class ScheduleModule extends StudentPage{
 			_.innerCont = _.f('.test-inner');
 			_.f('#step-item').textContent = currentStep;
 			if(currentStep === 1 ){
-				let practiceRows = document.querySelectorAll('#shedule-rows .practice-schedule-row');
-				_.practiceRows = [];
+				let practiceRows = document.querySelectorAll('#schedule-rows .practice-schedule-row');
 				_.practiceTests = [];
 				for(let row of practiceRows){
-					_.practiceRows.push(row);
 					let
 						date = row.querySelector('.schedule-date').value,
 						time = row.querySelector('.schedule-time').value;
@@ -173,11 +171,9 @@ export class ScheduleModule extends StudentPage{
 				_.changeBtnToNext();
 			}
 			if(currentStep === 3 ){
-				let practiceRows = document.querySelectorAll('#shedule-rows .practice-schedule-row');
-				_.practiceRows = [];
+				let practiceRows = document.querySelectorAll('#schedule-rows .practice-schedule-row');
 				_.practiceTests = [];
 				for(let row of practiceRows){
-					_.practiceRows.push(row);
 					let
 						date = row.querySelector('.schedule-date').value,
 						time = row.querySelector('.schedule-time').value;
