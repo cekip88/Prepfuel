@@ -228,7 +228,7 @@ export const loginView = {
 		return `
 			<form class="login-form" data-submit="${_.componentName}:doFormAction" data-handle="doLogin">
 				<h2 class="login-title">
-					<span>Sing In to Prepfuel</span>
+					<span>Sign In to Prepfuel</span>
 				</h2>
 				<h5 class="login-subtitle">
 					<span>New Here?</span>
@@ -244,7 +244,7 @@ export const loginView = {
 						class="g-form-item" 
 						type="email" 
 						data-keydown="${_.componentName}:formInputHandle" 
-						value="${loginData ? loginData.email : 'admin@mail.ru'}" 
+						value="${loginData ? loginData.email : ''}" 
 						name="email" 
 						className="form-input" 
 						required
@@ -263,7 +263,7 @@ export const loginView = {
 						data-keydown="${_.componentName}:formInputHandle" 
 						name="password"  
 						className="form-input"  
-						value="${loginData ? loginData.password : 'Admin12345#'}" 
+						value="${loginData ? loginData.password : ''}" 
 						required
 					></g-input>
 				</div>
