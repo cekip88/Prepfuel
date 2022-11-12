@@ -158,8 +158,14 @@ export const loginView = {
 			<div class="login-full login-success">
 				<h2 class="login-main-title"><span>We sent password reset link to your email</span></h2>
 				<div class="login-main-subtitle"><span>Please check your inbox messages</span></div>
-				<div class="form-checkbox-row login-checkbox"><span>Did’t receive an email?</span>
-				<button class="link" data-click="${_.componentName}:resend">Resend</button></div><img class="login-success-img" src="/img/S_email.png" alt="">
+				<div class="form-checkbox-row login-checkbox">
+					<span>Did’t receive an email?</span>
+					<button class="link" data-click="${_.componentName}:resend">Resend</button>
+				</div>
+				<div class="form-checkbox-row login-checkbox">
+					<button class="button-blue" data-click="${_.componentName}:changeSection" section="login" style="width: 480px;max-width:80vw;">Back to sign in</button>
+				</div>
+				<img class="login-success-img" src="/img/S_email.png" alt="">
 			</div>
 		`;
 	},
