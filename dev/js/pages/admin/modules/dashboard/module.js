@@ -828,6 +828,10 @@ export class DashboardModule extends AdminPage{
 			last,
 			count = 0;
 
+		/*
+		* {title:'Monthly Plan',value:2945,color:'turquoise'},
+			{title:'Yearly Plan',value:2200,color:'turquoise-light'},*/
+
 		for (let i = 0; i < data.length; i++) {
 			let number = parseInt(data[i]['value']);
 			if (isNaN(number) || !number) continue;
