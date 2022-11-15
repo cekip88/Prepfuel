@@ -239,10 +239,10 @@ class _Model{
 	async setPause(currentQuestion){
 		const _ = this;
 		let currentQuestionData = _.currentQuestionDataByQuestionId(currentQuestion['_id']);
-		console.log(_.currentSectionPos);
 		let answer = {
 			'questionsState':{
 				sectionPos: _.currentSectionPos,
+				questionId: currentQuestion['_id'],
 				sectionId: currentQuestionData['_id'],
 			},
 			'status': 'pause'

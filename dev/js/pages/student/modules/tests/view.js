@@ -555,10 +555,7 @@ export const view = {
 	},
 	async gridQuestion(){
 		const _ = this;
-		let amount = 0;
-		if(_.sectionPos == 1){
-			amount = 57;
-		}
+
 		let currentQuestion;
 		if(_._$.currentQuestion['questions']){
 			currentQuestion = _._$.currentQuestion['questions'][0]
@@ -767,10 +764,7 @@ export const view = {
 	},
 	async compareQuestion(){
 		const _ = this;
-		let amount = 0;
-		if(_.sectionPos == 1){
-			amount = 57;
-		}
+
 		let
 			currentQuestion = _._$.currentQuestion['questions'][0],
 			tpl= `
@@ -866,10 +860,7 @@ export const view = {
 	},
 	async graphicQuestion(){
 		const _ = this;
-		let amount = 0;
-		if(_.sectionPos == 1){
-			amount = 58;
-		}
+
 		
 		let currentQuestion;
 		if(_._$.currentQuestion['questions']){
@@ -959,10 +950,6 @@ export const view = {
 	},
 	async standartQuestion(){
 		const _ = this;
-		let amount = 0;
-		if(_.sectionPos == 1){
-			amount = 57;
-		}
 		let currentQuestion;
 		if(_._$.currentQuestion['questions']){
 			currentQuestion = _._$.currentQuestion['questions'][0]

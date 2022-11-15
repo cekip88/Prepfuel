@@ -184,7 +184,8 @@ export class TestsModule extends StudentPage{
 	// Change section welcome->directions->questions etc
 	async changeSection({item,event}){
 		const _ = this;
-		let isPaused = item.hasAttribute('data-is-paused')
+		let continuedData = null;
+		let isPaused = item.hasAttribute('data-is-paused');
 		if(item.hasAttribute('data-result-id')) {
 			_.resultId = item.getAttribute('data-result-id');
 		}
@@ -228,13 +229,16 @@ export class TestsModule extends StudentPage{
 					questionDataId = results['resultObj']['questionsState']['sectionId'],
 					sectionPos = results['resultObj']['questionsState']['sectionPos'];
 				Model.changeSectionPos(parseInt(sectionPos));
-			let		questionData = Model.currentQuestionDataByQuestionDataId(questionDataId);
-				_._$.currentQuestion = questionData;
+				continuedData = Model.currentQuestionDataByQuestionDataId(questionDataId);
+				if( continuedData['questions'].length > 1){
+					_._$.currentQuestion = continuedData;
+				}else{
+					_._$.currentQuestion = continuedData['questions'][0];
+				}
+				_.questionPos = Model.currentQuestionDataPosById(_._$.currentQuestion['_id']);
 			}else{
 				_._$.currentQuestion = await Model.firstQuestion;
 			}
-			
-			
 			
 			_.storageTest = results['testResults'];
 			_.resultObj = results['resultObj'];
@@ -260,10 +264,11 @@ export class TestsModule extends StudentPage{
 			}
 			let
 				pp = _.getStep(),
-				
-				questionData = Model.currentQuestionData(_.questionPos+1),
+				questionData = Model.currentQuestionData(_.questionPos),
 				directionsBtn = _.f('#directions-btn');
-			
+			if(continuedData){
+				questionData = continuedData;
+			}
 			if(questionData){
 				if(questionData['type'] == 'passage'){
 					let pos = `${pp[0]}-${pp[1]}`;
@@ -290,6 +295,7 @@ export class TestsModule extends StudentPage{
 		if(section == 'questions'){
 			_.fillCheckedAnswers();
 			_.fillDisabledAnswers();
+			
 			if(Model.isFinished()){
 			//	_.f('.test-timer').textContent ='';
 				let headerBtn = _.f('.header-question-btn');
@@ -514,7 +520,7 @@ export class TestsModule extends StudentPage{
 	pauseTest({item}){
 		const _ = this;
 		Model.setPause(_._$.currentQuestion);
-		location.reload();
+		//location.reload();
 	}
 	tickTimer(){
 		const _ = this;
@@ -1094,13 +1100,7 @@ export class TestsModule extends StudentPage{
 			}else{
 				currentQuestion = _._$.currentQuestion['questions'][0];
 			}
-			
 		}
-		/*if(_._$.currentQuestion['questions']){
-			currentQuestion = _._$.currentQuestion['questions'][0]
-		}else {
-			currentQuestion = _._$.currentQuestion;
-		}*/
 		Model.questions.find((item,index)=> {
 			if( item['questions']){
 				let findedInQuestions = false;
