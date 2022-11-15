@@ -427,9 +427,13 @@ export const view = {
 	},
 	skipBtnTpl(pos){
 		const _ = this;
+		let questionEnd = 'question';
+		if(pos.indexOf('-') > -1){
+			questionEnd = 'questions';
+		}
 		return `
 			<button class="button skip-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="next">
-				<span><em class="skip-to-question-title">Skip to questions</em> <b class="skip-to-question">${pos}</b></span>
+				<span><em class="skip-to-question-title">Skip to ${questionEnd}</em> <b class="skip-to-question">${pos}</b></span>
 			</button>
 		`;
 	},
@@ -438,18 +442,22 @@ export const view = {
 		const _ = this;
 		let questionData = Model.currentQuestionData(_.questionPos-1);
 		let questPos = `${pos[0]}`;
+		let questionEnd = 'question';
+	
 		if(questionData){
 			if(questionData['type'] != 'passage'){
 				questPos = pos[0]-1;
 			}else{
+				questionEnd = 'questions';
 				if(pos[0] == pos[1]){
-					questPos = `${pos[0]}-${pos[1]}`
+					questPos = `${pos[0]}-${pos[1]}`;
 				}else{
 					questPos = `${pos[0]}`
 				}
 				
 			}
 		}
+		
 		if(pos == -1){
 			return `
 				<button class="test-footer-back back-to-question-button" data-click="${this.componentName}:changeTestSection" data-section-pos="0">
@@ -457,7 +465,7 @@ export const view = {
 				</button>`;
 		}else{
 			return `<button class="test-footer-back back-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="prev">
-						<span>Back to questions ${questPos}</span>
+						<span>Back to ${questionEnd} ${questPos}</span>
 					</button>`;
 		}
 	},
@@ -547,6 +555,10 @@ export const view = {
 	},
 	async gridQuestion(){
 		const _ = this;
+		let amount = 0;
+		if(_.sectionPos == 1){
+			amount = 57;
+		}
 		let currentQuestion;
 		if(_._$.currentQuestion['questions']){
 			currentQuestion = _._$.currentQuestion['questions'][0]
@@ -557,7 +569,7 @@ export const view = {
 			{ title, text, intro, content } = await _.getQuestionFields(currentQuestion),
 			tpl =	`
 			<div class="test-header">
-				<h5 class="block-title test-title"><span>Question ${_.getStep()[0]-1} of ${_.questionsLength}</span></h5>
+				<h5 class="block-title test-title"><span>Question ${_.getStep()[0]-1}</span></h5>
 				${_.actionsTpl(currentQuestion)}
 			</div>
 			<div class="test-inner ">
@@ -755,11 +767,15 @@ export const view = {
 	},
 	async compareQuestion(){
 		const _ = this;
+		let amount = 0;
+		if(_.sectionPos == 1){
+			amount = 57;
+		}
 		let
 			currentQuestion = _._$.currentQuestion['questions'][0],
 			tpl= `
 				<div class="test-header">
-					<h5 class="block-title test-title"><span>Question ${_.getStep()[0]-1} of ${_.questionsLength}</span></h5>
+					<h5 class="block-title test-title"><span>Question ${_.getStep()[0]-1}</span></h5>
 					${_.actionsTpl(currentQuestion)}
 				</div>
 				<div class="test-inner middle">
@@ -850,6 +866,11 @@ export const view = {
 	},
 	async graphicQuestion(){
 		const _ = this;
+		let amount = 0;
+		if(_.sectionPos == 1){
+			amount = 58;
+		}
+		
 		let currentQuestion;
 		if(_._$.currentQuestion['questions']){
 			currentQuestion = _._$.currentQuestion['questions'][0]
@@ -860,7 +881,7 @@ export const view = {
 		tpl= `
 			<div class="test-header">
 				<h5 class="block-title test-title">
-					<span>Question ${_.getStep()[0]-1} of ${_.questionsLength}</span>
+					<span>Question ${_.getStep()[0]-1}</span>
 				</h5>
 				${_.actionsTpl(currentQuestion)}
 			</div>
@@ -895,6 +916,7 @@ export const view = {
 	},
 	async passageQuestion(){
 		const _ = this;
+	/* of ${_._$.currentQuestion['questions'].length}*/
 		/*<p class="test-text"><span>${question['title']}</span></p>
 		* <p class="test-left-text">${_._$.currentQuestion['passageType'}</p>
 		* */
@@ -913,7 +935,7 @@ export const view = {
 			tpl+= `
 				<div class="test-sec" id="${question['_id']}">
 				<div class="test-header">
-					<h5 class="block-title test-title"><span>Question ${cnt+1} of ${_._$.currentQuestion['questions'].length}</span>
+					<h5 class="block-title test-title"><span>Question ${_.getStep()[0]+cnt}</span>
 					</h5>
 					${_.actionsTpl(question)}
 				</div>
@@ -937,6 +959,10 @@ export const view = {
 	},
 	async standartQuestion(){
 		const _ = this;
+		let amount = 0;
+		if(_.sectionPos == 1){
+			amount = 57;
+		}
 		let currentQuestion;
 		if(_._$.currentQuestion['questions']){
 			currentQuestion = _._$.currentQuestion['questions'][0]
@@ -948,7 +974,7 @@ export const view = {
 			tpl = `
 			<div class="test-header">
 				<h5 class="block-title test-title ddss">
-					<span>Question ${_.getStep('arr')[0]-1} of ${Model.allQuestionsLength}</span>
+					<span>Question ${_.getStep('arr')[0]-1}</span>
 				</h5>
 				${_.actionsTpl(currentQuestion)}
 			</div>

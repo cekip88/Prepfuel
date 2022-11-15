@@ -1257,7 +1257,8 @@ export class PracticeModule extends StudentPage{
 		const _ = this;
 		if(item.hasAttribute('disabled')) return void 0;
 		return new Promise( async (resolve)=> {
-			let handle = async(answerEntries) => {
+			let handle = async(answerEntries,len) => {
+				let cnt =1;
 				for(let entry of answerEntries) {
 					let
 						 id = entry[0],
@@ -1272,9 +1273,10 @@ export class PracticeModule extends StudentPage{
 						"category": Model.currentCategory,
 						"concept": Model.currentConcept['concept']
 					}
-					if(item.hasAttribute('is-finished')){
+					if(item.hasAttribute('is-finished') && cnt == len){
 						fullAnswer['status'] = 'finished';
 					}
+					cnt++;
 					if(ansObj['note']){
 						answerObj['note'] =ansObj['note'];
 					}
@@ -1292,6 +1294,7 @@ export class PracticeModule extends StudentPage{
 					if(ansObj['answer']) {
 						_._$.currentQuestion['questions'].forEach(question => {
 							let ans = _.answerVariant[id]['answer'];
+							if(question['_id'] != id) return void 0;
 							if(typeof ans == 'object') ans = ans.join();
 							if(_.isGrid()) {
 								ans = _.answerVariant[id]['answer'].join('');
@@ -1333,7 +1336,7 @@ export class PracticeModule extends StudentPage{
 				}
 			}
 			let answerEntries = Object.entries(_.answerVariant);
-			await handle(answerEntries);
+			await handle(answerEntries,answerEntries.length);
 			if((!_.isLastQuestion)) {
 				_.changeAnswerButtonToNext();
 			}
@@ -1491,7 +1494,7 @@ export class PracticeModule extends StudentPage{
 	}
 	setSkillPaginationAnswers(currentAnswers){
 		const _ = this;
-		console.log(currentAnswers);
+		console.log('setSkillPaginationAnswers',currentAnswers);
 		_.skillTests.forEach( (skill,index) => {
 			if(currentAnswers[skill['_id']]){
 				for(let i=0; i < currentAnswers[skill['_id']].length;i++ ){

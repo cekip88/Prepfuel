@@ -22,10 +22,10 @@ new router().init({
 	"middleware": {
 		"guest": {
 			routes: {
-				"/login/": "login",
+		/*		"/login": "login",
 				"/login/forgot": "login",
 				"/login/reset/{token}": "login",
-				"/login/confirm/{token}": "login",
+				"/login/confirm/{token}": "login",*/
 			}
 		},
 		"admin": {
@@ -56,9 +56,12 @@ new router().init({
 				"/student/dashboard?redirect=google": "student",
 			}
 		},
-		"student|admin": {
+		"student|admin|parent|guest": {
 			routes: {
-				"/test": "test",
+				"/login": "login",
+				"/login/forgot": "login",
+				"/login/reset/{token}": "login",
+				"/login/confirm/{token}": "login",
 			}
 		}
 	},

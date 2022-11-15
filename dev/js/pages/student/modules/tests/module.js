@@ -26,7 +26,7 @@ export class TestsModule extends StudentPage{
 			'jumpToQuestion','jumpToQuestion','saveBookmark','saveNote','changeInnerQuestionId','showForm','deleteNote',
 			'editNote','showTestLabelModal','updateStorageTest','saveReport','changeTestSection','enterGridAnswer',
 			'resetTest','domReady','changePracticeTest','changeTestResultsTab','showConfirmModal','pauseTest',
-		"startTest"
+			"startTest"
 		]);
 		//TestModel = new TestModel();
 		_.isLastQuestion = false;
@@ -101,6 +101,8 @@ export class TestsModule extends StudentPage{
 		_.lastSkippedQuestion= {
 			'data-questionPage-id': -1
 		};
+		_.sectionPos =0;
+		_.sectionChanged = false;
 		clearInterval(_.timerInterval);
 	}
 	async fillTestsBody(){
@@ -145,6 +147,18 @@ export class TestsModule extends StudentPage{
 		_.fillTestsBody();
 	}
 	
+	calcTestTime(){
+		const _ = this;
+		if(!_.resultObj) return void 0;
+		let minus = 0;
+		if(_.resultObj['pauses'].length){
+			for(let i = 1; i < _.resultObj['pauses'].length;i++){
+				let pause = _.resultObj['pauses'][i];
+				minus+= new Date(pause['pausedAt']).getTime() - new Date(_.resultObj['pauses'][i-1]['continuedAt']).getTime();
+			}
+		}
+		return _.testTime-Math.round(minus/60000);
+	}
 	get timerTime(){
 		const _ = this;
 		if(!_.resultObj) return void 0;
@@ -153,8 +167,11 @@ export class TestsModule extends StudentPage{
 			startTime = new Date(createdAt).getTime(),
 			nowTime =new Date().getTime(),
 			currentTime = nowTime - startTime;
-		return  Math.round(_.resultObj['timeLeft'] / 60000);
-		return  _.testTime - Math.round(currentTime/ 60000);
+		if(_.resultObj['pauses'].length){
+			let lastContinue = _.resultObj['pauses'][_.resultObj['pauses'].length-1]['continuedAt'];
+			currentTime = nowTime - new Date(lastContinue).getTime();
+		}
+		return _.testTime - Math.round(currentTime/60000);
 	}
 	get questionsPages(){return Model.currentSection['subSections'][Model.currentSubSectionPos]['questionData']}
 	get questionsLength(){
@@ -283,6 +300,10 @@ export class TestsModule extends StudentPage{
 				_.markAnswers();
 				_.markCorrectAnswer();
 			}else{
+				_.resultObj['pauses'].unshift({
+					'continuedAt': _.resultObj['testStartedAt']
+				});
+				_.testTime = _.calcTestTime();
 				_.set({
 					timerTime: _.timerTime
 				});
@@ -294,8 +315,7 @@ export class TestsModule extends StudentPage{
 	//
 	async startTest({item}){
 		const _ = this;
-		console.log('test started');
-	
+		
 	}
 	async resetTest({item}){
 		const _ = this;
@@ -637,11 +657,12 @@ export class TestsModule extends StudentPage{
 		let
 			questionId = item.getAttribute('data-question-id'),
 			bookmarked = item.classList.contains('active');
-		Model.saveTestToStorage({
+/*		Model.saveTestToStorage({
 			questionId: questionId,
 			bookmark: !bookmarked
-		});
+		});*/
 		item.classList.toggle('active');
+	
 		if(!_.isGrid()){
 			if(_.f(`.questions-list .questions-item[data-question-id="${questionId}"]`))
 				_.f(`.questions-list .questions-item[data-question-id="${questionId}"]`).classList.toggle('checked');
@@ -761,9 +782,18 @@ export class TestsModule extends StudentPage{
 					}else if(answer['answer'] == 'O'){
 						let bookmarkedButton = _.f(`.bookmarked-button[data-question-id="${quest['_id']}"]`);
 						if(!answer['bookmark']){
-							_.saveBookmark({
-								item: bookmarkedButton
-							});
+							if(!bookmarkedButton.classList.contains('active')){
+								_.saveBookmark({
+									item: bookmarkedButton
+								});
+							}
+							answer['bookmark'] = true;
+						}else{
+							if(!bookmarkedButton.classList.contains('active')){
+								_.saveBookmark({
+									item: bookmarkedButton
+								});
+							}
 							answer['bookmark'] = true;
 						}
 					}else{
@@ -779,20 +809,27 @@ export class TestsModule extends StudentPage{
 					currentQuestion = _._$.currentQuestion['questions'][0];
 				}
 				let answer = _.storageTest[currentQuestion['_id']];
+				
 				if(answer && (answer['answer'] != 'O')){
 					// if user choosed answer save it to db
 					answer['bookmark'] = _.f(`.bookmarked-button[data-question-id="${answer['questionId']}"]`).classList.contains('active');
 					resolve(await handle(answer));
 				}else{
 					// else set bookmarked this answer
+					let currentBookmark = _.f(`.bookmarked-button[data-question-id="${answer['questionId']}"]`);
 					if(!answer)	answer = {};
-					if((!answer['bookmark']) && (! _.f(`.bookmarked-button[data-question-id="${answer['questionId']}"]`).classList.contains('active'))){
+					if((!answer['bookmark']) && (! currentBookmark.classList.contains('active'))){
 						_.saveBookmark({
 							item: _.f('.bookmarked-button')
 						});
 						answer['bookmark'] = true;
 					}
-					if(_.f(`.bookmarked-button[data-question-id="${answer['questionId']}"]`).classList.contains('active')){
+					if(currentBookmark.classList.contains('active')){
+						answer['bookmark'] = true;
+					}else{
+						_.saveBookmark({
+							item: _.f('.bookmarked-button')
+						});
 						answer['bookmark'] = true;
 					}
 					
@@ -892,7 +929,11 @@ export class TestsModule extends StudentPage{
 	}
 	changeNextButtonToSkip(pos){
 		const _ = this;
-		_.f('.skip-to-question-title').textContent = `Skip to questions ${pos}`;
+		let questionEnd = 'question';
+		if(pos.indexOf('-') > -1){
+			questionEnd = 'questions';
+		}
+		_.f('.skip-to-question-title').textContent = `Skip to ${questionEnd} ${pos}`;
 		let btn = _.f('.skip-to-question-button');
 		btn.className= 'button skip-to-question-button';
 		btn.setAttribute('data-click',`${this.componentName}:changeQuestion`);
@@ -931,6 +972,10 @@ export class TestsModule extends StudentPage{
 				questPos = pos[0]-1;
 			}
 		}
+		let questionEnd = 'question';
+		if((typeof questPos == 'string') && questPos.indexOf('-') > -1){
+			questionEnd = 'questions';
+		}
 		if(pos == -1){
 			_.f('.test-footer .dir-button').after(
 				_.markup(`
@@ -942,7 +987,7 @@ export class TestsModule extends StudentPage{
 			_.f('.test-footer .dir-button').after(
 				_.markup(`
 					<button class="test-footer-back back-to-question-button" data-click="${this.componentName}:changeQuestion" data-dir="prev">
-						<span>Back to questions ${questPos}</span>
+						<span>Back to ${questionEnd} ${questPos}</span>
 					</button>`
 				)
 			)
@@ -1020,7 +1065,10 @@ export class TestsModule extends StudentPage{
 			input.value = '';
 		}else{
 			btn.classList.add('active');
-			_.setCorrectAnswer({item:item,type:'grid'})
+			if(!tem.classList.contains('high')){
+				_.setCorrectAnswer({item:item,type:'grid'})
+			}
+			
 		}
 		
 	}
@@ -1073,6 +1121,7 @@ export class TestsModule extends StudentPage{
 		return pos;
 	}
 	getQuestionNum(pos){
+		const _ = this;
 		let cnt = 0,cntFirst=1,cntLen=0;
 		for(let i = 0; i <= pos;i++){
 			if(Model.questions[i]){
@@ -1088,8 +1137,11 @@ export class TestsModule extends StudentPage{
 		}
 		//if(cntFirst < 1){ cntFirst =0;}
 		cntFirst = (cnt+1) - cntLen;
-	
-		return [cntFirst,cnt];
+		let amount = 0;
+		if(_.sectionPos == 1){
+			amount = 57;
+		}
+		return [cntFirst+amount,cnt+amount];
 	}
 	getStep(){
 		const _ = this;
@@ -1100,6 +1152,7 @@ export class TestsModule extends StudentPage{
 	getPrevStepCnt(){
 		const _ = this;
 		let pos = _.getStepPos();
+	
 		return _.getQuestionNum(pos-1);
 	}
 	getNextStepCnt(){
@@ -1216,7 +1269,6 @@ export class TestsModule extends StudentPage{
 				if(Model.currentSectionPos == 1){
 					if(!Model.isFinished()){
 					}else{
-						console.log('Finish');
 						_.changeSkipButtonToFinish();
 					}
 					

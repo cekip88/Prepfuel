@@ -111,15 +111,14 @@ export class router {
 			for(let value of _.routesValues){
 				if(value.indexOf('{') > 0){
 					let rawOutRoute = value.substring(value.indexOf('{')-1,-1);
+					outRoute = pathName.match(rawOutRoute);
+					if(!outRoute) continue;
 					difRoute = value;
 					rawOutRoute = new RegExp(rawOutRoute.replace('/','\/')+'/\\w{1,}');
-					outRoute = pathName.match(rawOutRoute);
-					if(outRoute) continue;
 				}
 			}
 			if(!outRoute){
 				if(!location.pathname != '/login'){}
-				history.pushState(null, null, '/login');
 				if (difRoute) {
 					return {
 						'module': _.routes[`${difRoute}`],
@@ -127,11 +126,11 @@ export class router {
 						'pathParts': pathParts
 					}
 				}
-				return {
+/*				return {
 					'module': 'login',
 					'params': params,
 					'pathParts': pathParts
-				}
+				}*/
 			}else{
 				pathName = difRoute;
 				return {
@@ -141,7 +140,15 @@ export class router {
 				}
 			}
 		}
-	
+		if(_.role != 'guest' && pathName == '/login'){
+			return {
+				'module':  _.role,
+				'params': {
+					module:'dashboard'
+				},
+				'pathParts': ['dashboard']
+			}
+		}
 		return {
 			'module': _.routes[`${pathName}`],
 			'params': params,
@@ -222,23 +229,10 @@ export class router {
 
 	changeHistory(){
 		const _ = this;
-		/*if (_.locations[_.curPosIndex] !== location.pathname) {
-			_.locations.push(location.pathname);
-		}
-		_.curPosIndex = _.locations.length - 1;
-		localStorage.setItem('history',JSON.stringify(_.locations));
-		console.log(_.locations)*/
 	}
 
 	backNextAction(){
 		const _ = this;
-		/*let locations = localStorage.getItem('history');
-		if (!locations) {
-			_.locations = [];
-		} else {
-			_.locations = JSON.parse(locations);
-		}
-		localStorage.setItem('history',JSON.stringify(_.locations));*/
 		let btn = document.querySelector(`[section="${location.pathname/*_.locations[_.curPosIndex]*/}"]`);
 		if ((btn && btn.classList.contains('active')) || !btn) {
 			_.changePage(location.pathname,false);
