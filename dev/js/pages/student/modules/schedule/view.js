@@ -94,8 +94,8 @@ export const view = {
 	stepTwoTpl(){
 		const _ = this;
 		let rows = '';
-		for (let item of _.practiceTests) {
-			rows += _.practiceTestRow(item)
+		for (let index = 0; index < _.practiceTests.length; index++) {
+			rows += _.practiceTestRow(_.practiceTests[index],index + 1)
 		}
 		return `
 			<h4 class="test-subtitle"><span>Practice test days</span></h4>
@@ -245,7 +245,7 @@ export const view = {
 			</div>
 		`;
 	},
-	practiceTestRow(item = null){
+	practiceTestRow(item = null,index = this.practiceRowsCnt){
 		const _ = this;
 		let dateStr = _.startDate;
 		let options = [
@@ -278,9 +278,10 @@ export const view = {
 		if (item) {
 			let
 				dateData = item.date.split('T')[0],
-				timeData = item.date.split('T')[1].substr(0,8),
-				date = new Date(dateData);
-			dateStr = `${date.getFullYear()}-${(date.getMonth() + 1 < 10) ? '0' + date.getMonth() + 1 : date.getMonth() + 1}-${(date.getDate() < 10) ? '0' + date.getDate() : date.getDate()}`
+				timeData = item.date.split('T')[1].substr(0,8);
+				//date = new Date(dateData);
+			//dateStr = `${date.getFullYear()}-${(date.getMonth() + 1 < 10) ? '0' + date.getMonth() + 1 : date.getMonth() + 1}-${(date.getDate() < 10) ? '0' + date.getDate() : date.getDate()}`
+			dateStr = dateData;
 			for (let unit of options) {
 				if (unit.value == timeData) {
 					unit.active = true;
@@ -296,7 +297,7 @@ export const view = {
 						<use xlink:href="#badge"></use>
 					</svg>
 				</div>
-				<h5 class="practice-schedule-title">Practice test ${_.practiceRowsCnt}</h5>
+				<h5 class="practice-schedule-title">Practice test ${index}</h5>
 				<div class="practice-schedule-date">
 					<g-input type="date" class="input-date schedule-date" icon='false' format="month DD, YYYY" value="${dateStr}"></g-input>
 				</div>
