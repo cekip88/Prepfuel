@@ -156,10 +156,10 @@ export const loginView = {
 		const _ = this;
 		return `
 			<div class="login-full login-success">
-				<h2 class="login-main-title"><span>We sent password reset link to your email</span></h2>
-				<div class="login-main-subtitle"><span>Please check your inbox messages</span></div>
+				<h2 class="login-main-title"><span>We sent a password reset link to your email.</span></h2>
+				<div class="login-main-subtitle"><span>Please check your inbox and spam folders.</span></div>
 				<div class="form-checkbox-row login-checkbox">
-					<span>Did’t receive an email?</span>
+					<span>Didn’t receive an email? Resend</span>
 					<button class="link" data-click="${_.componentName}:resend">Resend</button>
 				</div>
 				<div class="form-checkbox-row login-checkbox">
