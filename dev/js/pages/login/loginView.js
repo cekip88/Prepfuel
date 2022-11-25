@@ -159,7 +159,7 @@ export const loginView = {
 				<h2 class="login-main-title"><span>We sent a password reset link to your email.</span></h2>
 				<div class="login-main-subtitle"><span>Please check your inbox and spam folders.</span></div>
 				<div class="form-checkbox-row login-checkbox">
-					<span>Didn’t receive an email? Resend</span>
+					<span>Didn’t receive an email? </span>
 					<button class="link" data-click="${_.componentName}:resend">Resend</button>
 				</div>
 				<div class="form-checkbox-row login-checkbox">
@@ -172,7 +172,7 @@ export const loginView = {
 	forgotTpl(){
 		const _ = this;
 		//
-		return `<form class="login-form" data-submit="${_.componentName}:doFormAction" data-handle="doForgot">
+		return `<form class="login-form" data-submit="${_.componentName}:doFormAction" data-handle="doForgot" section="forgotDone">
 					<h2 class="login-title">
 						<span>Forgot Password?</span>
 					</h2>

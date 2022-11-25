@@ -44,7 +44,6 @@ class LoginPage extends G{
 				'loginSuccess',
 				'loginFail',
 				'registerFail',
-				'forgotSuccess',
 				'forgotFail',
 				'resetSuccess',
 				'resetFail',
@@ -105,29 +104,46 @@ class LoginPage extends G{
 		let validation = await _.formValidation(form);
 		if (!validation) return void 0;
 
-		if (handle == 'doLogin') {
-			let remember = form.querySelector('[name="remember"]');
-			if (remember.value.length) {
-				let loginData = {
-					email: formData.email,
-					password: formData.password
-				}
-				localStorage.setItem('loginData',JSON.stringify(loginData));
-			}
-			else localStorage.removeItem('loginData');
-		}
-		let resp = await loginModel[handle](formData,form);
+		await _[handle](form,formData);
 		_.lastSend = {handle:handle,form:form,formData:formData};
-		if (handle == 'doRegister') {
-			if (resp.status == 'success') {
-				let btn = document.createElement('BUTTON');
-				btn.setAttribute('section','registerSuccess');
-				_.changeSection({item:btn});
-			}
-		} else if (handle == 'doForgot') {
-			//validation = await _.checkEmail({item:form.querySelector('g-input')});
-			if (resp.status == 'fail') form.querySelector('g-input').doValidate("Sorry, we can't find a user with that email. Try again.")
+	}
+	async doRegister(form,formData){
+		const _ = this;
+		let resp = await loginModel['doRegister'](formData,form);
+		if (resp.status == 'success') {
+			let btn = document.createElement('BUTTON');
+			btn.setAttribute('section','registerSuccess');
+			_.changeSection({item:btn});
 		}
+	}
+	async doLogin(form,formData){
+		let remember = form.querySelector('[name="remember"]');
+		if (remember.value.length) {
+			let loginData = {
+				email: formData.email,
+				password: formData.password
+			}
+			localStorage.setItem('loginData',JSON.stringify(loginData));
+		}
+		else localStorage.removeItem('loginData');
+		await loginModel['doLogin'](formData,form);
+	}
+	async doForgot(form,formData){
+		let input = form.querySelector('g-input');
+		let value = input.value;
+		if (!value) {
+			input.doValidate("Email can't be empty");
+			return false;
+		}
+		let
+			dogPos = value.indexOf('@'),
+			dotPos = value.lastIndexOf('.');
+		if (dogPos <= 0 || dotPos <= 0 || dogPos > dotPos || dotPos == value.length - 1) {
+			input.doValidate("Invalid email");
+			return false;
+		}
+		let resp = await loginModel['doForgot'](formData,form);
+		if (resp.status == 'fail') form.querySelector('g-input').doValidate("Sorry, we can't find a user with that email. Try again.")
 	}
 	showSuccessPopup(text) {
 		const _ =  this;
@@ -205,7 +221,7 @@ class LoginPage extends G{
 			part = (section == 'reset') ? 'row' : 'right';
 
 		if(section !== 'welcome'){
-			if (section === 'registerSuccess') {
+			if (section === 'registerSuccess' || section === 'forgotDone') {
 				_.pageStructure.left.container.style = 'display:none';
 			} else {
 				_.pageStructure.left.container.removeAttribute('style')
@@ -247,14 +263,6 @@ class LoginPage extends G{
 		let msg = response['error'];
 		_.f('g-input[name="email"]').doValidate(msg);
 		_.f('g-input[name="password"]').doValidate(msg);
-	}
-	forgotSuccess({item:form}){
-		const _ = this;
-		//let renderData = {part:'row',content: _.markup(_[`forgotDoneTpl`](),false)};
-		//_.renderPart(renderData);
-		let cont = form.parentElement;
-		form.remove();
-		if (cont) cont.append(_.markup(_.forgotDoneTpl()));
 	}
 	forgotFail(){
 		const _ = this;

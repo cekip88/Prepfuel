@@ -95,7 +95,7 @@ class _loginModel{
 		if( _.isSuccessStatus(rawResponse.status) ){
 			let response = await rawResponse.json();
 			if( _.isSuccessResponse(response) ){
-				await G_Bus.trigger(_.componentName,'forgotSuccess',/*response['token']*/{item:form});
+				await G_Bus.trigger(_.componentName,'changeSection',/*response['token']*/{item:form});
 				return response;
 			}else{
 				G_Bus.trigger(_.componentName,'forgotFail',{
