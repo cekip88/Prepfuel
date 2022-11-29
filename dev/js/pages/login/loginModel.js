@@ -95,6 +95,7 @@ class _loginModel{
 		if( _.isSuccessStatus(rawResponse.status) ){
 			let response = await rawResponse.json();
 			if( _.isSuccessResponse(response) ){
+				if (response.role && response.role == 'student') form.setAttribute('role','forgotDoneStudent')
 				await G_Bus.trigger(_.componentName,'changeSection',/*response['token']*/{item:form});
 				return response;
 			}else{
@@ -106,6 +107,21 @@ class _loginModel{
 			}
 		} else {
 			return await rawResponse.json()
+		}
+	}
+	async sendRemoveAnswers(formData,form){
+		const _ = this;
+		let rawResponse = await fetch(_.endpoints['remove'],{
+			method: 'POST',
+			..._.baseHeaders,
+			body: JSON.stringify(formData),
+		});
+		if( _.isSuccessStatus(rawResponse.status) ){
+			let response = await rawResponse.json();
+			if( _.isSuccessResponse(response) ){
+				await G_Bus.trigger(_.componentName,'changeSection',/*response['token']*/{item:form});
+				return response;
+			}
 		}
 	}
 	async doReset(formData){

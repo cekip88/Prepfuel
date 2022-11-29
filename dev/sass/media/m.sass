@@ -2803,7 +2803,11 @@ button.student-profile-plan-edit
 		background-color: rgb($white)
 		.button
 			&-blue,&-lightblue
-				width: 100%
+				padding: 14px 54px
+				&:not(.center)
+					width: 100%
+				&.center
+					margin: 0 auto
 				&.narrow
 					width: initial
 	&-form
@@ -2864,9 +2868,11 @@ button.student-profile-plan-edit
 		&.row
 			flex-direction: row
 			.button-blue,.button-lightblue
-				margin-left: 16px
+				&:not(.center)
+					margin-left: 16px
 				&:first-child
-					margin-left: 0
+					&:not(.center)
+						margin-left: 0
 		&-comment
 			margin-top: 12px
 			font-size: calc(12em/14)
@@ -2920,7 +2926,12 @@ button.student-profile-plan-edit
 				color: rgb($neutral-700)
 		&:checked ~ .form-checkbox-icon:after
 			background-color: rgb($blue)
-
+textarea.form-input
+	height: 96px
+	padding: 15px
+	resize: none
+	&[disabled]
+		opacity: .5
 
 .blue-icon
 	+wh(48px)
@@ -5205,3 +5216,47 @@ div.tbl-head
 	&-next
 		margin-top: 20px
 		display: block
+
+.removeForm
+	max-width: 544px
+	padding: 24px
+	background-color: #fff
+	border-radius: 12px
+	&-bgc
+		+dfc
+		width: 100vw
+		height: 100vh
+		background-color: #E5E5E5
+	&-text
+		margin-top: 24px
+		line-height: 24px
+		color: rgb($neutral-700)
+
+.radio
+	display: flex
+	flex-direction: column
+	align-items: flex-start
+	font-family: $f_reg
+	&-button
+		display: flex
+		align-items: center
+		margin-top: 16px
+		color: rgb($neutral-600)
+		position: relative
+		&:before
+			+wh(24px)
+			margin-right: 12px
+			content: ''
+			display: block
+			border-radius: 12px
+			background-color: rgba(235, 237, 243, 1)
+		&.active
+			&:after
+				+wh(12px)
+				content: ''
+				display: block
+				background-color: #fff
+				border-radius: 50%
+				position: absolute
+				left: 6px
+

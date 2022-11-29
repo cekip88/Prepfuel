@@ -51,6 +51,7 @@ class LoginPage extends G{
 				'changeAgree',
 				'formInputHandle',
 				'checkEmail','validatePassword','resend',
+				'radio','enableTextarea',
 		]);
 	}
 
@@ -145,6 +146,10 @@ class LoginPage extends G{
 		let resp = await loginModel['doForgot'](formData,form);
 		if (resp.status == 'fail') form.querySelector('g-input').doValidate("Sorry, we can't find a user with that email. Try again.")
 	}
+	async sendRemoveAnswers(form,formData){
+		const _ = this;
+		let resp = await loginModel['sendRemoveAnswers'](formData,form);
+	}
 	showSuccessPopup(text) {
 		const _ =  this;
 		_.closePopup();
@@ -221,7 +226,7 @@ class LoginPage extends G{
 			part = (section == 'reset') ? 'row' : 'right';
 
 		if(section !== 'welcome'){
-			if (section === 'registerSuccess' || section === 'forgotDone') {
+			if (section === 'registerSuccess' || section === 'forgotDone' || section === 'removeEnd') {
 				_.pageStructure.left.container.style = 'display:none';
 			} else {
 				_.pageStructure.left.container.removeAttribute('style')
@@ -280,6 +285,31 @@ class LoginPage extends G{
 		this.handleErrors({response});
 	}
 
+	radio({item,event}){
+		const _ = this;
+		let target = event.target;
+		if (target.className !== 'radio-button') return;
+		let input = item.querySelector('INPUT');
+
+		let activeBtn = item.querySelector('.active');
+		if(activeBtn) activeBtn.classList.remove('active');
+		input.value = target.textContent;
+		target.classList.add('active');
+	}
+	enableTextarea({item,event}){
+		const _ = this;
+		let targetItem = document.getElementById(item.getAttribute('target'));
+		let target = event.target;
+		if (!target.classList.contains('radio-button')) return;
+
+		if (target.hasAttribute('data-other')) {
+			targetItem.removeAttribute('disabled');
+		} else {
+			targetItem.setAttribute('disabled','')
+			targetItem.value = '';
+		}
+	}
+
 	async init(blockData){
 		const _ = this;
 		if (blockData && blockData.params && blockData.params.module) {
@@ -291,6 +321,10 @@ class LoginPage extends G{
 			} else if (blockData.params.module == 'reset') {
 				_.resetData = blockData;
 				_.moduleStructure['right'] = `resetTpl`;
+			} else if (blockData.params.module == 'remove') {
+				_.resetData = blockData;
+				_.pageStructure.left.container.style = 'display:none';
+				_.moduleStructure['right'] = `removeTpl`;
 			}
 		}
 /*		let initTpl = _.loginTpl();

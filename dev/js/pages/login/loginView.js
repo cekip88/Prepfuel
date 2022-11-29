@@ -31,6 +31,60 @@ export const loginView = {
 			</div>
 		`;
 	},
+	removeTpl(){
+		const _ = this;
+		let
+			token = _.resetData.pathParts[_.resetData.pathParts.length - 1],
+			email = _.resetData.params.email;
+		return `
+			<div class="removeForm-bgc">
+				<form class="removeForm" data-submit="${_.componentName}:doFormAction" data-handle="sendRemoveAnswers" section="removeEnd">
+					<h2 class="login-title"><span>We’re sorry to see you go</span></h2>
+					<input type="hidden" class="g-form-item" name="token" value="${token}">
+					<input type="hidden" class="g-form-item" name='email' value="${email}">
+					<p class="removeForm-text">
+						Before you go, we are interested in a learning more about why you decide to leave, please let us know the reason you are leaving.
+					</p>
+					<p class="removeForm-text">
+						Your responses will be kept confidential and will not be used for any purpose other than research conducted by our company.
+					</p>
+					<div class="radio" data-click="${_.componentName}:radio;${_.componentName}:enableTextarea" target="reason-text">
+						<input type="hidden" name="reason" id="reason">
+						<button class="radio-button" type="button">Technical issues</button>
+						<button class="radio-button" type="button">Too expensive</button>
+						<button class="radio-button" type="button">Switching to another product</button>
+						<button class="radio-button" type="button">Not sure how to use the data & tools</button>
+						<button class="radio-button" type="button">Missing features I need</button>
+						<button class="radio-button" type="button" data-other>Other (please explain below)</button>
+					</div>
+					<div class="form-block">
+						<textarea class="g-form-item form-input" disabled id="reason-text" name="comment" placeholder="Anything you want to share? (Optional)"></textarea>
+					</div>
+					<div class="form-block row">
+					<button class="button-blue center"><span>Submit</span></button></div>
+				</form>
+			</div>
+			<div class="login-bottom">
+				<a class="link" href="#"><span>Contact Us</span></a>
+			</div>
+		`;
+	},
+	removeEndTpl(){
+		const _ = this;
+		return `
+			<div class="removeForm-bgc">
+				<div class="removeForm">
+					<p class="removeForm-text">
+						Thank you for taking the time to complete the questionnaire and submitting it back to us.
+					</p>
+					<p class="removeForm-text">
+						Your participation is important to us.
+					</p>
+					<p class="removeForm-text">
+						Your feedback and suggestions will help us improve the Prepfuel.
+					</p>
+		`;
+	},
 	passwordChangedTpl(){
 		const _ = this;
 		return `
@@ -158,6 +212,23 @@ export const loginView = {
 			<div class="login-full login-success">
 				<h2 class="login-main-title"><span>We sent a password reset link to your email.</span></h2>
 				<div class="login-main-subtitle"><span>Please check your inbox and spam folders.</span></div>
+				<div class="form-checkbox-row login-checkbox">
+					<span>Didn’t receive an email? </span>
+					<button class="link" data-click="${_.componentName}:resend">Resend</button>
+				</div>
+				<div class="form-checkbox-row login-checkbox">
+					<button class="button-blue" data-click="${_.componentName}:changeSection" section="login" style="width: 480px;max-width:80vw;">Back to sign in</button>
+				</div>
+				<img class="login-success-img" src="/img/S_email.png" alt="">
+			</div>
+		`;
+	},
+	forgotDoneStudent(){
+		const _ = this;
+		return `
+			<div class="login-full login-success">
+				<h2 class="login-main-title"><span>We sent a password reset link to your Parent's email.</span></h2>
+				<div class="login-main-subtitle"><span>Please ask your Parent to check their inbox and spam folders.</span></div>
 				<div class="form-checkbox-row login-checkbox">
 					<span>Didn’t receive an email? </span>
 					<button class="link" data-click="${_.componentName}:resend">Resend</button>
