@@ -81,6 +81,7 @@ class ParentPage extends G{
 		let
 			section = item.getAttribute('section'),
 			tpl = section.split('/')[2];
+		console.log(section)
 
 		if(_.currentSection == section || !section) return void 0;
 
@@ -157,6 +158,7 @@ class ParentPage extends G{
 		if(blockData && blockData['params']){
 			params = blockData['params'];
 		}
+		console.log(params)
 		if(params['redirect']){
 			await _.getMe();
 		}

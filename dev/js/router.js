@@ -114,6 +114,7 @@ export class router {
 					outRoute = pathName.match(rawOutRoute);
 					if(!outRoute) continue;
 					difRoute = value;
+					console.log(difRoute)
 					rawOutRoute = new RegExp(rawOutRoute.replace('/','\/')+'/\\w{1,}');
 				}
 			}

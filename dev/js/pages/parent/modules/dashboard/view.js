@@ -1042,6 +1042,7 @@ export const view = {
 	},
 	dashboardBodyTpl(){
 		const _ = this;
+		console.log('dashboardBodyTpl')
 		let date = new Date;
 		date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
 		let tpl = `
@@ -1169,6 +1170,7 @@ export const view = {
 	},
 	studentProfileTpl( studentInfo ){
 		const _ = this;
+		console.log('studentProfileTpl')
 		let avatarTpl = '';
 		if (studentInfo.user.avatar) avatarTpl = `<img data-id="${studentInfo['user']['avatar']['_id'] ?? studentInfo['user']['avatar']}" data-type="avatars" data-title="avatar">`;
 		let tpl = `
@@ -1210,7 +1212,7 @@ export const view = {
 							<button 
 								class="button-blue" 
 								id="${ studentInfo['_id'] }" 
-								section="profile"
+								section="student-profile"
 								data-click="${_.componentName}:changeSection"	
 							>Edit Profile</button>
 							<button class="button button-hide" data-click="${_.componentName}:hideProfile">

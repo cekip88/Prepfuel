@@ -94,7 +94,7 @@ export class DashboardModule extends ParentPage{
 			_.fillDashboardTabs();
 			_.fillStudentProfile();
 		}
-		if( _.subSection == 'profile' ){
+		if( _.subSection == 'profile' || _.subSection == 'student-profile' ){
 			_.body = _.f("g-body");
 			_.clear( _.body );
 			_.fillProfile();
@@ -107,6 +107,7 @@ export class DashboardModule extends ParentPage{
 		let sectionParts = section.split('/');
 		if (sectionParts.length > 1) section = sectionParts[sectionParts.length - 1];
 		_.subSection = section;
+		if (section == 'student-profile') toHistory = false;
 		if (toHistory) history.pushState(null,null,section);
 		if (item.getAttribute('data-clear')) {
 			_.studentInfo = {};
@@ -148,7 +149,7 @@ export class DashboardModule extends ParentPage{
 				'footer':'dashboardFooter'
 			}
 		}
-		if (section == 'profile'){
+		if (section == 'profile' || section == 'student-profile'){
 			_.moduleStructure = {
 				'header':'fullHeader',
 				'body':'',
