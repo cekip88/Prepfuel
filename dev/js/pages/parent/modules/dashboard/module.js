@@ -62,6 +62,7 @@ export class DashboardModule extends ParentPage{
 			'fillProfile','assignCourse','changeCurrentCourse',
 			'showCancelMembership','showCalendar',
 			'showSelect','liveSearch','liveSearchInsert',
+			'changePasswordInput'
 		]);
 
 	}
@@ -195,6 +196,7 @@ export class DashboardModule extends ParentPage{
 			_.studentInfo['userId'] = _.studentInfo['_id'];
 			_.studentInfo['_id'] = _.currentStudent['_id'];
 			_.studentInfo['plans'] = _.currentStudent['plans'];
+			_.studentInfo['password'] = '';
 
 			_.courseData = {};
 			for (let item of _.studentInfo['plans']) {
@@ -717,11 +719,18 @@ export class DashboardModule extends ParentPage{
 			'firstName': _.studentInfo['firstName'],
 			"lastName": _.studentInfo['lastName'],
 			"email": _.studentInfo['email'],
-			"password": _.studentInfo['password'],
 			"avatar": _.studentInfo['avatar'],
 			"grade": _.studentInfo['grade'],
 			"currentSchool": _.studentInfo['currentSchool']
 		};
+		if (_.studentInfo.password || _.studentInfo['confirm_password']) {
+			if (!_.studentInfo.password) {
+				_.validatePassword({item:document.querySelector('[name="password"]')});
+			} else if (!_.studentInfo['confirm_password']) {
+				_.validatePassword({item:document.querySelector('[name="confirm_password"]')});
+			} else updateData.password = _.studentInfo.password;
+		}
+
 		let response = await Model.updateStudent(updateData);
 		if(!response) return void 0;
 		_.currentStudent = response;
@@ -950,6 +959,13 @@ export class DashboardModule extends ParentPage{
 		G_Bus.trigger(_.componentName,'showSuccessPopup','Password Generated and Copied');
 		setTimeout(()=>{input.type = 'password'},2000)
 	}
+	changePasswordInput({item}){
+		const _ = this;
+		let validate = _.validatePassword({item});
+		if (validate) {
+			_.studentInfo[item.name] = item.value;
+		}
+	}
 	validatePassword({item}){
 		const _ = this;
 		let
@@ -969,6 +985,7 @@ export class DashboardModule extends ParentPage{
 			text.removeAttribute('style');
 			if (item == inputs[1]) text.setAttribute('style','display:none;')
 		} else {
+			console.log(item)
 			item.setMarker('red');
 			text.style = 'color: red;';
 		}

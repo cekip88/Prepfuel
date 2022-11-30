@@ -1812,7 +1812,7 @@ export const view = {
 									</div>
 							</div>
 							<div class="adding-section">
-								<div class="password-inner passwords">
+								<div class="passwords">
 									<h6 class="password-title">Password</h6>
 									<div class="adding-inpt">
 										<div class="form-label-row">
@@ -1823,7 +1823,7 @@ export const view = {
 											name="password" 
 											match="changePassword" 
 											class="g-form-item" 
-											data-outfocus="${_.componentName}:validatePassword" 
+											data-outfocus="${_.componentName}:changePasswordInput" 
 											classname="form-input adding-inpt"
 										></g-input>
 										<span class="form-label-desc">8+ characters, with min. one number, one uppercase letter and one special character</span>
@@ -1837,7 +1837,7 @@ export const view = {
 											name="confirm_password" 
 											match="changePassword" 
 											class="g-form-item" 
-											data-outfocus="${_.componentName}:validatePassword" 
+											data-outfocus="${_.componentName}:changePasswordInput" 
 											classname="form-input adding-inpt"
 										></g-input>
 										<span class="form-label-desc" style="display:none;">Password does not match</span>
