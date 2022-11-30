@@ -278,7 +278,7 @@ export const view = {
 		if (item) {
 			let
 				dateData = item.date.split('T')[0],
-				timeData = item.date.split('T')[1].substr(0,8);
+				timeData = item.date.split('T')[1].substr(0,5);
 				//date = new Date(dateData);
 			//dateStr = `${date.getFullYear()}-${(date.getMonth() + 1 < 10) ? '0' + date.getMonth() + 1 : date.getMonth() + 1}-${(date.getDate() < 10) ? '0' + date.getDate() : date.getDate()}`
 			dateStr = dateData;
