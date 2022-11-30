@@ -33,15 +33,17 @@ export const loginView = {
 	},
 	removeTpl(){
 		const _ = this;
+		console.log(_.removeData)
 		let
-			token = _.resetData.pathParts[_.resetData.pathParts.length - 1],
-			email = _.resetData.params.email;
+			parentId = _.removeData.params.parentid,
+			role = _.removeData.params.removeduser;
+
 		return `
 			<div class="removeForm-bgc">
 				<form class="removeForm" data-submit="${_.componentName}:doFormAction" data-handle="sendRemoveAnswers" section="removeEnd">
 					<h2 class="login-title"><span>We’re sorry to see you go</span></h2>
-					<input type="hidden" class="g-form-item" name="token" value="${token}">
-					<input type="hidden" class="g-form-item" name='email' value="${email}">
+					<input type="hidden" class="g-form-item" name="parentId" value="${parentId}">
+					<input type="hidden" class="g-form-item" name="role" value="${role}">
 					<p class="removeForm-text">
 						Before you go, we are interested in a learning more about why you decide to leave, please let us know the reason you are leaving.
 					</p>

@@ -30,7 +30,7 @@ export class ScheduleModule extends StudentPage{
 		_.testDate = _.startDate = `${date.getFullYear()}-${(date.getMonth() + 1 < 10) ? '0' + date.getMonth() + 1 : date.getMonth() + 1}-${(date.getDate() < 10) ? '0' + date.getDate() : date.getDate()}`;
 		
 		_.practiceTests = [];
-		_.practiceAt = '4:00 PM';
+		_.practiceAt = '8:00';
 		_.datePicked = true;
 		
 		
@@ -109,7 +109,6 @@ export class ScheduleModule extends StudentPage{
 				_._$.currentStep--;
 			}
 		}
-		console.log(_)
 	}
 	changeScheduleDate({item}){
 		this.testDate = item.value;

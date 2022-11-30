@@ -61,7 +61,7 @@ new router().init({
 				"/login": "login",
 				"/login/forgot": "login",
 				"/login/reset/{token}": "login",
-				"/login/remove/{token}": "login",
+				"/login/remove-user/{parentId}": "login",
 				"/login/confirm/{token}": "login",
 			}
 		}

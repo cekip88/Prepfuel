@@ -321,8 +321,8 @@ class LoginPage extends G{
 			} else if (blockData.params.module == 'reset') {
 				_.resetData = blockData;
 				_.moduleStructure['right'] = `resetTpl`;
-			} else if (blockData.params.module == 'remove') {
-				_.resetData = blockData;
+			} else if (blockData.params.module == 'remove-user') {
+				_.removeData = blockData;
 				_.pageStructure.left.container.style = 'display:none';
 				_.moduleStructure['right'] = `removeTpl`;
 			}
