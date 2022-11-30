@@ -111,15 +111,21 @@ class _loginModel{
 	}
 	async sendRemoveAnswers(formData,form){
 		const _ = this;
+
+		await G_Bus.trigger(_.componentName,'changeSection',{item:form});
+		console.log(form)
+		return;
+
 		let rawResponse = await fetch(_.endpoints['remove'],{
 			method: 'POST',
 			..._.baseHeaders,
 			body: JSON.stringify(formData),
 		});
+
 		if( _.isSuccessStatus(rawResponse.status) ){
 			let response = await rawResponse.json();
 			if( _.isSuccessResponse(response) ){
-				await G_Bus.trigger(_.componentName,'changeSection',/*response['token']*/{item:form});
+				await G_Bus.trigger(_.componentName,'changeSection',{item:form});
 				return response;
 			}
 		}

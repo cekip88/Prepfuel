@@ -33,7 +33,6 @@ export const loginView = {
 	},
 	removeTpl(){
 		const _ = this;
-		console.log(_.removeData)
 		let
 			parentId = _.removeData.params.parentid,
 			role = _.removeData.params.removeduser;
