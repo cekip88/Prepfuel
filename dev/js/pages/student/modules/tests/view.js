@@ -344,7 +344,7 @@ export const view = {
 		}
 		tpl+=`</div>
 					<div class="test-footer">
-						<a class="test-footer-back" data-click="${_.componentName}:changeSection" section="questions">
+						<a class="test-footer-back" data-click="${_.componentName}:changeSection" section="questions" data-result-id="${Model.test['resultId']}">
 							<span>Review this test</span>
 						</a>
 						<!--button class="button-blue"><span>Start the next section: Quantitative Reasoning</span></button -->
@@ -359,7 +359,7 @@ export const view = {
 			<div class="section">
 				<div class="section-header">
 					<h1 class="title">Practice test ${Model.test['testNumber']} &mdash; <strong id="test-section-name">${Model.currentSection.sectionName}</strong></h1>
-					${_.timerTpl()}
+					${Model.isFinished() ? '': _.timerTpl()}
 					<button class="button-white header-question-btn" data-click="${this.componentName}:showConfirmModal" section="score"><span>Finish this test</span></button>
 				</div>
 			</div>
@@ -623,7 +623,7 @@ export const view = {
 					</div>
 					<div class="grid-row">
 						<div class="grid-col"	data-col="1">
-							<button class="grid-button high"> </button>
+							<button class="grid-button high" disabled> </button>
 						</div>
 						<div class="grid-col"	data-col="2">
 							${_.gridDigitButtons()}
@@ -1077,7 +1077,11 @@ export const view = {
 			<div class="test-results-item" style="background-color:rgba(${_.sectionColors[cnt]},.2);color:rgb(${_.sectionColors[cnt]})">
 				<h6 class="test-results-item-title">${result['title']}</h6>
 				<span class="test-results-item-value">${result['result']['score']}</span>
-				<button class="test-results-item-button" style="background-color:rgb(${_.sectionColors[cnt]})" data-test-id="${Model.test['_id']}" data-click="${_.componentName}:changeSection" section="questions">Review this test</button>
+				<button class="test-results-item-button" style="background-color:rgb(${_.sectionColors[cnt]})"
+					data-result-id="${Model.test['resultId']}"
+					data-section-pos="${cnt}"
+					data-test-id="${Model.test['_id']}"
+					data-click="${_.componentName}:changeSection" section="questions">Review this test</button>
 			</div>
 			`;
 			cnt++;
@@ -1257,9 +1261,9 @@ export const view = {
 		return `
 			<li class="test-aside-item">
 				<button data-pos="${i-1}" class="test-aside-btn ${i-1 == Model.currentTestPos ? 'active' : ''}" data-id="${test['_id']}" data-click="${_.componentName}:changePracticeTest">
-					<h6 class="test-aside-btn-title">Practice test ${test['testNumber']}</h6><span class="test-aside-btn-desc">0 of ${test['sections'].length} sections complete</span>
+					<h6 class="test-aside-btn-title">Practice test ${test['testNumber']}</h6><span class="test-aside-btn-desc">${test.status == 'finished' ? test['sections'].length : 0} of ${test['sections'].length} sections complete</span>
 					<span class="test-aside-btn-date">
-						<svg><use xlink:href="#calendar"></use></svg><span>${_.createdAtFormat(test['schedule'])}</span>
+						<svg><use xlink:href="#calendar"></use></svg><span>${test.status == 'finished' ? _.createdAtFormat(test.finishedAt) : _.createdAtFormat(test['schedule'])}</span>
 					</span>
 				</button>
 			</li>

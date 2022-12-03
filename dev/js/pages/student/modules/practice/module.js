@@ -203,6 +203,7 @@ export class PracticeModule extends StudentPage{
 		let
 			conceptName = item.getAttribute('data-id'),
 			{ currentConcept } = Model.getCurrentConcept(conceptName);
+		console.log(currentConcept);
 		_.f('#welcome-header-title').textContent = currentConcept['concept'];
 		_.f('#welcome-btn').setAttribute('data-id',currentConcept['concept']);
 		let howToList = _.f('#how-to-list');
@@ -919,10 +920,25 @@ export class PracticeModule extends StudentPage{
 		}
 
 	}
+	checkGridAnswer(answer) {
+		let res = {},sign = answer[0] == '-' ? -1 : 1;
+		answer.shift();
+		let numberStr = answer.join('').replaceAll('_', ' '),
+		number = +numberStr;
+		if (isNaN(number)) {
+			res.status = 'error';
+			res.value = 'Not a valid number';
+		} else {
+			res.status = 'success';
+			res.value = number * sign;
+		}
+		return res;
+	}
 	enterGridAnswer({item,event}){
 		const _ = this;
 		let btn = event.target;
 		if (btn.tagName !== 'BUTTON') return void 0;
+		if(btn.classList.contains('high')) return void 0;
 		
 		let
 			testRow = item.parentNode,
@@ -943,7 +959,6 @@ export class PracticeModule extends StudentPage{
 			gridValue =  ['_','_','_','_','_'];
 		if(input.value) gridValue =  input.value.split('');
 		//shower.children[index].textContent = btn.textContent;
-
 		grids.forEach( (grid) =>{
 			let
 				input = grid.querySelector('#grid-value'),
@@ -952,18 +967,19 @@ export class PracticeModule extends StudentPage{
 			if(input.value) gridValue =  input.value.split('');
 			shower.children[index].textContent = btn.textContent;
 		})
+		
 		let activeBtn = item.querySelector(`.grid-col:nth-child(${index + 1}) .active`);
 		if (activeBtn) {
 			activeBtn.classList.remove('active');
 			shower.children[index].textContent = '';
 			gridValue[pos] =  '_';
 			input.value = gridValue.join('');
-			_.setCorrectAnswer({item:item,type:'grid'})
+			_.setCorrectAnswer({item: item, type: 'grid'});
 		}else{
 			btn.classList.add('active');
 			gridValue[pos] =  btn.textContent;
 			input.value = gridValue.join('');
-			_.setCorrectAnswer({item:item,type:'grid'})
+			_.setCorrectAnswer({item: item, type: 'grid'});
 		}
 	}
 	setWrongAnswer({item,event}){
@@ -971,6 +987,7 @@ export class PracticeModule extends StudentPage{
 		let
 			answer = item.parentNode,
 			questionId =  answer.getAttribute('data-question-id');
+		if(answer.classList.contains('active')) return void 0;
 		if(!_.tempDisabledAnswerObj[questionId])	_.tempDisabledAnswerObj[questionId]  = {};
 		let
 			currentTest,
@@ -1014,7 +1031,7 @@ export class PracticeModule extends StudentPage{
 				_.changeNextButtonToAnswer()
 			}
 		}else{
-			_.setAvailableCheckBtn();
+			//_.setAvailableCheckBtn();
 		}
 	
 	}
@@ -1298,7 +1315,20 @@ export class PracticeModule extends StudentPage{
 							if(typeof ans == 'object') ans = ans.join();
 							if(_.isGrid()) {
 								ans = _.answerVariant[id]['answer'].join('');
-								ans = ans.replaceAll('_', '');
+							//	ans = ans.replaceAll('_', '');
+								let outAns = '';
+								for(let i=0; i<ans.length; i++){
+									if(i == ans.length-1 && ans[i] == '_'){
+										outAns +='';
+									}else{
+										if(ans[i] == '_'){
+											outAns +='0';
+										}else{
+											outAns += ans[i];
+										}
+									}
+								}
+								ans = outAns;
 							}
 							let answerItems = _.f(`.answer-item[data-question-id="${question['_id']}"]`);
 							if(answerItems) {
@@ -1307,16 +1337,23 @@ export class PracticeModule extends StudentPage{
 									ans.classList.add('wrong');
 								});
 							}
-							if(question['correctAnswer'] == ans) {
+							
+							let query = question['correctAnswer'] ==ans;
+							if(_.isGrid()) {
+								query = parseFloat(question['correctAnswer']) == parseFloat(ans);
+							}
+							if(query) {
 								_.f('#question-pagination .active').classList.add('done');
 								if(_.isGrid()) {
 									_.f('.grid.empty').setAttribute('hidden', 'hidden');
 									_.f('.grid.correct').removeAttribute('hidden');
+									_.f('.grid.incorrect').setAttribute('hidden', 'hidden');
 								}
 							} else {
 								_.f('#question-pagination .active').classList.add('error');
 								if(_.isGrid()) {
 									_.f('.grid.empty').setAttribute('hidden', 'hidden');
+									_.f('.grid.correct').setAttribute('hidden', 'hidden');
 									_.f('.grid.incorrect').removeAttribute('hidden');
 								}
 							}
@@ -1362,9 +1399,21 @@ export class PracticeModule extends StudentPage{
 			className = '.grid.correct',
 			correctAnswer = _._$.currentQuestion['questions'][0]['correctAnswer'],
 			ans =   _.answerVariant[answerObject['questionId']]['answer'].join('');
-		ans = ans.replaceAll('_','');
-		
-		if( correctAnswer != ans) className = '.grid.incorrect';
+		let outAns = '';
+		for(let i=0; i<ans.length; i++){
+			if(i == ans.length-1 && ans[i] == '_'){
+				outAns +='';
+			}else{
+				if(ans[i] == '_'){
+					outAns +='0';
+				}else{
+					outAns += ans[i];
+				}
+			}
+		}
+		ans = outAns;
+		let query = parseFloat(correctAnswer) != parseFloat(ans);
+		if( query) className = '.grid.incorrect';
 		_.f('.grid.empty').setAttribute('hidden','hidden');
 		if( className == '.grid.correct'){
 			_.f('.grid.correct').removeAttribute('hidden');
@@ -1484,6 +1533,7 @@ export class PracticeModule extends StudentPage{
 				answers = currentAnswers[key],
 				pos = answers['pos'];
 			answers.forEach(  answer=>{
+				// continue from here
 				if(answer['answer'] == answer['correctAnswer']){
 					_.f(`.pagination-link[data-pos="${answer[pos]}"]`).classList.add('done');
 				}else{

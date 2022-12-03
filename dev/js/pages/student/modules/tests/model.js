@@ -152,8 +152,8 @@ class _Model{
 				if(rawResponse.status < 210){
 					let
 						response = await rawResponse.json();
-					console.log(response);
 					_.test = response['response'];
+					console.log(_.test);
 					_.testStatus = _.test['status'];
 					resolve(_.test)
 				}else{

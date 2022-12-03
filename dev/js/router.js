@@ -47,7 +47,7 @@ export class router {
 		//_.user['role'] = 'guest';
 		//if(_.user['role'] == 'guest')
 		await _.getMe();
-		
+
 		_.currentPageRoute = await _.definePageRoute(route,push);
 		_.clearComponents();
 		await _.includePage(_.currentPageRoute);
@@ -141,13 +141,23 @@ export class router {
 				}
 			}
 		}
-		if(_.role != 'guest' && pathName == '/login'){
+		if(_.role != 'guest' && (pathName == '/login' || pathName == '/')){
+			history.pushState(null, null, `${_.role}/dashboard`);
 			return {
 				'module':  _.role,
 				'params': {
 					module:'dashboard'
 				},
 				'pathParts': ['dashboard']
+			}
+		}
+		if(_.role == 'guest' && route != '/login'){
+			return {
+				'module':  'login',
+				'params': {
+					module:'login'
+				},
+				'pathParts': ['login']
 			}
 		}
 		return {

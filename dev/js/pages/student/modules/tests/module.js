@@ -101,6 +101,7 @@ export class TestsModule extends StudentPage{
 		_.lastSkippedQuestion= {
 			'data-questionPage-id': -1
 		};
+		Model.currentSectionPos = 0;
 		_.sectionPos =0;
 		_.sectionChanged = false;
 		clearInterval(_.timerInterval);
@@ -182,12 +183,27 @@ export class TestsModule extends StudentPage{
 	
 	
 	// Change section welcome->directions->questions etc
+	setTimerTime(){
+		const _ = this;
+		if(_.resultObj){
+			_.testTime = _.calcTestTime();
+			_.set({
+				timerTime: _.timerTime
+			});
+		}
+	}
 	async changeSection({item,event}){
 		const _ = this;
-		let continuedData = null;
-		let isPaused = item.hasAttribute('data-is-paused');
+		let
+			continuedData = null,
+			isPaused = item.hasAttribute('data-is-paused');
+		if(item.hasAttribute('data-section-pos')){
+			_.sectionPos = parseInt(item.getAttribute('data-section-pos'));
+			Model.changeSectionPos(_.sectionPos);
+		}
 		if(item.hasAttribute('data-result-id')) {
 			_.resultId = item.getAttribute('data-result-id');
+			Model.changeSectionPos(0);
 		}
 		let section = item.getAttribute('section');
 		_.moduleStructure = {
@@ -202,11 +218,13 @@ export class TestsModule extends StudentPage{
 					 console.log('Last answer saved',await _.saveAnswerToDB());
 				 }
 				console.log('Test finished',await Model.finishTest({}));
+				
 				//console.log('Test result data', await Model.getTestResultsByResultId());
 				//_._$.currentQuestion = Model.questions[0];
 				_.moduleStructure['body'] = _.flexible(section);
 			//	_._$.currentQuestion = Model.firstQuestion;
 				await _.render();
+				
 				return void 0;
 			}
 		}
@@ -248,13 +266,14 @@ export class TestsModule extends StudentPage{
 				Model.getTestResultsByResultId();
 			}
 		}
-	//	_._$.currentSection = section;
 		
 		if( (section == 'questions') && (Model.isFinished()) ){
 			let results = await Model.getTestResults(_.resultId);
+			await Model.getTest();
+			_._$.currentQuestion = await Model.firstQuestion;
 			_.storageTest = results['testResults'];
 		}
-		
+
 		await _.render();
 		if(section == 'directions') {
 			let isContinue = item.hasAttribute('data-dir');
@@ -291,6 +310,12 @@ export class TestsModule extends StudentPage{
 			}
 		//	_.f('#directionsQuestion').textContent = _.getStep()[0]-1//_.questionPos+1;
 			_.tickTimer();
+			if(!Model.isFinished()){
+				_.resultObj['pauses'].unshift({
+					'continuedAt': _.resultObj['testStartedAt']
+				});
+				_.setTimerTime();
+			}
 		}
 		if(section == 'questions'){
 			_.fillCheckedAnswers();
@@ -306,13 +331,7 @@ export class TestsModule extends StudentPage{
 				_.markAnswers();
 				_.markCorrectAnswer();
 			}else{
-				_.resultObj['pauses'].unshift({
-					'continuedAt': _.resultObj['testStartedAt']
-				});
-				_.testTime = _.calcTestTime();
-				_.set({
-					timerTime: _.timerTime
-				});
+				_.setTimerTime();
 			}
 		}
 		
@@ -517,10 +536,11 @@ export class TestsModule extends StudentPage{
 		});
 	}
 	
-	pauseTest({item}){
+	async pauseTest({item}){
 		const _ = this;
+		await _.saveAnswerToDB();
 		Model.setPause(_._$.currentQuestion);
-		//location.reload();
+		location.reload();
 	}
 	tickTimer(){
 		const _ = this;
@@ -856,6 +876,7 @@ export class TestsModule extends StudentPage{
 			obj  = {
 				questionId: questionId
 			};
+		if(answer.classList.contains('active')) return void 0;
 		if(answer.hasAttribute('disabled')){
 			answer.removeAttribute('disabled');
 			if(currentTest['disabledAnswers']){
@@ -928,7 +949,14 @@ export class TestsModule extends StudentPage{
 
 	changeSkipButtonToNext(){
 		const _ = this;
-		_.f('.skip-to-question-title').textContent = 'Next to question';
+		let questionTitle = _.f('.skip-to-question-title'),
+			questionNumber = _.f('.skip-to-question');
+		let questionEnd = 'question';
+		
+		if(questionNumber && (questionNumber.textContent.indexOf('-') > -1)){
+			questionEnd = 'questions';
+		}
+		questionTitle.textContent = `Next to ${questionEnd}`;
 		let btn = _.f('.skip-to-question-button');
 		btn.className= 'skip-to-question-button button-blue';
 		btn.setAttribute('data-click',`${this.componentName}:changeQuestion`);
@@ -1043,7 +1071,7 @@ export class TestsModule extends StudentPage{
 		const _ = this;
 		let btn = event.target;
 		if (btn.tagName !== 'BUTTON') return void 0;
-
+		if(btn.classList.contains('high')) return void 0;
 		let
 			col = btn.closest('.grid-col'),
 			parent = col.parentElement,
@@ -1059,24 +1087,20 @@ export class TestsModule extends StudentPage{
 			shower = item.querySelector('.grid-input');
 
 		shower.children[index].textContent = btn.textContent;
+		
 		input.value = '';
-		for (let i = 0; i < shower.childElementCount; i++) {
-			input.value += (shower.children[i].textContent ?? '*');
-		}
-
 		let activeBtn = item.querySelector(`.grid-col:nth-child(${index + 1}) .active`);
 		if (activeBtn) {
 			activeBtn.classList.remove('active');
+			//	input.value = '';
 			shower.children[index].textContent = '';
-			input.value = '';
 		}else{
 			btn.classList.add('active');
-			if(!tem.classList.contains('high')){
-				_.setCorrectAnswer({item:item,type:'grid'})
-			}
-			
 		}
-		
+		for (let i = 0; i < shower.childElementCount; i++) {
+			input.value += (shower.children[i].textContent ?? '*');
+		}
+		_.setCorrectAnswer({item:item,type:'grid'});
 	}
 	
 	async getQuestionTpl(){

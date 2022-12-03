@@ -1086,6 +1086,10 @@ button.student-profile-plan-edit
 		color: rgb($neutral-600)
 
 
+.answer-value,.test-text
+	mjx-over
+		margin-bottom: -15px!important
+		padding-bottom: 0!important
 .test
 	&-scores
 		&-list
@@ -1212,9 +1216,6 @@ button.student-profile-plan-edit
 			line-height: calc(24em / 16)
 		span
 			display: block
-		mjx-over
-			margin-bottom: -15px!important
-			padding-bottom: 0!important
 	&-header
 		@extend %dfi
 		flex-wrap: wrap
@@ -1930,6 +1931,8 @@ button.student-profile-plan-edit
 			color: rgb($white)
 		&.high
 			height: 356px
+			&:hover
+				background-color: rgb(var(--neutral-300))
 	&-row
 		&.ans
 			.grid-button.active
