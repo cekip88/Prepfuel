@@ -216,11 +216,13 @@ class LoginPage extends G{
 
 		if (validate) {
 			item.setMarker();
-			text.removeAttribute('style');
-			if (item == inputs[1]) text.setAttribute('style','display:none;')
+			if (text) {
+				text.removeAttribute('style');
+				if (item == inputs[1]) text.setAttribute('style','display:none;')
+			}
 		} else {
 			item.setMarker('red');
-			text.style = 'color: red;';
+			if(text) text.style = 'color: red;';
 		}
 		return validate
 	}
