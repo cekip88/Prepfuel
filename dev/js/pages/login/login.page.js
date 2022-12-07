@@ -99,6 +99,7 @@ class LoginPage extends G{
 		const _ = this;
 		if (e) e.preventDefault();
 		let handle = form.getAttribute('data-handle');
+		console.log(handle)
 		let formData = _.gFormDataCapture(form);
 		if(!formData) return void 0;
 
@@ -107,6 +108,10 @@ class LoginPage extends G{
 
 		await _[handle](form,formData);
 		_.lastSend = {handle:handle,form:form,formData:formData};
+	}
+	async doReset(form,formData){
+		const _ = this;
+		await loginModel.doReset(formData);
 	}
 	async doRegister(form,formData){
 		const _ = this;
