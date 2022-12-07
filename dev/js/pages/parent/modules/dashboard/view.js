@@ -1030,6 +1030,7 @@ export const view = {
 					<button 
 						class="button-blue" 
 						section="/parent/addingStudent"
+						toHistory="false"
 						data-click="${_.componentName}:changeSection"
 					>
 						<span>Add student</span>
@@ -1213,6 +1214,7 @@ export const view = {
 								class="button-blue" 
 								id="${ studentInfo['_id'] }" 
 								section="student-profile"
+								toHistory="false"
 								data-click="${_.componentName}:changeSection"	
 							>Edit Profile</button>
 							<button class="button button-hide" data-click="${_.componentName}:hideProfile">

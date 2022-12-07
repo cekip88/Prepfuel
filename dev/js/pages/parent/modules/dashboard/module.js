@@ -64,7 +64,6 @@ export class DashboardModule extends ParentPage{
 			'showSelect','liveSearch','liveSearchInsert',
 			'changePasswordInput'
 		]);
-
 	}
 	async domReady() {
 		const _ = this;
@@ -107,8 +106,10 @@ export class DashboardModule extends ParentPage{
 		let sectionParts = section.split('/');
 		if (sectionParts.length > 1) section = sectionParts[sectionParts.length - 1];
 		_.subSection = section;
-		if (section == 'student-profile') toHistory = false;
+		
+		if (item.getAttribute('toHistory') == 'false') toHistory = false;
 		if (toHistory) history.pushState(null,null,section);
+		
 		if (item.getAttribute('data-clear')) {
 			_.studentInfo = {};
 			_.metaInfo = {};
@@ -127,7 +128,6 @@ export class DashboardModule extends ParentPage{
 			_.moduleStructure = {
 				'header':'fullHeader',
 				'header-tabs':'studentTabs',
-				'body':'badgeTpl',
 				'footer':'dashboardFooter'
 			}
 		}
@@ -618,6 +618,7 @@ export class DashboardModule extends ParentPage{
 
 	// add student methods
 	async fillStudentInfo({item}){
+		console.log('fillStudentInfo')
 		const _ = this;
 		let
 			name = item.getAttribute('name'),
@@ -662,20 +663,20 @@ export class DashboardModule extends ParentPage{
 		const _ = this;
 		let curCourseData = _.courseData[_.courseData.currentPlan];
 		let createInfo = {
-			firstName: _.studentInfo.firstName,
-			lastName: _.studentInfo.lastName,
-			email: _.studentInfo.email,
-			password: _.studentInfo.password,
-			avatar: _.studentInfo.avatar,
-			grade: _.studentInfo.grade._id,
-			currentSchool: _.studentInfo.currentSchool,
-			course: curCourseData.course._id,
-			level: curCourseData.level._id,
-			testDate: curCourseData.testDate,
-			firstSchool: curCourseData.firstSchool._id,
-			secondSchool: curCourseData.secondSchool._id,
-			thirdSchool: curCourseData.thirdSchool._id,
-			parentId: _.studentInfo.parentId
+			'firstName': _.studentInfo.firstName,
+			'lastName': _.studentInfo.lastName,
+			'email': _.studentInfo.email,
+			'password': _.studentInfo.password,
+			'avatar': _.studentInfo.avatar,
+			'grade': _.studentInfo.grade._id,
+			'currentSchool': _.studentInfo.currentSchool,
+			'course': curCourseData.course._id,
+			'level': curCourseData.level._id,
+			'testDate': curCourseData.testDate,
+			'firstSchool': curCourseData.firstSchool._id,
+			'secondSchool': curCourseData.secondSchool._id,
+			'thirdSchool': curCourseData.thirdSchool._id,
+			'parentId': _.studentInfo.parentId
 		};
 		let response = await Model.createStudent(createInfo);
 		if (!response) return void 0;
@@ -771,6 +772,7 @@ export class DashboardModule extends ParentPage{
 		const _ = this;
 
 		let listCont = _.f('.avatars-list');
+		console.log(listCont)
 		if (!listCont.children.length ) {
 			_.avatars = _.wizardData['avatars'];
 			listCont.append(_.markup(_.avatarsItemsTpl()));
@@ -1132,7 +1134,8 @@ export class DashboardModule extends ParentPage{
 			let validate = await _.nextStepBtnValidation(cont);
 			if (!validate) return;
 		}
-
+		
+		console.log(_)
 		_._$.addingStep = parseInt(targetStep);
 	}
 	async assignStep({item}){
@@ -1171,8 +1174,8 @@ export class DashboardModule extends ParentPage{
 			let stepOneData = _.wizardData ?? await Model.getWizardData();
 			if (_.isEmpty(_.studentInfo.currentPlan)) {
 				_.studentInfo.currentPlan = {
-					course: stepOneData['courses'][0],
-					level: stepOneData['courses'][0]['levels'][0],
+					course: stepOneData['courses'][2],
+					level: stepOneData['courses'][2]['levels'][0],
 				};
 			}
 			_.courseData = {};
