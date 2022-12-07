@@ -157,6 +157,7 @@ export class DashboardModule extends ParentPage{
 			}
 		}
 		await _.render();
+		console.log(_)
 	}
 	changeStudent({item,event}){
 		const _ = this;

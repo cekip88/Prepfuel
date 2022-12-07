@@ -1748,7 +1748,8 @@ export const view = {
 			courseData,
 			course = '',
 			level = '',
-			testDate = plan && plan['testDate'] ? _.createdAtFormat(plan['testDate']) : '';
+			//testDate = plan && plan['testDate'] ? _.createdAtFormat(plan['testDate']) : '';
+			testDate = plan && plan['testDate'] ? plan['testDate'].substr(0,10) : '';
 
 		if (plan && plan.course) {
 			if (plan.course.title) {
@@ -2328,6 +2329,7 @@ export const view = {
 			}
 		}
 		if (!currentCourse) currentCourse = 'ISEE';
+		
 		return `
 			<div class="student-profile-row student-profile-body">
 				<div class="student-profile-left">
@@ -2374,7 +2376,15 @@ export const view = {
 							<div class="form-label-row">
 								<label class="form-label">Date registered</label>
 							</div>
-							<g-input type="text" name="testDate"  data-input="${_.componentName}:fillStudentInfo"  value='${_.createdAtFormat(_.studentInfo["createdAt"])}' class="g-form-item" classname="form-input adding-inpt" disabled></g-input>
+							<g-input
+								type="date"
+								value='${_.studentInfo["createdAt"].substr(0,10)}'
+								format="month DD, YYYY"
+								icon="false"
+								class="g-form-item"
+								classname="form-input adding-inpt"
+								disabled
+							></g-input>
 							</div>
 					</div>
 					<div class="adding-section">

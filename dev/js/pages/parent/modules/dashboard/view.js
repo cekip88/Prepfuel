@@ -1171,7 +1171,6 @@ export const view = {
 	},
 	studentProfileTpl( studentInfo ){
 		const _ = this;
-		console.log('studentProfileTpl')
 		let avatarTpl = '';
 		if (studentInfo.user.avatar) avatarTpl = `<img data-id="${studentInfo['user']['avatar']['_id'] ?? studentInfo['user']['avatar']}" data-type="avatars" data-title="avatar">`;
 		let tpl = `
@@ -1764,7 +1763,6 @@ export const view = {
 			}
 		}
 		if (!currentCourse) currentCourse = 'ISEE';
-		console.log(_.studentInfo)
 
 		return `
 			<div class="section parent">
@@ -1812,7 +1810,15 @@ export const view = {
 									<div class="form-label-row">
 										<label class="form-label">Date registered</label>
 									</div>
-									<g-input type="text" name="testDate"  data-input="${_.componentName}:fillStudentInfo"  value='${_.createdAtFormat(_.studentInfo["createdAt"])}' class="g-form-item" classname="form-input adding-inpt" disabled></g-input>
+									<g-input
+										type="date"
+										icon="false"
+										value='${_.studentInfo["createdAt"].substr(0,10)}'
+										format="month DD, YYYY"
+										class="g-form-item"
+										classname="form-input adding-inpt"
+										disabled
+									></g-input>
 									</div>
 							</div>
 							<div class="adding-section">
@@ -1929,7 +1935,8 @@ export const view = {
 		let
 			course = '',
 			level = '',
-			testDate = plan && plan['testDate'] ? _.createdAtFormat(plan['testDate']) : '';
+			testDate = plan && plan['testDate'] ? plan['testDate'].substr(0,10) : '';
+			//testDate = plan && plan['testDate'] ? _.createdAtFormat(plan['testDate']) : '';
 
 		if (plan && plan.course) {
 			if (plan.course.title) {
@@ -1937,7 +1944,6 @@ export const view = {
 				level = plan.level ? plan.level.title.trim() : '';
 			}
 		}
-
 		return `
 			<div class="adding-section">
 				<h4 class="adding-subtitle withmar">Course & Test Information</h4>
@@ -1963,7 +1969,7 @@ export const view = {
 						name="testDate" 
 						format="month DD, YYYY" 
 						icon="false" 
-						value="${testDate}" 
+						value="${testDate}"
 						class="g-form-item" 
 						classname="form-input adding-inpt"
 						data-change="${_.componentName}:fillStudentInfo"
