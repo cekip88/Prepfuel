@@ -12,6 +12,7 @@ export class DashboardModule extends AdminPage{
 			'body-tabs':'dashboardTabs',
 			'body':'studentDashboardBody',
 		};
+		document.title = 'Prepfuel - Dashboard';
 	}
 
 	define() {

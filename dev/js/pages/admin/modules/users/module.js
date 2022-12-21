@@ -12,6 +12,7 @@ export class UsersModule extends AdminPage {
 			'body':'usersBody',
 			'footer':'adminFooter'
 		}
+		document.title = 'Prepfuel - Users';
 	}
 
 	async asyncDefine(){

@@ -13,6 +13,7 @@ export class DashboardModule extends ParentPage{
 
 		_.me = JSON.parse(localStorage.getItem('me'));
 		_.prepMe();
+		document.title = 'Prepfuel - Dashboard';
 
 		if (_.me['parent']['students']['length']) {
 			_.moduleStructure = {
@@ -117,6 +118,7 @@ export class DashboardModule extends ParentPage{
 		}
 
 		if (section == 'welcome'){
+			document.title = 'Prepfuel - Welcome';
 			_.moduleStructure = {
 				'header':'',
 				'header-tabs':'',
@@ -125,6 +127,7 @@ export class DashboardModule extends ParentPage{
 			}
 		}
 		if (section == 'addingStudent'){
+			document.title = 'Prepfuel - Adding student';
 			_.moduleStructure = {
 				'header':'fullHeader',
 				'header-tabs':'studentTabs',
@@ -132,6 +135,7 @@ export class DashboardModule extends ParentPage{
 			}
 		}
 		if (section == 'assignCourse'){
+			document.title = 'Prepfuel - Assign course';
 			_.moduleStructure = {
 				'header':'fullHeader',
 				'header-tabs':'studentTabs',
@@ -141,6 +145,7 @@ export class DashboardModule extends ParentPage{
 			_.courseAction === 'assign';
 		}
 		if (section == 'dashboard'){
+			document.title = 'Prepfuel - Dashboard';
 			_.moduleStructure = {
 				'header':'fullHeader',
 				'header-tabs':'studentTabs',
@@ -150,6 +155,8 @@ export class DashboardModule extends ParentPage{
 			}
 		}
 		if (section == 'profile' || section == 'student-profile'){
+			if (section == 'profile') document.title = 'Profile';
+			else document.title = 'Prepfuel - Student profile';
 			_.moduleStructure = {
 				'header':'fullHeader',
 				'body':'',

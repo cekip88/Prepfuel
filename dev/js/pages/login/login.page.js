@@ -53,6 +53,7 @@ class LoginPage extends G{
 				'checkEmail','validatePassword','resend',
 				'radio','enableTextarea',
 		]);
+		document.title = 'Prepfuel - Login';
 	}
 
 	formInputHandle({item,event}){

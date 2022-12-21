@@ -11,6 +11,7 @@ export class CoursesModule extends AdminPage {
 			'body':'coursesBody',
 			'footer':'coursesFooter'
 		}
+		document.title = 'Prepfuel - Courses';
 	}
 
 	async asyncDefine(){

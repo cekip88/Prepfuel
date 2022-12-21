@@ -50,6 +50,7 @@ export class ScheduleModule extends StudentPage{
 			'finishSchedule','domReady',
 			'skipTestDate',
 		]);
+		document.title = 'Prepfuel - Create Schedule';
 	}
 	
 	domReady(){

@@ -17,7 +17,7 @@ class HeaderBlock extends G{
 			role: _.me[userType] ? _.me[userType]['user']['role'] : _.me['role'],
 		});
 		G_Bus
-			.on(_,['showUserList','rerender','fullHeader','changeTitle']);
+			.on(_,['showUserList','rerender','fullHeader']);
 	}
 	showUserList({item}) {
 		const _ = this;
@@ -26,14 +26,6 @@ class HeaderBlock extends G{
 	}
 	init(){
 		const _ = this;
-		_.changeTitle();
-	}
-	changeTitle(){
-		const _ = this;
-		let
-			paths = location.pathname.split('/'),
-			last = paths[paths.length - 1];
-		document.title = 'Prepfuel - ' + last[0].toUpperCase() + last.substr(1);
 	}
 	rerender(){
 		const _ = this;

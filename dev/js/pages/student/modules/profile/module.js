@@ -14,6 +14,7 @@ export class ProfileModule extends StudentPage {
 			'body':'profileTpl',
 			'footer':''
 		}
+		document.title = 'Prepfuel - Profile';
 	}
 	async asyncDefine(){
 		const _ = this;

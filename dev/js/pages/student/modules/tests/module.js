@@ -13,6 +13,7 @@ export class TestsModule extends StudentPage{
 			'header-tabs': 'studentTabs',
 			'body':'testsBody',
 		};
+		document.title = 'Prepfuel - Tests';
 	}
 	async asyncDefine(){
 		const _ = this;

@@ -12,6 +12,7 @@ export class DashboardModule extends StudentPage{
 			'body-tabs':'dashboardTabs',
 			'body':'dashboardBody',
 		};
+		document.title = 'Prepfuel - Dashboard';
 	}
 
 	async asyncDefine(){

@@ -12,6 +12,7 @@ export class PracticeModule extends StudentPage{
 			'body':'practiceBody',
 			'footer':'studentFooter'
 		};
+		document.title = 'Prepfuel - Practice';
 	}
 	// Getters
 	get questionsLength(){

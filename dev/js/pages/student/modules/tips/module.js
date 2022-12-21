@@ -11,6 +11,7 @@ export class TipsModule extends StudentPage{
 			'body-tabs':'tipsTabs',
 			'body':'tipsBody',
 		};
+		document.title = 'Prepfuel - Tips & Strategies';
 	}
 
 	async asyncDefine(){}

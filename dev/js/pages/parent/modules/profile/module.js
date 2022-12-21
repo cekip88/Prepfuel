@@ -29,6 +29,7 @@ export class ProfileModule extends ParentPage {
 			phone: _.me.parent.phone,
 			photo: _.me.photo,
 		};
+		document.title = 'Prepfuel - Profile';
 
 		G_Bus.on(_,[
 			'domReady','fillParentInfo','updateParent','uploadPhoto',
