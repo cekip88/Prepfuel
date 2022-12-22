@@ -218,7 +218,7 @@ export const loginView = {
 					<button class="link" data-click="${_.componentName}:resend">Resend</button>
 				</div>
 				<div class="form-checkbox-row login-checkbox">
-					<button class="button-blue" data-click="${_.componentName}:changeSection" section="login" style="width: 480px;max-width:80vw;">Back to sign in</button>
+					<button class="button-blue" data-click="${_.componentName}:changeSection" section="login" style="width: 480px;max-width:80vw;">Back to Sign in</button>
 				</div>
 				<img class="login-success-img" src="/img/S_email.png" alt="">
 			</div>
@@ -235,7 +235,7 @@ export const loginView = {
 					<button class="link" data-click="${_.componentName}:resend">Resend</button>
 				</div>
 				<div class="form-checkbox-row login-checkbox">
-					<button class="button-blue" data-click="${_.componentName}:changeSection" section="login" style="width: 480px;max-width:80vw;">Back to sign in</button>
+					<button class="button-blue" data-click="${_.componentName}:changeSection" section="login" style="width: 480px;max-width:80vw;">Back to Sign in</button>
 				</div>
 				<img class="login-success-img" src="/img/S_email.png" alt="">
 			</div>
