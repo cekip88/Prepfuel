@@ -60,7 +60,6 @@ export class _Model{
 				//body: JSON.stringify(searchData)
 			});
 			let response = await rawResponse.json();
-			console.log(response)
 			resolve(response['response']);
 		});
 	}

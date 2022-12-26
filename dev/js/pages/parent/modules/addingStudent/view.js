@@ -79,7 +79,6 @@ export const view = {
 		`
 	},
 	addingStepOne(){
-		console.log('addingStepOne')
 		const _ = this;
 		let
 			courses = _.wizardData['courses'],
@@ -509,7 +508,7 @@ export const view = {
 		if (!activeClass) {
 			let firstHalf = tpl.substring(0,tpl.indexOf('adding-button'));
 			let secondHalf = tpl.substring(tpl.indexOf('adding-button'));
-			tpl = firstHalf + ' active' + secondHalf;
+			tpl = firstHalf + ' active ' + secondHalf;
 		}
 		return tpl;
 	},
@@ -803,12 +802,11 @@ export const view = {
 		}
 		return outItems;
 	},
-	choiceSelectStudent(choiceData,title='School you are interested in applying to'){
+	choiceSelectStudent(choiceData,title= 'School you are interested in applying to'){
 		const _ = this;
 		let
 			plan = _.courseData[_.courseData.currentPlan],
 			activeFirst,activeSecond,activeThird;
-		console.log(plan)
 
 		if (plan) {
 			if(plan.firstSchool) activeFirst = `_id:${plan.firstSchool._id ?? plan.firstSchool}`;

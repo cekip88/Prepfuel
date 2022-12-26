@@ -156,7 +156,6 @@ export class DashboardModule extends ParentPage{
 			}
 		}
 		await _.render();
-		console.log(_)
 	}
 	changeStudent({item,event}){
 		const _ = this;
@@ -169,7 +168,6 @@ export class DashboardModule extends ParentPage{
 		activeButton.classList.remove('active');
 		item.classList.add('active');
 		_.fillStudentProfile({item,event})
-		console.log(_)
 	}
 
 	fillWelcome(){
@@ -277,9 +275,9 @@ export class DashboardModule extends ParentPage{
 					'course': curCourse.course._id,
 					'level': curCourse.level._id,
 					'testDate': curCourse.testDate,
-					firstSchool: curCourse.firstSchool._id,
-					secondSchool: curCourse.secondSchool._id,
-					thirdSchool: curCourse.thirdSchool._id,
+					firstSchool: curCourse.firstSchool._id ?? curCourse.firstSchool,
+					secondSchool: curCourse.secondSchool._id ?? curCourse.secondSchool,
+					thirdSchool: curCourse.thirdSchool._id ?? curCourse.thirdSchool,
 				};
 				courseResponse = await Model.assignCourse(assignData);
 			}
@@ -290,7 +288,6 @@ export class DashboardModule extends ParentPage{
 		_.currentStudent.currentPlan = _.find(plans,_.currentStudent.currentPlan._id);
 		return true;
 	}
-
 
 	//dashboard
 	async fillDashboardTabs(){
@@ -617,10 +614,8 @@ export class DashboardModule extends ParentPage{
 		_.showCircleGraphic(starsInfo,starsCont)
 	}
 
-
 	// add student methods
 	async fillStudentInfo({item}){
-		console.log('fillStudentInfo')
 		const _ = this;
 		let
 			name = item.getAttribute('name'),
@@ -730,6 +725,7 @@ export class DashboardModule extends ParentPage{
 		let response = await Model.updateStudent(updateData);
 		if(!response) return void 0;
 		_.currentStudent = response;
+		_.currentStudent.currentSchool = _.studentInfo['currentSchool'];
 		_.updateMe();
 
 		item.setAttribute('rerender',true);
@@ -766,7 +762,6 @@ export class DashboardModule extends ParentPage{
 		const _ = this;
 
 		let listCont = _.f('.avatars-list');
-		console.log(listCont)
 		if (!listCont.children.length ) {
 			_.avatars = _.wizardData['avatars'];
 			listCont.append(_.markup(_.avatarsItemsTpl()));
@@ -982,7 +977,6 @@ export class DashboardModule extends ParentPage{
 			text.removeAttribute('style');
 			if (item == inputs[1]) text.setAttribute('style','display:none;')
 		} else {
-			console.log(item)
 			item.setMarker('red');
 			text.style = 'color: red;';
 		}
@@ -1102,8 +1096,6 @@ export class DashboardModule extends ParentPage{
 		const _ = this;
 		G_Bus.trigger('modaler','showModal',{type:'html',target:'#addBillingAddress'})
 	}
-
-
 
 	async assignStep({item}){
 		const _ = this;

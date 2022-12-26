@@ -75,6 +75,131 @@ export const view = {
 		`
 	},
 
+	addingStepOne(){
+		const _ = this;
+		let
+			courses = _.wizardData['courses'],
+			tpl = `
+				<h3 class="adding-title">Course & Plan</h3>
+				<h5 class="parent-adding-subtitle">
+					<span>If you need more info, please </span>
+					<a href="#">Contact Our Support</a>
+				</h5>
+				<div class="adding-section">
+					<!--<div class="adding-label">What test is the student purchasing?</div>-->
+					<div class="adding-label">What test is the student registering for?</div>
+					<div class="adding-buttons">
+		`;
+		_.coursePos = 2;
+		courses.forEach( (item,cnt) => {
+			let activeClass = '';
+			if (item.title !== 'SHSAT') return;
+			if(item.title === _.courseData.currentPlan){
+				_.coursePos = cnt;
+				activeClass = 'active';
+			}
+			tpl += `
+				<button 
+					class="adding-button ${ activeClass } active" 
+					pos="${cnt}" 
+					data-click="${_.componentName}:changeTestType" 
+					data-id="${item._id}"
+					${_.courseAction === 'assign' && !activeClass.length ? 'disabled' : ''}
+				>
+					<span>${item.title}</span>
+				</button>
+			`;
+		});
+		let memType = _.studentInfo['paymentMethod'] ? _.studentInfo['paymentMethod'].type : 'monthly';
+		tpl += `
+				</div>
+			</div>
+			<div class="adding-section">
+				<!--<div class="adding-label">What level of the test student plan to take?</div>-->
+				<div class="adding-label">What level of the test does your student plan to take?</div>
+				<div class="adding-buttons level-buttons loader-parent">
+					${_.levelButtons(courses[_.coursePos])}
+				</div>
+			</div>
+			<!--<div class="adding-section">
+				<div class="adding-label">Type of membership?</div>
+				<div class="adding-buttons">
+					<button 
+						class="adding-button ${memType == 'monthly' ? 'active' : ''}" 
+						data-type="monthly" 
+						data-click="${_.componentName}:changePayMethod"
+					>Pay Monthly</button>
+					<button 
+						class="adding-button ${memType == 'yearly' ? 'active' : ''}" 
+						data-type="yearly" 
+						data-click="${_.componentName}:changePayMethod"
+					>Pay Yearly</button>
+				</div>
+			</div>-->
+			<!--<div class="adding-section parent-adding-section">
+				<div class="adding-label">Which plan do you prefer?</div>
+				<div class="parent-adding-plan">
+					<span class="adding-plan active">
+						<h5 class="adding-plan-title">App</h5>
+						<h6 class="adding-plan-subtitle">Best for self-preparation</h6>
+						<span class="adding-plan-price">
+						 <em>$</em><strong>20</strong><i>/ Mon</i>
+						</span>
+						<ul class="adding-plan-list">
+							<li class="adding-plan-item"><span>Skill Practice</span></li>
+							<li class="adding-plan-item"><span>Practice Tests</span></li>
+							<li class="adding-plan-item none"><span>Homeworks & Quizzes</span></li>
+							<li class="adding-plan-item none"><span>Classroom Activities</span></li>
+							<li class="adding-plan-item none"><span>Private Tutor</span></li>
+						</ul>
+					</span>
+				</div>
+			</div>-->
+		`;
+		return tpl;
+	},
+	addingStepFour(){
+		const _ = this;
+		return `
+			<div class="adding-center">
+				<h3 class="adding-title">Test Information</h3>
+				<div class="adding-section">
+					<h4 class="adding-subtitle withmar">Registered Official Test Date</h4>
+					<div class="adding-inpt adding-radio-row">
+						<div class="form-label-row">
+							<input 
+								type="radio" 
+								id="have_registered" 
+								class="adding-radio" 
+								name="registered"
+								data-change="${_.componentName}:skipTestDate" 
+								${_.courseData[_.courseData.currentPlan].testDatePicked ? 'checked' : ''}>
+							<label class="form-label adding-label-have" for="have_registered">Have registered</label>
+						</div>
+						<g-input 
+							${_.courseData[_.courseData.currentPlan].testDatePicked ? '' : 'disabled'} 
+							type='date' 
+							format="month DD, YYYY" 
+							value="${_.courseData[_.courseData.currentPlan].testDate ?? ''}" 
+							data-change="${_.componentName}:fillStudentInfo" 
+							class="select adding-select" 
+							name="testDate" 
+							classname="adding-select" 
+							icon="false" 
+							xlink="select-arrow-bottom" 
+							placeholder="Press to choose your official test date"
+						></g-input>
+					</div>
+					<div class="adding-inpt">
+						<div class="form-label-row">
+							<input type="radio" id="have_yet" class="adding-radio" name="registered" data-change="${_.componentName}:skipTestDate" ${!_.courseData[_.courseData.currentPlan].testDatePicked ? 'checked' : ''}>
+							<label class="form-label adding-label-have" for="have_yet">Have not registered yet</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		`;
+	},
 	assignCourseTpl(){
 		const _ = this;
 		return `
@@ -147,29 +272,34 @@ export const view = {
 	},
 
 //steps auxiliary tpls
+
 	levelButtons(stepData){
 		const _ = this;
 		let tpl = ``;
 		let curPlan = _.courseData[_.courseData.currentPlan];
-		stepData['levels'].forEach( (item,count) => {
-			let activeClass = '';
+		let activeClass = false;
+		let markered = false;
+		stepData['levels'].forEach( (item) => {
 			if(curPlan['level']){
 				if(item._id == curPlan['level']._id){
-					activeClass = 'active';
+					activeClass = true;
 				}
-			}
-			if (!count && !activeClass) {
-				activeClass = 'active';
 			}
 			tpl += `
 				<button 
-					class="adding-button ${ activeClass }" 
+					class="adding-button${ activeClass && !markered ? ' active' : '' }" 
 					data-id="${item._id}" 
 					data-click="${_.componentName}:changeStudentLevel">
 					${item.title}
 				</button>
 			`;
+			if (activeClass) markered = true;
 		});
+		if (!activeClass) {
+			let firstHalf = tpl.substring(0,tpl.indexOf('adding-button'));
+			let secondHalf = tpl.substring(tpl.indexOf('adding-button'));
+			tpl = firstHalf + ' active ' + secondHalf;
+		}
 		return tpl;
 	},
 
@@ -524,7 +654,6 @@ export const view = {
 	},
 //end staps auxiliary tpls
 
-
 // dashboard
 	dashboardTabs(){
 		const _ = this;
@@ -562,7 +691,6 @@ export const view = {
 	},
 	dashboardBodyTpl(){
 		const _ = this;
-		console.log('dashboardBodyTpl')
 		let date = new Date;
 		date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
 		let tpl = `
@@ -1110,7 +1238,6 @@ export const view = {
 		return tpl;
 	},
 
-
 // schedule methods
 	scheduleTpl(){
 		const _ = this;
@@ -1271,7 +1398,6 @@ export const view = {
 	// profile
 	personalInfo(){
 		const _ = this;
-		console.log(_)
 		let gradeActive;
 		if(_.studentInfo.grade) gradeActive = `_id:${_.studentInfo.grade}`;
 		let gradeItems = _.createSelectItems(_.wizardData.grades, 'value:_id;text:grade', gradeActive);
@@ -1283,7 +1409,6 @@ export const view = {
 			}
 		}
 		if (!currentCourse) currentCourse = 'ISEE';
-
 		return `
 			<div class="section parent">
 				<div class="block">
@@ -1440,6 +1565,7 @@ export const view = {
 			<h5 class="student-profile-course-empty">Currently, there is no ${_.courseData.currentPlan} course assign to this student</h5>
 			<button 
 				class="student-profile-course-empty-btn" 
+				toHistory="false"
 				data-click="${_.componentName}:changeSection"
 				section="assignCourse"
 			>

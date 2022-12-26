@@ -55,7 +55,6 @@ export class AddingStudentModule extends ParentPage{
 		}
 
 		_._$.addingStep = parseInt(targetStep);
-		console.log(_)
 	}
 	async handleAddingSteps({addingStep = 1}){
 		const _ = this;
@@ -287,7 +286,6 @@ export class AddingStudentModule extends ParentPage{
 			text.removeAttribute('style');
 			if (item == inputs[1]) text.setAttribute('style','display:none;')
 		} else {
-			console.log(item)
 			item.setMarker('red');
 			text.style = 'color: red;';
 		}
@@ -404,6 +402,7 @@ export class AddingStudentModule extends ParentPage{
 			'createdAt':response.response.createdAt,
 			'_id':response.response._id,
 			'currentPlan':{
+				'_id':response.currentPlan,
 				'course': curCourseData.course,
 				'level': curCourseData.level,
 				'firstSchool': curCourseData.firstSchool._id,
@@ -412,6 +411,7 @@ export class AddingStudentModule extends ParentPage{
 				'testDate': curCourseData.testDate,
 			},
 			'plans':[{
+				'_id':response.currentPlan,
 				'course': curCourseData.course,
 				'level': curCourseData.level,
 				'firstSchool': curCourseData.firstSchool._id,
@@ -480,7 +480,6 @@ export class AddingStudentModule extends ParentPage{
 	}
 	confirmAvatar({item}){
 		const _ = this;
-		console.log('confirmAvatar')
 
 		_['studentInfo'].avatar = _['metaInfo'].avatar;
 		_['studentInfo'].avatarName = _['metaInfo'].avatarName;
@@ -622,7 +621,6 @@ export class AddingStudentModule extends ParentPage{
 
 	updateMe(data){
 		const _ = this;
-		console.log(data)
 		let me = localStorage.getItem('me');
 		if (!me) return;
 
