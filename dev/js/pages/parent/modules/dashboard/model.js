@@ -11,7 +11,6 @@ export class _Model{
 			me: `${env.backendUrl}/user/me`,
 			wizardData: `/user/wizard-data`,
 			checkEmail: `/auth/check-email/`,
-			createStudent: `/user/create-student`,
 			updateStudent: `/user/update-student`,
 			assignCourse: `/user/assign-plan`,
 			updateCourse: `/user/update-plan`,
@@ -34,29 +33,6 @@ export class _Model{
 				let response = await rawResponse.json();
 				resolve(response['response']);
 			}
-		});
-	}
-
-	createStudent(studentData) {
-		const _ = this;
-		return new Promise(async resolve => {
-			let rawResponse = await fetch(`${_.getEndpoint('createStudent')}`, {
-				method: 'POST',
-				headers: _.baseHeaders,
-				body: JSON.stringify(studentData)
-			});
-			if(rawResponse.status < 210) {
-				let response = await rawResponse.json();
-				if(response['status'] == 'success') {
-					_.newStudent = response['response'];
-					resolve(response);
-				} else {
-					_.wrongResponse('createStudent', response);
-				}
-			} else {
-				_.wrongRequest('createStudent', rawResponse)
-			}
-			resolve(null);
 		});
 	}
 	updateStudent(studentData) {
@@ -320,19 +296,6 @@ export class _Model{
 			}
 			resolve(null);
 		});
-	}
-
-	getCardsInfo(){
-		return [
-			{name:'Marvin Simmons',type:'visa',number:'8888-8888-8888-1679',date:'09/24',primary: true},
-			{name:'Marvin Simmons',type:'mastercard',number:'8888-8888-8888-2704',date:'02/26',primary: false},
-		]
-	}
-	getBillingAddressInfo(){
-		return [
-			{title:'Address 1',line1:'Ap #285-7193',line2:'Ullamcorper Avenue',state:'Amesbury HI',postcode:' 93373',country:'United States',primary: true},
-			{title:'Address 2',line1:'Ap #285-7193',line2:'Ullamcorper Avenue',state:'Amesbury HI',postcode:' 93373',country:'United States',primary: false},
-		]
 	}
 
 

@@ -253,7 +253,6 @@ export default class GComponent extends HTMLElement {
 	/**/
 	ascent(event,targetCls){
 		const _ = this;
-		console.log('ascent','g.component')
 		let eventPath = event.composedPath();
 		if(!eventPath.length) return;
 		for(let i=0,len=eventPath.length; i < len;i++){

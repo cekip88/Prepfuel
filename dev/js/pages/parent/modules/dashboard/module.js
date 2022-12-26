@@ -54,7 +54,7 @@ export class DashboardModule extends ParentPage{
 		G_Bus.on(_,[
 			'domReady','changeSection','changeStudent',
 			'generatePassword','validatePassword','checkEmail','fillStudentInfo',
-			'addingStep','assignStep',
+			'assignStep',
 			'changeStudentLevel','changeTestType','changePayMethod','skipTestDate',
 			'updateStudent',
 			'selectAvatar','pickAvatar','confirmAvatar','closeAvatar',
@@ -126,14 +126,6 @@ export class DashboardModule extends ParentPage{
 				'footer':'dashboardFooter'
 			}
 		}
-		if (section == 'addingStudent'){
-			document.title = 'Prepfuel - Adding student';
-			_.moduleStructure = {
-				'header':'fullHeader',
-				'header-tabs':'studentTabs',
-				'footer':'dashboardFooter'
-			}
-		}
 		if (section == 'assignCourse'){
 			document.title = 'Prepfuel - Assign course';
 			_.moduleStructure = {
@@ -142,7 +134,7 @@ export class DashboardModule extends ParentPage{
 				'body':'',
 				'footer':'dashboardFooter'
 			}
-			_.courseAction === 'assign';
+			_.courseAction = 'assign';
 		}
 		if (section == 'dashboard'){
 			document.title = 'Prepfuel - Dashboard';
@@ -177,6 +169,7 @@ export class DashboardModule extends ParentPage{
 		activeButton.classList.remove('active');
 		item.classList.add('active');
 		_.fillStudentProfile({item,event})
+		console.log(_)
 	}
 
 	fillWelcome(){
@@ -206,6 +199,7 @@ export class DashboardModule extends ParentPage{
 			_.studentInfo['_id'] = _.currentStudent['_id'];
 			_.studentInfo['plans'] = _.currentStudent['plans'];
 			_.studentInfo['password'] = '';
+			if (!_.studentInfo.createdAt) _.studentInfo.createdAt = _.currentStudent['createdAt']
 
 			_.courseData = {};
 			for (let item of _.studentInfo['plans']) {
@@ -659,14 +653,6 @@ export class DashboardModule extends ParentPage{
 		_.body.append( _.markup( _.addingStudentTpl()));
 		_.handleAddingSteps(1);
 	}
-	cancelAddStudent(){
-		const _ = this;
-		let btn = document.createElement('BUTTON');
-		if (_.previousSection === 'profile') _.previousSection = 'dashboard'
-		btn.setAttribute('section',_.previousSection);
-		btn.setAttribute('data-clear','true');
-		_.changeSection({item:btn});
-	}
 	async createStudent(){
 		const _ = this;
 		let curCourseData = _.courseData[_.courseData.currentPlan];
@@ -1117,35 +1103,8 @@ export class DashboardModule extends ParentPage{
 		G_Bus.trigger('modaler','showModal',{type:'html',target:'#addBillingAddress'})
 	}
 
-	fillParentCardsInfo(cardsInfo){
-		const _ = this;
-		let cardsCont = _.f('#cards');
-		_.clear(cardsCont)
-		if (cardsInfo.length) {
-			cardsCont.append(_.markup(_.fillParentCardsTpl(cardsInfo)));
-		}
-	}
-	fillParentAddressesInfo(addressesInfo){
-		const _ = this;
-		let addressesCont = _.f('#billing-addresses');
-		_.clear(addressesCont)
-		if (addressesInfo.length) {
-			addressesCont.append(_.markup(_.fillParentAddressTpl(addressesInfo)));
-		}
-	}
 
-	async addingStep({item}){
-		const _ = this;
-		let cont = item.closest('#parent');
-		let targetStep = item.getAttribute('step');
-		if (targetStep > _.currentStep) {
-			let validate = await _.nextStepBtnValidation(cont);
-			if (!validate) return;
-		}
-		
-		console.log(_)
-		_._$.addingStep = parseInt(targetStep);
-	}
+
 	async assignStep({item}){
 		const _ = this;
 		let cont = item.closest('#parent');
@@ -1155,93 +1114,6 @@ export class DashboardModule extends ParentPage{
 			if (!validate) return;
 		}
 		_._$.assignStep = parseInt(item.getAttribute('step'));
-	}
-	async handleAddingSteps({addingStep = 1}){
-		const _ = this;
-		if(!_.initedUpdate){
-			_.wizardData = await Model.getWizardData();
-			_.addingSteps = {
-				0: 'cancelAddStudent',
-				1: 'addingStepOne',
-				2: 'addingStepTwo',
-				3: 'addingStepThree',
-				4: 'addingStepFour',
-				5: 'addingStepFive',
-				6: 'addingStepSix',
-				7: 'createStudent'
-			};
-			_.studentInfo = {
-				paymentMethod: 'monthly'
-			};
-			return void 0;
-		}
-		if (addingStep === 0 || addingStep === 7) {
-			_[_.addingSteps[addingStep]]();
-			return void 0;
-		} else if (addingStep === 1) {
-			let stepOneData = _.wizardData ?? await Model.getWizardData();
-			if (_.isEmpty(_.studentInfo.currentPlan)) {
-				_.studentInfo.currentPlan = {
-					course: stepOneData['courses'][2],
-					level: stepOneData['courses'][2]['levels'][0],
-				};
-			}
-			_.courseData = {};
-			_.courseData.currentPlan = _.studentInfo.currentPlan.course.title;
-			_.courseData[_.courseData.currentPlan] = Object.assign({},_.studentInfo.currentPlan);
-		}
-		_.currentStep = addingStep;
-
-		let addingFooter = _.f('.parent-adding-body .test-footer');
-		if (addingStep >= 2) addingFooter.classList.add('narrow');
-		else addingFooter.classList.remove('narrow');
-		addingFooter.querySelectorAll('BUTTON').forEach((btn)=>{
-			if (btn.classList.contains('back')) btn.setAttribute('step',addingStep - 1)
-			else  btn.setAttribute('step',addingStep + 1)
-		})
-
-
-		let addingBody = _.f('#parent-adding-body');
-		_.clear(addingBody);
-		addingBody.append(_.markup(_[_.addingSteps[addingStep]]()))
-
-
-		let
-			aside = _.f('#parent .adding-list'),
-			activeAside = aside.querySelector('.active'),
-			asideButtons = aside.querySelectorAll('.adding-list-item'),
-			asideTarget = asideButtons[addingStep - 1];
-		if (asideTarget != activeAside) {
-			activeAside.classList.remove('active');
-			asideTarget.classList.add('active')
-		}
-		for (let i = 0; i < 6; i++) {
-			let button = asideButtons[i].querySelector('.adding-list-digit');
-			_.clear(button);
-			if (i < addingStep - 1) {
-				button.append(_.markup(`<svg><use xlink:href="#checkmark"></use></svg>`))
-			} else {
-				button.textContent = i + 1
-			}
-		}
-
-		if (addingStep === 5) {
-			let
-				cards = await Model.getCardsInfo(),
-				addresses = await Model.getBillingAddressInfo();
-			_.fillParentCardsInfo(cards);
-			_.fillParentAddressesInfo(addresses);
-		} else if (addingStep == 3) {
-			_.f('.search-select-options').addEventListener('scroll',function (e) {_.liveSearchScroll({item:e.target,event:e})});
-		}
-		let button = _.f('#parent .test-footer .button-blue');
-		if (addingStep === 6) {
-			button.classList.add('button-green');
-			button.textContent = 'Purchase';
-		} else {
-			button.classList.remove('button-green');
-			button.textContent = 'Next';
-		}
 	}
 	async handleAssignSteps({assignStep = 1}){
 		const _ = this;
@@ -1460,7 +1332,6 @@ export class DashboardModule extends ParentPage{
 
 	async init() {
 		const _ = this;
-		_._( _.handleAddingSteps.bind(_),['addingStep'])
 		_._( _.handleAssignSteps.bind(_),['assignStep'])
 	}
 	

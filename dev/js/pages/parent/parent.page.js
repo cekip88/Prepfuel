@@ -81,7 +81,6 @@ class ParentPage extends G{
 		let
 			section = item.getAttribute('section'),
 			tpl = section.split('/')[2];
-		console.log(section)
 
 		if(_.currentSection == section || !section) return void 0;
 

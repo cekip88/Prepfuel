@@ -109,6 +109,7 @@ export class G extends G_G{
 		* Запрашивает блок страницы или модуль целой страницы
 		* */
 		const _ = this;
+		console.log(blockData)
 		return new Promise(async function (resolve,reject) {
 			try{
 				let
@@ -126,7 +127,9 @@ export class G extends G_G{
 					resolve(comp);
 				}*/
 				const
-					module = await import(pathModule),
+					module = await import(pathModule);
+				console.log(module)
+				const
 					view = await import(pathView),
 					moduleName = new module[moduleStr](params);
 				Object.assign(module[moduleStr].prototype,mixins);

@@ -45,6 +45,7 @@ new router().init({
 				"/parent/profile": "parent",
 				"/parent/student-profile": "parent",
 				"/parent/dashboard?redirect=google": "parent",
+				"/parent/addingStudent": "parent",
 			}
 		},
 		"student": {
