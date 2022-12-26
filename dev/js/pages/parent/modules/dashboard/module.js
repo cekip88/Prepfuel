@@ -175,8 +175,12 @@ export class DashboardModule extends ParentPage{
 		_.body.append( _.markup( _.welcomeTpl()));
 	}
 
-	prepMe(){
+	async prepMe(){
 		const _ = this;
+		let parent = await Model.getMe();
+		_.me.parent = parent;
+		localStorage.setItem('me',JSON.stringify(_.me));
+
 		if (_.me.email) return;
 		let newMe = Object.assign({},_.me.parent.user);
 		newMe.parent = Object.assign({},_.me.parent);
