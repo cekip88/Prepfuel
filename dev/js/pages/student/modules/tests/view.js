@@ -1261,7 +1261,7 @@ export const view = {
 		return `
 			<li class="test-aside-item">
 				<button data-pos="${i-1}" class="test-aside-btn ${i-1 == Model.currentTestPos ? 'active' : ''}" data-id="${test['_id']}" data-click="${_.componentName}:changePracticeTest">
-					<h6 class="test-aside-btn-title">Practice test ${test['testNumber']}</h6><span class="test-aside-btn-desc">${test.status == 'finished' ? test['sections'].length : 0} of ${test['sections'].length} sections complete</span>
+					<h6 class="test-aside-btn-title">Practice test ${test['testNumber']}</h6><span class="test-aside-btn-desc">${test.countOfFinishedSections*1} of ${test['sections'].length} sections complete</span>
 					<span class="test-aside-btn-date">
 						<svg><use xlink:href="#calendar"></use></svg><span>${test.status == 'finished' ? _.createdAtFormat(test.finishedAt) : _.createdAtFormat(test['schedule'])}</span>
 					</span>
@@ -1293,13 +1293,6 @@ export const view = {
 	
 	confirmFinishTpl(){
 		const _ = this;
-		/*
-		* 	_.lastSkippedQuestion= {
-					'data-questionPage-id': _._$.currentQuestion['type'] == 'passage' ?_._$.currentQuestion['_id'] : -1,
-					'data-question-id': _._$.currentQuestion['questions'][0]['_id']
-				}
-		*
-		* */
 		return `
 			 <div class="modal modal-block finish" id="finish" slot="modal-item">
           <h6 class="modal-title"><span>Are you sure you want to finish this test</span></h6>
