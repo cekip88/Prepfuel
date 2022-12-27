@@ -239,11 +239,11 @@ export class PracticeModule extends StudentPage{
 		_.f('#question-pagination').append(_.markup(_.quizQuestionNavigation()));
 		_.f("#testType").textContent = _.currentTestType;
 		let
-		innerItem = _.f('.pagination-link'),
-		pos = _.questionPos;
+			innerItem = _.f('.pagination-link'),
+			pos = _.questionPos;
+		
 		if(_.f('.pagination-link.active')){ _.f('.pagination-link.active').classList.remove('active'); }
 		innerItem[pos].classList.add('active');
-		
 		
 		
 		let directionsBtn = _.f('#directions-btn');
@@ -976,6 +976,9 @@ export class PracticeModule extends StudentPage{
 			gridValue[pos] =  '_';
 			input.value = gridValue.join('');
 			_.setCorrectAnswer({item: item, type: 'grid'});
+			if(input.value == '_____'){
+				_.f('#check-answer-btn').setAttribute('disabled', 'disabled');
+			}
 		}else{
 			btn.classList.add('active');
 			gridValue[pos] =  btn.textContent;
@@ -1317,15 +1320,16 @@ export class PracticeModule extends StudentPage{
 							if(_.isGrid()) {
 								ans = _.answerVariant[id]['answer'].join('');
 							//	ans = ans.replaceAll('_', '');
-								let outAns = '';
+								let outAns = '', digit = false;
 								for(let i=0; i<ans.length; i++){
 									if(i == ans.length-1 && ans[i] == '_'){
 										outAns +='';
 									}else{
-										if(ans[i] == '_'){
+										if( (ans[i] == '_') && !digit){
 											outAns +='0';
 										}else{
 											outAns += ans[i];
+											digit = true;
 										}
 									}
 								}
@@ -1338,11 +1342,11 @@ export class PracticeModule extends StudentPage{
 									ans.classList.add('wrong');
 								});
 							}
-							
-							let query = question['correctAnswer'] ==ans;
+							let query = parseFloat(question['correctAnswer']) == parseFloat(ans); //question['correctAnswer'] ==ans;
 							if(_.isGrid()) {
 								query = parseFloat(question['correctAnswer']) == parseFloat(ans);
 							}
+							console.log(question['correctAnswer'] ,ans);
 							if(query) {
 								_.f('#question-pagination .active').classList.add('done');
 								if(_.isGrid()) {
@@ -1400,26 +1404,31 @@ export class PracticeModule extends StudentPage{
 			className = '.grid.correct',
 			correctAnswer = _._$.currentQuestion['questions'][0]['correctAnswer'],
 			ans =   _.answerVariant[answerObject['questionId']]['answer'].join('');
-		let outAns = '';
+		let outAns = '', digit = false;
 		for(let i=0; i<ans.length; i++){
 			if(i == ans.length-1 && ans[i] == '_'){
 				outAns +='';
 			}else{
-				if(ans[i] == '_'){
+				if( (ans[i] == '_') && !digit){
 					outAns +='0';
 				}else{
 					outAns += ans[i];
+					digit = true;
 				}
 			}
 		}
 		ans = outAns;
+		
 		let query = parseFloat(correctAnswer) != parseFloat(ans);
 		if( query) className = '.grid.incorrect';
+		console.log(correctAnswer,ans,className);
 		_.f('.grid.empty').setAttribute('hidden','hidden');
 		if( className == '.grid.correct'){
 			_.f('.grid.correct').removeAttribute('hidden');
+			_.f('.grid.incorrect').setAttribute('hidden','hidden');
 		}else{
 			_.f('.grid.incorrect').removeAttribute('hidden');
+			_.f('.grid.correct').setAttribute('hidden','hidden');
 		}
 		answerDigits.forEach( (digit,index) => {
 			let currentCol = _.f(`${className} [data-col="${index+1}"] .grid-button`);
@@ -1533,9 +1542,30 @@ export class PracticeModule extends StudentPage{
 			let
 				answers = currentAnswers[key],
 				pos = answers['pos'];
+			
 			answers.forEach(  answer=>{
 				// continue from here
-				if(answer['answer'] == answer['correctAnswer']){
+				let ans = answer['answer'],correctAnswer = answer['correctAnswer'];
+				if(typeof answer['answer'] == 'object'){
+					ans = answer['answer'].join('')
+					ans = ans.replaceAll('_','');
+				}
+				let outAns = '', digit = false;
+				for(let i=0; i<ans.length; i++){
+					if(i == ans.length-1 && ans[i] == '_'){
+						outAns +='';
+					}else{
+						if( (ans[i] == '_') && !digit){
+							outAns +='0';
+						}else{
+							outAns += ans[i];
+							digit = true;
+						}
+					}
+				}
+				ans = outAns;
+				let query = parseFloat(correctAnswer) == parseFloat(ans);
+				if(query){
 					_.f(`.pagination-link[data-pos="${answer[pos]}"]`).classList.add('done');
 				}else{
 					_.f(`.pagination-link[data-pos="${answer[pos]}"]`).classList.add('error');
@@ -1545,7 +1575,7 @@ export class PracticeModule extends StudentPage{
 	}
 	setSkillPaginationAnswers(currentAnswers){
 		const _ = this;
-		console.log('setSkillPaginationAnswers',currentAnswers);
+		//console.log('setSkillPaginationAnswers',currentAnswers);
 		_.skillTests.forEach( (skill,index) => {
 			if(currentAnswers[skill['_id']]){
 				for(let i=0; i < currentAnswers[skill['_id']].length;i++ ){
@@ -1562,20 +1592,36 @@ export class PracticeModule extends StudentPage{
 		for(let key in currentAnswers){
 				for(let answer of currentAnswers[key]){
 				//	let answer = currentAnswers[key][0];
+					let ans = answer['answer'],correctAnswer = answer['correctAnswer'];
 					if(typeof answer['answer'] == 'object'){
-						answer['answer'] = answer['answer'].join('')
-						answer['answer'] = answer['answer'].replaceAll('_','');
+						ans = answer['answer'].join('')
+						ans = ans.replaceAll('_','');
 					}
-					if(answer['answer'] == answer['correctAnswer']){
+					let outAns = '', digit = false;
+					for(let i=0; i<ans.length; i++){
+						if(i == ans.length-1 && ans[i] == '_'){
+							outAns +='';
+						}else{
+							if( (ans[i] == '_') && !digit){
+								outAns +='0';
+							}else{
+								outAns += ans[i];
+								digit = true;
+							}
+						}
+					}
+					ans = outAns;
+					
+					let query = parseFloat(correctAnswer) == parseFloat(ans);
+					//console.log(correctAnswer,ans,className);
+					
+					if(query){
 						_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('done');
 					}else{
 						_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('error');
 					}
 				}
-				
-			
-		
-			
+
 		}
 	}
 	async startQuiz({item}){

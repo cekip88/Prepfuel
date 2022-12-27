@@ -59,12 +59,12 @@ export class TestsModule extends StudentPage{
 		_.lastSkippedQuestion= {
 			'data-questionPage-id': -1
 		};
-		
+		_.calcedTime = false;
 		_.sectionColors = [
 			'80,205,137','4,200,200'
 		]
 		_.datasPos = 0;
-		
+		_.sectionPos =0;
 		_.letters = [
 			'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'
 		];
@@ -105,6 +105,7 @@ export class TestsModule extends StudentPage{
 		Model.currentSectionPos = 0;
 		_.sectionPos =0;
 		_.sectionChanged = false;
+		_.calcedTime = false;
 		clearInterval(_.timerInterval);
 	}
 	async fillTestsBody(){
@@ -151,15 +152,25 @@ export class TestsModule extends StudentPage{
 	
 	calcTestTime(){
 		const _ = this;
-		if(!_.resultObj) return void 0;
-		let minus = 0;
-		if(_.resultObj['pauses'].length){
-			for(let i = 1; i < _.resultObj['pauses'].length;i++){
-				let pause = _.resultObj['pauses'][i];
-				minus+= new Date(pause['pausedAt']).getTime() - new Date(_.resultObj['pauses'][i-1]['continuedAt']).getTime();
+		console.log(_.resultObj);
+		return  new Promise( (resolve,reject)=>{
+			if(!_.resultObj){
+				resolve(0);
+				return void 0;
 			}
-		}
-		return _.testTime-Math.round(minus/60000);
+			
+			if(!_.calcedTime){
+				_.minus = 0;
+				if(_.resultObj['pauses'].length){
+					for(let i = 1; i < _.resultObj['pauses'].length;i++){
+						let pause = _.resultObj['pauses'][i];
+						_.minus+= new Date(pause['pausedAt']).getTime() - new Date(_.resultObj['pauses'][i-1]['continuedAt']).getTime();
+					}
+				}
+			}
+			resolve(_.testTime-Math.round(_.minus/60000));
+		})
+		
 	}
 	get timerTime(){
 		const _ = this;
@@ -184,10 +195,10 @@ export class TestsModule extends StudentPage{
 	
 	
 	// Change section welcome->directions->questions etc
-	setTimerTime(){
+	async setTimerTime(){
 		const _ = this;
 		if(_.resultObj){
-			_.testTime = _.calcTestTime();
+			_.testTime = await _.calcTestTime();
 			_.set({
 				timerTime: _.timerTime
 			});
@@ -229,8 +240,17 @@ export class TestsModule extends StudentPage{
 				return void 0;
 			}
 		}
+		await Model.getTest();
+		Model.test['resultId'] = _.resultId;
+		let results = await Model.getTestResults(_.resultId);
 		if(section == 'directions') {
 			// start of test
+			if(isPaused) {
+				let
+					sectionPos = results['resultObj']['questionsState']['sectionPos'];
+				Model.changeSectionPos(parseInt(sectionPos));
+				_.sectionPos = sectionPos;
+			}
 			if(!_.startedTest) {
 				if(_.resultId == 'null'){
 					let startObj = await Model.start();
@@ -239,15 +259,10 @@ export class TestsModule extends StudentPage{
 			}
 			if(isPaused){
 				await Model.setContinue();
-			}
-			await Model.getTest();
-			Model.test['resultId'] = _.resultId;
-			let results = await Model.getTestResults(_.resultId);
-			if(isPaused){
 				let
 					questionDataId = results['resultObj']['questionsState']['sectionId'],
 					sectionPos = results['resultObj']['questionsState']['sectionPos'];
-				Model.changeSectionPos(parseInt(sectionPos));
+		//		Model.changeSectionPos(parseInt(sectionPos));
 				continuedData = Model.currentQuestionDataByQuestionDataId(questionDataId);
 				if( continuedData['questions'].length > 1){
 					_._$.currentQuestion = continuedData;
@@ -332,7 +347,8 @@ export class TestsModule extends StudentPage{
 				_.markAnswers();
 				_.markCorrectAnswer();
 			}else{
-				_.setTimerTime();
+			//	_.setTimerTime();
+				_.f('.test-timer-value').textContent = _.timerTime;
 			}
 		}
 		
@@ -439,7 +455,6 @@ export class TestsModule extends StudentPage{
 			}
 		}
 			//	_._$.currentQuestion = Model.currentQuestionData(_.datasPos);
-		
 		_.sectionPos = pos;
 		let cnt = 1;
 		
@@ -545,16 +560,14 @@ export class TestsModule extends StudentPage{
 	}
 	tickTimer(){
 		const _ = this;
-		_.set({
+	/*	_.set({
 			timerTime: _.timerTime
-		})
+		})*/
 		_.timerInterval = setInterval(  ()=>{
 			_.set({
 				timerTime: _.timerTime
 			})
 		},1000*60);
-		
-	
 	}
 	
 	
@@ -750,7 +763,6 @@ export class TestsModule extends StudentPage{
 	
 	changeInnerQuestionId({item}){
 		const _ = this;
-		
 		_.innerQuestionId = item.getAttribute('data-question-id');
 	}
 
@@ -1336,8 +1348,10 @@ export class TestsModule extends StudentPage{
 		
 		_._( ({timerTime})=>{
 			if(!_.initedUpdate) return void 0;
+			
 			let timerValue = _.f('.test-timer-value');
 			if(!timerValue) return void 0;
+			
 			timerValue.textContent = timerTime;
 		},['timerTime'])
 	}
