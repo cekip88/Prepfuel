@@ -25,6 +25,7 @@ export class ScheduleModule extends StudentPage{
 		});
 		_.minStep = 1;
 		_.maxStep = 3;
+		_.daysPerWeek = [];
 
 		let date = new Date();
 		_.testDate = _.startDate = `${date.getFullYear()}-${(date.getMonth() + 1 < 10) ? '0' + date.getMonth() + 1 : date.getMonth() + 1}-${(date.getDate() < 10) ? '0' + date.getDate() : date.getDate()}`;
@@ -61,7 +62,7 @@ export class ScheduleModule extends StudentPage{
 		const _ = this;
 		Model.finishSchedule({
 			testDate: _.datePicked ? _.testDate : null,
-			practiceDays: _._$.daysPerWeek,
+			practiceDays: _.daysPerWeek,
 			practiceTime: _.practiceAt.toString(),
 			practiceSkill: _._$.numberOfQuestions,
 			practiceTests: _.practiceTests
@@ -72,9 +73,7 @@ export class ScheduleModule extends StudentPage{
 		_._$.numberOfQuestions = parseInt(item.value[0]);
 	}
 	changeDay({item}) {
-		const _ = this;
-		let checkedValues = item.value;
-		_._$.daysPerWeek = checkedValues;
+		this.daysPerWeek = item.value;
 	}
 	addPracticeRow({item}){
 		const _ = this;
@@ -103,7 +102,9 @@ export class ScheduleModule extends StudentPage{
 			if(_._$.currentStep < _.maxStep){
 				if (_._$.currentStep === 2) {
 					if (_.practiceRowsCnt) _._$.currentStep++;
-				} else _._$.currentStep++;
+				} else {
+					_._$.currentStep++;
+				}
 			}
 		} else {
 			if(_._$.currentStep > _.minStep){
@@ -140,6 +141,14 @@ export class ScheduleModule extends StudentPage{
 			dateInput.removeAttribute('disabled');
 			_.datePicked = true;
 		}
+	}
+
+	fillStepThree(){
+		const _ = this;
+		setTimeout(()=>{
+			if (_.daysPerWeek.length) _.f('.inpt-days').value = _.daysPerWeek;
+			if (_.practiceAt) _.f('#practice_time').value = _.practiceAt;
+		},100)
 	}
 	
 	init(){
@@ -181,6 +190,7 @@ export class ScheduleModule extends StudentPage{
 					_.practiceTests.push({date:`${date}T${time}:00Z`});
 				}
 				_.innerCont.innerHTML = _.stepThreeTpl();
+				_.fillStepThree();
 				_.changeBtnToCreate();
 			}
 

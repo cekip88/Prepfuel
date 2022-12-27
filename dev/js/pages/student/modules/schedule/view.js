@@ -184,10 +184,10 @@ export const view = {
 					<div class="practice-schedule-right">
 						<g-input 
 							class="inpt-checkbox inpt-days" 
-							data-change="${_.componentName}:changeDay" 
+							data-click="${_.componentName}:changeDay" 
 							type="checkbox" 
 							name="day" 
-							classname="inpt-days" 
+							classname="inpt-days"
 							items='${JSON.stringify(days)}'
 						></g-input>
 					</div>
@@ -210,6 +210,7 @@ export const view = {
 						<g-select 
 							class="g-select-gray" 
 							data-change="${_.componentName}:changePracticeTime"
+							id="practice_time"
 							items='${JSON.stringify(times)}' 
 							classname="g-select-gray"
 						></g-select>
@@ -222,7 +223,7 @@ export const view = {
 				<div class="practice-schedule-row">
 					<h5 class="practice-schedule-title">Days per week</h5>
 					<div class="practice-schedule-dots"></div>
-					<span class="practice-schedule-title"><i id="daysPerWeek">${_._$.daysPerWeek.length}</i> days / week</span>
+					<span class="practice-schedule-title"><i id="daysPerWeek">${_.daysPerWeek.length}</i> days / week</span>
 				</div>
 				<div class="practice-schedule-row">
 					<h5 class="practice-schedule-title">Total weeks</h5>
