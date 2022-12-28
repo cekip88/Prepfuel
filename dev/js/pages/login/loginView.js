@@ -218,7 +218,7 @@ export const loginView = {
 					<button class="link" data-click="${_.componentName}:resend">Resend</button>
 				</div>
 				<div class="form-checkbox-row login-checkbox">
-					<button class="button-blue" data-click="${_.componentName}:changeSection" section="login" style="width: 480px;max-width:80vw;">Back to Sign in</button>
+					<button class="button-blue" data-click="${_.componentName}:changeSection" section="login" style="width: 480px;max-width:80vw;">Back to Sign In</button>
 				</div>
 				<img class="login-success-img" src="/img/S_email.png" alt="">
 			</div>
@@ -235,7 +235,7 @@ export const loginView = {
 					<button class="link" data-click="${_.componentName}:resend">Resend</button>
 				</div>
 				<div class="form-checkbox-row login-checkbox">
-					<button class="button-blue" data-click="${_.componentName}:changeSection" section="login" style="width: 480px;max-width:80vw;">Back to Sign in</button>
+					<button class="button-blue" data-click="${_.componentName}:changeSection" section="login" style="width: 480px;max-width:80vw;">Back to Sign In</button>
 				</div>
 				<img class="login-success-img" src="/img/S_email.png" alt="">
 			</div>
@@ -272,7 +272,13 @@ export const loginView = {
 							<span>Reset Password</span>
 						</button>
 					</div>
-				</form>`;
+				</form>
+				<div class="login-bottom">
+					<a class="link" href="#">
+						<span>Contact Us</span>
+					</a>
+				</div>
+`;
 	},
 	leftTpl(){
 		const _ = this;
