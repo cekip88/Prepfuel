@@ -277,7 +277,7 @@ export class PracticeModule extends StudentPage{
 		_.f('#question-pagination').append(_.markup(_.questionNavigation()));
 		_.f("#testType").textContent = _.currentTestType;
 		if(_.testFinished){
-			_.setSkillPaginationAnswers(_.currentAnswers);
+			//_.setSkillPaginationAnswers(_.currentAnswers);
 		}
 		
 //		_.f('#directions-btn').setAttribute('data-id',_.currentConcept);
@@ -1614,7 +1614,6 @@ export class PracticeModule extends StudentPage{
 					
 					let query = parseFloat(correctAnswer) == parseFloat(ans);
 					//console.log(correctAnswer,ans,className);
-					
 					if(query){
 						_.f(`.pagination-link[data-pos="${answer['pos']}"]`).classList.add('done');
 					}else{

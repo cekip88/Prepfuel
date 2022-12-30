@@ -59,8 +59,8 @@ class _Model{
 	get questions(){
 		const _ = this;
 		let questions = [];
+
 		for(let subSection of _.currentSection['subSections']){
-			
 			subSection['questionData'].forEach((page,i) => {
 				if(page['type'] == 'passage'){
 					questions.push(page);
@@ -153,7 +153,7 @@ class _Model{
 					let
 						response = await rawResponse.json();
 					_.test = response['response'];
-					console.log(_.test);
+
 					_.testStatus = _.test['status'];
 					resolve(_.test)
 				}else{
@@ -229,7 +229,6 @@ class _Model{
 			});
 			if(rawResponse.status == 200){
 				let response = await rawResponse.json();
-				
 				if(response['status'] == 'success'){
 					resolve(response);
 				}
@@ -314,7 +313,7 @@ class _Model{
 					for(let section of sections) {
 						let subSections = section['subSections'];
 						for(let subSection of subSections) {
-							Object.assign(_.testServerAnswers, subSection['answers'])
+							Object.assign(_.testServerAnswers, subSection['answers']);
 						}
 					}
 				}

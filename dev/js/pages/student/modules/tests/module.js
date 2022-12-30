@@ -164,7 +164,10 @@ export class TestsModule extends StudentPage{
 				if(_.resultObj['pauses'].length){
 					for(let i = 1; i < _.resultObj['pauses'].length;i++){
 						let pause = _.resultObj['pauses'][i];
-						_.minus+= new Date(pause['pausedAt']).getTime() - new Date(_.resultObj['pauses'][i-1]['continuedAt']).getTime();
+						if(_.resultObj['pauses'][i-1]['continuedAt']){
+							if(!isNaN(new Date(pause['pausedAt']).getTime() - new Date(_.resultObj['pauses'][i-1]['continuedAt']).getTime()))
+							_.minus+= new Date(pause['pausedAt']).getTime() - new Date(_.resultObj['pauses'][i-1]['continuedAt']).getTime();
+						}
 					}
 				}
 			}
@@ -182,6 +185,7 @@ export class TestsModule extends StudentPage{
 			currentTime = nowTime - startTime;
 		if(_.resultObj['pauses'].length){
 			let lastContinue = _.resultObj['pauses'][_.resultObj['pauses'].length-1]['continuedAt'];
+			if(!isNaN(nowTime - new Date(lastContinue).getTime()))
 			currentTime = nowTime - new Date(lastContinue).getTime();
 		}
 		return _.testTime - Math.round(currentTime/60000);
@@ -240,25 +244,31 @@ export class TestsModule extends StudentPage{
 				return void 0;
 			}
 		}
+		if(isPaused) {
+			await Model.setContinue();
+		}
 		await Model.getTest();
+		if(!_.startedTest) {
+			if(_.resultId == 'null'){
+				let startObj = await Model.start();
+				_.resultId = startObj['resultId'];
+			}
+		}
 		Model.test['resultId'] = _.resultId;
 		let results = await Model.getTestResults(_.resultId);
+		
 		if(section == 'directions') {
 			// start of test
 			if(isPaused) {
+				//await Model.setContinue();
 				let
 					sectionPos = results['resultObj']['questionsState']['sectionPos'];
 				Model.changeSectionPos(parseInt(sectionPos));
 				_.sectionPos = sectionPos;
 			}
-			if(!_.startedTest) {
-				if(_.resultId == 'null'){
-					let startObj = await Model.start();
-					_.resultId = startObj['resultId'];
-				}
-			}
+		
 			if(isPaused){
-				await Model.setContinue();
+			
 				let
 					questionDataId = results['resultObj']['questionsState']['sectionId'],
 					sectionPos = results['resultObj']['questionsState']['sectionPos'];
@@ -851,6 +861,7 @@ export class TestsModule extends StudentPage{
 				
 				if(answer && (answer['answer'] != 'O')){
 					// if user choosed answer save it to db
+					if( _.f(`.bookmarked-button[data-question-id="${answer['questionId']}"]`))
 					answer['bookmark'] = _.f(`.bookmarked-button[data-question-id="${answer['questionId']}"]`).classList.contains('active');
 					resolve(await handle(answer));
 				}else{

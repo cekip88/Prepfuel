@@ -186,7 +186,7 @@ export const view = {
 			<div class="section">
 				<div class="section-header">
 					<h1 class="title">Welcome</h1>
-					<button class="button-white" data-click="StudentPage:changeSection" section="/student/tests">
+					<button class="button-white" data-click="StudentPage:changeSection" refresh section="/student/tests">
 						<span>Don’t start this test now</span>
 					</button>
 				</div>
@@ -860,8 +860,6 @@ export const view = {
 	},
 	async graphicQuestion(){
 		const _ = this;
-
-		
 		let currentQuestion;
 		if(_._$.currentQuestion['questions']){
 			currentQuestion = _._$.currentQuestion['questions'][0]
